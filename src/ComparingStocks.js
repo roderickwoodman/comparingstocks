@@ -17,8 +17,9 @@ export class ComparingStocks extends React.Component {
     }
 
     componentDidMount() {
+        let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
         // FIXME: placeholder API call
-        fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&apikey=demo')
+        fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&apikey='+alpha_vantage_api_key)
         .then(res => res.json())
         .then(result => this.setState({ quote_result: result }))
     }
