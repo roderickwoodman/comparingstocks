@@ -7,29 +7,49 @@ export class ComparingStocks extends React.Component {
         super(props)
         this.state = {
             allStocks: [ // FIXME: placeholder data for now
-                {'ticker': 'V', 'name': 'Visa Inc'},
-                {'ticker': 'MSFT', 'name': 'Microsoft Corporation'},
-                {'ticker': 'SBUX', 'name': 'Starbucks Corporation'},
+                'MSFT', 'MSFT', 'MSFT' // FIXME: default to demo key and MSFT, not rate-limited
+                //'V', 'MSFT', 'SBUX'
             ],
-            quote_result: null,
+            allQuotes: [],
             done: false
         }
+        this.getQuotes = this.getQuotes.bind(this)
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        this.getQuotes(this.state.allStocks)
+    }
+
+    getQuoteUrl(ticker) {
         //let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
-        let alpha_vantage_api_key = 'demo' // FIXME: default to demo key and MSFT, not rate-limited
-        // FIXME: placeholder API call
-        fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&apikey='+alpha_vantage_api_key)
-        .then(res => res.json())
-        .then(result => this.setState({ quote_result: result }))
+        let alpha_vantage_api_key = 'demo' // FIXME: default to demo key and MSFT, not rate-limited 
+        let url_prefix = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
+        let url_suffix = '&apikey=' + alpha_vantage_api_key
+        return url_prefix + ticker + url_suffix
+    }
+
+    async getQuotes(tickers) {
+        let newQuotes = {}
+        const quotesApiResults = await Promise.all(tickers.map(ticker =>
+            fetch(this.getQuoteUrl(ticker))
+            .then(res => res.json())
+        ))
+        quotesApiResults.forEach(function(item, idx) {
+            let quoteResult = item['Global Quote']
+            let newQuote = {}
+            let ticker = quoteResult['01. symbol'] + idx
+            newQuote['price'] = quoteResult['05. price']
+            newQuotes[ticker] = newQuote
+        })
+        this.setState({ allQuotes: newQuotes })
     }
 
     render() {
-        const stocks = this.state.allStocks.map( stock => 
-            <tr key={ stock.ticker }>
-                <td>{ stock.ticker }</td>
-                <td>{ stock.name }</td>
+        const tickers_with_quotes = Object.keys(this.state.allQuotes)
+        const ticker_row = tickers_with_quotes.map( (ticker, index) => 
+            <tr key={ index }>
+                <td>{ ticker }</td>
+                <td>{ this.state.allQuotes[ticker].price }</td>
             </tr>
         )
         return (
@@ -43,7 +63,7 @@ export class ComparingStocks extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            { stocks }
+                            { ticker_row }
                         </tbody>
                     </table>
                 </div>
