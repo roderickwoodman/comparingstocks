@@ -1,4 +1,5 @@
 import React from 'react'
+import { PositionRow } from './components/PositionRow'
 
 
 export class ComparingStocks extends React.Component {
@@ -38,6 +39,7 @@ export class ComparingStocks extends React.Component {
             let quoteResult = item['Global Quote']
             let newQuote = {}
             let ticker = quoteResult['01. symbol'] + idx
+            newQuote['symbol'] = ticker
             newQuote['price'] = parseFloat(quoteResult['05. price'])
             newQuote['change'] = parseFloat(quoteResult['09. change'])
             newQuote['change_pct'] = parseFloat(quoteResult['10. change percent'].slice(0, -1))
@@ -48,27 +50,13 @@ export class ComparingStocks extends React.Component {
     }
 
     render() {
-        const tickers_with_quotes = Object.keys(this.state.allQuotes)
-        const ticker_row = tickers_with_quotes.map( (ticker, index) => 
-            <tr key={ index }>
-                <td>{ ticker }</td>
-                <td>{ this.state.allQuotes[ticker].price }</td>
-            </tr>
-        )
         return (
             <div id="page-wrapper">
                 <div id="stocks-list">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ticker</th>
-                                <th>Company Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            { ticker_row }
-                        </tbody>
-                    </table>
+                    {Object.keys(this.state.allQuotes).map(ticker => (
+                        <PositionRow 
+                            position={this.state.allQuotes[ticker]} 
+                    />))}
                 </div>
             </div>
         )
