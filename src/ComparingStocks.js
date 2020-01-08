@@ -52,12 +52,21 @@ export class ComparingStocks extends React.Component {
     render() {
         return (
             <div id="page-wrapper">
-                <div id="stocks-list">
-                    {Object.keys(this.state.allQuotes).map(ticker => (
-                        <PositionRow 
-                            position={this.state.allQuotes[ticker]} 
-                    />))}
-                </div>
+                <table id="position-listing">
+                    <thead>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Change Pct</th>
+                        <th>Volume</th>
+                    </thead>
+                    <tbody>
+                        {Object.keys(this.state.allQuotes).map(ticker => (
+                            <PositionRow 
+                                position={this.state.allQuotes[ticker]} 
+                        />))}
+                    </tbody>
+                </table>
             </div>
         )
     }

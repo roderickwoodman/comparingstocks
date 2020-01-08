@@ -6,13 +6,13 @@ export class PositionRow extends React.Component {
     render() {
         const quote = this.props.position
         return (
-            <div class="tablerow">
-                <div>{ quote.symbol }</div>
-                <div>{ quote.price }</div>
-                <div>{ quote.change }</div>
-                <div>{ quote.change_pct }</div>
-                <div>{ quote.volume }</div>
-            </div>
+            <tr class="position-row">
+                <td class="position-cell">{ quote.symbol }</td>
+                <td class="position-cell">{ quote.price }</td>
+                <td class="position-cell">{ quote.change }</td>
+                <td class="position-cell">{ quote.change_pct }</td>
+                <td class="position-cell">{ quote.volume }</td>
+            </tr>
         )
     }
 
