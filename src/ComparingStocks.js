@@ -126,6 +126,8 @@ export class ComparingStocks extends React.Component {
 
     render() {
         let self = this
+        let sort_column = this.state.sort_column
+        let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
         let sorted_positions = Object.keys(this.state.allQuotes).sort(function(a, b) {
             if (self.state.allQuotes.hasOwnProperty(a) && self.state.allQuotes.hasOwnProperty(b)) {
                 let value_a = self.state.allQuotes[a][self.state.sort_column]
@@ -153,11 +155,11 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing">
                     <thead>
                         <tr>
-                            <th onClick={ (e) => this.changeSort('symbol') }>Symbol</th>
-                            <th onClick={ (e) => this.changeSort('price') }>Price</th>
-                            <th onClick={ (e) => this.changeSort('change') }>Change</th>
-                            <th onClick={ (e) => this.changeSort('change_pct') }>Change Pct</th>
-                            <th onClick={ (e) => this.changeSort('volume') }>Volume</th>
+                            <th onClick={ (e) => this.changeSort('symbol') }>Symbol{ sort_column === 'symbol' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('price') }>Price{ sort_column === 'price' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('change') }>Change{ sort_column === 'change' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('change_pct') }>Change Pct{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
                         </tr>
                     </thead>
                     <tbody>
