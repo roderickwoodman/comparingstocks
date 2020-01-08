@@ -38,7 +38,10 @@ export class ComparingStocks extends React.Component {
             let quoteResult = item['Global Quote']
             let newQuote = {}
             let ticker = quoteResult['01. symbol'] + idx
-            newQuote['price'] = quoteResult['05. price']
+            newQuote['price'] = parseFloat(quoteResult['05. price'])
+            newQuote['change'] = parseFloat(quoteResult['09. change'])
+            newQuote['change_pct'] = parseFloat(quoteResult['10. change percent'].slice(0, -1))
+            newQuote['volume'] = parseInt(quoteResult['06. volume'])
             newQuotes[ticker] = newQuote
         })
         this.setState({ allQuotes: newQuotes })
