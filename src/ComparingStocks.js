@@ -17,7 +17,8 @@ export class ComparingStocks extends React.Component {
     }
 
     componentDidMount() {
-        let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
+        //let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
+        let alpha_vantage_api_key = 'demo' // FIXME: default to demo key and MSFT, not rate-limited
         // FIXME: placeholder API call
         fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&apikey='+alpha_vantage_api_key)
         .then(res => res.json())
