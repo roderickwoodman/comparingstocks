@@ -117,15 +117,18 @@ export class ComparingStocks extends React.Component {
             <div id="page-wrapper">
                 <table id="position-listing">
                     <thead>
-                        <th>Symbol</th>
-                        <th>Price</th>
-                        <th>Change</th>
-                        <th>Change Pct</th>
-                        <th>Volume</th>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Price</th>
+                            <th>Change</th>
+                            <th>Change Pct</th>
+                            <th>Volume</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {Object.keys(this.state.allQuotes).map(ticker => (
                             <PositionRow 
+                                key={ticker}
                                 position={this.state.allQuotes[ticker]} 
                         />))}
                     </tbody>
