@@ -12,10 +12,13 @@ export class ComparingStocks extends React.Component {
                 'V', 'MSFT', 'SBUX'
             ],
             allQuotes: [],
+            sort_column: 'symbol',
+            sort_dir_asc: true,
             done: false
         }
         this.getQuotes = this.getQuotes.bind(this)
         this.debugGetQuotes = this.debugGetQuotes.bind(this)
+        this.changeSort = this.changeSort.bind(this)
     }
 
     async componentDidMount() {
@@ -112,21 +115,53 @@ export class ComparingStocks extends React.Component {
         this.setState({ allQuotes: newQuotes })
     }
 
+    changeSort(new_sort_column) {
+        if (new_sort_column === this.state.sort_column) {
+            this.setState(prevState => ({
+                sort_dir_asc: !prevState.sort_dir_asc
+            }))
+        }
+        this.setState({ sort_column: new_sort_column })
+    }
+
     render() {
+        let self = this
+        let sorted_positions = Object.keys(this.state.allQuotes).sort(function(a, b) {
+            if (self.state.allQuotes.hasOwnProperty(a) && self.state.allQuotes.hasOwnProperty(b)) {
+                let value_a = self.state.allQuotes[a][self.state.sort_column]
+                let value_b = self.state.allQuotes[b][self.state.sort_column]
+                if (self.state.sort_dir_asc === true) {
+                    if (value_a < value_b) {
+                        return -1
+                    }
+                    if (value_a > value_b) {
+                        return 1
+                    }
+                } else {
+                    if (value_a < value_b) {
+                        return 1
+                    }
+                    if (value_a > value_b) {
+                        return -1
+                    }
+                }
+            }
+            return 0
+        })
         return (
             <div id="page-wrapper">
                 <table id="position-listing">
                     <thead>
                         <tr>
-                            <th>Symbol</th>
-                            <th>Price</th>
-                            <th>Change</th>
-                            <th>Change Pct</th>
-                            <th>Volume</th>
+                            <th onClick={ (e) => this.changeSort('symbol') }>Symbol</th>
+                            <th onClick={ (e) => this.changeSort('price') }>Price</th>
+                            <th onClick={ (e) => this.changeSort('change') }>Change</th>
+                            <th onClick={ (e) => this.changeSort('change_pct') }>Change Pct</th>
+                            <th onClick={ (e) => this.changeSort('volume') }>Volume</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.keys(this.state.allQuotes).map(ticker => (
+                        {sorted_positions.map(ticker => (
                             <PositionRow 
                                 key={ticker}
                                 position={this.state.allQuotes[ticker]} 
