@@ -48,9 +48,9 @@ export class ComparingStocks extends React.Component {
             let newQuote = {}
             let ticker = quoteResult['01. symbol'] + idx
             newQuote['symbol'] = ticker
-            newQuote['price'] = parseFloat(quoteResult['05. price'])
-            newQuote['change'] = parseFloat(quoteResult['09. change'])
-            newQuote['change_pct'] = parseFloat(quoteResult['10. change percent'].slice(0, -1))
+            newQuote['price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
+            newQuote['change'] = (Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2)
+            newQuote['change_pct'] = (Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2)
             newQuote['volume'] = parseInt(quoteResult['06. volume'])
             newQuotes[ticker] = newQuote
         })
@@ -109,9 +109,9 @@ export class ComparingStocks extends React.Component {
             let newQuote = {}
             let ticker = quoteResult['01. symbol']
             newQuote['symbol'] = ticker
-            newQuote['price'] = parseFloat(quoteResult['05. price'])
-            newQuote['change'] = parseFloat(quoteResult['09. change'])
-            newQuote['change_pct'] = parseFloat(quoteResult['10. change percent'].slice(0, -1))
+            newQuote['price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
+            newQuote['change'] = (Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2)
+            newQuote['change_pct'] = (Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2)
             newQuote['volume'] = parseInt(quoteResult['06. volume'])
             newQuotes[ticker] = newQuote
         })
@@ -5774,12 +5774,12 @@ export class ComparingStocks extends React.Component {
         let current_quote_cols = ['symbol', 'price', 'change', 'change_pct', 'volume']
         let self = this
         let allPerformanceNumbers = {}
-        Object.keys(this.state.allCurrentQuotes).map(function(ticker) {
+        Object.keys(this.state.allCurrentQuotes).forEach(function(ticker) {
             let newPerformanceNumbers = {}
             let start = self.state.allMonthlyQuotes[ticker]['monthly_prices'][0]
-            newPerformanceNumbers['short_change_pct'] = (start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]) / start * 100
-            newPerformanceNumbers['medium_change_pct'] = (start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]) / start * 100
-            newPerformanceNumbers['long_change_pct'] = (start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]) / start * 100
+            newPerformanceNumbers['short_change_pct'] = (Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]) / start * 100) / 10)).toFixed(1);
+            newPerformanceNumbers['medium_change_pct'] = (Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]) / start * 100) / 10)).toFixed(1);
+            newPerformanceNumbers['long_change_pct'] = (Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]) / start * 100)  /10)).toFixed(1);
             allPerformanceNumbers[ticker] = newPerformanceNumbers
         })
         let sort_column = this.state.sort_column
@@ -5820,8 +5820,7 @@ export class ComparingStocks extends React.Component {
                         <tr>
                             <th onClick={ (e) => this.changeSort('symbol') }>Symbol{ sort_column === 'symbol' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('price') }>Price{ sort_column === 'price' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('change') }>Change{ sort_column === 'change' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('change_pct') }>Change Pct{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('short_change_pct') }>6-month{ sort_column === 'short_change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('medium_change_pct') }>1-year{ sort_column === 'medium_change_pct' ? sort_triangle : '' }</th>
