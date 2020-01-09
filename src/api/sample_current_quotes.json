@@ -1,0 +1,46 @@
+{
+    "sample_current_quotes" : [
+        {
+            "Global Quote": {
+                "01. symbol": "V",
+                "02. open": "189.4900",
+                "03. high": "192.1100",
+                "04. low": "188.8000",
+                "05. price": "191.8700",
+                "06. volume": "1752851",
+                "07. latest trading day": "2020-01-08",
+                "08. previous close": "188.6900",
+                "09. change": "3.1800",
+                "10. change percent": "1.6853%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "MSFT",
+                "02. open": "158.9300",
+                "03. high": "160.1800",
+                "04. low": "157.9491",
+                "05. price": "159.9650",
+                "06. volume": "9797793",
+                "07. latest trading day": "2020-01-08",
+                "08. previous close": "157.5800",
+                "09. change": "2.3850",
+                "10. change percent": "1.5135%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "SBUX",
+                "02. open": "87.9400",
+                "03. high": "89.1800",
+                "04. low": "87.7800",
+                "05. price": "89.1350",
+                "06. volume": "2517383",
+                "07. latest trading day": "2020-01-08",
+                "08. previous close": "87.8600",
+                "09. change": "1.2750",
+                "10. change percent": "1.4512%"
+            }
+        }
+    ]
+}
