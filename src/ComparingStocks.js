@@ -5755,7 +5755,7 @@ export class ComparingStocks extends React.Component {
             let newQuote = {}
             let ticker = quoteMeta['2. Symbol']
             newQuote['symbol'] = ticker
-            newQuote['monthly_prices'] = Object.entries(item['Monthly Adjusted Time Series']).map(price => price[1]['5. adjusted close'])
+            newQuote['monthly_prices'] = Object.entries(item['Monthly Adjusted Time Series']).map(price => parseFloat(price[1]['5. adjusted close']))
             newQuotes[ticker] = newQuote
         })
         this.setState({ allMonthlyQuotes: newQuotes })
@@ -5771,13 +5771,29 @@ export class ComparingStocks extends React.Component {
     }
 
     render() {
+        let current_quote_cols = ['symbol', 'price', 'change', 'change_pct', 'volume']
         let self = this
+        let allPerformanceNumbers = {}
+        Object.keys(this.state.allCurrentQuotes).map(function(ticker) {
+            let newPerformanceNumbers = {}
+            let start = self.state.allMonthlyQuotes[ticker]['monthly_prices'][0]
+            newPerformanceNumbers['short_change_pct'] = (start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]) / start * 100
+            newPerformanceNumbers['medium_change_pct'] = (start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]) / start * 100
+            newPerformanceNumbers['long_change_pct'] = (start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]) / start * 100
+            allPerformanceNumbers[ticker] = newPerformanceNumbers
+        })
         let sort_column = this.state.sort_column
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
-        let sorted_positions = Object.keys(this.state.allCurrentQuotes).sort(function(a, b) {
+        let sorted_tickers = Object.keys(this.state.allCurrentQuotes).sort(function(a, b) {
             if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                let value_a = self.state.allCurrentQuotes[a][self.state.sort_column]
-                let value_b = self.state.allCurrentQuotes[b][self.state.sort_column]
+                let value_a, value_b
+                if (current_quote_cols.includes(self.state.sort_column)) {
+                    value_a = self.state.allCurrentQuotes[a][self.state.sort_column]
+                    value_b = self.state.allCurrentQuotes[b][self.state.sort_column]
+                } else {
+                    value_a = allPerformanceNumbers[a][self.state.sort_column]
+                    value_b = allPerformanceNumbers[b][self.state.sort_column]
+                }
                 if (self.state.sort_dir_asc === true) {
                     if (value_a < value_b) {
                         return -1
@@ -5796,6 +5812,7 @@ export class ComparingStocks extends React.Component {
             }
             return 0
         })
+
         return (
             <div id="page-wrapper">
                 <table id="position-listing">
@@ -5806,13 +5823,17 @@ export class ComparingStocks extends React.Component {
                             <th onClick={ (e) => this.changeSort('change') }>Change{ sort_column === 'change' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('change_pct') }>Change Pct{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('short_change_pct') }>6-month{ sort_column === 'short_change_pct' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('medium_change_pct') }>1-year{ sort_column === 'medium_change_pct' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('long_change_pct') }>2-year{ sort_column === 'long_change_pct' ? sort_triangle : '' }</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {sorted_positions.map(ticker => (
+                        {sorted_tickers.map(ticker => (
                             <PositionRow 
                                 key={ticker}
-                                position={this.state.allCurrentQuotes[ticker]} 
+                                current_quote={this.state.allCurrentQuotes[ticker]} 
+                                performance_numbers={allPerformanceNumbers[ticker]} 
                         />))}
                     </tbody>
                 </table>
