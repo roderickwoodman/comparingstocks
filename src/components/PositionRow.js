@@ -6,8 +6,12 @@ export class PositionRow extends React.Component {
     render() {
         const quote = this.props.current_quote
         const performance = this.props.performance_numbers
+        let row_classes = 'position-row' 
+        if (this.props.ticker_is_index(quote.symbol)) {
+            row_classes += ' position-is-index'
+        }
         return (
-            <tr className="position-row">
+            <tr className={ row_classes }>
                 <td className="position-cell">{ quote.symbol }</td>
                 <td className="position-cell">${ quote.price }</td>
                 <td className="position-cell">{ quote.change_pct }%</td>
