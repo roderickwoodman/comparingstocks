@@ -7,6 +7,7 @@ export class ComparingStocks extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            allIndicies: [ 'INX' ], // S&P500
             allStocks: [ // FIXME: placeholder data for now
                 // 'MSFT', 'MSFT', 'MSFT' // FIXME: default to demo key and MSFT, not rate-limited
                 'V', 'MSFT', 'SBUX'
@@ -17,6 +18,7 @@ export class ComparingStocks extends React.Component {
             sort_dir_asc: true,
             done: false
         }
+        this.tickerIsIndex = this.tickerIsIndex.bind(this)
         this.getCurrentQuotes = this.getCurrentQuotes.bind(this)
         this.debugGetCurrentQuotes = this.debugGetCurrentQuotes.bind(this)
         this.debugGetMonthlyQuotes = this.debugGetMonthlyQuotes.bind(this)
@@ -98,6 +100,10 @@ export class ComparingStocks extends React.Component {
         this.setState({ sort_column: new_sort_column })
     }
 
+    tickerIsIndex(ticker) {
+        return (this.state.allIndicies.includes(ticker)) ? true : false
+    }
+
     render() {
         let current_quote_cols = ['symbol', 'price', 'change', 'change_pct', 'volume']
         let self = this
@@ -140,6 +146,8 @@ export class ComparingStocks extends React.Component {
             }
             return 0
         })
+        let sorted_indicies = sorted_tickers.filter(ticker => this.tickerIsIndex(ticker))
+        let sorted_nonindicies = sorted_tickers.filter(ticker => !this.tickerIsIndex(ticker))
 
         return (
             <div id="page-wrapper">
@@ -156,7 +164,13 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {sorted_tickers.map(ticker => (
+                        {sorted_indicies.map(ticker => (
+                            <PositionRow 
+                                key={ticker}
+                                current_quote={this.state.allCurrentQuotes[ticker]} 
+                                performance_numbers={allPerformanceNumbers[ticker]} 
+                        />))}
+                        {sorted_nonindicies.map(ticker => (
                             <PositionRow 
                                 key={ticker}
                                 current_quote={this.state.allCurrentQuotes[ticker]} 

@@ -2,6 +2,20 @@
     "sample_current_quotes" : [
         {
             "Global Quote": {
+                "01. symbol": "INX",
+                "02. open": "3266.0300",
+                "03. high": "3273.8999",
+                "04. low": "3265.4500",
+                "05. price": "3271.9900",
+                "06. volume": "593105802",
+                "07. latest trading day": "2020-01-09",
+                "08. previous close": "3253.0500",
+                "09. change": "18.9399",
+                "10. change percent": "0.5822%"
+            }
+        },
+        {
+            "Global Quote": {
                 "01. symbol": "V",
                 "02. open": "189.4900",
                 "03. high": "192.1100",
