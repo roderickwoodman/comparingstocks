@@ -15,6 +15,7 @@ export class ComparingStocks extends React.Component {
             ],
             allCurrentQuotes: [],
             allMonthlyQuotes: [],
+            performance_baseline: 'sp500_pct_gain',
             sort_column: 'symbol',
             sort_dir_asc: true,
             done: false
@@ -24,6 +25,7 @@ export class ComparingStocks extends React.Component {
         this.getCurrentQuotes = this.getCurrentQuotes.bind(this)
         this.debugGetCurrentQuotes = this.debugGetCurrentQuotes.bind(this)
         this.debugGetMonthlyQuotes = this.debugGetMonthlyQuotes.bind(this)
+        this.onBaselineChange = this.onBaselineChange.bind(this)
         this.changeSort = this.changeSort.bind(this)
     }
 
@@ -95,6 +97,10 @@ export class ComparingStocks extends React.Component {
         this.setState({ allMonthlyQuotes: newQuotes })
     }
 
+    onBaselineChange(event) {
+        this.setState({ performance_baseline: event.target.value })
+    }
+
     changeSort(new_sort_column) {
         if (new_sort_column === this.state.sort_column) {
             this.setState(prevState => ({
@@ -123,10 +129,36 @@ export class ComparingStocks extends React.Component {
         let allPerformanceNumbers = {}
         Object.keys(this.state.allCurrentQuotes).forEach(function(ticker) {
             let newPerformanceNumbers = {}
-            let start = self.state.allMonthlyQuotes[ticker]['monthly_prices'][0]
-            newPerformanceNumbers['short_change_pct'] = parseFloat((Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]) / start * 100) / 10)).toFixed(1));
-            newPerformanceNumbers['medium_change_pct'] = parseFloat((Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]) / start * 100) / 10)).toFixed(1));
-            newPerformanceNumbers['long_change_pct'] = parseFloat((Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]) / start * 100)  /10)).toFixed(1));
+
+            let ticker_now = self.state.allMonthlyQuotes[ticker]['monthly_prices'][0]
+            let ticker_prev_short = self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]
+            let ticker_prev_medium = self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]
+            let ticker_prev_long = self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]
+            let ticker_perf_short = (ticker_now - ticker_prev_short) / ticker_now
+            let ticker_perf_medium = (ticker_now - ticker_prev_medium) / ticker_now
+            let ticker_perf_long = (ticker_now - ticker_prev_long) / ticker_now
+
+            let baseline_now = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][0]
+            let baseline_prev_short = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][5]
+            let baseline_prev_medium = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][11]
+            let baseline_prev_long = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][23]
+            let baseline_perf_short = (baseline_now - baseline_prev_short) / baseline_now
+            let baseline_perf_medium = (baseline_now - baseline_prev_medium) / baseline_now
+            let baseline_perf_long = (baseline_now - baseline_prev_long) / baseline_now
+
+            if (self.state.performance_baseline === 'sp500_pct_gain') {
+                newPerformanceNumbers['short_change_pct'] = ticker_perf_short - baseline_perf_short
+                newPerformanceNumbers['medium_change_pct'] = ticker_perf_medium - baseline_perf_medium
+                newPerformanceNumbers['long_change_pct'] = ticker_perf_long - baseline_perf_long
+            } else {
+                newPerformanceNumbers['short_change_pct'] = ticker_perf_short
+                newPerformanceNumbers['medium_change_pct'] = ticker_perf_medium
+                newPerformanceNumbers['long_change_pct'] = ticker_perf_long
+            }
+
+            Object.keys(newPerformanceNumbers).forEach(function(key) {
+                newPerformanceNumbers[key] = parseFloat((Math.round(10 * 100 * newPerformanceNumbers[key]) / 10).toFixed(1))
+            })
             allPerformanceNumbers[ticker] = newPerformanceNumbers
         })
         let sort_column = this.state.sort_column
@@ -162,6 +194,15 @@ export class ComparingStocks extends React.Component {
 
         return (
             <div id="page-wrapper">
+                <div id="page-controls">
+                    <label>
+                        Performance Baseline:
+                        <select value={this.state.baseline} onChange={this.onBaselineChange}>
+                            <option value="zero_pct_gain">0% gain</option>
+                            <option value="sp500_pct_gain">SP&amp;500 Index</option>
+                        </select>
+                    </label>
+                </div>
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>

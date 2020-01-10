@@ -17,6 +17,14 @@ code {
     monospace;
 }
 
+#page-wrapper {
+  padding: 10px 20px;
+}
+
+#page-controls {
+  margin: 20px 0;
+}
+
 .position-is-index {
   background: orange;
   font-weight: 800;
