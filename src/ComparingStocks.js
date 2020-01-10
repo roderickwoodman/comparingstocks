@@ -11,7 +11,7 @@ export class ComparingStocks extends React.Component {
             allIndiciesAliases: [ 'S&P500' ],
             allStocks: [ // FIXME: placeholder data for now
                 // 'MSFT', 'MSFT', 'MSFT' // FIXME: default to demo key and MSFT, not rate-limited
-                'V', 'MSFT', 'SBUX'
+                'V', 'MSFT', 'SBUX', 'BA', 'CVX', 'JNJ', 'CAT', 'DIS', 'HD', 'HSY', 'NFLX', 'TRV', 'PG'
             ],
             allCurrentQuotes: [],
             allMonthlyQuotes: [],
