@@ -71,9 +71,9 @@ export class ComparingStocks extends React.Component {
             let newQuote = {}
             let ticker = self.convertNameForIndicies(quoteResult['01. symbol'])
             newQuote['symbol'] = ticker
-            newQuote['price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
-            newQuote['change'] = (Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2)
-            newQuote['change_pct'] = (Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2)
+            newQuote['price'] = parseFloat((Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2))
+            newQuote['change'] = parseFloat((Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2))
+            newQuote['change_pct'] = parseFloat((Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2))
             newQuote['volume'] = parseInt(quoteResult['06. volume'])
             newQuotes[ticker] = newQuote
         })
@@ -124,9 +124,9 @@ export class ComparingStocks extends React.Component {
         Object.keys(this.state.allCurrentQuotes).forEach(function(ticker) {
             let newPerformanceNumbers = {}
             let start = self.state.allMonthlyQuotes[ticker]['monthly_prices'][0]
-            newPerformanceNumbers['short_change_pct'] = (Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]) / start * 100) / 10)).toFixed(1);
-            newPerformanceNumbers['medium_change_pct'] = (Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]) / start * 100) / 10)).toFixed(1);
-            newPerformanceNumbers['long_change_pct'] = (Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]) / start * 100)  /10)).toFixed(1);
+            newPerformanceNumbers['short_change_pct'] = parseFloat((Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]) / start * 100) / 10)).toFixed(1));
+            newPerformanceNumbers['medium_change_pct'] = parseFloat((Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]) / start * 100) / 10)).toFixed(1));
+            newPerformanceNumbers['long_change_pct'] = parseFloat((Math.round(10 * ((start - self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]) / start * 100)  /10)).toFixed(1));
             allPerformanceNumbers[ticker] = newPerformanceNumbers
         })
         let sort_column = this.state.sort_column
