@@ -13,7 +13,8 @@ export class PositionRow extends React.Component {
         return (
             <tr className={ row_classes }>
                 <td className="position-cell">{ quote.symbol }</td>
-                <td className="position-cell">${ quote.price }</td>
+                {/* <td className="position-cell">{ this.props.current_shares }</td> */}
+                <td className="position-cell">${ quote.current_price }</td>
                 <td className="position-cell">{ quote.change_pct }%</td>
                 <td className="position-cell">{ quote.volume }</td>
                 <td className="position-cell">{ performance.short_change_pct }%</td>

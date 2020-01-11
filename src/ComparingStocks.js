@@ -15,6 +15,7 @@ export class ComparingStocks extends React.Component {
             ],
             allCurrentQuotes: [],
             allMonthlyQuotes: [],
+            currentPositions: [],
             performance_baseline: 'sp500_pct_gain',
             sort_column: 'symbol',
             sort_dir_asc: true,
@@ -25,6 +26,7 @@ export class ComparingStocks extends React.Component {
         this.getCurrentQuotes = this.getCurrentQuotes.bind(this)
         this.debugGetCurrentQuotes = this.debugGetCurrentQuotes.bind(this)
         this.debugGetMonthlyQuotes = this.debugGetMonthlyQuotes.bind(this)
+        this.debugGetAllPositions = this.debugGetAllPositions.bind(this)
         this.onBaselineChange = this.onBaselineChange.bind(this)
         this.changeSort = this.changeSort.bind(this)
     }
@@ -33,6 +35,7 @@ export class ComparingStocks extends React.Component {
         // this.getCurrentQuotes(this.state.allStocks)
         this.debugGetCurrentQuotes(this.state.allStocks)
         this.debugGetMonthlyQuotes(this.state.allStocks)
+        this.debugGetAllPositions(this.state.allStocks)
     }
 
     getQuoteUrl(ticker) {
@@ -54,7 +57,7 @@ export class ComparingStocks extends React.Component {
             let newQuote = {}
             let ticker = quoteResult['01. symbol'] + idx
             newQuote['symbol'] = this.convertNameForIndicies(ticker)
-            newQuote['price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
+            newQuote['current_price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
             newQuote['change'] = (Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2)
             newQuote['change_pct'] = (Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2)
             newQuote['volume'] = parseInt(quoteResult['06. volume'])
@@ -73,7 +76,7 @@ export class ComparingStocks extends React.Component {
             let newQuote = {}
             let ticker = self.convertNameForIndicies(quoteResult['01. symbol'])
             newQuote['symbol'] = ticker
-            newQuote['price'] = parseFloat((Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2))
+            newQuote['current_price'] = parseFloat((Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2))
             newQuote['change'] = parseFloat((Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2))
             newQuote['change_pct'] = parseFloat((Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2))
             newQuote['volume'] = parseInt(quoteResult['06. volume'])
@@ -95,6 +98,20 @@ export class ComparingStocks extends React.Component {
             newQuotes[ticker] = newQuote
         })
         this.setState({ allMonthlyQuotes: newQuotes })
+    }
+
+    debugGetAllPositions() {
+        let newPositions = {}
+        let transactions = require('./api/sample_transactions.json').sample_transactions
+        let self = this
+        Object.keys(transactions).forEach(function(ticker, idx) {
+            let newPosition = {}
+            newPosition['current_shares'] = transactions[ticker].reduce(function (total, current_val) {
+               return total + current_val['shares_added']
+            }, 0)
+            newPositions[ticker] = newPosition
+        })
+        this.setState({ currentPositions: newPositions })
     }
 
     onBaselineChange(event) {
@@ -124,7 +141,7 @@ export class ComparingStocks extends React.Component {
     }
 
     render() {
-        let current_quote_cols = ['symbol', 'price', 'change', 'change_pct', 'volume']
+        let current_quote_cols = ['symbol', 'current_price', 'change', 'change_pct', 'volume']
         let self = this
         let allPerformanceNumbers = {}
         Object.keys(this.state.allCurrentQuotes).forEach(function(ticker) {
@@ -207,7 +224,8 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             <th onClick={ (e) => this.changeSort('symbol') }>Symbol{ sort_column === 'symbol' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('price') }>Price{ sort_column === 'price' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('current_shares') }>Symbol{ sort_column === 'current_shares' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('current_price') }>Price{ sort_column === 'current_price' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('short_change_pct') }>6-month{ sort_column === 'short_change_pct' ? sort_triangle : '' }</th>
@@ -219,6 +237,7 @@ export class ComparingStocks extends React.Component {
                         {sorted_tickers.map(ticker => (
                             <PositionRow 
                                 key={ ticker }
+                                // current_shares={this.state.currentPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={allPerformanceNumbers[ticker]}
                                 ticker_is_index={this.tickerIsIndex}
