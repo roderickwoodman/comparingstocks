@@ -4,6 +4,7 @@ import React from 'react'
 export class PositionRow extends React.Component {
 
     render() {
+        const current_shares = this.props.current_shares
         const quote = this.props.current_quote
         const performance = this.props.performance_numbers
         let row_classes = 'position-row' 
@@ -13,7 +14,7 @@ export class PositionRow extends React.Component {
         return (
             <tr className={ row_classes }>
                 <td className="position-cell">{ quote.symbol }</td>
-                {/* <td className="position-cell">{ this.props.current_shares }</td> */}
+                <td className="position-cell">{ current_shares }</td>
                 <td className="position-cell">${ quote.current_price }</td>
                 <td className="position-cell">{ quote.change_pct }%</td>
                 <td className="position-cell">{ quote.volume }</td>

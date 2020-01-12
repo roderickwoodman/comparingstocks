@@ -208,6 +208,7 @@ export class ComparingStocks extends React.Component {
             }
             return 0
         })
+        let filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.currentPositions.hasOwnProperty(ticker) && this.state.currentPositions[ticker]['current_shares'])
 
         return (
             <div id="page-wrapper">
@@ -224,7 +225,7 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             <th onClick={ (e) => this.changeSort('symbol') }>Symbol{ sort_column === 'symbol' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('current_shares') }>Symbol{ sort_column === 'current_shares' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('current_shares') }>Shares{ sort_column === 'current_shares' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('current_price') }>Price{ sort_column === 'current_price' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
@@ -234,10 +235,10 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {sorted_tickers.map(ticker => (
+                        {filtered_sorted_tickers.map(ticker => (
                             <PositionRow 
-                                key={ ticker }
-                                // current_shares={this.state.currentPositions[ticker]}
+                                key={ticker}
+                                current_shares={this.state.currentPositions[ticker].current_shares}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={allPerformanceNumbers[ticker]}
                                 ticker_is_index={this.tickerIsIndex}
