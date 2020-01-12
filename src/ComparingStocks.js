@@ -103,7 +103,6 @@ export class ComparingStocks extends React.Component {
     debugGetAllPositions() {
         let newPositions = {}
         let transactions = require('./api/sample_transactions.json').sample_transactions
-        let self = this
         Object.keys(transactions).forEach(function(ticker, idx) {
             let newPosition = {}
             newPosition['current_shares'] = transactions[ticker].reduce(function (total, current_val) {
@@ -252,14 +251,15 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {sorted_filtered_tickers.map(ticker => (
+                        {sorted_filtered_tickers.map(ticker => {
+                            return(
                             <PositionRow 
                                 key={ticker}
-                                current_shares={this.state.currentPositions[ticker].current_shares}
+                                current_position={this.state.currentPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={allPerformanceNumbers[ticker]}
                                 ticker_is_index={this.tickerIsIndex}
-                        />))}
+                        />)})}
                     </tbody>
                 </table>
             </div>
