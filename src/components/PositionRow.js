@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 
 export class PositionRow extends React.Component {
@@ -25,4 +26,12 @@ export class PositionRow extends React.Component {
         )
     }
 
+}
+
+PositionRow.propTypes = {
+    key: PropTypes.string,
+    current_shares: PropTypes.number.isRequired,
+    current_quote: PropTypes.object.isRequired,
+    performance_numbers: PropTypes.object.isRequired,
+    ticker_is_index: PropTypes.func.isRequired,
 }
