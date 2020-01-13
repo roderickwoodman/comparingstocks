@@ -103,7 +103,7 @@ export class ComparingStocks extends React.Component {
     debugGetAllPositions() {
         let newPositions = {}
         let transactions = require('./api/sample_transactions.json').sample_transactions
-        Object.keys(transactions).forEach(function(ticker, idx) {
+        Object.keys(transactions).forEach(function(ticker) {
             let newPosition = {}
             newPosition['current_shares'] = transactions[ticker].reduce(function (total, current_val) {
                return total + current_val['shares_added']
@@ -140,10 +140,9 @@ export class ComparingStocks extends React.Component {
     }
 
     render() {
-        let current_quote_cols = ['symbol', 'current_price', 'change', 'change_pct', 'volume']
-        let position_cols = ['current_shares']
-        let performance_cols = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
+
         let self = this
+
         let allPerformanceNumbers = {}
         Object.keys(this.state.allCurrentQuotes).forEach(function(ticker) {
             let newPerformanceNumbers = {}
@@ -179,35 +178,39 @@ export class ComparingStocks extends React.Component {
             })
             allPerformanceNumbers[ticker] = newPerformanceNumbers
         })
-        let sort_column = this.state.sort_column
+
+        let sort_column = self.state.sort_column
+        let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume']
+        let holdings_columns = ['current_shares']
+        let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
-        let filtered_tickers = Object.keys(this.state.currentPositions).filter(ticker => this.state.currentPositions[ticker]['current_shares'])
-        let sorted_filtered_tickers = filtered_tickers.sort(function(a, b) {
+        let sorted_tickers = Object.keys(this.state.allCurrentQuotes).sort(function(a, b) {
             let value_a, value_b
-            if (current_quote_cols.includes(self.state.sort_column)) {
+            if (quote_columns.includes(sort_column)) {
                 if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                    value_a = self.state.allCurrentQuotes[a][self.state.sort_column]
-                    value_b = self.state.allCurrentQuotes[b][self.state.sort_column]
-                } else {
-                    return 0
+                    value_a = self.state.allCurrentQuotes[a][sort_column]
+                    value_b = self.state.allCurrentQuotes[b][sort_column]
+                } 
+            } else if (performance_columns.includes(sort_column)) {
+                if (self.state.allMonthlyQuotes.hasOwnProperty(a) && self.state.allMonthlyQuotes.hasOwnProperty(b)) {
+                    value_a = allPerformanceNumbers[a][sort_column]
+                    value_b = allPerformanceNumbers[b][sort_column]
                 }
-            } else if (position_cols.includes(self.state.sort_column)) {
-                if (self.state.currentPositions.hasOwnProperty(a) && self.state.currentPositions.hasOwnProperty(b)) { 
-                    value_a = self.state.currentPositions[a][self.state.sort_column]
-                    value_b = self.state.currentPositions[b][self.state.sort_column]
+            } else if (holdings_columns.includes(sort_column)) {
+                if (self.state.currentPositions.hasOwnProperty(a)) {
+                    value_a = self.state.currentPositions[a][sort_column]
                 } else {
-                    return 0
+                    value_a = 0
                 }
-            } else if (performance_cols.includes(self.state.sort_column)) {
-                if (allPerformanceNumbers[a].hasOwnProperty(a) && allPerformanceNumbers[b].hasOwnProperty(b)) { 
-                    value_a = allPerformanceNumbers[a][self.state.sort_column]
-                    value_b = allPerformanceNumbers[b][self.state.sort_column]
+                if (self.state.currentPositions.hasOwnProperty(b)) {
+                    value_b = self.state.currentPositions[b][sort_column]
                 } else {
-                    return 0
+                    value_b = 0
                 }
             } else {
                 return 0
             }
+                
             if (self.state.sort_dir_asc === true) {
                 if (value_a < value_b) {
                     return -1
@@ -223,8 +226,10 @@ export class ComparingStocks extends React.Component {
                     return -1
                 }
             }
+
             return 0
         })
+        let filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.currentPositions.hasOwnProperty(ticker) && this.state.currentPositions[ticker]['current_shares'])
 
         return (
             <div id="page-wrapper">
@@ -251,15 +256,14 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {sorted_filtered_tickers.map(ticker => {
-                            return(
+                        {filtered_sorted_tickers.map(ticker => (
                             <PositionRow 
                                 key={ticker}
                                 current_position={this.state.currentPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={allPerformanceNumbers[ticker]}
                                 ticker_is_index={this.tickerIsIndex}
-                        />)})}
+                        />))}
                     </tbody>
                 </table>
             </div>
