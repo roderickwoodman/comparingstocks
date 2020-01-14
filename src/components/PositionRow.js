@@ -49,9 +49,10 @@ export class PositionRow extends React.Component {
                 <td className="position-cell">{ current_quote.symbol }</td>
                 <td className="position-cell">{ formatZeroValue(current_position.current_shares) }</td>
                 <td className="position-cell">${ current_quote.current_price }</td>
-                <td className="position-cell">{ addTrailingZeros(current_quote.change_pct, 2) }%</td>
                 <td className="position-cell">{ formatZeroValue('$' + (Math.round(100 * current_quote.current_price * current_position.current_shares) / 100).toFixed(2)) }</td>
+                <td className="position-cell">{ addTrailingZeros(current_quote.change_pct, 2) }%</td>
                 <td className="position-cell">{ current_quote.volume }</td>
+                <td className="position-cell">${ Math.round(current_quote.current_price * current_quote.volume / 1000000) }</td>
                 <td className="position-cell">{ addTrailingZeros(performance.short_change_pct, 1) }%</td>
                 <td className="position-cell">{ addTrailingZeros(performance.medium_change_pct, 1) }%</td>
                 <td className="position-cell">{ addTrailingZeros(performance.long_change_pct, 1) }%</td>

@@ -186,7 +186,7 @@ export class ComparingStocks extends React.Component {
         })
 
         let sort_column = self.state.sort_column
-        let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume']
+        let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
         let holdings_columns = ['current_shares', 'current_value']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
@@ -194,8 +194,13 @@ export class ComparingStocks extends React.Component {
             let value_a, value_b
             if (quote_columns.includes(sort_column)) {
                 if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                    value_a = self.state.allCurrentQuotes[a][sort_column]
-                    value_b = self.state.allCurrentQuotes[b][sort_column]
+                    if (sort_column === 'dollar_volume') {
+                        value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
+                        value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
+                    } else {
+                        value_a = self.state.allCurrentQuotes[a][sort_column]
+                        value_b = self.state.allCurrentQuotes[b][sort_column]
+                    }
                 } 
             } else if (performance_columns.includes(sort_column)) {
                 if (self.state.allMonthlyQuotes.hasOwnProperty(a) && self.state.allMonthlyQuotes.hasOwnProperty(b)) {
@@ -280,9 +285,10 @@ export class ComparingStocks extends React.Component {
                             <th onClick={ (e) => this.changeSort('symbol') }>Symbol{ sort_column === 'symbol' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('current_shares') }>Shares{ sort_column === 'current_shares' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('current_price') }>Price{ sort_column === 'current_price' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('current_value') }>Value{ sort_column === 'current_value' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('dollar_volume') }>Dollar Vol (M){ sort_column === 'dollar_volume' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('short_change_pct') }>6-month{ sort_column === 'short_change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('medium_change_pct') }>1-year{ sort_column === 'medium_change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('long_change_pct') }>2-year{ sort_column === 'long_change_pct' ? sort_triangle : '' }</th>
