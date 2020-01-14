@@ -48,6 +48,14 @@ export class PositionRow extends React.Component {
         }
         let current_value = Math.round(current_quote.current_price * current_position.current_shares).toFixed(0)
         let percent_value = Math.round(10 * current_value / this.props.total_value * 100) / 10
+        let percent_gains
+        if (current_position.current_shares === 0) {
+            percent_gains = 0
+        } else if (current_position.basis >= current_value) {
+            percent_gains = 'loss'
+        } else if (current_value > current_position.basis) {
+            percent_gains = Math.round(10 * (1 - current_position.basis / current_value) * 100) / 10
+        }
 
         return (
             <tr className={ row_classes }>
@@ -57,6 +65,7 @@ export class PositionRow extends React.Component {
                 <td className="position-cell">{ formatZeroValue('$' + current_value) }</td>
                 <td className="position-cell">{ formatZeroValue(addTrailingZeros(percent_value, 1) + '%') }</td>
                 <td className="position-cell">{ formatZeroValue('$' + current_position.basis) }</td>
+                <td className="position-cell">{ (percent_gains === 'loss') ? 'loss' : formatZeroValue(addTrailingZeros(percent_gains, 1) + '%') }</td>
                 <td className="position-cell">{ formatZeroValue('$' + current_position.realized_gains) }</td>
                 <td className="position-cell">{ addTrailingZeros(current_quote.change_pct, 2) }%</td>
                 <td className="position-cell">{ current_quote.volume }</td>

@@ -205,7 +205,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = self.state.sort_column
         let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains']
+        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_gains']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
         let sorted_tickers = Object.keys(this.state.allCurrentQuotes).sort(function(a, b) {
@@ -226,10 +226,17 @@ export class ComparingStocks extends React.Component {
                     value_b = allPerformanceNumbers[b][sort_column]
                 }
             } else if (holdings_columns.includes(sort_column)) {
+                let positionvalue_a, positionvalue_b
                 if (self.state.currentPositions.hasOwnProperty(a)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value') {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
-                            value_a = self.state.currentPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
+                            positionvalue_a = self.state.currentPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
+                            if (sort_column === 'percent_gains' && positionvalue_a !== 0) {
+                                let basis_a = self.state.currentPositions[a]['basis']
+                                value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 0
+                            } else {
+                                value_a = positionvalue_a
+                            }
                         } else {
                             value_a = 0
                         }
@@ -240,9 +247,16 @@ export class ComparingStocks extends React.Component {
                     value_a = 0
                 }
                 if (self.state.currentPositions.hasOwnProperty(b)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value') {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                            value_b = self.state.currentPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
+                            positionvalue_b = self.state.currentPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
+                            if (sort_column === 'percent_gains' && positionvalue_b !== 0) {
+                                let basis_b = self.state.currentPositions[b]['basis']
+                                // value_b = 1 - self.state.currentPositions[b]['basis'] / positionvalue_b
+                                value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 0
+                            } else {
+                                value_b = positionvalue_b
+                            }
                         } else {
                             value_b = 0
                         }
@@ -251,6 +265,9 @@ export class ComparingStocks extends React.Component {
                     }
                 } else {
                     value_b = 0
+                }
+                if (sort_column === 'percent_gains' && (value_a !== 0) && (value_b !== 0)){
+                    console.log(a+':'+value_a+' '+b+':'+value_b)
                 }
             } else {
                 return 0
@@ -306,6 +323,7 @@ export class ComparingStocks extends React.Component {
                             <th onClick={ (e) => this.changeSort('current_value') }>Value{ sort_column === 'current_value' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('percent_value') }>Pct Value{ sort_column === 'percent_value' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('basis') }>Basis{ sort_column === 'basis' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('percent_gains') }>Pct Gains{ sort_column === 'percent_gains' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('realized_gains') }>Realized{ sort_column === 'realized_gains' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
