@@ -229,54 +229,60 @@ export class ComparingStocks extends React.Component {
                 let positionvalue_a, positionvalue_b
                 if (self.state.currentPositions.hasOwnProperty(a)) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.currentPositions[a]['current_shares']) {
                             positionvalue_a = self.state.currentPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
-                            if (sort_column === 'percent_gains' && positionvalue_a !== 0) {
+                            if (sort_column === 'percent_gains') {
                                 let basis_a = self.state.currentPositions[a]['basis']
-                                value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 0
+                                value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
                             } else {
                                 value_a = positionvalue_a
                             }
                         } else {
-                            value_a = 0
+                            value_a = 'n/a'
                         }
-                    } else {
+                    } else if (self.state.currentPositions[a]['current_shares'] || sort_column === 'realized_gains') {
                         value_a = self.state.currentPositions[a][sort_column]
+                    } else {
+                        value_a = 'n/a'
                     }
                 } else {
-                    value_a = 0
+                    value_a = 'n/a'
                 }
                 if (self.state.currentPositions.hasOwnProperty(b)) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(b) && self.state.currentPositions[b]['current_shares']) {
                             positionvalue_b = self.state.currentPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
                             if (sort_column === 'percent_gains' && positionvalue_b !== 0) {
                                 let basis_b = self.state.currentPositions[b]['basis']
-                                // value_b = 1 - self.state.currentPositions[b]['basis'] / positionvalue_b
-                                value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 0
+                                value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
                             } else {
                                 value_b = positionvalue_b
                             }
                         } else {
-                            value_b = 0
+                            value_b = 'n/a'
                         }
-                    } else {
+                    } else if (self.state.currentPositions[b]['current_shares'] || sort_column === 'realized_gains') {
                         value_b = self.state.currentPositions[b][sort_column]
+                    } else {
+                        value_b = 'n/a'
                     }
                 } else {
-                    value_b = 0
+                    value_b = 'n/a'
                 }
             } else {
                 return 0
             }
                 
-            if (value_a === 'n/a') {
-                return -1
-            }
-            if (value_b === 'n/a') {
-                return 1
+            if (value_a === value_b) {
+                return 0
             }
             if (self.state.sort_dir_asc === true) {
+                if (value_a === 'n/a') {
+                    return 1
+                }
+                if (value_b === 'n/a') {
+                    return -1
+                }
                 if (value_a < value_b) {
                     return -1
                 }
@@ -284,6 +290,12 @@ export class ComparingStocks extends React.Component {
                     return 1
                 }
             } else {
+                if (value_a === 'n/a') {
+                    return 1
+                }
+                if (value_b === 'n/a') {
+                    return -1
+                }
                 if (value_a < value_b) {
                     return 1
                 }
@@ -291,8 +303,6 @@ export class ComparingStocks extends React.Component {
                     return -1
                 }
             }
-
-            return 0
         })
         let filtered_sorted_tickers = [...sorted_tickers]
         if (this.state.show_which_stocks === 'holdings_only') {

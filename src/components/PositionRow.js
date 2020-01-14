@@ -56,7 +56,7 @@ export class PositionRow extends React.Component {
                 <td className="position-cell">{ formatValue('$', current_position.realized_gains, '', null) }</td>
                 <td className="position-cell">{ formatValue('', current_quote.change_pct, '%', 2) }</td>
                 <td className="position-cell">{ formatValue('', current_quote.volume, '', null) }</td>
-                <td className="position-cell">{ formatValue('$', Math.round(current_quote.current_price * current_quote.volume / 1000000), '', null) }</td>
+                <td className="position-cell">{ formatValue('$', current_quote.current_price * current_quote.volume / 1000000, '', 0) }</td>
                 <td className="position-cell">{ formatValue('', performance.short_change_pct, '%', 1) }</td>
                 <td className="position-cell">{ formatValue('', performance.medium_change_pct, '%', 1) }</td>
                 <td className="position-cell">{ formatValue('', performance.long_change_pct, '%', 1) }</td>
