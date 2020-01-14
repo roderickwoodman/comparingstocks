@@ -266,13 +266,16 @@ export class ComparingStocks extends React.Component {
                 } else {
                     value_b = 0
                 }
-                if (sort_column === 'percent_gains' && (value_a !== 0) && (value_b !== 0)){
-                    console.log(a+':'+value_a+' '+b+':'+value_b)
-                }
             } else {
                 return 0
             }
                 
+            if (value_a === 'n/a') {
+                return -1
+            }
+            if (value_b === 'n/a') {
+                return 1
+            }
             if (self.state.sort_dir_asc === true) {
                 if (value_a < value_b) {
                     return -1
