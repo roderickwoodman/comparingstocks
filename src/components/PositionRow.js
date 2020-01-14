@@ -9,7 +9,7 @@ export class PositionRow extends React.Component {
             let my_type = typeof(value)
             if (my_type === 'number' && parseFloat(value) === 0) {
                 return '-'
-            } else if (my_type === 'string' && parseFloat(value.replace('$','')) === 0){
+            } else if (my_type === 'string' && parseFloat(value.replace('$','').replace('%','')) === 0){
                 return '-'
             } else {
                 return value
@@ -44,12 +44,16 @@ export class PositionRow extends React.Component {
         if (this.props.ticker_is_index(current_quote.symbol)) {
             row_classes += ' position-is-index'
         }
+        let current_value = Math.round(current_quote.current_price * current_position.current_shares).toFixed(0)
+        let percent_value = Math.round(10 * current_value / this.props.total_value * 100) / 10
+
         return (
             <tr className={ row_classes }>
                 <td className="position-cell">{ current_quote.symbol }</td>
                 <td className="position-cell">{ formatZeroValue(current_position.current_shares) }</td>
                 <td className="position-cell">${ current_quote.current_price }</td>
-                <td className="position-cell">{ formatZeroValue('$' + (Math.round(100 * current_quote.current_price * current_position.current_shares) / 100).toFixed(2)) }</td>
+                <td className="position-cell">{ formatZeroValue('$' + current_value) }</td>
+                <td className="position-cell">{ formatZeroValue(addTrailingZeros(percent_value, 1) + '%') }</td>
                 <td className="position-cell">{ addTrailingZeros(current_quote.change_pct, 2) }%</td>
                 <td className="position-cell">{ current_quote.volume }</td>
                 <td className="position-cell">${ Math.round(current_quote.current_price * current_quote.volume / 1000000) }</td>
