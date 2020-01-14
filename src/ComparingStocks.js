@@ -17,6 +17,7 @@ export class ComparingStocks extends React.Component {
             allMonthlyQuotes: [],
             currentPositions: [],
             performance_baseline: 'sp500_pct_gain',
+            show_which_stocks: 'all_stocks',
             sort_column: 'symbol',
             sort_dir_asc: true,
             done: false
@@ -28,6 +29,7 @@ export class ComparingStocks extends React.Component {
         this.debugGetMonthlyQuotes = this.debugGetMonthlyQuotes.bind(this)
         this.debugGetAllPositions = this.debugGetAllPositions.bind(this)
         this.onBaselineChange = this.onBaselineChange.bind(this)
+        this.onShowStocksChange = this.onShowStocksChange.bind(this)
         this.changeSort = this.changeSort.bind(this)
     }
 
@@ -115,6 +117,10 @@ export class ComparingStocks extends React.Component {
 
     onBaselineChange(event) {
         this.setState({ performance_baseline: event.target.value })
+    }
+
+    onShowStocksChange(event) {
+        this.setState({ show_which_stocks: event.target.value })
     }
 
     changeSort(new_sort_column) {
@@ -229,7 +235,10 @@ export class ComparingStocks extends React.Component {
 
             return 0
         })
-        let filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.currentPositions.hasOwnProperty(ticker) && this.state.currentPositions[ticker]['current_shares'])
+        let filtered_sorted_tickers = [...sorted_tickers]
+        if (this.state.show_which_stocks === 'holdings_only') {
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.currentPositions.hasOwnProperty(ticker) && this.state.currentPositions[ticker]['current_shares'])
+        }
 
         return (
             <div id="page-wrapper">
@@ -239,6 +248,13 @@ export class ComparingStocks extends React.Component {
                         <select value={this.state.baseline} onChange={this.onBaselineChange}>
                             <option value="zero_pct_gain">0% gain</option>
                             <option value="sp500_pct_gain">SP&amp;500 Index</option>
+                        </select>
+                    </label>
+                    <label>
+                        Show Stocks:
+                        <select value={this.state.show_which_stocks} onChange={this.onShowStocksChange}>
+                            <option value="holdings_only">holdings only</option>
+                            <option value="all_stocks">all stocks</option>
                         </select>
                     </label>
                 </div>
