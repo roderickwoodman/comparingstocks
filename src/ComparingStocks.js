@@ -108,9 +108,18 @@ export class ComparingStocks extends React.Component {
         Object.keys(transactions).forEach(function(ticker) {
             let newPosition = {}
             newPosition['symbol'] = ticker
-            newPosition['current_shares'] = transactions[ticker].reduce(function (total, current_val) {
+            let current_shares = transactions[ticker].reduce(function (total, current_val) {
                return total + current_val['shares_added']
             }, 0)
+            let outflows = transactions[ticker].reduce(function (total, current_val) {
+               return (current_val['dollars_spent'] > 0) ? total + current_val['dollars_spent'] : total
+            }, 0)
+            let inflows = -1 * transactions[ticker].reduce(function (total, current_val) {
+               return (current_val['dollars_spent'] < 0) ? total + current_val['dollars_spent'] : total
+            }, 0)
+            newPosition['current_shares'] = current_shares
+            newPosition['basis'] = Math.round((outflows > inflows) ? outflows - inflows : 0)
+            newPosition['realized_gains'] = Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
             newPositions[ticker] = newPosition
         })
         this.setState({ currentPositions: newPositions })
@@ -196,7 +205,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = self.state.sort_column
         let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['current_shares', 'current_value', 'percent_value']
+        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
         let sorted_tickers = Object.keys(this.state.allCurrentQuotes).sort(function(a, b) {
@@ -296,6 +305,8 @@ export class ComparingStocks extends React.Component {
                             <th onClick={ (e) => this.changeSort('current_price') }>Price{ sort_column === 'current_price' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('current_value') }>Value{ sort_column === 'current_value' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('percent_value') }>Pct Value{ sort_column === 'percent_value' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('basis') }>Basis{ sort_column === 'basis' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort('realized_gains') }>Realized{ sort_column === 'realized_gains' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
                             <th onClick={ (e) => this.changeSort('dollar_volume') }>Dollar Vol (M){ sort_column === 'dollar_volume' ? sort_triangle : '' }</th>
