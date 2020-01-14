@@ -23,6 +23,7 @@ export class PositionRow extends React.Component {
                 <td className="position-cell">{ current_position.current_shares }</td>
                 <td className="position-cell">${ current_quote.current_price }</td>
                 <td className="position-cell">{ current_quote.change_pct }%</td>
+                <td className="position-cell">${ (Math.round(100 * current_quote.current_price * current_position.current_shares) / 100).toFixed(2) }</td>
                 <td className="position-cell">{ current_quote.volume }</td>
                 <td className="position-cell">{ performance.short_change_pct }%</td>
                 <td className="position-cell">{ performance.medium_change_pct }%</td>
