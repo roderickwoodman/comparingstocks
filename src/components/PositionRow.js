@@ -20,10 +20,12 @@ export class PositionRow extends React.Component {
         function formatValue(prefix_for_number, value, suffix_for_number, num_decimals) {
             if (value === null || value === 'n/a') {
                 return '-'
-            } else if (isNaN(parseFloat(value))) {
+            } else if (typeof(value) === 'string') {
                 return value
-            } else if (num_decimals >= 0) {
+            } else if (!isNaN(value) && num_decimals >= 0) {
                 return prefix_for_number + (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals) + suffix_for_number
+            } else {
+                return '??'
             }
         }
 
@@ -32,8 +34,8 @@ export class PositionRow extends React.Component {
             row_classes += ' position-is-index'
         }
 
-        let current_value = (current_position.current_shares) ? formatValue('', current_quote.current_price * current_position.current_shares, '', 0) : 'n/a'
-        let percent_value = (current_value !== 'n/a') ? formatValue('', current_value / this.props.total_value * 100, '', 1) : 'n/a'
+        let current_value = (current_position.current_shares) ? current_quote.current_price * current_position.current_shares : 'n/a'
+        let percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
         let basis = (current_position.basis) ? current_position.basis : 'n/a'
         let percent_gains
         if (current_position.current_shares === 0) {
@@ -41,21 +43,21 @@ export class PositionRow extends React.Component {
         } else if (current_position.basis >= current_value) {
             percent_gains = 'losing'
         } else if (current_value > current_position.basis) {
-            percent_gains = formatValue('', (1 - current_position.basis / current_value) * 100, '', 1)
+            percent_gains = (1 - current_position.basis / current_value) * 100
         }
 
         return (
             <tr className={ row_classes }>
-                <td className="position-cell">{ formatValue('', current_quote.symbol, '') }</td>
-                <td className="position-cell">{ formatValue('', current_position.current_shares, '', null) }</td>
-                <td className="position-cell">{ formatValue('$', current_quote.current_price, '', null) }</td>
-                <td className="position-cell">{ formatValue('$', current_value, '', null) }</td>
+                <td className="position-cell">{ formatValue('', current_quote.symbol, '', null) }</td>
+                <td className="position-cell">{ formatValue('', current_position.current_shares, '', 0) }</td>
+                <td className="position-cell">{ formatValue('$', current_quote.current_price, '', 2) }</td>
+                <td className="position-cell">{ formatValue('$', current_value, '', 0) }</td>
                 <td className="position-cell">{ formatValue('', percent_value, '%', 1) }</td>
-                <td className="position-cell">{ formatValue('$', basis, '', null) }</td>
+                <td className="position-cell">{ formatValue('$', basis, '', 0) }</td>
                 <td className="position-cell">{ formatValue('', percent_gains, '%', 1) }</td>
-                <td className="position-cell">{ formatValue('$', current_position.realized_gains, '', null) }</td>
+                <td className="position-cell">{ formatValue('$', current_position.realized_gains, '', 0) }</td>
                 <td className="position-cell">{ formatValue('', current_quote.change_pct, '%', 2) }</td>
-                <td className="position-cell">{ formatValue('', current_quote.volume, '', null) }</td>
+                <td className="position-cell">{ formatValue('', current_quote.volume, '', 0) }</td>
                 <td className="position-cell">{ formatValue('$', current_quote.current_price * current_quote.volume / 1000000, '', 0) }</td>
                 <td className="position-cell">{ formatValue('', performance.short_change_pct, '%', 1) }</td>
                 <td className="position-cell">{ formatValue('', performance.medium_change_pct, '%', 1) }</td>
