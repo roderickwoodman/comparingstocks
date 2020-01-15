@@ -209,6 +209,286 @@
                 "09. change": "1.3400",
                 "10. change percent": "1.0938%"
             }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "AAPL",
+                "02. open": "316.7000",
+                "03. high": "317.5700",
+                "04. low": "312.1700",
+                "05. price": "312.6800",
+                "06. volume": "40028577",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "316.9600",
+                "09. change": "-4.2800",
+                "10. change percent": "-1.3503%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "AXP",
+                "02. open": "128.6200",
+                "03. high": "130.0900",
+                "04. low": "128.3400",
+                "05. price": "128.8000",
+                "06. volume": "3836018",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "128.5400",
+                "09. change": "0.2600",
+                "10. change percent": "0.2023%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "CSCO",
+                "02. open": "47.9600",
+                "03. high": "47.9900",
+                "04. low": "47.6200",
+                "05. price": "47.7900",
+                "06. volume": "17558749",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "47.9700",
+                "09. change": "-0.1800",
+                "10. change percent": "-0.3752%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "XOM",
+                "02. open": "69.3800",
+                "03. high": "69.5799",
+                "04. low": "68.8900",
+                "05. price": "69.2000",
+                "06. volume": "15496980",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "69.8000",
+                "09. change": "-0.6000",
+                "10. change percent": "-0.8596%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "GS",
+                "02. open": "245.3200",
+                "03. high": "248.5200",
+                "04. low": "244.6000",
+                "05. price": "245.6600",
+                "06. volume": "3999121",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "245.2100",
+                "09. change": "0.4500",
+                "10. change percent": "0.1835%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "IBM",
+                "02. open": "136.2800",
+                "03. high": "137.1390",
+                "04. low": "135.5500",
+                "05. price": "135.8200",
+                "06. volume": "3154038",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "136.6000",
+                "09. change": "-0.7800",
+                "10. change percent": "-0.5710%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "INTC",
+                "02. open": "59.4900",
+                "03. high": "59.7400",
+                "04. low": "59.1850",
+                "05. price": "59.4300",
+                "06. volume": "16147488",
+                "07. latest trading day": "2020-01-14",
+                "08. previous close": "59.5900",
+                "09. change": "-0.1600",
+                "10. change percent": "-0.2685%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "KO",
+                "02. open": "56.0000",
+                "03. high": "56.9500",
+                "04. low": "56.0000",
+                "05. price": "56.8950",
+                "06. volume": "5953753",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "56.0000",
+                "09. change": "0.8950",
+                "10. change percent": "1.5982%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "JPM",
+                "02. open": "137.8500",
+                "03. high": "138.6000",
+                "04. low": "136.6900",
+                "05. price": "136.8000",
+                "06. volume": "5999178",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "138.8000",
+                "09. change": "-2.0000",
+                "10. change percent": "-1.4409%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "MCD",
+                "02. open": "207.3200",
+                "03. high": "210.3500",
+                "04. low": "207.3200",
+                "05. price": "209.7400",
+                "06. volume": "1528858",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "207.3200",
+                "09. change": "2.4200",
+                "10. change percent": "1.1673%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "MMM",
+                "02. open": "181.4200",
+                "03. high": "181.8600",
+                "04. low": "180.2300",
+                "05. price": "180.6600",
+                "06. volume": "853860",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "181.3700",
+                "09. change": "-0.7100",
+                "10. change percent": "-0.3915%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "MRK",
+                "02. open": "90.1000",
+                "03. high": "91.3750",
+                "04. low": "90.0900",
+                "05. price": "91.3750",
+                "06. volume": "3641554",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "89.9300",
+                "09. change": "1.4450",
+                "10. change percent": "1.6068%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "NKE",
+                "02. open": "103.2500",
+                "03. high": "103.6999",
+                "04. low": "102.7100",
+                "05. price": "102.8000",
+                "06. volume": "1583094",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "102.9200",
+                "09. change": "-0.1200",
+                "10. change percent": "-0.1166%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "PFE",
+                "02. open": "40.1900",
+                "03. high": "40.8700",
+                "04. low": "40.1700",
+                "05. price": "40.6250",
+                "06. volume": "10789490",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "40.0700",
+                "09. change": "0.5550",
+                "10. change percent": "1.3851%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "UNH",
+                "02. open": "289.0200",
+                "03. high": "297.8700",
+                "04. low": "289.0000",
+                "05. price": "297.7200",
+                "06. volume": "3174174",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "288.2400",
+                "09. change": "9.4800",
+                "10. change percent": "3.2889%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "UTX",
+                "02. open": "151.6400",
+                "03. high": "153.0700",
+                "04. low": "151.1500",
+                "05. price": "152.2300",
+                "06. volume": "1366804",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "151.5400",
+                "09. change": "0.6900",
+                "10. change percent": "0.4553%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "VZ",
+                "02. open": "59.2500",
+                "03. high": "59.4200",
+                "04. low": "59.0400",
+                "05. price": "59.1000",
+                "06. volume": "3458676",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "59.0400",
+                "09. change": "0.0600",
+                "10. change percent": "0.1016%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "WBA",
+                "02. open": "54.5400",
+                "03. high": "54.7000",
+                "04. low": "54.0800",
+                "05. price": "54.4600",
+                "06. volume": "1631290",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "54.6200",
+                "09. change": "-0.1600",
+                "10. change percent": "-0.2929%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "WMT",
+                "02. open": "114.6300",
+                "03. high": "115.8700",
+                "04. low": "114.5200",
+                "05. price": "115.0350",
+                "06. volume": "3904111",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "116.1800",
+                "09. change": "-1.1450",
+                "10. change percent": "-0.9855%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "DOW",
+                "02. open": "52.1900",
+                "03. high": "52.6500",
+                "04. low": "51.7000",
+                "05. price": "52.3141",
+                "06. volume": "945193",
+                "07. latest trading day": "2020-01-15",
+                "08. previous close": "52.2400",
+                "09. change": "0.0741",
+                "10. change percent": "0.1418%"
+            }
         }
     ]
 }

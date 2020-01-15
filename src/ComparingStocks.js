@@ -11,7 +11,7 @@ export class ComparingStocks extends React.Component {
             allIndiciesAliases: [ 'S&P500' ],
             allStocks: [ // FIXME: placeholder data for now
                 // 'MSFT', 'MSFT', 'MSFT' // FIXME: default to demo key and MSFT, not rate-limited
-                'V', 'MSFT', 'SBUX', 'BA', 'CVX', 'JNJ', 'CAT', 'DIS', 'HD', 'HSY', 'NFLX', 'TRV', 'PG'
+                'AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 'XOM', 'GS', 'HD', 'IBM', 'INTC', 'JNJ', 'KO', 'JPM', 'MCD', 'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 'TRV', 'UNH', 'UTX', 'VZ', 'V', 'WBA', 'WMT', 'SBUX', 'CVX', 'DIS', 'HSY', 'NFLX', 'DOW'
             ],
             allCurrentQuotes: [],
             allMonthlyQuotes: [],
@@ -303,6 +303,7 @@ export class ComparingStocks extends React.Component {
                     return -1
                 }
             }
+            return 0
         })
         let filtered_sorted_tickers = [...sorted_tickers]
         if (this.state.show_which_stocks === 'holdings_only') {
