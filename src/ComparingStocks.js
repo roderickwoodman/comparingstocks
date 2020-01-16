@@ -310,6 +310,65 @@ export class ComparingStocks extends React.Component {
             filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.currentPositions.hasOwnProperty(ticker) && this.state.currentPositions[ticker]['current_shares'])
         }
 
+        let columns = [
+            {
+                column_variable: 'symbol',
+                column_display_name: 'Symbol'
+            },
+            {
+                column_variable: 'current_shares',
+                column_display_name: 'Shares'
+            },
+            {
+                column_variable: 'current_price',
+                column_display_name: 'Price'
+            },
+            {
+                column_variable: 'current_value',
+                column_display_name: 'Value'
+            },
+            {
+                column_variable: 'percent_value',
+                column_display_name: 'Pct Value'
+            },
+            {
+                column_variable: 'basis',
+                column_display_name: 'Basis'
+            },
+            {
+                column_variable: 'percent_gains',
+                column_display_name: 'Pct Gains'
+            },
+            {
+                column_variable: 'realized_gains',
+                column_display_name: 'Realized'
+            },
+            {
+                column_variable: 'change_pct',
+                column_display_name: 'Change'
+            },
+            {
+                column_variable: 'volume',
+                column_display_name: 'Volume'
+            },
+            {
+                column_variable: 'dollar_volume',
+                column_display_name: 'Dollar Vol (M)'
+            },
+            {
+                column_variable: 'short_change_pct',
+                column_display_name: '6-month'
+            },
+            {
+                column_variable: 'medium_change_pct',
+                column_display_name: '1-year'
+            },
+            {
+                column_variable: 'long_change_pct',
+                column_display_name: '2-year'
+            }
+        ]
+
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
@@ -331,20 +390,9 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <th onClick={ (e) => this.changeSort('symbol') }>Symbol{ sort_column === 'symbol' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('current_shares') }>Shares{ sort_column === 'current_shares' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('current_price') }>Price{ sort_column === 'current_price' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('current_value') }>Value{ sort_column === 'current_value' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('percent_value') }>Pct Value{ sort_column === 'percent_value' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('basis') }>Basis{ sort_column === 'basis' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('percent_gains') }>Pct Gains{ sort_column === 'percent_gains' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('realized_gains') }>Realized{ sort_column === 'realized_gains' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('change_pct') }>Change{ sort_column === 'change_pct' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('volume') }>Volume{ sort_column === 'volume' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('dollar_volume') }>Dollar Vol (M){ sort_column === 'dollar_volume' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('short_change_pct') }>6-month{ sort_column === 'short_change_pct' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('medium_change_pct') }>1-year{ sort_column === 'medium_change_pct' ? sort_triangle : '' }</th>
-                            <th onClick={ (e) => this.changeSort('long_change_pct') }>2-year{ sort_column === 'long_change_pct' ? sort_triangle : '' }</th>
+                            {columns.map(column => (
+                            <th onClick={ (e) => this.changeSort(column.column_variable) }>{ column.column_display_name }{ sort_column === 'symbol' ? sort_triangle : '' }</th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
