@@ -69,8 +69,9 @@ export class PositionRow extends React.Component {
 }
 
 PositionRow.propTypes = {
-    current_quote: PropTypes.object.isRequired,
+    current_quote: PropTypes.object,
     current_position: PropTypes.object,
-    performance_numbers: PropTypes.object.isRequired,
-    ticker_is_index: PropTypes.func.isRequired,
+    performance_numbers: PropTypes.object,
+    total_value: PropTypes.number,
+    ticker_is_index: PropTypes.func,
 }
