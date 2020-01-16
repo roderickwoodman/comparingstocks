@@ -389,7 +389,8 @@ export class ComparingStocks extends React.Component {
                 variable_name: 'dollar_volume',
                 display_name: 'Dollar Vol (M)',
                 variable_type: 'currency',
-                num_decimals: -6
+                scaling_power: -6,
+                num_decimals: 0
             },
             {
                 variable_name: 'short_change_pct',
@@ -433,7 +434,7 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             {columns.map(column => (
-                            <th onClick={ (e) => this.changeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
+                            <th key={ column.variable_name} onClick={ (e) => this.changeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
