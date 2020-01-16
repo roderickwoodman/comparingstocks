@@ -312,60 +312,87 @@ export class ComparingStocks extends React.Component {
 
         let columns = [
             {
-                column_variable: 'symbol',
-                column_display_name: 'Symbol'
+                variable_name: 'symbol',
+                display_name: 'Symbol',
+                variable_type: 'string'
             },
             {
-                column_variable: 'current_shares',
-                column_display_name: 'Shares'
+                variable_name: 'current_shares',
+                display_name: 'Shares',
+                variable_type: 'number',
+                num_decimals: 0
             },
             {
-                column_variable: 'current_price',
-                column_display_name: 'Price'
+                variable_name: 'current_price',
+                display_name: 'Price',
+                variable_type: 'currency',
+                num_decimals: 2
             },
             {
-                column_variable: 'current_value',
-                column_display_name: 'Value'
+                variable_name: 'current_value',
+                display_name: 'Value',
+                variable_type: 'currency',
+                num_decimals: 0
             },
             {
-                column_variable: 'percent_value',
-                column_display_name: 'Pct Value'
+                variable_name: 'percent_value',
+                display_name: 'Pct Value',
+                variable_type: 'percentage',
+                num_decimals: 1
             },
             {
-                column_variable: 'basis',
-                column_display_name: 'Basis'
+                variable_name: 'basis',
+                display_name: 'Basis',
+                variable_type: 'currency',
+                num_decimals: 0
             },
             {
-                column_variable: 'percent_gains',
-                column_display_name: 'Pct Gains'
+                variable_name: 'percent_gains',
+                display_name: 'Pct Gains',
+                variable_type: 'percentage',
+                num_decimals: 1
             },
             {
-                column_variable: 'realized_gains',
-                column_display_name: 'Realized'
+                variable_name: 'realized_gains',
+                display_name: 'Realized',
+                variable_type: 'currency',
+                num_decimals: 0
             },
             {
-                column_variable: 'change_pct',
-                column_display_name: 'Change'
+                variable_name: 'change_pct',
+                display_name: 'Change',
+                variable_type: 'percentage',
+                num_decimals: 2
             },
             {
-                column_variable: 'volume',
-                column_display_name: 'Volume'
+                variable_name: 'volume',
+                display_name: 'Volume',
+                variable_type: 'number',
+                num_decimals: 0
             },
             {
-                column_variable: 'dollar_volume',
-                column_display_name: 'Dollar Vol (M)'
+                variable_name: 'dollar_volume',
+                display_name: 'Dollar Vol (M)',
+                variable_type: 'currency',
+                num_decimals: -6
             },
             {
-                column_variable: 'short_change_pct',
-                column_display_name: '6-month'
+                variable_name: 'short_change_pct',
+                display_name: '6-month',
+                variable_type: 'percentage',
+                num_decimals: 1
             },
             {
-                column_variable: 'medium_change_pct',
-                column_display_name: '1-year'
+                variable_name: 'medium_change_pct',
+                display_name: '1-year',
+                variable_type: 'percentage',
+                num_decimals: 1
             },
             {
-                column_variable: 'long_change_pct',
-                column_display_name: '2-year'
+                variable_name: 'long_change_pct',
+                display_name: '2-year',
+                variable_type: 'percentage',
+                num_decimals: 1
             }
         ]
 
@@ -391,7 +418,7 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             {columns.map(column => (
-                            <th onClick={ (e) => this.changeSort(column.column_variable) }>{ column.column_display_name }{ sort_column === 'symbol' ? sort_triangle : '' }</th>
+                            <th onClick={ (e) => this.changeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
@@ -399,6 +426,7 @@ export class ComparingStocks extends React.Component {
                         {filtered_sorted_tickers.map(ticker => (
                             <PositionRow 
                                 key={ticker}
+                                columns={columns}
                                 current_position={this.state.currentPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={allPerformanceNumbers[ticker]}
