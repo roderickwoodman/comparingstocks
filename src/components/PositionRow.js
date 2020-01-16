@@ -46,22 +46,59 @@ export class PositionRow extends React.Component {
             percent_gains = (1 - current_position.basis / current_value) * 100
         }
 
+        function formatCell(column) {
+            let classes = 'position-cell'
+            switch (column) {
+                case 'change_pct':
+                    if (current_quote.change_pct > 0) {
+                        classes += ' text-green'
+                    } else if (current_quote.change_pct < 0) {
+                        classes += ' text-red'
+                    }
+                    break
+                case 'short_change_pct':
+                    if (performance.short_change_pct > 0) {
+                        classes += ' text-green'
+                    } else if (performance.short_change_pct < 0) {
+                        classes += ' text-red'
+                    }
+                    break
+                case 'medium_change_pct':
+                    if (performance.medium_change_pct > 0) {
+                        classes += ' text-green'
+                    } else if (performance.medium_change_pct < 0) {
+                        classes += ' text-red'
+                    }
+                    break
+                case 'long_change_pct':
+                    if (performance.long_change_pct > 0) {
+                        classes += ' text-green'
+                    } else if (performance.long_change_pct < 0) {
+                        classes += ' text-red'
+                    }
+                    break
+                default:
+                    break
+            }
+            return classes
+        }
+
         return (
             <tr className={ row_classes }>
-                <td className="position-cell">{ formatValue('', current_quote.symbol, '', null) }</td>
-                <td className="position-cell">{ formatValue('', current_position.current_shares, '', 0) }</td>
-                <td className="position-cell">{ formatValue('$', current_quote.current_price, '', 2) }</td>
-                <td className="position-cell">{ formatValue('$', current_value, '', 0) }</td>
-                <td className="position-cell">{ formatValue('', percent_value, '%', 1) }</td>
-                <td className="position-cell">{ formatValue('$', basis, '', 0) }</td>
-                <td className="position-cell">{ formatValue('', percent_gains, '%', 1) }</td>
-                <td className="position-cell">{ formatValue('$', current_position.realized_gains, '', 0) }</td>
-                <td className="position-cell">{ formatValue('', current_quote.change_pct, '%', 2) }</td>
-                <td className="position-cell">{ formatValue('', current_quote.volume, '', 0) }</td>
-                <td className="position-cell">{ formatValue('$', current_quote.current_price * current_quote.volume / 1000000, '', 0) }</td>
-                <td className="position-cell">{ formatValue('', performance.short_change_pct, '%', 1) }</td>
-                <td className="position-cell">{ formatValue('', performance.medium_change_pct, '%', 1) }</td>
-                <td className="position-cell">{ formatValue('', performance.long_change_pct, '%', 1) }</td>
+                <td className={ formatCell('symbol') }>{ formatValue('', current_quote.symbol, '', null) }</td>
+                <td className={ formatCell('current_shares') }>{ formatValue('', current_position.current_shares, '', 0) }</td>
+                <td className={ formatCell('current_price') }>{ formatValue('$', current_quote.current_price, '', 2) }</td>
+                <td className={ formatCell('current_value') }>{ formatValue('$', current_value, '', 0) }</td>
+                <td className={ formatCell('percent_value') }>{ formatValue('', percent_value, '%', 1) }</td>
+                <td className={ formatCell('basis') }>{ formatValue('$', basis, '', 0) }</td>
+                <td className={ formatCell('percent_gains') }>{ formatValue('', percent_gains, '%', 1) }</td>
+                <td className={ formatCell('realized_gains') }>{ formatValue('$', current_position.realized_gains, '', 0) }</td>
+                <td className={ formatCell('change_pct') }>{ formatValue('', current_quote.change_pct, '%', 2) }</td>
+                <td className={ formatCell('volume') }>{ formatValue('', current_quote.volume, '', 0) }</td>
+                <td className={ formatCell('dollar') }>{ formatValue('$', current_quote.current_price * current_quote.volume / 1000000, '', 0) }</td>
+                <td className={ formatCell('short_change_pct') }>{ formatValue('', performance.short_change_pct, '%', 1) }</td>
+                <td className={ formatCell('medium_change_pct') }>{ formatValue('', performance.medium_change_pct, '%', 1) }</td>
+                <td className={ formatCell('long_change_pct') }>{ formatValue('', performance.long_change_pct, '%', 1) }</td>
             </tr>
         )
     }

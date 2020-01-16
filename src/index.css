@@ -44,3 +44,11 @@ th,
 th:hover {
   cursor: pointer;
 }
+
+.position-cell.text-green {
+  color: green;
+}
+
+.position-cell.text-red {
+  color: red;
+}
