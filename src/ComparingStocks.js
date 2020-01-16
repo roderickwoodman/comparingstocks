@@ -195,6 +195,21 @@ export class ComparingStocks extends React.Component {
             allPerformanceNumbers[ticker] = newPerformanceNumbers
         })
 
+        let performance_green_threshold = {}
+        if (this.state.performance_baseline !== 'sp500_pct_gain') {
+            performance_green_threshold = {
+                short_change_pct: allPerformanceNumbers['S&P500'].short_change_pct,
+                medium_change_pct: allPerformanceNumbers['S&P500'].medium_change_pct,
+                long_change_pct: allPerformanceNumbers['S&P500'].long_change_pct
+            }
+        } else {
+            performance_green_threshold = {
+                short_change_pct: 0,
+                medium_change_pct: 0,
+                long_change_pct: 0
+            }
+        }
+
         let total_value = Object.entries(this.state.currentPositions).reduce(function (total, current_val) {
             if (self.state.allCurrentQuotes.hasOwnProperty(current_val[0])) {
                 return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
@@ -430,6 +445,7 @@ export class ComparingStocks extends React.Component {
                                 current_position={this.state.currentPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={allPerformanceNumbers[ticker]}
+                                performance_green_threshold={performance_green_threshold}
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
                         />))}

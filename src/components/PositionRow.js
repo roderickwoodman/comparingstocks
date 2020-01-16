@@ -8,6 +8,7 @@ export class PositionRow extends React.Component {
 
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
+        const green_threshold = this.props.performance_green_threshold
         let current_position = this.props.current_position
         if (current_position == null) {
             current_position = {
@@ -57,23 +58,23 @@ export class PositionRow extends React.Component {
                     }
                     break
                 case 'short_change_pct':
-                    if (performance.short_change_pct > 0) {
+                    if (performance.short_change_pct > 0 && performance.short_change_pct > green_threshold.short_change_pct) {
                         classes += ' text-green'
-                    } else if (performance.short_change_pct < 0) {
+                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < green_threshold.short_change_pct) {
                         classes += ' text-red'
                     }
                     break
                 case 'medium_change_pct':
-                    if (performance.medium_change_pct > 0) {
+                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > green_threshold.medium_change_pct) {
                         classes += ' text-green'
-                    } else if (performance.medium_change_pct < 0) {
+                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < green_threshold.medium_change_pct) {
                         classes += ' text-red'
                     }
                     break
                 case 'long_change_pct':
-                    if (performance.long_change_pct > 0) {
+                    if (performance.long_change_pct > 0 && performance.long_change_pct > green_threshold.long_change_pct) {
                         classes += ' text-green'
-                    } else if (performance.long_change_pct < 0) {
+                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < green_threshold.long_change_pct) {
                         classes += ' text-red'
                     }
                     break
@@ -109,6 +110,7 @@ PositionRow.propTypes = {
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,
+    performance_green_threshold: PropTypes.object,
     total_value: PropTypes.number,
     ticker_is_index: PropTypes.func,
 }
