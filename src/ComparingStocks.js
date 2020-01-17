@@ -11,15 +11,13 @@ export class ComparingStocks extends React.Component {
         this.state = {
             allIndiciesTickers: [ 'INX' ],
             allIndiciesAliases: [ 'S&P500' ],
-            allStocks: [ // FIXME: placeholder data for now
-                // 'MSFT', 'MSFT', 'MSFT' // FIXME: default to demo key and MSFT, not rate-limited
-                // 'AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 'XOM', 'GS', 'HD', 'IBM', 'INTC', 'JNJ', 'KO', 'JPM', 'MCD', 'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 'TRV', 'UNH', 'UTX', 'VZ', 'V', 'WBA', 'WMT', 'SBUX', 'CVX', 'DIS', 'HSY', 'NFLX', 'DOW'
-            ],
+            allStocks: [],
             allCurrentQuotes: {},
             allMonthlyQuotes: {},
             allPositions: {},
             performance_baseline: 'zero_pct_gain',
-            baseline_performance: {},
+            performance_baseline_numbers: {},
+            index_performance: {},
             allPerformanceNumbers: {},
             show_which_stocks: 'all_stocks',
             sort_column: 'symbol',
@@ -65,10 +63,11 @@ export class ComparingStocks extends React.Component {
             }
         })
         if (this.state.performance_baseline !== 'sp500_pct_gain') {
-            this.setState({ baseline_performance: index_performance })
+            this.setState({ performance_baseline_numbers: index_performance })
         } else {
-            this.setState({ baseline_performance: zero_performance })
+            this.setState({ performance_baseline_numbers: zero_performance })
         }
+        this.setState({ index_performance: index_performance })
 
         let all_stocks = []
         Object.keys(indexed_transaction_data).forEach(function(ticker) {
@@ -169,6 +168,7 @@ export class ComparingStocks extends React.Component {
 
     }
 
+    // FIXME: disable these parallel API calls during development due to the API quota limits
     // getQuoteUrl(ticker) {
     //     //let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
     //     let alpha_vantage_api_key = 'demo' // FIXME: default to demo key and MSFT, not rate-limited 
@@ -198,7 +198,13 @@ export class ComparingStocks extends React.Component {
     // }
 
     onBaselineChange(event) {
-        this.setState({ performance_baseline: event.target.value })
+        let new_baseline = event.target.value
+        this.setState({ performance_baseline: new_baseline })
+        if (this.state.performance_baseline !== 'sp500_pct_gain') {
+            this.setState({ performance_baseline_numbers: this.state.index_performance })
+        } else {
+            this.setState({ performance_baseline_numbers: zero_performance })
+        }
     }
 
     onShowStocksChange(event) {
@@ -230,28 +236,6 @@ export class ComparingStocks extends React.Component {
     render() {
 
         let self = this
-
-        // FIXME: update references now that performance number calculations have been reafactored
-        // let performance_green_threshold = {}
-        // if (this.state.performance_baseline !== 'sp500_pct_gain') {
-        //     performance_green_threshold = {
-        //         short_change_pct: this.state.allPerformanceNumbers['S&P500'].short_change_pct,
-        //         medium_change_pct: this.state.allPerformanceNumbers['S&P500'].medium_change_pct,
-        //         long_change_pct: this.state.allPerformanceNumbers['S&P500'].long_change_pct
-        //     }
-        // } else {
-        //     performance_green_threshold = {
-        //         short_change_pct: 0,
-        //         medium_change_pct: 0,
-        //         long_change_pct: 0
-        //     }
-        // }
-
-        let performance_green_threshold = {
-            short_change_pct: this.state.baseline_performance.short,
-            medium_change_pct: this.state.baseline_performance.medium,
-            long_change_pct: this.state.baseline_performance.long
-        }
 
         let total_value = Object.entries(this.state.allPositions).filter(position => position[1] !== null).reduce(function (total, current_val) {
             if (self.state.allCurrentQuotes[current_val[0]] !== null) {
@@ -489,7 +473,8 @@ export class ComparingStocks extends React.Component {
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
-                                performance_green_threshold={performance_green_threshold}
+                                performance_baseline={this.state.performance_baseline}
+                                performance_baseline_numbers={this.state.performance_baseline_numbers}
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
                         />))}

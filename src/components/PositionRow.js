@@ -8,7 +8,8 @@ export class PositionRow extends React.Component {
 
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
-        const green_threshold = this.props.performance_green_threshold
+        const performance_baseline = this.props.performance_baseline
+        const performance_baseline_numbers = this.props.performance_baseline_numbers
         let current_position = this.props.current_position
         if (current_position == null) {
             current_position = {
@@ -23,7 +24,8 @@ export class PositionRow extends React.Component {
             let suffix = ''
             let adjust_decimal = false
             let num_decimals
-            let value
+            let value, baseline_value
+            let performance_value = false
             switch (column.variable_type) {
                 case 'number':
                     adjust_decimal = true
@@ -78,12 +80,18 @@ export class PositionRow extends React.Component {
                     break
                 case 'short_change_pct':
                     value = performance.short_change_pct
+                    performance_value = true
+                    baseline_value = performance_baseline_numbers.short
                     break
                 case 'medium_change_pct':
                     value = performance.medium_change_pct
+                    performance_value = true
+                    baseline_value = performance_baseline_numbers.medium
                     break
                 case 'long_change_pct':
                     value = performance.long_change_pct
+                    performance_value = true
+                    baseline_value = performance_baseline_numbers.long
                     break
                 default:
                     break
@@ -94,10 +102,12 @@ export class PositionRow extends React.Component {
             } else if (column.variable_type === 'string') {
                 return value
             } else if (!isNaN(value)) {
-                //return value
                 if (adjust_decimal) {
                     if (column.hasOwnProperty('scaling_power')) {
                         value *= Math.pow(10, column.scaling_power)
+                    }
+                    if (performance_value && performance_baseline !== 'zero_pct_gain') {
+                        value = value - baseline_value
                     }
                     value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
                 }
@@ -119,23 +129,23 @@ export class PositionRow extends React.Component {
                     }
                     break
                 case 'short_change_pct':
-                    if (performance.short_change_pct > 0 && performance.short_change_pct > green_threshold.short_change_pct) {
+                    if (performance.short_change_pct > 0 && performance.short_change_pct > performance_baseline_numbers.short) {
                         classes += ' text-green'
-                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < green_threshold.short_change_pct) {
+                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < performance_baseline_numbers.short) {
                         classes += ' text-red'
                     }
                     break
                 case 'medium_change_pct':
-                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > green_threshold.medium_change_pct) {
+                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > performance_baseline_numbers.medium) {
                         classes += ' text-green'
-                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < green_threshold.medium_change_pct) {
+                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < performance_baseline_numbers.medium) {
                         classes += ' text-red'
                     }
                     break
                 case 'long_change_pct':
-                    if (performance.long_change_pct > 0 && performance.long_change_pct > green_threshold.long_change_pct) {
+                    if (performance.long_change_pct > 0 && performance.long_change_pct > performance_baseline_numbers.long) {
                         classes += ' text-green'
-                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < green_threshold.long_change_pct) {
+                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < performance_baseline_numbers.long) {
                         classes += ' text-red'
                     }
                     break
@@ -165,7 +175,7 @@ export class PositionRow extends React.Component {
         return (
             <tr className={ row_classes }>
                 { this.props.columns.map(column => (
-                <td className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
+                <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
                 ))}
             </tr>
         )
@@ -177,8 +187,9 @@ PositionRow.propTypes = {
     columns: PropTypes.array,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
-    performance_numbers: PropTypes.object.isRequired,
-    performance_green_threshold: PropTypes.object,
+    performance_numbers: PropTypes.object,
+    performance_baseline: PropTypes.string,
+    performance_baseline_numbers: PropTypes.object,
     total_value: PropTypes.number,
     ticker_is_index: PropTypes.func,
 }
