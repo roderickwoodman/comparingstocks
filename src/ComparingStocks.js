@@ -39,6 +39,12 @@ export class ComparingStocks extends React.Component {
         const stored_show_which_stocks = JSON.parse(localStorage.getItem("show_which_stocks"))
         this.setState({ show_which_stocks: stored_show_which_stocks })
 
+        const stored_sort_column = JSON.parse(localStorage.getItem("sort_column"))
+        this.setState({ sort_column: stored_sort_column })
+
+        const stored_sort_dir_asc = JSON.parse(localStorage.getItem("sort_dir_asc"))
+        this.setState({ sort_dir_asc: stored_sort_dir_asc })
+
         let self = this
 
         let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
@@ -166,11 +172,11 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        this.setState({ allStocks: all_stocks })
-        this.setState({ allPositions: newPositions })
-        this.setState({ allCurrentQuotes: newCurrentQuotes })
-        this.setState({ allMonthlyQuotes: newMonthlyQuotes })
-        this.setState({ allPerformanceNumbers: newPerformanceNumbers })
+        this.setState({ allStocks: all_stocks,
+                        allPositions: newPositions,
+                        allCurrentQuotes: newCurrentQuotes,
+                        allMonthlyQuotes: newMonthlyQuotes,
+                        allPerformanceNumbers: newPerformanceNumbers })
 
     }
 
@@ -205,13 +211,11 @@ export class ComparingStocks extends React.Component {
 
     onBaselineChange(event) {
         let new_baseline = event.target.value
-        this.setState({ performance_baseline: new_baseline })
-        if (this.state.performance_baseline !== 'sp500_pct_gain') {
-            this.setState({ performance_baseline_numbers: this.state.index_performance })
-        } else {
-            this.setState({ performance_baseline_numbers: zero_performance })
-        }
         localStorage.setItem('performance_baseline', JSON.stringify(new_baseline))
+
+        let new_baseline_numbers = (new_baseline === 'sp500_pct_gain') ? this.state.index_performance : zero_performance
+        this.setState({ performance_baseline: new_baseline })
+        this.setState({ performance_baseline_numbers: new_baseline_numbers })
     }
 
     onShowStocksChange(event) {
@@ -222,10 +226,12 @@ export class ComparingStocks extends React.Component {
 
     changeSort(new_sort_column) {
         if (new_sort_column === this.state.sort_column) {
+            localStorage.setItem('sort_dir_asc', JSON.stringify(!this.state.sort_dir_asc))
             this.setState(prevState => ({
                 sort_dir_asc: !prevState.sort_dir_asc
             }))
         }
+        localStorage.setItem('sort_column', JSON.stringify(new_sort_column))
         this.setState({ sort_column: new_sort_column })
     }
 
