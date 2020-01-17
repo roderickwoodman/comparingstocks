@@ -177,7 +177,7 @@ PositionRow.propTypes = {
     columns: PropTypes.array,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
-    performance_numbers: PropTypes.object,
+    performance_numbers: PropTypes.object.isRequired,
     performance_green_threshold: PropTypes.object,
     total_value: PropTypes.number,
     ticker_is_index: PropTypes.func,

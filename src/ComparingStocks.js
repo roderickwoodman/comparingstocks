@@ -2,6 +2,8 @@ import React from 'react'
 import { PositionRow } from './components/PositionRow'
 
 
+const zero_performance = { short: 0, medium: 0, long: 0 }
+
 export class ComparingStocks extends React.Component {
 
     constructor(props) {
@@ -11,12 +13,14 @@ export class ComparingStocks extends React.Component {
             allIndiciesAliases: [ 'S&P500' ],
             allStocks: [ // FIXME: placeholder data for now
                 // 'MSFT', 'MSFT', 'MSFT' // FIXME: default to demo key and MSFT, not rate-limited
-                'AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 'XOM', 'GS', 'HD', 'IBM', 'INTC', 'JNJ', 'KO', 'JPM', 'MCD', 'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 'TRV', 'UNH', 'UTX', 'VZ', 'V', 'WBA', 'WMT', 'SBUX', 'CVX', 'DIS', 'HSY', 'NFLX', 'DOW'
+                // 'AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 'XOM', 'GS', 'HD', 'IBM', 'INTC', 'JNJ', 'KO', 'JPM', 'MCD', 'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 'TRV', 'UNH', 'UTX', 'VZ', 'V', 'WBA', 'WMT', 'SBUX', 'CVX', 'DIS', 'HSY', 'NFLX', 'DOW'
             ],
-            allCurrentQuotes: [],
-            allMonthlyQuotes: [],
-            currentPositions: [],
-            performance_baseline: 'sp500_pct_gain',
+            allCurrentQuotes: {},
+            allMonthlyQuotes: {},
+            allPositions: {},
+            performance_baseline: 'zero_pct_gain',
+            baseline_performance: {},
+            allPerformanceNumbers: {},
             show_which_stocks: 'all_stocks',
             sort_column: 'symbol',
             sort_dir_asc: true,
@@ -24,106 +28,174 @@ export class ComparingStocks extends React.Component {
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
-        this.getCurrentQuotes = this.getCurrentQuotes.bind(this)
-        this.debugGetCurrentQuotes = this.debugGetCurrentQuotes.bind(this)
-        this.debugGetMonthlyQuotes = this.debugGetMonthlyQuotes.bind(this)
-        this.debugGetAllPositions = this.debugGetAllPositions.bind(this)
         this.onBaselineChange = this.onBaselineChange.bind(this)
         this.onShowStocksChange = this.onShowStocksChange.bind(this)
         this.changeSort = this.changeSort.bind(this)
     }
 
-    async componentDidMount() {
-        // this.getCurrentQuotes(this.state.allStocks)
-        this.debugGetCurrentQuotes(this.state.allStocks)
-        this.debugGetMonthlyQuotes(this.state.allStocks)
-        this.debugGetAllPositions(this.state.allStocks)
-    }
+    componentDidMount() {
 
-    getQuoteUrl(ticker) {
-        //let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
-        let alpha_vantage_api_key = 'demo' // FIXME: default to demo key and MSFT, not rate-limited 
-        let url_prefix = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
-        let url_suffix = '&apikey=' + alpha_vantage_api_key
-        return url_prefix + ticker + url_suffix
-    }
-
-    async getCurrentQuotes(tickers) {
-        let newQuotes = {}
-        const quotesApiResults = await Promise.all(tickers.map(ticker =>
-            fetch(this.getQuoteUrl(ticker))
-            .then(res => res.json())
-        ))
-        quotesApiResults.forEach(function(item, idx) {
-            let quoteResult = item['Global Quote']
-            let newQuote = {}
-            let ticker = quoteResult['01. symbol'] + idx
-            newQuote['symbol'] = this.convertNameForIndicies(ticker)
-            newQuote['current_price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
-            newQuote['change'] = (Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2)
-            newQuote['change_pct'] = (Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2)
-            newQuote['volume'] = parseInt(quoteResult['06. volume'])
-            newQuotes[ticker] = newQuote
-        })
-        this.setState({ allCurrentQuotes: newQuotes })
-    }
-
-    // DEBUG: use hardcoded, local responses for development
-    debugGetCurrentQuotes(tickers) {
-        let newQuotes = {}
-        let currentQuotes = require('./api/sample_current_quotes.json').sample_current_quotes
         let self = this
-        currentQuotes.forEach(function(item, idx) {
-            let quoteResult = item['Global Quote']
-            let newQuote = {}
-            let ticker = self.convertNameForIndicies(quoteResult['01. symbol'])
-            newQuote['symbol'] = ticker
-            newQuote['current_price'] = parseFloat((Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2))
-            newQuote['change'] = parseFloat((Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2))
-            newQuote['change_pct'] = parseFloat((Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2))
-            newQuote['volume'] = parseInt(quoteResult['06. volume'])
-            newQuotes[ticker] = newQuote
-        })
-        this.setState({ allCurrentQuotes: newQuotes })
-    }
 
-    debugGetMonthlyQuotes(tickers) {
-        let newQuotes = {}
-        let monthlyQuotes = require('./api/sample_monthly_quotes.json').sample_monthly_quotes
-        let self = this
-        monthlyQuotes.forEach(function(item, idx) {
-            let quoteMeta = item['Meta Data']
-            let newQuote = {}
-            let ticker = self.convertNameForIndicies(quoteMeta['2. Symbol'])
-            newQuote['symbol'] = ticker
-            newQuote['monthly_prices'] = Object.entries(item['Monthly Adjusted Time Series']).map(price => parseFloat(price[1]['5. adjusted close']))
-            newQuotes[ticker] = newQuote
-        })
-        this.setState({ allMonthlyQuotes: newQuotes })
-    }
+        let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
 
-    debugGetAllPositions() {
+        let raw_current_quote_data = require('./api/sample_current_quotes.json').sample_current_quotes
+        let indexed_current_quote_data = {}
+        raw_current_quote_data.forEach(function(raw_quote) {
+            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'])
+            indexed_current_quote_data[adjusted_ticker] = raw_quote
+        })
+
+        let raw_monthly_quote_data = require('./api/sample_monthly_quotes.json').sample_monthly_quotes
+        let indexed_monthly_quote_data = {}
+        let index_performance = {}
+        raw_monthly_quote_data.forEach(function(raw_quote) {
+            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'])
+            indexed_monthly_quote_data[adjusted_ticker] = raw_quote
+            if (adjusted_ticker === 'S&P500') {
+                let quoteTimeSeries = indexed_monthly_quote_data[adjusted_ticker]['Monthly Adjusted Time Series']
+                let monthly_prices = Object.entries(quoteTimeSeries).map(price => parseFloat(price[1]['5. adjusted close']))
+                let now = monthly_prices[0]
+                let prev_short = monthly_prices[5]
+                let prev_medium = monthly_prices[11]
+                let prev_long = monthly_prices[23]
+                index_performance['short'] = (now - prev_short) / now * 100
+                index_performance['medium'] = (now - prev_medium) / now * 100
+                index_performance['long'] = (now - prev_long) / now * 100
+            }
+        })
+        if (this.state.performance_baseline !== 'sp500_pct_gain') {
+            this.setState({ baseline_performance: index_performance })
+        } else {
+            this.setState({ baseline_performance: zero_performance })
+        }
+
+        let all_stocks = []
+        Object.keys(indexed_transaction_data).forEach(function(ticker) {
+            if (!all_stocks.includes(ticker)) {
+                all_stocks.push(ticker)
+            }
+        })
+        Object.keys(indexed_current_quote_data).forEach(function(ticker) {
+            if (!all_stocks.includes(ticker)) {
+                all_stocks.push(ticker)
+            }
+        })
+        Object.keys(indexed_monthly_quote_data).forEach(function(ticker) {
+            if (!all_stocks.includes(ticker)) {
+                all_stocks.push(ticker)
+            }
+        })
+
         let newPositions = {}
-        let transactions = require('./api/sample_transactions.json').sample_transactions
-        Object.keys(transactions).forEach(function(ticker) {
-            let newPosition = {}
-            newPosition['symbol'] = ticker
-            let current_shares = transactions[ticker].reduce(function (total, current_val) {
-               return total + current_val['shares_added']
-            }, 0)
-            let outflows = transactions[ticker].reduce(function (total, current_val) {
-               return (current_val['dollars_spent'] > 0) ? total + current_val['dollars_spent'] : total
-            }, 0)
-            let inflows = -1 * transactions[ticker].reduce(function (total, current_val) {
-               return (current_val['dollars_spent'] < 0) ? total + current_val['dollars_spent'] : total
-            }, 0)
-            newPosition['current_shares'] = current_shares
-            newPosition['basis'] = Math.round((outflows > inflows) ? outflows - inflows : 0)
-            newPosition['realized_gains'] = Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
-            newPositions[ticker] = newPosition
+        let newCurrentQuotes = {}
+        let newMonthlyQuotes = {}
+        let newPerformanceNumbers = {}
+
+        all_stocks.forEach(function(ticker) {
+
+            // get position
+            if (indexed_transaction_data.hasOwnProperty(ticker)) {
+                let newPosition = {}
+                newPosition['symbol'] = ticker
+                let current_shares = indexed_transaction_data[ticker].reduce(function (total, current_val) {
+                return total + current_val['shares_added']
+                }, 0)
+                let outflows = indexed_transaction_data[ticker].reduce(function (total, current_val) {
+                return (current_val['dollars_spent'] > 0) ? total + current_val['dollars_spent'] : total
+                }, 0)
+                let inflows = -1 * indexed_transaction_data[ticker].reduce(function (total, current_val) {
+                return (current_val['dollars_spent'] < 0) ? total + current_val['dollars_spent'] : total
+                }, 0)
+                newPosition['current_shares'] = current_shares
+                newPosition['basis'] = Math.round((outflows > inflows) ? outflows - inflows : 0)
+                newPosition['realized_gains'] = Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
+                newPositions[ticker] = newPosition
+            } else {
+                newPositions[ticker] = null
+            }
+
+            // get current quote
+            if (indexed_current_quote_data.hasOwnProperty(ticker)) {
+                let newCurrentQuote = {}
+                let quoteResult = indexed_current_quote_data[ticker]['Global Quote']
+                newCurrentQuote['symbol'] = ticker
+                newCurrentQuote['current_price'] = parseFloat((Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2))
+                newCurrentQuote['change'] = parseFloat((Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2))
+                newCurrentQuote['change_pct'] = parseFloat((Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2))
+                newCurrentQuote['volume'] = parseInt(quoteResult['06. volume'])
+                newCurrentQuotes[ticker] = newCurrentQuote
+            } else {
+                newCurrentQuotes[ticker] = null
+            }
+
+            // get monthly quote
+            if (indexed_monthly_quote_data.hasOwnProperty(ticker)) {
+                let newMonthlyQuote = {}
+                let quoteTimeSeries = indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series']
+                newMonthlyQuote['symbol'] = ticker
+                newMonthlyQuote['monthly_prices'] = Object.entries(quoteTimeSeries).map(price => parseFloat(price[1]['5. adjusted close']))
+                newMonthlyQuotes[ticker] = newMonthlyQuote
+
+                // calculate performance
+                let newPerformance = {}
+                let ticker_now = newMonthlyQuote['monthly_prices'][0]
+                let ticker_prev_short = newMonthlyQuote['monthly_prices'][5]
+                let ticker_prev_medium = newMonthlyQuote['monthly_prices'][11]
+                let ticker_prev_long = newMonthlyQuote['monthly_prices'][23]
+                let ticker_perf_short = (ticker_now - ticker_prev_short) / ticker_now * 100
+                let ticker_perf_medium = (ticker_now - ticker_prev_medium) / ticker_now * 100
+                let ticker_perf_long = (ticker_now - ticker_prev_long) / ticker_now * 100
+                if (self.state.performance_baseline === 'sp500_pct_gain') {
+                    newPerformance['short_change_pct'] = ticker_perf_short - index_performance.short
+                    newPerformance['medium_change_pct'] = ticker_perf_medium - index_performance.medium
+                    newPerformance['long_change_pct'] = ticker_perf_long - index_performance.long
+                } else {
+                    newPerformance['short_change_pct'] = ticker_perf_short
+                    newPerformance['medium_change_pct'] = ticker_perf_medium
+                    newPerformance['long_change_pct'] = ticker_perf_long
+                }
+                newPerformanceNumbers[ticker] = newPerformance
+            } else {
+                newPerformanceNumbers[ticker] = null
+            }
         })
-        this.setState({ currentPositions: newPositions })
+
+        this.setState({ allStocks: all_stocks })
+        this.setState({ allPositions: newPositions })
+        this.setState({ allCurrentQuotes: newCurrentQuotes })
+        this.setState({ allMonthlyQuotes: newMonthlyQuotes })
+        this.setState({ allPerformanceNumbers: newPerformanceNumbers })
+
     }
+
+    // getQuoteUrl(ticker) {
+    //     //let alpha_vantage_api_key = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY
+    //     let alpha_vantage_api_key = 'demo' // FIXME: default to demo key and MSFT, not rate-limited 
+    //     let url_prefix = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
+    //     let url_suffix = '&apikey=' + alpha_vantage_api_key
+    //     return url_prefix + ticker + url_suffix
+    // }
+    // 
+    // async getCurrentQuotes(tickers) {
+    //     let newQuotes = {}
+    //     const quotesApiResults = await Promise.all(tickers.map(ticker =>
+    //         fetch(this.getQuoteUrl(ticker))
+    //         .then(res => res.json())
+    //     ))
+    //     quotesApiResults.forEach(function(item, idx) {
+    //         let quoteResult = item['Global Quote']
+    //         let newQuote = {}
+    //         let ticker = quoteResult['01. symbol'] + idx
+    //         newQuote['symbol'] = this.convertNameForIndicies(ticker)
+    //         newQuote['current_price'] = (Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2)
+    //         newQuote['change'] = (Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2)
+    //         newQuote['change_pct'] = (Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2)
+    //         newQuote['volume'] = parseInt(quoteResult['06. volume'])
+    //         newQuotes[ticker] = newQuote
+    //     })
+    //     this.setState({ allCurrentQuotes: newQuotes })
+    // }
 
     onBaselineChange(event) {
         this.setState({ performance_baseline: event.target.value })
@@ -159,59 +231,30 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        let allPerformanceNumbers = {}
-        Object.keys(this.state.allCurrentQuotes).forEach(function(ticker) {
-            let newPerformanceNumbers = {}
+        // FIXME: update references now that performance number calculations have been reafactored
+        // let performance_green_threshold = {}
+        // if (this.state.performance_baseline !== 'sp500_pct_gain') {
+        //     performance_green_threshold = {
+        //         short_change_pct: this.state.allPerformanceNumbers['S&P500'].short_change_pct,
+        //         medium_change_pct: this.state.allPerformanceNumbers['S&P500'].medium_change_pct,
+        //         long_change_pct: this.state.allPerformanceNumbers['S&P500'].long_change_pct
+        //     }
+        // } else {
+        //     performance_green_threshold = {
+        //         short_change_pct: 0,
+        //         medium_change_pct: 0,
+        //         long_change_pct: 0
+        //     }
+        // }
 
-            let ticker_now = self.state.allMonthlyQuotes[ticker]['monthly_prices'][0]
-            let ticker_prev_short = self.state.allMonthlyQuotes[ticker]['monthly_prices'][5]
-            let ticker_prev_medium = self.state.allMonthlyQuotes[ticker]['monthly_prices'][11]
-            let ticker_prev_long = self.state.allMonthlyQuotes[ticker]['monthly_prices'][23]
-            let ticker_perf_short = (ticker_now - ticker_prev_short) / ticker_now
-            let ticker_perf_medium = (ticker_now - ticker_prev_medium) / ticker_now
-            let ticker_perf_long = (ticker_now - ticker_prev_long) / ticker_now
-
-            let baseline_now = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][0]
-            let baseline_prev_short = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][5]
-            let baseline_prev_medium = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][11]
-            let baseline_prev_long = self.state.allMonthlyQuotes['S&P500']['monthly_prices'][23]
-            let baseline_perf_short = (baseline_now - baseline_prev_short) / baseline_now
-            let baseline_perf_medium = (baseline_now - baseline_prev_medium) / baseline_now
-            let baseline_perf_long = (baseline_now - baseline_prev_long) / baseline_now
-
-            if (self.state.performance_baseline === 'sp500_pct_gain') {
-                newPerformanceNumbers['short_change_pct'] = ticker_perf_short - baseline_perf_short
-                newPerformanceNumbers['medium_change_pct'] = ticker_perf_medium - baseline_perf_medium
-                newPerformanceNumbers['long_change_pct'] = ticker_perf_long - baseline_perf_long
-            } else {
-                newPerformanceNumbers['short_change_pct'] = ticker_perf_short
-                newPerformanceNumbers['medium_change_pct'] = ticker_perf_medium
-                newPerformanceNumbers['long_change_pct'] = ticker_perf_long
-            }
-
-            Object.keys(newPerformanceNumbers).forEach(function(key) {
-                newPerformanceNumbers[key] = parseFloat((Math.round(10 * 100 * newPerformanceNumbers[key]) / 10).toFixed(1))
-            })
-            allPerformanceNumbers[ticker] = newPerformanceNumbers
-        })
-
-        let performance_green_threshold = {}
-        if (this.state.performance_baseline !== 'sp500_pct_gain') {
-            performance_green_threshold = {
-                short_change_pct: allPerformanceNumbers['S&P500'].short_change_pct,
-                medium_change_pct: allPerformanceNumbers['S&P500'].medium_change_pct,
-                long_change_pct: allPerformanceNumbers['S&P500'].long_change_pct
-            }
-        } else {
-            performance_green_threshold = {
-                short_change_pct: 0,
-                medium_change_pct: 0,
-                long_change_pct: 0
-            }
+        let performance_green_threshold = {
+            short_change_pct: this.state.baseline_performance.short,
+            medium_change_pct: this.state.baseline_performance.medium,
+            long_change_pct: this.state.baseline_performance.long
         }
 
-        let total_value = Object.entries(this.state.currentPositions).reduce(function (total, current_val) {
-            if (self.state.allCurrentQuotes.hasOwnProperty(current_val[0])) {
+        let total_value = Object.entries(this.state.allPositions).filter(position => position[1] !== null).reduce(function (total, current_val) {
+            if (self.state.allCurrentQuotes[current_val[0]] !== null) {
                 return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
             } else {
                 return total
@@ -223,10 +266,10 @@ export class ComparingStocks extends React.Component {
         let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_gains']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
-        let sorted_tickers = Object.keys(this.state.allCurrentQuotes).sort(function(a, b) {
+        let sorted_tickers = Object.keys(this.state.allPositions).sort(function(a, b) {
             let value_a, value_b
             if (quote_columns.includes(sort_column)) {
-                if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
+                if (self.state.allCurrentQuotes[a] !== null && self.state.allCurrentQuotes[b] !== null) {
                     if (sort_column === 'dollar_volume') {
                         value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
                         value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
@@ -236,18 +279,18 @@ export class ComparingStocks extends React.Component {
                     }
                 } 
             } else if (performance_columns.includes(sort_column)) {
-                if (self.state.allMonthlyQuotes.hasOwnProperty(a) && self.state.allMonthlyQuotes.hasOwnProperty(b)) {
-                    value_a = allPerformanceNumbers[a][sort_column]
-                    value_b = allPerformanceNumbers[b][sort_column]
+                if (self.state.allMonthlyQuotes[a] !== null && self.state.allMonthlyQuotes[b] !== null) {
+                    value_a = self.state.allPerformanceNumbers[a][sort_column]
+                    value_b = self.state.allPerformanceNumbers[b][sort_column]
                 }
             } else if (holdings_columns.includes(sort_column)) {
                 let positionvalue_a, positionvalue_b
-                if (self.state.currentPositions.hasOwnProperty(a)) {
+                if (self.state.allPositions[a] !== null) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.currentPositions[a]['current_shares']) {
-                            positionvalue_a = self.state.currentPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
+                        if (self.state.allCurrentQuotes[a] !== null && self.state.allPositions[a]['current_shares']) {
+                            positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
                             if (sort_column === 'percent_gains') {
-                                let basis_a = self.state.currentPositions[a]['basis']
+                                let basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
                             } else {
                                 value_a = positionvalue_a
@@ -255,20 +298,20 @@ export class ComparingStocks extends React.Component {
                         } else {
                             value_a = 'n/a'
                         }
-                    } else if (self.state.currentPositions[a]['current_shares'] || sort_column === 'realized_gains') {
-                        value_a = self.state.currentPositions[a][sort_column]
+                    } else if (self.state.allPositions[a]['current_shares'] || sort_column === 'realized_gains') {
+                        value_a = self.state.allPositions[a][sort_column]
                     } else {
                         value_a = 'n/a'
                     }
                 } else {
                     value_a = 'n/a'
                 }
-                if (self.state.currentPositions.hasOwnProperty(b)) {
+                if (self.state.allPositions[b] !== null) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(b) && self.state.currentPositions[b]['current_shares']) {
-                            positionvalue_b = self.state.currentPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
+                        if (self.state.allCurrentQuotes[b] !== null && self.state.allPositions[b]['current_shares']) {
+                            positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
                             if (sort_column === 'percent_gains' && positionvalue_b !== 0) {
-                                let basis_b = self.state.currentPositions[b]['basis']
+                                let basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
                             } else {
                                 value_b = positionvalue_b
@@ -276,8 +319,8 @@ export class ComparingStocks extends React.Component {
                         } else {
                             value_b = 'n/a'
                         }
-                    } else if (self.state.currentPositions[b]['current_shares'] || sort_column === 'realized_gains') {
-                        value_b = self.state.currentPositions[b][sort_column]
+                    } else if (self.state.allPositions[b]['current_shares'] || sort_column === 'realized_gains') {
+                        value_b = self.state.allPositions[b][sort_column]
                     } else {
                         value_b = 'n/a'
                     }
@@ -322,7 +365,7 @@ export class ComparingStocks extends React.Component {
         })
         let filtered_sorted_tickers = [...sorted_tickers]
         if (this.state.show_which_stocks === 'holdings_only') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.currentPositions.hasOwnProperty(ticker) && this.state.currentPositions[ticker]['current_shares'])
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.allPositions.ticker !== null && this.state.allPositions[ticker]['current_shares'])
         }
 
         let columns = [
@@ -443,9 +486,9 @@ export class ComparingStocks extends React.Component {
                             <PositionRow 
                                 key={ticker}
                                 columns={columns}
-                                current_position={this.state.currentPositions[ticker]}
+                                current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
-                                performance_numbers={allPerformanceNumbers[ticker]}
+                                performance_numbers={this.state.allPerformanceNumbers[ticker]}
                                 performance_green_threshold={performance_green_threshold}
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
