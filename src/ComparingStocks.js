@@ -359,6 +359,13 @@ export class ComparingStocks extends React.Component {
         let filtered_sorted_tickers = [...sorted_tickers]
         if (this.state.show_which_stocks === 'holdings_only') {
             filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
+        } else if (this.state.show_which_stocks === 'holdings_and_index') {
+            filtered_sorted_tickers = sorted_tickers.filter(function(ticker) {
+                if( self.state.allPositions[ticker] !== null && self.state.allPositions[ticker]['current_shares']
+                 || self.state.allIndiciesAliases.includes(ticker) ) {
+                     return ticker
+                 }
+            })
         }
 
         let columns = [
@@ -461,8 +468,9 @@ export class ComparingStocks extends React.Component {
                     <label>
                         Show Stocks:
                         <select value={this.state.show_which_stocks} onChange={this.onShowStocksChange}>
-                            <option value="holdings_only">holdings only</option>
                             <option value="all_stocks">all stocks</option>
+                            <option value="holdings_and_index">holdings and index</option>
+                            <option value="holdings_only">holdings only</option>
                         </select>
                     </label>
                 </div>
