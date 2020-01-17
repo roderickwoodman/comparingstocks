@@ -33,6 +33,12 @@ export class ComparingStocks extends React.Component {
 
     componentDidMount() {
 
+        const stored_performance_baseline = JSON.parse(localStorage.getItem("performance_baseline"))
+        this.setState({ performance_baseline: stored_performance_baseline })
+
+        const stored_show_which_stocks = JSON.parse(localStorage.getItem("show_which_stocks"))
+        this.setState({ show_which_stocks: stored_show_which_stocks })
+
         let self = this
 
         let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
@@ -62,7 +68,7 @@ export class ComparingStocks extends React.Component {
                 index_performance['long'] = (now - prev_long) / now * 100
             }
         })
-        if (this.state.performance_baseline !== 'sp500_pct_gain') {
+        if (stored_performance_baseline !== 'sp500_pct_gain') {
             this.setState({ performance_baseline_numbers: index_performance })
         } else {
             this.setState({ performance_baseline_numbers: zero_performance })
@@ -145,7 +151,7 @@ export class ComparingStocks extends React.Component {
                 let ticker_perf_short = (ticker_now - ticker_prev_short) / ticker_now * 100
                 let ticker_perf_medium = (ticker_now - ticker_prev_medium) / ticker_now * 100
                 let ticker_perf_long = (ticker_now - ticker_prev_long) / ticker_now * 100
-                if (self.state.performance_baseline === 'sp500_pct_gain') {
+                if (stored_performance_baseline === 'sp500_pct_gain') {
                     newPerformance['short_change_pct'] = ticker_perf_short - index_performance.short
                     newPerformance['medium_change_pct'] = ticker_perf_medium - index_performance.medium
                     newPerformance['long_change_pct'] = ticker_perf_long - index_performance.long
@@ -205,10 +211,13 @@ export class ComparingStocks extends React.Component {
         } else {
             this.setState({ performance_baseline_numbers: zero_performance })
         }
+        localStorage.setItem('performance_baseline', JSON.stringify(new_baseline))
     }
 
     onShowStocksChange(event) {
-        this.setState({ show_which_stocks: event.target.value })
+        let new_show_which_stocks = event.target.value
+        this.setState({ show_which_stocks: new_show_which_stocks })
+        localStorage.setItem('show_which_stocks', JSON.stringify(new_show_which_stocks))
     }
 
     changeSort(new_sort_column) {
@@ -349,7 +358,7 @@ export class ComparingStocks extends React.Component {
         })
         let filtered_sorted_tickers = [...sorted_tickers]
         if (this.state.show_which_stocks === 'holdings_only') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.allPositions.ticker !== null && this.state.allPositions[ticker]['current_shares'])
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
         }
 
         let columns = [
@@ -444,7 +453,7 @@ export class ComparingStocks extends React.Component {
                 <div id="page-controls">
                     <label>
                         Performance Baseline:
-                        <select value={this.state.baseline} onChange={this.onBaselineChange}>
+                        <select value={this.state.performance_baseline} onChange={this.onBaselineChange}>
                             <option value="zero_pct_gain">0% gain</option>
                             <option value="sp500_pct_gain">SP&amp;500 Index</option>
                         </select>
