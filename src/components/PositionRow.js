@@ -18,12 +18,12 @@ export class PositionRow extends React.Component {
             }
         }
 
-        function formatValue(value, column) {
+        function populateCellValue(column) {
             let prefix = ''
             let suffix = ''
             let adjust_decimal = false
             let num_decimals
-            let final_value = value
+            let value
             switch (column.variable_type) {
                 case 'number':
                     adjust_decimal = true
@@ -42,28 +42,73 @@ export class PositionRow extends React.Component {
                 default:
                     break
             }
-
-            if (adjust_decimal) {
-                if (column.hasOwnProperty('scaling_power')) {
-                    final_value *= Math.pow(10, column.scaling_power)
-                }
-                final_value = (Math.round(Math.pow(10, num_decimals) * final_value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
+            switch (column.variable_name) {
+                case 'symbol':
+                    value = current_quote.symbol
+                    break
+                case 'current_shares':
+                    value = current_position.current_shares
+                    break
+                case 'current_price':
+                    value = current_quote.current_price
+                    break
+                case 'current_value':
+                    value = current_value
+                    break
+                case 'percent_value':
+                    value = percent_value
+                    break
+                case 'basis':
+                    value = basis
+                    break
+                case 'percent_gains':
+                    value = percent_gains
+                    break
+                case 'realized_gains':
+                    value = current_position.realized_gains
+                    break
+                case 'change_pct':
+                    value = current_quote.change_pct
+                    break
+                case 'volume':
+                    value = current_quote.volume
+                    break
+                case 'dollar_volume':
+                    value = current_quote.current_price * current_quote.volume
+                    break
+                case 'short_change_pct':
+                    value = performance.short_change_pct
+                    break
+                case 'medium_change_pct':
+                    value = performance.medium_change_pct
+                    break
+                case 'long_change_pct':
+                    value = performance.long_change_pct
+                    break
+                default:
+                    break
             }
 
-            final_value = prefix + final_value + suffix
-            
             if (value === null || value === 'n/a') {
                 return '-'
-            } else if (typeof(value) === 'string') {
+            } else if (column.variable_type === 'string') {
                 return value
             } else if (!isNaN(value)) {
-                return final_value
+                //return value
+                if (adjust_decimal) {
+                    if (column.hasOwnProperty('scaling_power')) {
+                        value *= Math.pow(10, column.scaling_power)
+                    }
+                    value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
+                }
+                return value = prefix + value + suffix
+
             } else {
                 return '??'
             }
         }
 
-        function formatCell(column) {
+        function styleCell(column) {
             let classes = 'position-cell'
             switch (column) {
                 case 'change_pct':
@@ -100,8 +145,6 @@ export class PositionRow extends React.Component {
             return classes
         }
 
-        const columns = this.props.columns
-
         let row_classes = 'position-row' 
         if (this.props.ticker_is_index(current_quote.symbol)) {
             row_classes += ' position-is-index'
@@ -121,20 +164,9 @@ export class PositionRow extends React.Component {
 
         return (
             <tr className={ row_classes }>
-                <td className={ formatCell(columns[0].variable_name) }>{ formatValue(current_quote.symbol, columns[0]) }</td>
-                <td className={ formatCell(columns[1].variable_name) }>{ formatValue(current_position.current_shares, columns[1]) }</td>
-                <td className={ formatCell(columns[2].variable_name) }>{ formatValue(current_quote.current_price, columns[2]) }</td>
-                <td className={ formatCell(columns[3].variable_name) }>{ formatValue(current_value, columns[3]) }</td>
-                <td className={ formatCell(columns[4].variable_name) }>{ formatValue(percent_value, columns[4]) }</td>
-                <td className={ formatCell(columns[5].variable_name) }>{ formatValue(basis, columns[5]) }</td>
-                <td className={ formatCell(columns[6].variable_name) }>{ formatValue(percent_gains, columns[6]) }</td>
-                <td className={ formatCell(columns[7].variable_name) }>{ formatValue(current_position.realized_gains, columns[7]) }</td>
-                <td className={ formatCell(columns[8].variable_name) }>{ formatValue(current_quote.change_pct, columns[8]) }</td>
-                <td className={ formatCell(columns[9].variable_name) }>{ formatValue(current_quote.volume, columns[9]) }</td>
-                <td className={ formatCell(columns[10].variable_name) }>{ formatValue(current_quote.current_price * current_quote.volume, columns[10]) }</td>
-                <td className={ formatCell(columns[11].variable_name) }>{ formatValue(performance.short_change_pct, columns[11]) }</td>
-                <td className={ formatCell(columns[12].variable_name) }>{ formatValue(performance.medium_change_pct, columns[12]) }</td>
-                <td className={ formatCell(columns[13].variable_name) }>{ formatValue(performance.long_change_pct, columns[13]) }</td>
+                { this.props.columns.map(column => (
+                <td className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
+                ))}
             </tr>
         )
     }
