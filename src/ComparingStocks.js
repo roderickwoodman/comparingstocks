@@ -377,14 +377,26 @@ export class ComparingStocks extends React.Component {
             }
             return 0
         })
+
+        function getHoldings() {
+            return self.state.allStocks.filter(ticker => self.state.allPositions[ticker] !== null && self.state.allPositions[ticker]['current_shares'])
+        }
+        function getIndicies() {
+            return self.state.allIndiciesAliases
+        }
+        function getWatchList() {
+            return self.state.userStocks.filter(ticker => self.state.allPositions[ticker] === null || !self.state.allPositions[ticker]['current_shares'])
+        }
+
         let filtered_sorted_tickers = [...sorted_tickers]
         if (this.state.show_which_stocks === 'holdings_only') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getHoldings()].includes(ticker))
         } else if (this.state.show_which_stocks === 'holdings_and_index') {
-            filtered_sorted_tickers = sorted_tickers.filter(function(ticker) {
-                return ( (self.state.allPositions[ticker] !== null && self.state.allPositions[ticker]['current_shares']) 
-                 || self.state.allIndiciesAliases.includes(ticker) )
-            })
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getHoldings(), ...getIndicies()].includes(ticker))
+        } else if (this.state.show_which_stocks === 'holdings_and_watchlist_and_index') {
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getHoldings(), ...getWatchList(), ...getIndicies()].includes(ticker))
+        } else if (this.state.show_which_stocks === 'watchlist_only') {
+            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getWatchList()].includes(ticker))
         }
 
         let columns = [
@@ -488,7 +500,9 @@ export class ComparingStocks extends React.Component {
                         Show Stocks:
                         <select value={this.state.show_which_stocks} onChange={this.onShowStocksChange}>
                             <option value="all_stocks">all stocks</option>
+                            <option value="watchlist_only">watch list only</option>
                             <option value="holdings_and_index">holdings and index</option>
+                            <option value="holdings_and_watchlist_and_index">holdings and watch and index</option>
                             <option value="holdings_only">holdings only</option>
                         </select>
                     </label>
