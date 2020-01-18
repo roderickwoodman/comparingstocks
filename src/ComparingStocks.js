@@ -399,92 +399,95 @@ export class ComparingStocks extends React.Component {
             filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getWatchList()].includes(ticker))
         }
 
-        let columns = [
-            {
+        let all_columns = {
+            'symbol': {
                 variable_name: 'symbol',
                 display_name: 'Symbol',
                 variable_type: 'string'
             },
-            {
+            'current_shares': {
                 variable_name: 'current_shares',
                 display_name: 'Shares',
                 variable_type: 'number',
                 num_decimals: 0
             },
-            {
+            'current_price': {
                 variable_name: 'current_price',
                 display_name: 'Price',
                 variable_type: 'currency',
                 num_decimals: 2
             },
-            {
+            'current_value': {
                 variable_name: 'current_value',
                 display_name: 'Value',
                 variable_type: 'currency',
                 num_decimals: 0
             },
-            {
+            'percent_value': {
                 variable_name: 'percent_value',
                 display_name: 'Pct Value',
                 variable_type: 'percentage',
                 num_decimals: 1
             },
-            {
+            'basis': {
                 variable_name: 'basis',
                 display_name: 'Basis',
                 variable_type: 'currency',
                 num_decimals: 0
             },
-            {
+            'percent_gains': {
                 variable_name: 'percent_gains',
                 display_name: 'Pct Gains',
                 variable_type: 'percentage',
                 num_decimals: 1
             },
-            {
+            'realized_gains': {
                 variable_name: 'realized_gains',
                 display_name: 'Realized',
                 variable_type: 'currency',
                 num_decimals: 0
             },
-            {
+            'change_pct': {
                 variable_name: 'change_pct',
                 display_name: 'Change',
                 variable_type: 'percentage',
                 num_decimals: 2
             },
-            {
+            'volume': {
                 variable_name: 'volume',
                 display_name: 'Volume',
                 variable_type: 'number',
                 num_decimals: 0
             },
-            {
+            'dollar_volume': {
                 variable_name: 'dollar_volume',
                 display_name: 'Dollar Vol (M)',
                 variable_type: 'currency',
                 scaling_power: -6,
                 num_decimals: 0
             },
-            {
+            'short_change_pct': {
                 variable_name: 'short_change_pct',
                 display_name: '6-month',
                 variable_type: 'percentage',
                 num_decimals: 1
             },
-            {
+            'medium_change_pct': {
                 variable_name: 'medium_change_pct',
                 display_name: '1-year',
                 variable_type: 'percentage',
                 num_decimals: 1
             },
-            {
+            'long_change_pct': {
                 variable_name: 'long_change_pct',
                 display_name: '2-year',
                 variable_type: 'percentage',
                 num_decimals: 1
             }
-        ]
+        }
+        // let display_column_order = Object.keys(all_columns)
+        let display_column_order = ['symbol', 'current_value', 'percent_value', 'percent_gains', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+        let display_columns = display_column_order.map(column_variable => all_columns[column_variable])
 
         return (
             <div id="page-wrapper">
@@ -515,7 +518,7 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            {columns.map(column => (
+                            {display_columns.map(column => (
                             <th key={ column.variable_name} onClick={ (e) => this.onChangeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
@@ -524,7 +527,7 @@ export class ComparingStocks extends React.Component {
                         {filtered_sorted_tickers.map(ticker => (
                             <PositionRow 
                                 key={ticker}
-                                columns={columns}
+                                columns={display_columns}
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
