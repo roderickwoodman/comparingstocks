@@ -1,5 +1,6 @@
 import React from 'react'
 import { PositionRow } from './components/PositionRow'
+import { AddByTicker } from './components/AddByTicker'
 
 
 const zero_performance = { short: 0, medium: 0, long: 0 }
@@ -15,6 +16,7 @@ export class ComparingStocks extends React.Component {
             allCurrentQuotes: {},
             allMonthlyQuotes: {},
             allPositions: {},
+            userStocks: [],
             performance_baseline: 'zero_pct_gain',
             performance_baseline_numbers: {},
             index_performance: {},
@@ -28,7 +30,8 @@ export class ComparingStocks extends React.Component {
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
         this.onBaselineChange = this.onBaselineChange.bind(this)
         this.onShowStocksChange = this.onShowStocksChange.bind(this)
-        this.changeSort = this.changeSort.bind(this)
+        this.onChangeSort = this.onChangeSort.bind(this)
+        this.onNewTickers = this.onNewTickers.bind(this)
     }
 
     componentDidMount() {
@@ -224,7 +227,7 @@ export class ComparingStocks extends React.Component {
         localStorage.setItem('show_which_stocks', JSON.stringify(new_show_which_stocks))
     }
 
-    changeSort(new_sort_column) {
+    onChangeSort(new_sort_column) {
         if (new_sort_column === this.state.sort_column) {
             localStorage.setItem('sort_dir_asc', JSON.stringify(!this.state.sort_dir_asc))
             this.setState(prevState => ({
@@ -246,6 +249,18 @@ export class ComparingStocks extends React.Component {
         } else {
             return ticker
         }
+    }
+
+    onNewTickers(new_tickers) {
+        this.setState(prevState => {
+            let userStocks = prevState.userStocks.slice()
+            new_tickers.forEach(function(ticker) {
+                if (!userStocks.includes(ticker)) {
+                    userStocks.push(ticker)
+                }
+            })
+            return { userStocks: userStocks }
+        })
     }
 
     render() {
@@ -367,10 +382,8 @@ export class ComparingStocks extends React.Component {
             filtered_sorted_tickers = sorted_tickers.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
         } else if (this.state.show_which_stocks === 'holdings_and_index') {
             filtered_sorted_tickers = sorted_tickers.filter(function(ticker) {
-                if( self.state.allPositions[ticker] !== null && self.state.allPositions[ticker]['current_shares']
-                 || self.state.allIndiciesAliases.includes(ticker) ) {
-                     return ticker
-                 }
+                return ( (self.state.allPositions[ticker] !== null && self.state.allPositions[ticker]['current_shares']) 
+                 || self.state.allIndiciesAliases.includes(ticker) )
             })
         }
 
@@ -479,12 +492,17 @@ export class ComparingStocks extends React.Component {
                             <option value="holdings_only">holdings only</option>
                         </select>
                     </label>
+                    <AddByTicker
+                        all_stocks={this.state.allStocks}
+                        user_stocks={this.state.userStocks}
+                        on_new_tickers={this.onNewTickers}
+                    />
                 </div>
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
                             {columns.map(column => (
-                            <th key={ column.variable_name} onClick={ (e) => this.changeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
+                            <th key={ column.variable_name} onClick={ (e) => this.onChangeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
@@ -500,6 +518,7 @@ export class ComparingStocks extends React.Component {
                                 performance_baseline_numbers={this.state.performance_baseline_numbers}
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
+                                on_new_tickers={this.onNewTickers}
                         />))}
                     </tbody>
                 </table>
