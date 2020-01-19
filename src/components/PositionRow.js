@@ -174,6 +174,9 @@ export class PositionRow extends React.Component {
 
         return (
             <tr className={ row_classes }>
+                <td>
+                { (this.props.watch_group.includes(current_quote.symbol)) ? 'watch' : '-' }
+                </td>
                 { this.props.columns.map(column => (
                 <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
                 ))}
@@ -185,6 +188,7 @@ export class PositionRow extends React.Component {
 
 PositionRow.propTypes = {
     columns: PropTypes.array,
+    watch_group: PropTypes.array,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,

@@ -534,6 +534,7 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
+                            <th>Groups</th>
                             {display_columns.map(column => (
                             <th key={ column.variable_name} onClick={ (e) => this.onChangeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
                             ))}
@@ -544,6 +545,7 @@ export class ComparingStocks extends React.Component {
                             <PositionRow 
                                 key={ticker}
                                 columns={display_columns}
+                                watch_group={this.state.allGroups.watch}
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
