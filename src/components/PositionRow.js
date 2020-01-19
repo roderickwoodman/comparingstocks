@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 export class PositionRow extends React.Component {
 
     render() {
-
+        const on_remove_from_group = this.props.on_remove_from_group
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
         const performance_baseline = this.props.performance_baseline
@@ -175,7 +175,12 @@ export class PositionRow extends React.Component {
         return (
             <tr className={ row_classes }>
                 <td>
-                { (this.props.watch_group.includes(current_quote.symbol)) ? 'watch' : '-' }
+                    { (this.props.watch_group.includes(current_quote.symbol)) ?
+                        <button onClick={ (e) => {on_remove_from_group(e, current_quote.symbol)}}>
+                            watch
+                        </button>
+                    : '-'
+                    }
                 </td>
                 { this.props.columns.map(column => (
                 <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
@@ -196,4 +201,5 @@ PositionRow.propTypes = {
     performance_baseline_numbers: PropTypes.object,
     total_value: PropTypes.number,
     ticker_is_index: PropTypes.func,
+    on_remove_from_group: PropTypes.func,
 }

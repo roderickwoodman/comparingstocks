@@ -34,6 +34,7 @@ export class ComparingStocks extends React.Component {
         this.onShowStocksChange = this.onShowStocksChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
+        this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
     }
 
     componentDidMount() {
@@ -278,6 +279,17 @@ export class ComparingStocks extends React.Component {
             return { allGroups: newAllGroups }
         })
     }
+
+    onRemoveFromGroup(event, remove_ticker) {
+        this.setState(prevState => {
+            let newAllGroups = Object.assign({}, prevState.allGroups)
+            newAllGroups.watch = newAllGroups.watch.filter(ticker => ticker !== remove_ticker)
+
+            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
+            return { allGroups: newAllGroups }
+        })
+    }
+
 
     render() {
 
@@ -553,7 +565,7 @@ export class ComparingStocks extends React.Component {
                                 performance_baseline_numbers={this.state.performance_baseline_numbers}
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
-                                on_new_tickers={this.onNewTickers}
+                                on_remove_from_group={this.onRemoveFromGroup}
                         />))}
                     </tbody>
                 </table>
