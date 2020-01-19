@@ -37,16 +37,29 @@ export class ComparingStocks extends React.Component {
     componentDidMount() {
 
         const stored_performance_baseline = JSON.parse(localStorage.getItem("performance_baseline"))
-        this.setState({ performance_baseline: stored_performance_baseline })
+        if (stored_performance_baseline !== null) {
+            this.setState({ performance_baseline: stored_performance_baseline })
+        }
 
         const stored_show_which_stocks = JSON.parse(localStorage.getItem("show_which_stocks"))
-        this.setState({ show_which_stocks: stored_show_which_stocks })
+        if (stored_show_which_stocks !== null) {
+            this.setState({ show_which_stocks: stored_show_which_stocks })
+        }
 
         const stored_sort_column = JSON.parse(localStorage.getItem("sort_column"))
-        this.setState({ sort_column: stored_sort_column })
+        if (stored_sort_column !== null) {
+            this.setState({ sort_column: stored_sort_column })
+        }
 
         const stored_sort_dir_asc = JSON.parse(localStorage.getItem("sort_dir_asc"))
-        this.setState({ sort_dir_asc: stored_sort_dir_asc })
+        if (stored_sort_dir_asc !== null) {
+            this.setState({ sort_dir_asc: stored_sort_dir_asc })
+        }
+
+        const stored_userStocks = JSON.parse(localStorage.getItem("userStocks"))
+        if (stored_userStocks !== null) {
+            this.setState({ userStocks: stored_userStocks })
+        }
 
         let self = this
 
@@ -253,13 +266,14 @@ export class ComparingStocks extends React.Component {
 
     onNewTickers(new_tickers) {
         this.setState(prevState => {
-            let userStocks = prevState.userStocks.slice()
+            let newUserStocks = prevState.userStocks.slice()
             new_tickers.forEach(function(ticker) {
-                if (!userStocks.includes(ticker)) {
-                    userStocks.push(ticker)
+                if (!newUserStocks.includes(ticker)) {
+                    newUserStocks.push(ticker)
                 }
             })
-            return { userStocks: userStocks }
+            localStorage.setItem('userStocks', JSON.stringify(newUserStocks))
+            return { userStocks: newUserStocks }
         })
     }
 
