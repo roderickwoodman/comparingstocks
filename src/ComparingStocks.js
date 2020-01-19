@@ -16,7 +16,9 @@ export class ComparingStocks extends React.Component {
             allCurrentQuotes: {},
             allMonthlyQuotes: {},
             allPositions: {},
-            userStocks: [],
+            allGroups: {
+                watch: []
+            },
             performance_baseline: 'zero_pct_gain',
             performance_baseline_numbers: {},
             index_performance: {},
@@ -56,9 +58,9 @@ export class ComparingStocks extends React.Component {
             this.setState({ sort_dir_asc: stored_sort_dir_asc })
         }
 
-        const stored_userStocks = JSON.parse(localStorage.getItem("userStocks"))
-        if (stored_userStocks !== null) {
-            this.setState({ userStocks: stored_userStocks })
+        const stored_allGroups = JSON.parse(localStorage.getItem("allGroups"))
+        if (stored_allGroups !== null) {
+            this.setState({ allGroups: stored_allGroups })
         }
 
         let self = this
@@ -266,14 +268,14 @@ export class ComparingStocks extends React.Component {
 
     onNewTickers(new_tickers) {
         this.setState(prevState => {
-            let newUserStocks = prevState.userStocks.slice()
+            let newAllGroups = Object.assign({}, prevState.allGroups)
             new_tickers.forEach(function(ticker) {
-                if (!newUserStocks.includes(ticker)) {
-                    newUserStocks.push(ticker)
+                if (!newAllGroups.watch.includes(ticker)) {
+                    newAllGroups.watch.push(ticker)
                 }
             })
-            localStorage.setItem('userStocks', JSON.stringify(newUserStocks))
-            return { userStocks: newUserStocks }
+            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
+            return { allGroups: newAllGroups }
         })
     }
 
@@ -399,7 +401,7 @@ export class ComparingStocks extends React.Component {
             return self.state.allIndiciesAliases
         }
         function getWatchList() {
-            return self.state.userStocks.filter(ticker => self.state.allPositions[ticker] === null || !self.state.allPositions[ticker]['current_shares'])
+            return self.state.allGroups.watch.filter(ticker => self.state.allPositions[ticker] === null || !self.state.allPositions[ticker]['current_shares'])
         }
 
         let filtered_sorted_tickers = [...sorted_tickers]
@@ -525,7 +527,7 @@ export class ComparingStocks extends React.Component {
                     </label>
                     <AddByTicker
                         all_stocks={this.state.allStocks}
-                        user_stocks={this.state.userStocks}
+                        user_stocks={this.state.allGroups.watch}
                         on_new_tickers={this.onNewTickers}
                     />
                 </div>
