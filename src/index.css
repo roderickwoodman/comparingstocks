@@ -53,6 +53,7 @@ th:hover {
   color: red;
 }
 
-#input-by-ticker {
+#add-group,
+#add-ticker {
   margin: 20px 0;
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { PositionRow } from './components/PositionRow'
-import { AddByTicker } from './components/AddByTicker'
+import { AddGroup } from './components/AddGroup'
+import { AddTicker } from './components/AddTicker'
 
 
 const zero_performance = { short: 0, medium: 0, long: 0 }
@@ -33,6 +34,7 @@ export class ComparingStocks extends React.Component {
         this.onBaselineChange = this.onBaselineChange.bind(this)
         this.onShowStocksChange = this.onShowStocksChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
+        this.onNewGroups = this.onNewGroups.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
     }
@@ -265,6 +267,20 @@ export class ComparingStocks extends React.Component {
         } else {
             return ticker
         }
+    }
+
+    onNewGroups(new_groups) {
+        this.setState(prevState => {
+            let newAllGroups = Object.assign({}, prevState.allGroups)
+            new_groups.forEach(function(group) {
+                let newGroup = []
+                if (!newAllGroups.hasOwnProperty(group)) {
+                    newAllGroups[group] = newGroup
+                }
+            })
+            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
+            return { allGroups: newAllGroups }
+        })
     }
 
     onNewTickers(new_tickers) {
@@ -537,7 +553,11 @@ export class ComparingStocks extends React.Component {
                             <option value="holdings_only">holdings only</option>
                         </select>
                     </label>
-                    <AddByTicker
+                    <AddGroup
+                        all_groups={this.state.allGroups}
+                        on_new_groups={this.onNewGroups}
+                    />
+                    <AddTicker
                         all_stocks={this.state.allStocks}
                         user_stocks={this.state.allGroups.watch}
                         on_new_tickers={this.onNewTickers}

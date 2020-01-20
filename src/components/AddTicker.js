@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class AddByTicker extends React.Component {
+export class AddTicker extends React.Component {
 
     constructor(props) {
         super(props)
@@ -40,11 +40,11 @@ export class AddByTicker extends React.Component {
         let self = this
         tickers.forEach(function(ticker) {
             if (!self.props.all_stocks.includes(ticker)) {
-                new_status_messages.push('ERROR: ticker ' + ticker + ' does not exist.')
+                new_status_messages.push('ERROR: Ticker ' + ticker + ' does not exist.')
             } else if (self.props.user_stocks.includes(ticker)) {
-                new_status_messages.push('ERROR: ticker ' + ticker + ' has already been added.')
+                new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added.')
             } else {
-                new_status_messages.push('ticker ' + ticker + ' has now been added.')
+                new_status_messages.push('Ticker ' + ticker + ' has now been added.')
                 tickers_to_add.push(ticker)
             }
         })
@@ -55,13 +55,13 @@ export class AddByTicker extends React.Component {
 
     render() {
         return (
-            <section id="input-by-ticker">
+            <section id="add-ticker">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
-                    <label>Ticker(s):</label>
+                    <label>New Ticker(s):</label>
                     <input value={this.state.value} onChange={this.handleChange} placeholder="Dow30 tickers only" required />
                     <section className="buttonrow">
                         <input type="reset" value="Clear" />
-                        <input type="submit" value="Submit" />
+                        <input type="submit" value="Add Ticker(s)" />
                     </section>
                 </form>
                 <div className="status-messages">
@@ -80,7 +80,7 @@ export class AddByTicker extends React.Component {
     }
 }
 
-AddByTicker.propTypes = {
+AddTicker.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     user_stocks: PropTypes.array.isRequired,
     on_new_tickers: PropTypes.func.isRequired
