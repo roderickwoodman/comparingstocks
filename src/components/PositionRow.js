@@ -172,15 +172,23 @@ export class PositionRow extends React.Component {
             percent_gains = (1 - current_position.basis / current_value) * 100
         }
 
+        let all_groups = this.props.all_groups
+        let group_membership = []
+        Object.keys(all_groups).forEach(function(group_name) {
+            if (all_groups[group_name].includes(current_quote.symbol)) {
+                group_membership.push(group_name)
+            }
+        })
+
         return (
             <tr className={ row_classes }>
                 <td>
-                    { (this.props.watch_group.includes(current_quote.symbol)) ?
-                        <button onClick={ (e) => {on_remove_from_group(e, current_quote.symbol)}}>
-                            watch
+                    { group_membership.map( group_name => (
+                        <button key={group_name} onClick={ (e) => {on_remove_from_group(e, group_name, current_quote.symbol)}}>
+                            {group_name}
                         </button>
-                    : '-'
-                    }
+                    ))}
+                    { (!group_membership.length) ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
                 <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
@@ -193,7 +201,7 @@ export class PositionRow extends React.Component {
 
 PositionRow.propTypes = {
     columns: PropTypes.array,
-    watch_group: PropTypes.array,
+    all_groups: PropTypes.object,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,

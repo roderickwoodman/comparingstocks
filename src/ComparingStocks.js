@@ -283,12 +283,12 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onNewTickers(new_tickers) {
+    onNewTickers(group, new_tickers) {
         this.setState(prevState => {
             let newAllGroups = Object.assign({}, prevState.allGroups)
             new_tickers.forEach(function(ticker) {
-                if (!newAllGroups.watch.includes(ticker)) {
-                    newAllGroups.watch.push(ticker)
+                if (!newAllGroups[group].includes(ticker)) {
+                    newAllGroups[group].push(ticker)
                 }
             })
             localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
@@ -296,10 +296,10 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onRemoveFromGroup(event, remove_ticker) {
+    onRemoveFromGroup(event, remove_from_group, remove_ticker) {
         this.setState(prevState => {
             let newAllGroups = Object.assign({}, prevState.allGroups)
-            newAllGroups.watch = newAllGroups.watch.filter(ticker => ticker !== remove_ticker)
+            newAllGroups[remove_from_group] = newAllGroups[remove_from_group].filter(ticker => ticker !== remove_ticker)
 
             localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
             return { allGroups: newAllGroups }
@@ -559,7 +559,7 @@ export class ComparingStocks extends React.Component {
                     />
                     <AddTicker
                         all_stocks={this.state.allStocks}
-                        user_stocks={this.state.allGroups.watch}
+                        all_groups={this.state.allGroups}
                         on_new_tickers={this.onNewTickers}
                     />
                 </div>
@@ -577,7 +577,7 @@ export class ComparingStocks extends React.Component {
                             <PositionRow 
                                 key={ticker}
                                 columns={display_columns}
-                                watch_group={this.state.allGroups.watch}
+                                all_groups={this.state.allGroups}
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}

@@ -30,7 +30,7 @@ export class AddGroup extends React.Component {
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toLowerCase())
-            .map(str => str.replace(/[^a-z]/g, ""))
+            .map(str => str.replace(/[^a-z0-9:()-_!?]/g, ""))
         this.validateGroups(Array.from(new Set(user_tickers)))
     }
 

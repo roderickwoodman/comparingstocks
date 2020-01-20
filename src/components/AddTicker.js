@@ -7,48 +7,55 @@ export class AddTicker extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            value: '',
+            user_tickers_string: '',
+            add_to_group: 'watch',
             status_messages: []
         }
-        this.handleChange = this.handleChange.bind(this)
+        this.handleTickersChange = this.handleTickersChange.bind(this)
+        this.handleGroupChange = this.handleGroupChange.bind(this)
         this.handleReset = this.handleReset.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.validateTickers = this.validateTickers.bind(this)
     }
 
-    handleChange(event) {
-        this.setState({ value: event.target.value })
+    handleTickersChange(event) {
+        this.setState({ user_tickers_string: event.target.value })
+    }
+
+    handleGroupChange(event) {
+        this.setState({ add_to_group: event.target.value })
     }
 
     handleReset(event) {
-        this.setState({ value: "" })
+        this.setState({ user_tickers_string: "" })
     }
 
     handleSubmit(event) {
         event.preventDefault()
-        let user_tickers = String(this.state.value)
+        let user_group = this.state.add_to_group
+        let user_tickers = String(this.state.user_tickers_string)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toUpperCase())
             .map(str => str.replace(/[^A-Z]/g, ""))
-        this.validateTickers(Array.from(new Set(user_tickers)))
+        this.validateTickers(user_group, Array.from(new Set(user_tickers)))
     }
 
-    validateTickers(tickers) {
+    validateTickers(group, tickers) {
         let tickers_to_add = []
         let new_status_messages = []
         let self = this
         tickers.forEach(function(ticker) {
             if (!self.props.all_stocks.includes(ticker)) {
                 new_status_messages.push('ERROR: Ticker ' + ticker + ' does not exist.')
-            } else if (self.props.user_stocks.includes(ticker)) {
-                new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added.')
+            } else if (self.props.all_groups[group].includes(ticker)) {
+                new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to group "'+ group +'".')
             } else {
-                new_status_messages.push('Ticker ' + ticker + ' has now been added.')
+                new_status_messages.push('Ticker ' + ticker + ' has now been added to group "' + group + '".')
                 tickers_to_add.push(ticker)
             }
         })
-        this.props.on_new_tickers(tickers_to_add)
+        this.props.on_new_tickers(group, tickers_to_add)
         this.setState({ status_messages: new_status_messages })
         this.handleReset()
     }
@@ -58,7 +65,15 @@ export class AddTicker extends React.Component {
             <section id="add-ticker">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
                     <label>New Ticker(s):</label>
-                    <input value={this.state.value} onChange={this.handleChange} placeholder="Dow30 tickers only" required />
+                    <input value={this.state.user_tickers_string} onChange={this.handleTickersChange} placeholder="Dow30 tickers only" required />
+                    <label>
+                        Add to Group:
+                        <select value={this.state.add_to_group} onChange={this.handleGroupChange}>
+                            {Object.keys(this.props.all_groups).sort().map(group_name => (
+                            <option key={group_name} value={group_name}>{group_name}</option>
+                            ))}
+                        </select>
+                    </label>
                     <section className="buttonrow">
                         <input type="reset" value="Clear" />
                         <input type="submit" value="Add Ticker(s)" />
@@ -82,6 +97,6 @@ export class AddTicker extends React.Component {
 
 AddTicker.propTypes = {
     all_stocks: PropTypes.array.isRequired,
-    user_stocks: PropTypes.array.isRequired,
+    all_groups: PropTypes.object.isRequired,
     on_new_tickers: PropTypes.func.isRequired
 }
