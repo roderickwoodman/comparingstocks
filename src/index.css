@@ -52,3 +52,7 @@ th:hover {
 .position-cell.text-red {
   color: red;
 }
+
+#input-by-ticker {
+  margin: 20px 0;
+}
