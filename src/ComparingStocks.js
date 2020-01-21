@@ -1,8 +1,8 @@
 import React from 'react'
 import { PositionRow } from './components/PositionRow'
-import { AddGroup } from './components/AddGroup'
+import { AddTag } from './components/AddTag'
 import { AddTicker } from './components/AddTicker'
-import { DeleteGroup } from './components/DeleteGroup'
+import { DeleteTag } from './components/DeleteTag'
 
 
 const zero_performance = { short: 0, medium: 0, long: 0 }
@@ -18,8 +18,8 @@ export class ComparingStocks extends React.Component {
             allCurrentQuotes: {},
             allMonthlyQuotes: {},
             allPositions: {},
-            allGroups: {
-                'ungrouped': []
+            allTags: {
+                'untagged': []
             },
             performance_baseline: 'zero_pct_gain',
             performance_baseline_numbers: {},
@@ -27,8 +27,8 @@ export class ComparingStocks extends React.Component {
             allPerformanceNumbers: {},
             show_baseline: true,
             show_holdings: true,
-            show_grouped: true,
-            show_ungrouped: true,
+            show_tagged: true,
+            show_untagged: true,
             sort_column: 'symbol',
             sort_dir_asc: true,
             done: false
@@ -38,14 +38,14 @@ export class ComparingStocks extends React.Component {
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
-        this.onNewGroups = this.onNewGroups.bind(this)
+        this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
-        this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
-        this.onDeleteGroup = this.onDeleteGroup.bind(this)
+        this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
+        this.onDeleteTag = this.onDeleteTag.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
         this.getHoldings = this.getHoldings.bind(this)
-        this.getGrouped = this.getGrouped.bind(this)
-        this.getUngrouped = this.getUngrouped.bind(this)
+        this.getTaged = this.getTaged.bind(this)
+        this.getUntagged = this.getUntagged.bind(this)
     }
 
     componentDidMount() {
@@ -70,9 +70,9 @@ export class ComparingStocks extends React.Component {
             this.setState({ sort_dir_asc: stored_sort_dir_asc })
         }
 
-        const stored_allGroups = JSON.parse(localStorage.getItem("allGroups"))
-        if (stored_allGroups !== null) {
-            this.setState({ allGroups: stored_allGroups })
+        const stored_allTags = JSON.parse(localStorage.getItem("allTags"))
+        if (stored_allTags !== null) {
+            this.setState({ allTags: stored_allTags })
         }
 
         let self = this
@@ -283,70 +283,70 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    onNewGroups(new_groups) {
+    onNewTags(new_tags) {
         this.setState(prevState => {
-            let newAllGroups = Object.assign({}, prevState.allGroups)
-            new_groups.forEach(function(group) {
-                let newGroup = []
-                if (!newAllGroups.hasOwnProperty(group)) {
-                    newAllGroups[group] = newGroup
+            let newAllTags = Object.assign({}, prevState.allTags)
+            new_tags.forEach(function(tag) {
+                let newTag = []
+                if (!newAllTags.hasOwnProperty(tag)) {
+                    newAllTags[tag] = newTag
                 }
             })
-            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
-            return { allGroups: newAllGroups }
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+            return { allTags: newAllTags }
         })
     }
 
-    onNewTickers(group, new_tickers) {
+    onNewTickers(tag, new_tickers) {
         this.setState(prevState => {
-            let newAllGroups = Object.assign({}, prevState.allGroups)
+            let newAllTags = Object.assign({}, prevState.allTags)
             new_tickers.forEach(function(ticker) {
-                if (!newAllGroups[group].includes(ticker)) {
-                    newAllGroups[group].push(ticker)
-                    if (group !== 'ungrouped') {
-                        newAllGroups['ungrouped'] = newAllGroups['ungrouped'].filter(ungrouped_ticker => ungrouped_ticker !== ticker)
+                if (!newAllTags[tag].includes(ticker)) {
+                    newAllTags[tag].push(ticker)
+                    if (tag !== 'untagged') {
+                        newAllTags['untagged'] = newAllTags['untagged'].filter(untagged_ticker => untagged_ticker !== ticker)
                     }
                 }
             })
-            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
-            return { allGroups: newAllGroups }
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+            return { allTags: newAllTags }
         })
     }
 
-    onRemoveFromGroup(event, remove_from_group, remove_ticker) {
+    onRemoveFromTag(event, remove_from_tag, remove_ticker) {
         this.setState(prevState => {
-            let newAllGroups = Object.assign({}, prevState.allGroups)
-            newAllGroups[remove_from_group] = newAllGroups[remove_from_group].filter(ticker => ticker !== remove_ticker)
+            let newAllTags = Object.assign({}, prevState.allTags)
+            newAllTags[remove_from_tag] = newAllTags[remove_from_tag].filter(ticker => ticker !== remove_ticker)
 
-            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
-            return { allGroups: newAllGroups }
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+            return { allTags: newAllTags }
         })
     }
 
-    onDeleteGroup(delete_group) {
+    onDeleteTag(delete_tag) {
         this.setState(prevState => {
 
-            let newAllGroups = JSON.parse(JSON.stringify(prevState.allGroups))
-            let tickers_losing_a_group = newAllGroups[delete_group]
-            delete newAllGroups[delete_group]
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
+            let tickers_losing_a_tag = newAllTags[delete_tag]
+            delete newAllTags[delete_tag]
 
-            // assign tickers to "ungrouped" if they are losing their last (user) group
-            let all_other_grouped_tickers = []
-            Object.keys(newAllGroups).forEach(function(group_name) {
-                if (group_name !== 'ungrouped') {
-                    all_other_grouped_tickers = all_other_grouped_tickers.concat(newAllGroups[group_name])
+            // assign tickers to "untagged" if they are losing their last (user) tag
+            let all_other_tagged_tickers = []
+            Object.keys(newAllTags).forEach(function(tag_name) {
+                if (tag_name !== 'untagged') {
+                    all_other_tagged_tickers = all_other_tagged_tickers.concat(newAllTags[tag_name])
                 }
             })
-            tickers_losing_a_group.forEach(function(ticker) {
-                let newUngrouped = newAllGroups['ungrouped']
-                if (!all_other_grouped_tickers.includes(ticker)) {
-                    newUngrouped.push(ticker)
-                    newAllGroups['ungrouped'] = newUngrouped
+            tickers_losing_a_tag.forEach(function(ticker) {
+                let newUntagged = newAllTags['untagged']
+                if (!all_other_tagged_tickers.includes(ticker)) {
+                    newUntagged.push(ticker)
+                    newAllTags['untagged'] = newUntagged
                 }
             })
 
-            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
-            return { allGroups: newAllGroups }
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+            return { allTags: newAllTags }
         })
     }
 
@@ -358,19 +358,19 @@ export class ComparingStocks extends React.Component {
         return this.state.allIndiciesAliases
     }
 
-    getGrouped() {
-        let grouped_tickers = []
+    getTaged() {
+        let tagged_tickers = []
         let self = this
-        Object.keys(this.state.allGroups).forEach(function(group) {
-            if (group !== 'ungrouped') {
-                grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
+        Object.keys(this.state.allTags).forEach(function(tag) {
+            if (tag !== 'untagged') {
+                tagged_tickers = tagged_tickers.concat(self.state.allTags[tag])
             }
         })
-        return Array.from(new Set(grouped_tickers))
+        return Array.from(new Set(tagged_tickers))
     }
 
-    getUngrouped() {
-        return Array.from(this.state.allGroups['ungrouped'])
+    getUntagged() {
+        return Array.from(this.state.allTags['untagged'])
     }
 
     render() {
@@ -495,11 +495,11 @@ export class ComparingStocks extends React.Component {
         if (this.state.show_holdings) {
             tickers_to_show = [...tickers_to_show, ...this.getHoldings()]
         }
-        if (this.state.show_grouped) {
-            tickers_to_show = [...tickers_to_show, ...this.getGrouped()]
+        if (this.state.show_tagged) {
+            tickers_to_show = [...tickers_to_show, ...this.getTaged()]
         }
-        if (this.state.show_ungrouped) {
-            tickers_to_show = [...tickers_to_show, ...this.getUngrouped()]
+        if (this.state.show_untagged) {
+            tickers_to_show = [...tickers_to_show, ...this.getUntagged()]
         }
         let filtered_sorted_tickers = [...sorted_tickers].filter(ticker => tickers_to_show.includes(ticker))
 
@@ -599,16 +599,16 @@ export class ComparingStocks extends React.Component {
                     <div id="input-controls">
                         <AddTicker
                             all_stocks={this.state.allStocks}
-                            all_groups={this.state.allGroups}
+                            all_tags={this.state.allTags}
                             on_new_tickers={this.onNewTickers}
                         />
-                        <AddGroup
-                            all_groups={this.state.allGroups}
-                            on_new_groups={this.onNewGroups}
+                        <AddTag
+                            all_tags={this.state.allTags}
+                            on_new_tags={this.onNewTags}
                         />
-                        <DeleteGroup
-                            all_groups={this.state.allGroups}
-                            on_delete_group={this.onDeleteGroup}
+                        <DeleteTag
+                            all_tags={this.state.allTags}
+                            on_delete_tag={this.onDeleteTag}
                         />
                     </div>
                     <div id="view-controls">
@@ -631,18 +631,18 @@ export class ComparingStocks extends React.Component {
                                 </div>
 
                                 <div className="switch_control">
-                                    <div className="switch_label">show grouped:</div>
+                                    <div className="switch_label">show tagged:</div>
                                     <div className="switch_wrapper">
-                                        <input id="show_grouped" name="show_grouped" type="checkbox" checked={this.state.show_grouped} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_grouped" className="switch"></label>
+                                        <input id="show_tagged" name="show_tagged" type="checkbox" checked={this.state.show_tagged} onChange={this.onShowInputChange} />
+                                        <label htmlFor="show_tagged" className="switch"></label>
                                     </div>
                                 </div>
 
                                 <div className="switch_control">
-                                    <div className="switch_label">show ungrouped:</div>
+                                    <div className="switch_label">show untagged:</div>
                                     <div className="switch_wrapper">
-                                        <input id="show_ungrouped" name="show_ungrouped" type="checkbox" checked={this.state.show_ungrouped} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_ungrouped" className="switch"></label>
+                                        <input id="show_untagged" name="show_untagged" type="checkbox" checked={this.state.show_untagged} onChange={this.onShowInputChange} />
+                                        <label htmlFor="show_untagged" className="switch"></label>
                                     </div>
                                 </div>
                             </div>
@@ -659,7 +659,7 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <th>Groups</th>
+                            <th>Tags</th>
                             {display_columns.map(column => (
                             <th key={ column.variable_name} onClick={ (e) => this.onChangeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
                             ))}
@@ -670,7 +670,7 @@ export class ComparingStocks extends React.Component {
                             <PositionRow 
                                 key={ticker}
                                 columns={display_columns}
-                                all_groups={this.state.allGroups}
+                                all_tags={this.state.allTags}
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
@@ -678,7 +678,7 @@ export class ComparingStocks extends React.Component {
                                 performance_baseline_numbers={this.state.performance_baseline_numbers}
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
-                                on_remove_from_group={this.onRemoveFromGroup}
+                                on_remove_from_tag={this.onRemoveFromTag}
                         />))}
                     </tbody>
                 </table>

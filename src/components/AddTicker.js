@@ -8,11 +8,11 @@ export class AddTicker extends React.Component {
         super(props)
         this.state = {
             user_tickers_string: '',
-            add_to_group: 'ungrouped',
+            add_to_tag: 'untagged',
             status_messages: []
         }
         this.handleTickersChange = this.handleTickersChange.bind(this)
-        this.handleGroupChange = this.handleGroupChange.bind(this)
+        this.handleTagChange = this.handleTagChange.bind(this)
         this.handleReset = this.handleReset.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.validateTickers = this.validateTickers.bind(this)
@@ -22,8 +22,8 @@ export class AddTicker extends React.Component {
         this.setState({ user_tickers_string: event.target.value })
     }
 
-    handleGroupChange(event) {
-        this.setState({ add_to_group: event.target.value })
+    handleTagChange(event) {
+        this.setState({ add_to_tag: event.target.value })
     }
 
     handleReset(event) {
@@ -32,16 +32,16 @@ export class AddTicker extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault()
-        let user_group = this.state.add_to_group
+        let user_tag = this.state.add_to_tag
         let user_tickers = String(this.state.user_tickers_string)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toUpperCase())
             .map(str => str.replace(/[^A-Z]/g, ""))
-        this.validateTickers(user_group, Array.from(new Set(user_tickers)))
+        this.validateTickers(user_tag, Array.from(new Set(user_tickers)))
     }
 
-    validateTickers(group, tickers) {
+    validateTickers(tag, tickers) {
         let tickers_to_add = []
         let new_status_messages = []
         let self = this
@@ -50,31 +50,35 @@ export class AddTicker extends React.Component {
             if (!self.props.all_stocks.includes(ticker)) {
                 new_status_messages.push('ERROR: Ticker ' + ticker + ' does not exist.')
 
-            // ticker is already in the target group
-            } else if (self.props.all_groups[group].includes(ticker)) {
-                if (group === 'ungrouped') {
+            // ticker is already in the target tag
+            } else if (self.props.all_tags[tag].includes(ticker)) {
+                if (tag === 'untagged') {
                     new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added.')
                 } else {
-                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to group "'+ group +'".')
+                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to tag "'+ tag +'".')
                 }
 
-            // ticker is being added to a group that it is not already in
+            // ticker is being added to a tag that it is not already in
             } else {
-                let grouped_tickers = []
-                Object.keys(self.props.all_groups).forEach(function(group) {
-                    if (group !== 'ungrouped') {
-                        grouped_tickers = grouped_tickers.concat(self.props.all_groups[group])
+                let tagged_tickers = []
+                Object.keys(self.props.all_tags).forEach(function(tag) {
+                    if (tag !== 'untagged') {
+                        tagged_tickers = tagged_tickers.concat(self.props.all_tags[tag])
                     }
                 })
-                if (group === 'ungrouped' && grouped_tickers.includes(ticker)) {
-                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to another named group.')
+                if (tag === 'untagged' && tagged_tickers.includes(ticker)) {
+                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to another named tag.')
                 } else {
-                    new_status_messages.push('Ticker ' + ticker + ' has now been added to group "' + group + '".')
+                    if (tag === 'untagged') {
+                        new_status_messages.push('Ticker ' + ticker + ' has now been added.')
+                    } else {
+                        new_status_messages.push('Ticker ' + ticker + ' has now been added to tag "' + tag + '".')
+                    }
                     tickers_to_add.push(ticker)
                 }
             }
         })
-        this.props.on_new_tickers(group, tickers_to_add)
+        this.props.on_new_tickers(tag, tickers_to_add)
         this.setState({ status_messages: new_status_messages })
         this.handleReset()
     }
@@ -86,11 +90,11 @@ export class AddTicker extends React.Component {
                     <label>New Ticker(s):</label>
                     <input value={this.state.user_tickers_string} onChange={this.handleTickersChange} placeholder="Dow30 tickers only" required />
                     <label>
-                        Add to Group:
-                        <select value={this.state.add_to_group} onChange={this.handleGroupChange}>
-                            <option key="ungrouped" value="ungrouped">(no group)</option>
-                            {Object.keys(this.props.all_groups).sort().filter(group_name => group_name !== 'ungrouped').map(group_name => (
-                            <option key={group_name} value={group_name}>{group_name}</option>
+                        Add to Tag:
+                        <select value={this.state.add_to_tag} onChange={this.handleTagChange}>
+                            <option key="untagged" value="untagged">(no tag)</option>
+                            {Object.keys(this.props.all_tags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
+                            <option key={tag_name} value={tag_name}>{tag_name}</option>
                             ))}
                         </select>
                     </label>
@@ -117,6 +121,6 @@ export class AddTicker extends React.Component {
 
 AddTicker.propTypes = {
     all_stocks: PropTypes.array.isRequired,
-    all_groups: PropTypes.object.isRequired,
+    all_tags: PropTypes.object.isRequired,
     on_new_tickers: PropTypes.func.isRequired
 }

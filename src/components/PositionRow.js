@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 export class PositionRow extends React.Component {
 
     render() {
-        const on_remove_from_group = this.props.on_remove_from_group
+        const on_remove_from_tag = this.props.on_remove_from_tag
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
         const performance_baseline = this.props.performance_baseline
@@ -172,23 +172,23 @@ export class PositionRow extends React.Component {
             percent_gains = (1 - current_position.basis / current_value) * 100
         }
 
-        let all_groups = this.props.all_groups
-        let group_membership = []
-        Object.keys(all_groups).forEach(function(group_name) {
-            if (group_name !== 'ungrouped' && all_groups[group_name].includes(current_quote.symbol)) {
-                group_membership.push(group_name)
+        let all_tags = this.props.all_tags
+        let tag_membership = []
+        Object.keys(all_tags).forEach(function(tag_name) {
+            if (tag_name !== 'untagged' && all_tags[tag_name].includes(current_quote.symbol)) {
+                tag_membership.push(tag_name)
             }
         })
 
         return (
             <tr className={ row_classes }>
                 <td>
-                    { group_membership.map( group_name => (
-                        <button key={group_name} onClick={ (e) => {on_remove_from_group(e, group_name, current_quote.symbol)}}>
-                            {group_name}
+                    { tag_membership.map( tag_name => (
+                        <button key={tag_name} onClick={ (e) => {on_remove_from_tag(e, tag_name, current_quote.symbol)}}>
+                            {tag_name}
                         </button>
                     ))}
-                    { (!group_membership.length) ? '-' : '' }
+                    { (!tag_membership.length) ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
                 <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
@@ -201,7 +201,7 @@ export class PositionRow extends React.Component {
 
 PositionRow.propTypes = {
     columns: PropTypes.array,
-    all_groups: PropTypes.object,
+    all_tags: PropTypes.object,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,
@@ -209,5 +209,5 @@ PositionRow.propTypes = {
     performance_baseline_numbers: PropTypes.object,
     total_value: PropTypes.number,
     ticker_is_index: PropTypes.func,
-    on_remove_from_group: PropTypes.func,
+    on_remove_from_tag: PropTypes.func,
 }

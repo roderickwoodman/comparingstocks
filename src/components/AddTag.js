@@ -2,64 +2,64 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class AddGroup extends React.Component {
+export class AddTag extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            user_groups_string: '',
+            user_tags_string: '',
             status_messages: []
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleReset = this.handleReset.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
-        this.validateGroups = this.validateGroups.bind(this)
+        this.validateTags = this.validateTags.bind(this)
     }
 
     handleChange(event) {
-        this.setState({ user_groups_string: event.target.value })
+        this.setState({ user_tags_string: event.target.value })
     }
 
     handleReset(event) {
-        this.setState({ user_groups_string: "" })
+        this.setState({ user_tags_string: "" })
     }
 
     handleSubmit(event) {
         event.preventDefault()
-        let user_groups = String(this.state.user_groups_string)
+        let user_tags = String(this.state.user_tags_string)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toLowerCase())
             .map(str => str.replace(/[^a-z0-9:()-_!?]/g, ""))
-        this.validateGroups(Array.from(new Set(user_groups)))
+        this.validateTags(Array.from(new Set(user_tags)))
     }
 
-    validateGroups(groups) {
-        let groups_to_add = []
+    validateTags(tags) {
+        let tags_to_add = []
         let new_status_messages = []
         let self = this
-        groups.forEach(function(group) {
-            if (self.props.all_groups.hasOwnProperty(group)) {
-                new_status_messages.push('ERROR: Group "' + group + '" has already been created.')
+        tags.forEach(function(tag) {
+            if (self.props.all_tags.hasOwnProperty(tag)) {
+                new_status_messages.push('ERROR: Tag "' + tag + '" has already been created.')
             } else {
-                new_status_messages.push('Group "' + group + '" has now been created.')
-                groups_to_add.push(group)
+                new_status_messages.push('Tag "' + tag + '" has now been created.')
+                tags_to_add.push(tag)
             }
         })
-        this.props.on_new_groups(groups_to_add)
+        this.props.on_new_tags(tags_to_add)
         this.setState({ status_messages: new_status_messages })
         this.handleReset()
     }
 
     render() {
         return (
-            <section id="add-group">
+            <section id="add-tag">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
-                    <label>New Group Name(s):</label>
-                    <input value={this.state.user_groups_string} onChange={this.handleChange} required />
+                    <label>New Tag Name(s):</label>
+                    <input value={this.state.user_tags_string} onChange={this.handleChange} required />
                     <section className="buttonrow">
-                        <input type="reset" value="Clear" disabled={this.state.user_groups_string===''} />
-                        <input type="submit" value="Create Group(s)" disabled={this.state.user_groups_string===''} />
+                        <input type="reset" value="Clear" disabled={this.state.user_tags_string===''} />
+                        <input type="submit" value="Create Tag(s)" disabled={this.state.user_tags_string===''} />
                     </section>
                 </form>
                 <div className="status-messages">
@@ -78,7 +78,7 @@ export class AddGroup extends React.Component {
     }
 }
 
-AddGroup.propTypes = {
-    all_groups: PropTypes.object.isRequired,
-    on_new_groups: PropTypes.func.isRequired
+AddTag.propTypes = {
+    all_tags: PropTypes.object.isRequired,
+    on_new_tags: PropTypes.func.isRequired
 }
