@@ -21,11 +21,12 @@ code {
   padding: 10px 20px;
 }
 
-#page-controls {
+#view-controls,
+#input-controls {
   margin: 20px 0;
 }
 
-#page-controls > * {
+#view-controls form label {
   display: block
 }
 

@@ -24,15 +24,18 @@ export class ComparingStocks extends React.Component {
             performance_baseline_numbers: {},
             index_performance: {},
             allPerformanceNumbers: {},
-            show_which_stocks: 'all_stocks',
+            show_baseline: true,
+            show_holdings: true,
+            show_grouped: true,
+            show_ungrouped: true,
             sort_column: 'symbol',
             sort_dir_asc: true,
             done: false
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
-        this.onBaselineChange = this.onBaselineChange.bind(this)
-        this.onShowStocksChange = this.onShowStocksChange.bind(this)
+        this.onInputChange = this.onInputChange.bind(this)
+        this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.onNewGroups = this.onNewGroups.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
@@ -230,19 +233,24 @@ export class ComparingStocks extends React.Component {
     //     this.setState({ allCurrentQuotes: newQuotes })
     // }
 
-    onBaselineChange(event) {
-        let new_baseline = event.target.value
-        localStorage.setItem('performance_baseline', JSON.stringify(new_baseline))
+    onInputChange(event) {
+        let name = event.target.name
 
-        let new_baseline_numbers = (new_baseline === 'sp500_pct_gain') ? this.state.index_performance : zero_performance
-        this.setState({ performance_baseline: new_baseline })
-        this.setState({ performance_baseline_numbers: new_baseline_numbers })
+        if (name === 'baseline') {
+            let new_baseline = event.target.value
+            localStorage.setItem('performance_baseline', JSON.stringify(new_baseline))
+            let new_baseline_numbers = (new_baseline === 'sp500_pct_gain') ? this.state.index_performance : zero_performance
+            this.setState({ performance_baseline: new_baseline })
+            this.setState({ performance_baseline_numbers: new_baseline_numbers })
+        }
     }
-
-    onShowStocksChange(event) {
-        let new_show_which_stocks = event.target.value
-        this.setState({ show_which_stocks: new_show_which_stocks })
-        localStorage.setItem('show_which_stocks', JSON.stringify(new_show_which_stocks))
+    
+    onShowInputChange(event) {
+        const target = event.target
+        const new_value = target.type === 'checkbox' ? target.checked : target.value
+        const name = target.name
+        this.setState({ [name]: new_value })
+        localStorage.setItem(name, JSON.stringify(new_value))
     }
 
     onChangeSort(new_sort_column) {
@@ -428,20 +436,36 @@ export class ComparingStocks extends React.Component {
         function getIndicies() {
             return self.state.allIndiciesAliases
         }
-        function getWatchList() {
-            return self.state.allGroups.watch.filter(ticker => self.state.allPositions[ticker] === null || !self.state.allPositions[ticker]['current_shares'])
+        function getGrouped() {
+            let grouped_tickers = []
+            Object.keys(self.state.allGroups).forEach(function(group) {
+                grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
+            })
+            return grouped_tickers
+        }
+        function getUngrouped() {
+            let grouped_tickers = []
+            Object.keys(self.state.allGroups).forEach(function(group) {
+                grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
+            })
+            grouped_tickers = [...grouped_tickers, ...getIndicies()]
+            return Object.keys(self.state.allPositions).filter(ticker => !grouped_tickers.includes(ticker))
         }
 
-        let filtered_sorted_tickers = [...sorted_tickers]
-        if (this.state.show_which_stocks === 'holdings_only') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getHoldings()].includes(ticker))
-        } else if (this.state.show_which_stocks === 'holdings_and_index') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getHoldings(), ...getIndicies()].includes(ticker))
-        } else if (this.state.show_which_stocks === 'holdings_and_watchlist_and_index') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getHoldings(), ...getWatchList(), ...getIndicies()].includes(ticker))
-        } else if (this.state.show_which_stocks === 'watchlist_only') {
-            filtered_sorted_tickers = sorted_tickers.filter(ticker => [...getWatchList()].includes(ticker))
+        let tickers_to_show = []
+        if (this.state.show_baseline) {
+            tickers_to_show = [...tickers_to_show, ...getIndicies()]
         }
+        if (this.state.show_holdings) {
+            tickers_to_show = [...tickers_to_show, ...getHoldings()]
+        }
+        if (this.state.show_grouped) {
+            tickers_to_show = [...tickers_to_show, ...getGrouped()]
+        }
+        if (this.state.show_ungrouped) {
+            tickers_to_show = [...tickers_to_show, ...getUngrouped()]
+        }
+        let filtered_sorted_tickers = [...sorted_tickers].filter(ticker => tickers_to_show.includes(ticker))
 
         let all_columns = {
             'symbol': {
@@ -535,24 +559,31 @@ export class ComparingStocks extends React.Component {
 
         return (
             <div id="page-wrapper">
-                <div id="page-controls">
-                    <label>
-                        Performance Baseline:
-                        <select value={this.state.performance_baseline} onChange={this.onBaselineChange}>
-                            <option value="zero_pct_gain">0% gain</option>
-                            <option value="sp500_pct_gain">SP&amp;500 Index</option>
-                        </select>
-                    </label>
-                    <label>
-                        Show Stocks:
-                        <select value={this.state.show_which_stocks} onChange={this.onShowStocksChange}>
-                            <option value="all_stocks">all stocks</option>
-                            <option value="watchlist_only">watch list only</option>
-                            <option value="holdings_and_index">holdings and index</option>
-                            <option value="holdings_and_watchlist_and_index">holdings and watch and index</option>
-                            <option value="holdings_only">holdings only</option>
-                        </select>
-                    </label>
+                <div id="view-controls">
+                    <form>
+                        <label>
+                            Performance Baseline:
+                            <select name="baseline" value={this.state.performance_baseline} onChange={this.onInputChange}>
+                                <option value="zero_pct_gain">0% gain</option>
+                                <option value="sp500_pct_gain">SP&amp;500 Index</option>
+                            </select>
+                        </label>
+                        <label>show_baseline: 
+                            <input name="show_baseline" type="checkbox" checked={this.state.show_baseline} onChange={this.onShowInputChange} />
+                        </label>
+                        <label>show_holdings: 
+                            <input name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
+                        </label>
+                        <label>show_grouped: 
+                            <input name="show_grouped" type="checkbox" checked={this.state.show_grouped} onChange={this.onShowInputChange} />
+                        </label>
+                        <label>show_ungrouped: 
+                            <input name="show_ungrouped" type="checkbox" checked={this.state.show_ungrouped} onChange={this.onShowInputChange} />
+                        </label>
+                    </form>
+
+                </div>
+                <div id="input-controls">
                     <AddGroup
                         all_groups={this.state.allGroups}
                         on_new_groups={this.onNewGroups}
