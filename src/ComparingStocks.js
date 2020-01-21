@@ -567,18 +567,40 @@ export class ComparingStocks extends React.Component {
                                 <option value="sp500_pct_gain">SP&amp;500 Index</option>
                             </select>
                         </label>
-                        <label>show_baseline: 
-                            <input name="show_baseline" type="checkbox" checked={this.state.show_baseline} onChange={this.onShowInputChange} />
-                        </label>
-                        <label>show_holdings: 
-                            <input name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
-                        </label>
-                        <label>show_grouped: 
-                            <input name="show_grouped" type="checkbox" checked={this.state.show_grouped} onChange={this.onShowInputChange} />
-                        </label>
-                        <label>show_ungrouped: 
-                            <input name="show_ungrouped" type="checkbox" checked={this.state.show_ungrouped} onChange={this.onShowInputChange} />
-                        </label>
+
+                        <div className="switch_controls">
+                            <div className="switch_control">
+                                <div className="switch_label">show baseline:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_baseline" name="show_baseline" type="checkbox" checked={this.state.show_baseline} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_baseline" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show holdings:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_holdings" name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_holdings" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show grouped:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_grouped" name="show_grouped" type="checkbox" checked={this.state.show_grouped} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_grouped" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show ungrouped:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_ungrouped" name="show_ungrouped" type="checkbox" checked={this.state.show_ungrouped} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_ungrouped" className="switch"></label>
+                                </div>
+                            </div>
+                        </div>
                     </form>
 
                 </div>
