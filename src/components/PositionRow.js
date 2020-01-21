@@ -179,6 +179,7 @@ export class PositionRow extends React.Component {
                 group_membership.push(group_name)
             }
         })
+        group_membership = group_membership.filter(group => group !== 'ungrouped')
 
         return (
             <tr className={ row_classes }>

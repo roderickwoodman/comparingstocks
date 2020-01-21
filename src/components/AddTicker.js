@@ -8,7 +8,7 @@ export class AddTicker extends React.Component {
         super(props)
         this.state = {
             user_tickers_string: '',
-            add_to_group: 'watch',
+            add_to_group: 'ungrouped',
             status_messages: []
         }
         this.handleTickersChange = this.handleTickersChange.bind(this)
@@ -46,13 +46,32 @@ export class AddTicker extends React.Component {
         let new_status_messages = []
         let self = this
         tickers.forEach(function(ticker) {
+            // ticker does not exist
             if (!self.props.all_stocks.includes(ticker)) {
                 new_status_messages.push('ERROR: Ticker ' + ticker + ' does not exist.')
+
+            // ticker is already in the target group
             } else if (self.props.all_groups[group].includes(ticker)) {
-                new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to group "'+ group +'".')
+                if (group === 'ungrouped') {
+                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added.')
+                } else {
+                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to group "'+ group +'".')
+                }
+
+            // ticker is being added to a group that it is not already in
             } else {
-                new_status_messages.push('Ticker ' + ticker + ' has now been added to group "' + group + '".')
-                tickers_to_add.push(ticker)
+                let grouped_tickers = []
+                Object.keys(self.props.all_groups).forEach(function(group) {
+                    if (group !== 'ungrouped') {
+                        grouped_tickers = grouped_tickers.concat(self.props.all_groups[group])
+                    }
+                })
+                if (group === 'ungrouped' && grouped_tickers.includes(ticker)) {
+                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to another named group.')
+                } else {
+                    new_status_messages.push('Ticker ' + ticker + ' has now been added to group "' + group + '".')
+                    tickers_to_add.push(ticker)
+                }
             }
         })
         this.props.on_new_tickers(group, tickers_to_add)
@@ -69,7 +88,8 @@ export class AddTicker extends React.Component {
                     <label>
                         Add to Group:
                         <select value={this.state.add_to_group} onChange={this.handleGroupChange}>
-                            {Object.keys(this.props.all_groups).sort().map(group_name => (
+                            <option key="ungrouped" value="ungrouped">(no group)</option>
+                            {Object.keys(this.props.all_groups).sort().filter(group_name => group_name !== 'ungrouped').map(group_name => (
                             <option key={group_name} value={group_name}>{group_name}</option>
                             ))}
                         </select>

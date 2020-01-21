@@ -18,7 +18,7 @@ export class ComparingStocks extends React.Component {
             allMonthlyQuotes: {},
             allPositions: {},
             allGroups: {
-                watch: []
+                'ungrouped': []
             },
             performance_baseline: 'zero_pct_gain',
             performance_baseline_numbers: {},
@@ -297,6 +297,9 @@ export class ComparingStocks extends React.Component {
             new_tickers.forEach(function(ticker) {
                 if (!newAllGroups[group].includes(ticker)) {
                     newAllGroups[group].push(ticker)
+                    if (group !== 'ungrouped') {
+                        newAllGroups['ungrouped'] = newAllGroups['ungrouped'].filter(ungrouped_ticker => ungrouped_ticker !== ticker)
+                    }
                 }
             })
             localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
@@ -441,15 +444,11 @@ export class ComparingStocks extends React.Component {
             Object.keys(self.state.allGroups).forEach(function(group) {
                 grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
             })
+            grouped_tickers = grouped_tickers.filter(ticker => !self.state.allGroups['ungrouped'].includes(ticker))
             return grouped_tickers
         }
         function getUngrouped() {
-            let grouped_tickers = []
-            Object.keys(self.state.allGroups).forEach(function(group) {
-                grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
-            })
-            grouped_tickers = [...grouped_tickers, ...getIndicies()]
-            return Object.keys(self.state.allPositions).filter(ticker => !grouped_tickers.includes(ticker))
+            return Object.keys(self.state.allPositions).filter(ticker => self.state.allGroups['ungrouped'].includes(ticker))
         }
 
         let tickers_to_show = []
