@@ -318,6 +318,19 @@ export class ComparingStocks extends React.Component {
             let newAllTags = Object.assign({}, prevState.allTags)
             newAllTags[remove_from_tag] = newAllTags[remove_from_tag].filter(ticker => ticker !== remove_ticker)
 
+            // assign ticker to "untagged" if it is losing its last (user) tag
+            let all_other_tags_for_this_ticker = []
+            Object.keys(newAllTags).forEach(function(tag_name) {
+                if (tag_name !== remove_from_tag && tag_name !== 'untagged' && newAllTags[tag_name].includes(remove_ticker)) {
+                    all_other_tags_for_this_ticker.push(tag_name)
+                }
+            })
+            if (!all_other_tags_for_this_ticker.length) {
+                let newUntagged = newAllTags['untagged']
+                newUntagged.push(remove_ticker)
+                newAllTags['untagged'] = newUntagged
+            }
+
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
             return { allTags: newAllTags }
         })
