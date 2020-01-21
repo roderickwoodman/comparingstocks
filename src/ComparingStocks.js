@@ -2,6 +2,7 @@ import React from 'react'
 import { PositionRow } from './components/PositionRow'
 import { AddGroup } from './components/AddGroup'
 import { AddTicker } from './components/AddTicker'
+import { DeleteGroup } from './components/DeleteGroup'
 
 
 const zero_performance = { short: 0, medium: 0, long: 0 }
@@ -40,6 +41,11 @@ export class ComparingStocks extends React.Component {
         this.onNewGroups = this.onNewGroups.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromGroup = this.onRemoveFromGroup.bind(this)
+        this.onDeleteGroup = this.onDeleteGroup.bind(this)
+        this.getIndicies = this.getIndicies.bind(this)
+        this.getHoldings = this.getHoldings.bind(this)
+        this.getGrouped = this.getGrouped.bind(this)
+        this.getUngrouped = this.getUngrouped.bind(this)
     }
 
     componentDidMount() {
@@ -317,6 +323,55 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onDeleteGroup(delete_group) {
+        this.setState(prevState => {
+
+            let newAllGroups = JSON.parse(JSON.stringify(prevState.allGroups))
+            let tickers_losing_a_group = newAllGroups[delete_group]
+            delete newAllGroups[delete_group]
+
+            // assign tickers to "ungrouped" if they are losing their last (user) group
+            let all_other_grouped_tickers = []
+            Object.keys(newAllGroups).forEach(function(group_name) {
+                if (group_name !== 'ungrouped') {
+                    all_other_grouped_tickers = all_other_grouped_tickers.concat(newAllGroups[group_name])
+                }
+            })
+            tickers_losing_a_group.forEach(function(ticker) {
+                let newUngrouped = newAllGroups['ungrouped']
+                if (!all_other_grouped_tickers.includes(ticker)) {
+                    newUngrouped.push(ticker)
+                    newAllGroups['ungrouped'] = newUngrouped
+                }
+            })
+
+            localStorage.setItem('allGroups', JSON.stringify(newAllGroups))
+            return { allGroups: newAllGroups }
+        })
+    }
+
+    getHoldings() {
+        return this.state.allStocks.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
+    }
+
+    getIndicies() {
+        return this.state.allIndiciesAliases
+    }
+
+    getGrouped() {
+        let grouped_tickers = []
+        let self = this
+        Object.keys(this.state.allGroups).forEach(function(group) {
+            if (group !== 'ungrouped') {
+                grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
+            }
+        })
+        return Array.from(new Set(grouped_tickers))
+    }
+
+    getUngrouped() {
+        return Array.from(this.state.allGroups['ungrouped'])
+    }
 
     render() {
 
@@ -433,36 +488,18 @@ export class ComparingStocks extends React.Component {
             return 0
         })
 
-        function getHoldings() {
-            return self.state.allStocks.filter(ticker => self.state.allPositions[ticker] !== null && self.state.allPositions[ticker]['current_shares'])
-        }
-        function getIndicies() {
-            return self.state.allIndiciesAliases
-        }
-        function getGrouped() {
-            let grouped_tickers = []
-            Object.keys(self.state.allGroups).forEach(function(group) {
-                grouped_tickers = grouped_tickers.concat(self.state.allGroups[group])
-            })
-            grouped_tickers = grouped_tickers.filter(ticker => !self.state.allGroups['ungrouped'].includes(ticker))
-            return grouped_tickers
-        }
-        function getUngrouped() {
-            return Object.keys(self.state.allPositions).filter(ticker => self.state.allGroups['ungrouped'].includes(ticker))
-        }
-
         let tickers_to_show = []
         if (this.state.show_baseline) {
-            tickers_to_show = [...tickers_to_show, ...getIndicies()]
+            tickers_to_show = [...tickers_to_show, ...this.getIndicies()]
         }
         if (this.state.show_holdings) {
-            tickers_to_show = [...tickers_to_show, ...getHoldings()]
+            tickers_to_show = [...tickers_to_show, ...this.getHoldings()]
         }
         if (this.state.show_grouped) {
-            tickers_to_show = [...tickers_to_show, ...getGrouped()]
+            tickers_to_show = [...tickers_to_show, ...this.getGrouped()]
         }
         if (this.state.show_ungrouped) {
-            tickers_to_show = [...tickers_to_show, ...getUngrouped()]
+            tickers_to_show = [...tickers_to_show, ...this.getUngrouped()]
         }
         let filtered_sorted_tickers = [...sorted_tickers].filter(ticker => tickers_to_show.includes(ticker))
 
@@ -560,14 +597,18 @@ export class ComparingStocks extends React.Component {
             <div id="page-wrapper">
                 <div id="page-controls">
                     <div id="input-controls">
-                        <AddGroup
-                            all_groups={this.state.allGroups}
-                            on_new_groups={this.onNewGroups}
-                        />
                         <AddTicker
                             all_stocks={this.state.allStocks}
                             all_groups={this.state.allGroups}
                             on_new_tickers={this.onNewTickers}
+                        />
+                        <AddGroup
+                            all_groups={this.state.allGroups}
+                            on_new_groups={this.onNewGroups}
+                        />
+                        <DeleteGroup
+                            all_groups={this.state.allGroups}
+                            on_delete_group={this.onDeleteGroup}
                         />
                     </div>
                     <div id="view-controls">

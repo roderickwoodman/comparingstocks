@@ -175,11 +175,10 @@ export class PositionRow extends React.Component {
         let all_groups = this.props.all_groups
         let group_membership = []
         Object.keys(all_groups).forEach(function(group_name) {
-            if (all_groups[group_name].includes(current_quote.symbol)) {
+            if (group_name !== 'ungrouped' && all_groups[group_name].includes(current_quote.symbol)) {
                 group_membership.push(group_name)
             }
         })
-        group_membership = group_membership.filter(group => group !== 'ungrouped')
 
         return (
             <tr className={ row_classes }>

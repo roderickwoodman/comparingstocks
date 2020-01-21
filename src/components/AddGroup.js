@@ -7,7 +7,7 @@ export class AddGroup extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            value: '',
+            user_groups_string: '',
             status_messages: []
         }
         this.handleChange = this.handleChange.bind(this)
@@ -17,21 +17,21 @@ export class AddGroup extends React.Component {
     }
 
     handleChange(event) {
-        this.setState({ value: event.target.value })
+        this.setState({ user_groups_string: event.target.value })
     }
 
     handleReset(event) {
-        this.setState({ value: "" })
+        this.setState({ user_groups_string: "" })
     }
 
     handleSubmit(event) {
         event.preventDefault()
-        let user_tickers = String(this.state.value)
+        let user_groups = String(this.state.user_groups_string)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toLowerCase())
             .map(str => str.replace(/[^a-z0-9:()-_!?]/g, ""))
-        this.validateGroups(Array.from(new Set(user_tickers)))
+        this.validateGroups(Array.from(new Set(user_groups)))
     }
 
     validateGroups(groups) {
@@ -56,10 +56,10 @@ export class AddGroup extends React.Component {
             <section id="add-group">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
                     <label>New Group Name(s):</label>
-                    <input value={this.state.value} onChange={this.handleChange} required />
+                    <input value={this.state.user_groups_string} onChange={this.handleChange} required />
                     <section className="buttonrow">
-                        <input type="reset" value="Clear" />
-                        <input type="submit" value="Create Group(s)" />
+                        <input type="reset" value="Clear" disabled={this.state.user_groups_string===''} />
+                        <input type="submit" value="Create Group(s)" disabled={this.state.user_groups_string===''} />
                     </section>
                 </form>
                 <div className="status-messages">
