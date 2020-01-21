@@ -18,12 +18,30 @@ code {
 }
 
 #page-wrapper {
-  padding: 10px 20px;
+  padding: 20px;
+}
+
+#page-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#position-listing {
+  padding: 10px;
+  width: 100%;
 }
 
 #view-controls,
 #input-controls {
-  margin: 20px 0;
+  margin: 20px 0 0;
+}
+
+#baseline-control {
+  display: inline-block;
+  margin: 0;
+  padding: 20px 0 0;
 }
 
 #view-controls form label {
