@@ -68,7 +68,7 @@ export class AddTransaction extends React.Component {
                 total = parseFloat((Math.round(total * 100) / 100).toFixed(2));
             }
 
-            let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' $' + total
+            // this transaction is valid
             if (!new_status_messages.length) {
 
                 // also print the "ticker has now been added" message, if needed
@@ -85,12 +85,14 @@ export class AddTransaction extends React.Component {
                     new_status_messages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
                 }
 
+                let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' $' + total
                 new_status_messages.push('Transaction "' + valid_transaction + '" has now been added.')
+                this.props.on_new_transaction(valid_transaction)
             }
 
-            this.props.on_new_transaction(valid_transaction)
         }
 
+        // send all of the messages to print
         this.props.on_new_messages(new_status_messages)
     }
 

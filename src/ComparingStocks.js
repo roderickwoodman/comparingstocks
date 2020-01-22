@@ -16,6 +16,7 @@ export class ComparingStocks extends React.Component {
             allCurrentQuotes: {},
             allMonthlyQuotes: {},
             allPositions: {},
+            allTransactions: {},
             allTags: {
                 'untagged': []
             },
@@ -73,6 +74,11 @@ export class ComparingStocks extends React.Component {
             this.setState({ allTags: stored_allTags })
         }
 
+        const stored_allTransactions = JSON.parse(localStorage.getItem("allTransactions"))
+        if (stored_allTransactions !== null) {
+            this.setState({ allTransactions: stored_allTransactions })
+        }
+
         let self = this
 
         const view_controls = ['show_baseline', 'show_holdings', 'show_tagged', 'show_untagged']
@@ -83,7 +89,11 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
+        // let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
+        let indexed_transaction_data = {}
+        if (stored_allTransactions !== null) {
+            indexed_transaction_data = JSON.parse(JSON.stringify(stored_allTransactions))
+        }
 
         let raw_current_quote_data = require('./api/sample_current_quotes.json').sample_current_quotes
         let indexed_current_quote_data = {}
@@ -232,22 +242,25 @@ export class ComparingStocks extends React.Component {
     // }
 
     getPositionFromTransactions(transactions) {
-
-        let current_shares = transactions.reduce(function (total, current_val) {
-        return total + current_val['shares_added']
-        }, 0)
-        let outflows = transactions.reduce(function (total, current_val) {
-        return (current_val['dollars_spent'] > 0) ? total + current_val['dollars_spent'] : total
-        }, 0)
-        let inflows = -1 * transactions.reduce(function (total, current_val) {
-        return (current_val['dollars_spent'] < 0) ? total + current_val['dollars_spent'] : total
-        }, 0)
-
-        let newPosition = {}
-        newPosition['current_shares'] = current_shares
-        newPosition['basis'] = Math.round((outflows > inflows) ? outflows - inflows : 0)
-        newPosition['realized_gains'] = Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
-
+        let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
+        transactions.forEach(function(transaction) {
+            [action, num_shares, ticker, value] = transaction.split(' ')
+            num_shares = parseInt(num_shares)
+            value = parseFloat(value.substr(1))
+            if (action === 'buy') {
+                outflows += value
+                current_shares += num_shares
+            } else if (action === 'sell') {
+                inflows += value
+                current_shares -= num_shares
+            }
+        })
+        let newPosition = {
+            symbol: ticker,
+            current_shares: current_shares,
+            basis: Math.round((outflows > inflows) ? outflows - inflows : 0),
+            realized_gains: Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
+        }
         return newPosition
     }
 
@@ -337,18 +350,23 @@ export class ComparingStocks extends React.Component {
             all_tags_for_this_ticker.forEach(function(tag) {
                 newAllTags[tag] = newAllTags[tag].filter(ticker => ticker !== delete_ticker)
             })
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
 
             // update position
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
             newAllPositions[delete_ticker] = null
+
+            // update transactions
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
+            newAllTransactions[delete_ticker] = null
+            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add status messages
             let newStatusMessages = [...prevState.status_messages]
             let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
             newStatusMessages = [...newStatusMessages, ...new_message]
 
-            localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags, allPositions: newAllPositions, status_messages: newStatusMessages }
+            return { allTags: newAllTags, allPositions: newAllPositions, allTransactions: newAllTransactions, status_messages: newStatusMessages }
         })
     }
 
@@ -358,6 +376,13 @@ export class ComparingStocks extends React.Component {
         num_shares = parseInt(num_shares)
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
+
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
+            if (newAllTransactions.hasOwnProperty(ticker)) {
+                newAllTransactions[ticker] = newAllTransactions[ticker].concat([new_transaction])
+            } else {
+                newAllTransactions[ticker] = [new_transaction]
+            }
 
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
             let orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
@@ -375,8 +400,8 @@ export class ComparingStocks extends React.Component {
 
             newAllPositions[ticker] = updatedPosition
 
-            localStorage.setItem('allPositions', JSON.stringify(newAllPositions))
-            return { allPositions: newAllPositions }
+            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
+            return { allTransactions: newAllTransactions, allPositions: newAllPositions }
         })
         this.onNewTickers('untagged', [ticker])
     }
