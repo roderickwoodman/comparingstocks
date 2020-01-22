@@ -72,8 +72,7 @@ th:hover {
   color: red;
 }
 
-#add-tag,
-#add-ticker {
+#input-controls > * {
   margin: 20px 0;
 }
 

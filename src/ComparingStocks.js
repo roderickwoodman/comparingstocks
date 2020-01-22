@@ -1,7 +1,8 @@
 import React from 'react'
-import { PositionRow } from './components/PositionRow'
-import { AddTag } from './components/AddTag'
+import { GridRow } from './components/GridRow'
+import { AddTransaction } from './components/AddTransaction'
 import { AddTicker } from './components/AddTicker'
+import { AddTag } from './components/AddTag'
 import { DeleteTag } from './components/DeleteTag'
 
 
@@ -35,16 +36,18 @@ export class ComparingStocks extends React.Component {
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
+        this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
+        this.onNewTransaction = this.onNewTransaction.bind(this)
         this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
         this.getHoldings = this.getHoldings.bind(this)
-        this.getTaged = this.getTaged.bind(this)
+        this.getTagged = this.getTagged.bind(this)
         this.getUntagged = this.getUntagged.bind(this)
     }
 
@@ -53,11 +56,6 @@ export class ComparingStocks extends React.Component {
         const stored_performance_baseline = JSON.parse(localStorage.getItem("performance_baseline"))
         if (stored_performance_baseline !== null) {
             this.setState({ performance_baseline: stored_performance_baseline })
-        }
-
-        const stored_show_which_stocks = JSON.parse(localStorage.getItem("show_which_stocks"))
-        if (stored_show_which_stocks !== null) {
-            this.setState({ show_which_stocks: stored_show_which_stocks })
         }
 
         const stored_sort_column = JSON.parse(localStorage.getItem("sort_column"))
@@ -135,23 +133,9 @@ export class ComparingStocks extends React.Component {
 
         all_stocks.forEach(function(ticker) {
 
-            // get position
             if (indexed_transaction_data.hasOwnProperty(ticker)) {
-                let newPosition = {}
-                newPosition['symbol'] = ticker
-                let current_shares = indexed_transaction_data[ticker].reduce(function (total, current_val) {
-                return total + current_val['shares_added']
-                }, 0)
-                let outflows = indexed_transaction_data[ticker].reduce(function (total, current_val) {
-                return (current_val['dollars_spent'] > 0) ? total + current_val['dollars_spent'] : total
-                }, 0)
-                let inflows = -1 * indexed_transaction_data[ticker].reduce(function (total, current_val) {
-                return (current_val['dollars_spent'] < 0) ? total + current_val['dollars_spent'] : total
-                }, 0)
-                newPosition['current_shares'] = current_shares
-                newPosition['basis'] = Math.round((outflows > inflows) ? outflows - inflows : 0)
-                newPosition['realized_gains'] = Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
-                newPositions[ticker] = newPosition
+                newPositions[ticker] = self.getPositionFromTransactions(indexed_transaction_data[ticker])
+                newPositions[ticker]['symbol'] = ticker
             } else {
                 newPositions[ticker] = null
             }
@@ -239,6 +223,26 @@ export class ComparingStocks extends React.Component {
     //     this.setState({ allCurrentQuotes: newQuotes })
     // }
 
+    getPositionFromTransactions(transactions) {
+
+        let current_shares = transactions.reduce(function (total, current_val) {
+        return total + current_val['shares_added']
+        }, 0)
+        let outflows = transactions.reduce(function (total, current_val) {
+        return (current_val['dollars_spent'] > 0) ? total + current_val['dollars_spent'] : total
+        }, 0)
+        let inflows = -1 * transactions.reduce(function (total, current_val) {
+        return (current_val['dollars_spent'] < 0) ? total + current_val['dollars_spent'] : total
+        }, 0)
+
+        let newPosition = {}
+        newPosition['current_shares'] = current_shares
+        newPosition['basis'] = Math.round((outflows > inflows) ? outflows - inflows : 0)
+        newPosition['realized_gains'] = Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
+
+        return newPosition
+    }
+
     onInputChange(event) {
         let name = event.target.name
 
@@ -313,6 +317,35 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onNewTransaction(new_transaction) {
+        let action, num_shares, ticker, total
+        [action, num_shares, ticker, total]  = new_transaction.split(' ')
+        num_shares = parseInt(num_shares)
+        total = parseFloat(total)
+        this.setState(prevState => {
+
+            let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
+            let orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
+            if (newAllPositions.hasOwnProperty(ticker) && newAllPositions[ticker] !== null) {
+                orig_basis = newAllPositions[ticker]['basis']
+                orig_current_shares = newAllPositions[ticker]['current_shares']
+                orig_realized_gains = newAllPositions[ticker]['realized_gains']
+            }
+            let updatedPosition = {
+                symbol: ticker,
+                basis: (action === 'buy') ? orig_basis + total : orig_basis - total,
+                current_shares: (action === 'buy') ? orig_current_shares + num_shares : orig_current_shares - num_shares,
+                realized_gains: orig_realized_gains // FIXME: refactor out this attribute, merge with "basis"
+            }
+
+            newAllPositions[ticker] = updatedPosition
+
+            localStorage.setItem('allPositions', JSON.stringify(newAllPositions))
+            return { allPositions: newAllPositions }
+        })
+        this.onNewTickers('untagged', [ticker])
+    }
+
     onRemoveFromTag(event, remove_from_tag, remove_ticker) {
         this.setState(prevState => {
             let newAllTags = Object.assign({}, prevState.allTags)
@@ -371,7 +404,7 @@ export class ComparingStocks extends React.Component {
         return this.state.allIndiciesAliases
     }
 
-    getTaged() {
+    getTagged() {
         let tagged_tickers = []
         let self = this
         Object.keys(this.state.allTags).forEach(function(tag) {
@@ -509,7 +542,7 @@ export class ComparingStocks extends React.Component {
             tickers_to_show = [...tickers_to_show, ...this.getHoldings()]
         }
         if (this.state.show_tagged) {
-            tickers_to_show = [...tickers_to_show, ...this.getTaged()]
+            tickers_to_show = [...tickers_to_show, ...this.getTagged()]
         }
         if (this.state.show_untagged) {
             tickers_to_show = [...tickers_to_show, ...this.getUntagged()]
@@ -623,6 +656,10 @@ export class ComparingStocks extends React.Component {
                             all_tags={this.state.allTags}
                             on_delete_tag={this.onDeleteTag}
                         />
+                        <AddTransaction
+                            all_stocks={this.state.allStocks}
+                            on_new_transaction={this.onNewTransaction}
+                        />
                     </div>
                     <div id="view-controls">
                         <form>
@@ -680,7 +717,7 @@ export class ComparingStocks extends React.Component {
                     </thead>
                     <tbody>
                         {filtered_sorted_tickers.map(ticker => (
-                            <PositionRow 
+                            <GridRow 
                                 key={ticker}
                                 columns={display_columns}
                                 all_tags={this.state.allTags}

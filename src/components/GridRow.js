@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class PositionRow extends React.Component {
+export class GridRow extends React.Component {
 
     render() {
         const on_remove_from_tag = this.props.on_remove_from_tag
@@ -199,7 +199,7 @@ export class PositionRow extends React.Component {
 
 }
 
-PositionRow.propTypes = {
+GridRow.propTypes = {
     columns: PropTypes.array,
     all_tags: PropTypes.object,
     current_quote: PropTypes.object,
