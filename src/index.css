@@ -28,14 +28,24 @@ code {
   padding: 10px;
 }
 
+#input-controls > * {
+  margin: 5px 5px 5px 0;
+  padding: 5px;
+}
+
+#input-forms {
+  display: inline-block;
+  min-width: 400px;
+}
+
+#status-messages {
+  display: inline-block;
+  min-width: 450px;
+}
+
 #position-listing {
   padding: 10px;
   width: 100%;
-}
-
-#view-controls,
-#input-controls {
-  margin: 20px 0 0;
 }
 
 #baseline-control {
@@ -70,10 +80,6 @@ th:hover {
 
 .position-cell.text-red {
   color: red;
-}
-
-#input-controls > * {
-  margin: 20px 0;
 }
 
 .switch {

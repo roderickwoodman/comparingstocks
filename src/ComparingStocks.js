@@ -404,7 +404,6 @@ export class ComparingStocks extends React.Component {
     }
 
     onNewMessages(new_messages) {
-        console.log('new_messages!', new_messages)
         this.setState(prevState => {
             let newStatusMessages = [...prevState.status_messages]
             newStatusMessages = [...newStatusMessages, ...new_messages]
@@ -659,26 +658,28 @@ export class ComparingStocks extends React.Component {
             <div id="page-wrapper">
                 <div id="page-controls">
                     <div id="input-controls">
-                        <InputForms
-                            all_stocks={this.state.allStocks}
-                            all_tags={this.state.allTags}
-                            on_new_tickers={this.onNewTickers}
-                            on_new_tags={this.onNewTags}
-                            on_delete_tag={this.onDeleteTag}
-                            on_new_transaction={this.onNewTransaction}
-                            on_new_messages={this.onNewMessages}
-                        />
-                    </div>
-                    <div className="status-messages">
-                    { this.state.status_messages
-                        .map(
-                            (message, i) => {
-                                return (message.toLowerCase().startsWith("error"))
-                                ? <p key={i} className="message error">{message}</p>
-                                : <p key={i} className="message">{message}</p>
-                            }
-                        )
-                    }
+                        <div id="input-forms">
+                            <InputForms
+                                all_stocks={this.state.allStocks}
+                                all_tags={this.state.allTags}
+                                on_new_tickers={this.onNewTickers}
+                                on_new_tags={this.onNewTags}
+                                on_delete_tag={this.onDeleteTag}
+                                on_new_transaction={this.onNewTransaction}
+                                on_new_messages={this.onNewMessages}
+                            />
+                        </div>
+                        <div id="status-messages">
+                        { this.state.status_messages
+                            .map(
+                                (message, i) => {
+                                    return (message.toLowerCase().startsWith("error"))
+                                    ? <p key={i} className="message error">{message}</p>
+                                    : <p key={i} className="message">{message}</p>
+                                }
+                            )
+                        }
+                        </div>
                     </div>
                     <div id="view-controls">
                         <form>
