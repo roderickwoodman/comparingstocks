@@ -29,6 +29,7 @@ export class InputForms extends React.Component {
                 />
                 <AddTransaction
                     all_stocks={this.props.all_stocks}
+                    all_tags={this.props.all_tags}
                     on_new_transaction={this.props.on_new_transaction}
                     on_new_messages={this.props.on_new_messages}
                 />

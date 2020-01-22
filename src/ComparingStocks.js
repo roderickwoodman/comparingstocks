@@ -342,8 +342,13 @@ export class ComparingStocks extends React.Component {
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
             newAllPositions[delete_ticker] = null
 
+            // add status messages
+            let newStatusMessages = [...prevState.status_messages]
+            let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
+            newStatusMessages = [...newStatusMessages, ...new_message]
+
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags, allPositions: newAllPositions }
+            return { allTags: newAllTags, allPositions: newAllPositions, status_messages: newStatusMessages }
         })
     }
 

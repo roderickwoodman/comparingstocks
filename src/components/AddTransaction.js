@@ -70,6 +70,21 @@ export class AddTransaction extends React.Component {
 
             let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' $' + total
             if (!new_status_messages.length) {
+
+                // also print the "ticker has now been added" message, if needed
+                let tagged_tickers = []
+                let self = this
+                Object.keys(this.props.all_tags).forEach(function(tag) {
+                    self.props.all_tags[tag].forEach(function(ticker) {
+                        if (!tagged_tickers.includes(ticker)) {
+                            tagged_tickers.push(ticker)
+                        }
+                    })
+                })
+                if (tagged_tickers.includes(transaction[2].toUpperCase())) {
+                    new_status_messages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
+                }
+
                 new_status_messages.push('Transaction "' + valid_transaction + '" has now been added.')
             }
 
@@ -99,6 +114,7 @@ export class AddTransaction extends React.Component {
 
 AddTransaction.propTypes = {
     all_stocks: PropTypes.array.isRequired,
+    all_tags: PropTypes.object.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
     on_new_messages: PropTypes.func.isRequired
 }
