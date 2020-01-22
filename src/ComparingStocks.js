@@ -43,6 +43,7 @@ export class ComparingStocks extends React.Component {
         this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
+        this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
         this.getHoldings = this.getHoldings.bind(this)
@@ -296,7 +297,7 @@ export class ComparingStocks extends React.Component {
 
     onNewTags(new_tags) {
         this.setState(prevState => {
-            let newAllTags = Object.assign({}, prevState.allTags)
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             new_tags.forEach(function(tag) {
                 let newTag = []
                 if (!newAllTags.hasOwnProperty(tag)) {
@@ -310,7 +311,7 @@ export class ComparingStocks extends React.Component {
 
     onNewTickers(tag, new_tickers) {
         this.setState(prevState => {
-            let newAllTags = Object.assign({}, prevState.allTags)
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             new_tickers.forEach(function(ticker) {
                 if (!newAllTags[tag].includes(ticker)) {
                     newAllTags[tag].push(ticker)
@@ -321,6 +322,28 @@ export class ComparingStocks extends React.Component {
             })
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
             return { allTags: newAllTags }
+        })
+    }
+
+    onDeleteTicker(event, delete_ticker) {
+        this.setState(prevState => {
+
+            // update tags
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
+            let all_tags_for_this_ticker = []
+            Object.keys(newAllTags).forEach(function(tag_name) {
+                all_tags_for_this_ticker.push(tag_name)
+            })
+            all_tags_for_this_ticker.forEach(function(tag) {
+                newAllTags[tag] = newAllTags[tag].filter(ticker => ticker !== delete_ticker)
+            })
+
+            // update position
+            let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
+            newAllPositions[delete_ticker] = null
+
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+            return { allTags: newAllTags, allPositions: newAllPositions }
         })
     }
 
@@ -355,7 +378,7 @@ export class ComparingStocks extends React.Component {
 
     onRemoveFromTag(event, remove_from_tag, remove_ticker) {
         this.setState(prevState => {
-            let newAllTags = Object.assign({}, prevState.allTags)
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             newAllTags[remove_from_tag] = newAllTags[remove_from_tag].filter(ticker => ticker !== remove_ticker)
 
             // assign ticker to "untagged" if it is losing its last (user) tag
@@ -749,6 +772,7 @@ export class ComparingStocks extends React.Component {
                                 total_value = {total_value}
                                 ticker_is_index={this.tickerIsIndex}
                                 on_remove_from_tag={this.onRemoveFromTag}
+                                on_delete_ticker={this.onDeleteTicker}
                         />))}
                     </tbody>
                 </table>

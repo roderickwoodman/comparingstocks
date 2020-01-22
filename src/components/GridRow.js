@@ -6,6 +6,7 @@ export class GridRow extends React.Component {
 
     render() {
         const on_remove_from_tag = this.props.on_remove_from_tag
+        const on_delete_ticker = this.props.on_delete_ticker
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
         const performance_baseline = this.props.performance_baseline
@@ -118,6 +119,16 @@ export class GridRow extends React.Component {
             }
         }
 
+        function populateButton(column) {
+            if (column.variable_name === 'symbol') {
+                return (
+                    <button onClick={ (e) => {on_delete_ticker(e, current_quote.symbol)}}>x</button>
+                )
+            } else {
+                return
+            }
+        }
+
         function styleCell(column) {
             let classes = 'position-cell'
             switch (column) {
@@ -191,7 +202,7 @@ export class GridRow extends React.Component {
                     { (!tag_membership.length) ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
-                <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }</td>
+                <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }{ populateButton(column) }</td>
                 ))}
             </tr>
         )
@@ -210,4 +221,5 @@ GridRow.propTypes = {
     total_value: PropTypes.number,
     ticker_is_index: PropTypes.func,
     on_remove_from_tag: PropTypes.func,
+    on_delete_ticker: PropTypes.func,
 }
