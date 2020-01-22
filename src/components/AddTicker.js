@@ -9,7 +9,6 @@ export class AddTicker extends React.Component {
         this.state = {
             user_tickers_string: '',
             add_to_tag: 'untagged',
-            status_messages: []
         }
         this.handleTickersChange = this.handleTickersChange.bind(this)
         this.handleTagChange = this.handleTagChange.bind(this)
@@ -79,7 +78,7 @@ export class AddTicker extends React.Component {
             }
         })
         this.props.on_new_tickers(tag, tickers_to_add)
-        this.setState({ status_messages: new_status_messages })
+        this.props.on_new_messages(new_status_messages)
         this.handleReset()
     }
 
@@ -103,17 +102,6 @@ export class AddTicker extends React.Component {
                         <input type="submit" value="Add Ticker(s)" disabled={this.state.user_tickers_string===''}/>
                     </section>
                 </form>
-                <div className="status-messages">
-                    { this.state.status_messages
-                        .map(
-                            (message, i) => {
-                                return (message.toLowerCase().startsWith("error"))
-                                ? <p key={i} className="message error">{message}</p>
-                                : <p key={i} className="message">{message}</p>
-                            }
-                        )
-                    }
-                </div>
             </section>
         )
     }
@@ -122,5 +110,6 @@ export class AddTicker extends React.Component {
 AddTicker.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
-    on_new_tickers: PropTypes.func.isRequired
+    on_new_tickers: PropTypes.func.isRequired,
+    on_new_messages: PropTypes.func.isRequired
 }

@@ -8,7 +8,6 @@ export class DeleteTag extends React.Component {
         super(props)
         this.state = {
             delete_tag: 'untagged',
-            status_messages: []
         }
         this.handleTagChange = this.handleTagChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -25,8 +24,9 @@ export class DeleteTag extends React.Component {
 
         if (user_tag !== 'untagged') {
             new_status_messages.push('Tag "' + user_tag + '" has now been deleted.')
+            this.props.on_new_messages(new_status_messages)
             this.props.on_delete_tag(user_tag)
-            this.setState({ delete_tag: 'untagged', status_messages: new_status_messages })
+            this.setState({ delete_tag: 'untagged' })
         }
     }
 
@@ -47,17 +47,6 @@ export class DeleteTag extends React.Component {
                         <input type="submit" value="Delete Tag" disabled={this.state.delete_tag==='untagged'} />
                     </section>
                 </form>
-                <div className="status-messages">
-                    { this.state.status_messages
-                        .map(
-                            (message, i) => {
-                                return (message.toLowerCase().startsWith("error"))
-                                ? <p key={i} className="message error">{message}</p>
-                                : <p key={i} className="message">{message}</p>
-                            }
-                        )
-                    }
-                </div>
             </section>
         )
     }
@@ -65,5 +54,6 @@ export class DeleteTag extends React.Component {
 
 DeleteTag.propTypes = {
     all_tags: PropTypes.object.isRequired,
-    on_delete_tag: PropTypes.func.isRequired
+    on_delete_tag: PropTypes.func.isRequired,
+    on_new_messages: PropTypes.func.isRequired
 }

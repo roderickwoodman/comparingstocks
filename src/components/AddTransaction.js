@@ -8,7 +8,6 @@ export class AddTransaction extends React.Component {
         super(props)
         this.state = {
             transaction: '',
-            status_messages: []
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleReset = this.handleReset.bind(this)
@@ -77,7 +76,7 @@ export class AddTransaction extends React.Component {
             this.props.on_new_transaction(valid_transaction)
         }
 
-        this.setState({ status_messages: new_status_messages })
+        this.props.on_new_messages(new_status_messages)
     }
 
     render() {
@@ -93,17 +92,6 @@ export class AddTransaction extends React.Component {
                         <input type="submit" value="Add Transaction" disabled={this.state.transaction===''} />
                     </section>
                 </form>
-                <div className="status-messages">
-                    { this.state.status_messages
-                        .map(
-                            (message, i) => {
-                                return (message.toLowerCase().startsWith("error"))
-                                ? <p key={i} className="message error">{message}</p>
-                                : <p key={i} className="message">{message}</p>
-                            }
-                        )
-                    }
-                </div>
             </section>
         )
     }
@@ -111,5 +99,6 @@ export class AddTransaction extends React.Component {
 
 AddTransaction.propTypes = {
     all_stocks: PropTypes.array.isRequired,
-    on_new_transaction: PropTypes.func.isRequired
+    on_new_transaction: PropTypes.func.isRequired,
+    on_new_messages: PropTypes.func.isRequired
 }

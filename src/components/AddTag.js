@@ -8,7 +8,6 @@ export class AddTag extends React.Component {
         super(props)
         this.state = {
             user_tags_string: '',
-            status_messages: []
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleReset = this.handleReset.bind(this)
@@ -47,7 +46,7 @@ export class AddTag extends React.Component {
             }
         })
         this.props.on_new_tags(tags_to_add)
-        this.setState({ status_messages: new_status_messages })
+        this.props.on_new_messages(new_status_messages)
         this.handleReset()
     }
 
@@ -62,17 +61,6 @@ export class AddTag extends React.Component {
                         <input type="submit" value="Create Tag(s)" disabled={this.state.user_tags_string===''} />
                     </section>
                 </form>
-                <div className="status-messages">
-                    { this.state.status_messages
-                        .map(
-                            (message, i) => {
-                                return (message.toLowerCase().startsWith("error"))
-                                ? <p key={i} className="message error">{message}</p>
-                                : <p key={i} className="message">{message}</p>
-                            }
-                        )
-                    }
-                </div>
             </section>
         )
     }
@@ -80,5 +68,6 @@ export class AddTag extends React.Component {
 
 AddTag.propTypes = {
     all_tags: PropTypes.object.isRequired,
-    on_new_tags: PropTypes.func.isRequired
+    on_new_tags: PropTypes.func.isRequired,
+    on_new_messages: PropTypes.func.isRequired
 }

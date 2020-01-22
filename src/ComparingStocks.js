@@ -19,6 +19,7 @@ export class ComparingStocks extends React.Component {
             allTags: {
                 'untagged': []
             },
+            status_messages: [],
             performance_baseline: 'zero_pct_gain',
             performance_baseline_numbers: {},
             index_performance: {},
@@ -38,6 +39,7 @@ export class ComparingStocks extends React.Component {
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
+        this.onNewMessages = this.onNewMessages.bind(this)
         this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
@@ -401,6 +403,15 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onNewMessages(new_messages) {
+        console.log('new_messages!', new_messages)
+        this.setState(prevState => {
+            let newStatusMessages = [...prevState.status_messages]
+            newStatusMessages = [...newStatusMessages, ...new_messages]
+            return { status_messages: newStatusMessages }
+        })
+    }
+
     getHoldings() {
         return this.state.allStocks.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
     }
@@ -655,7 +666,19 @@ export class ComparingStocks extends React.Component {
                             on_new_tags={this.onNewTags}
                             on_delete_tag={this.onDeleteTag}
                             on_new_transaction={this.onNewTransaction}
+                            on_new_messages={this.onNewMessages}
                         />
+                    </div>
+                    <div className="status-messages">
+                    { this.state.status_messages
+                        .map(
+                            (message, i) => {
+                                return (message.toLowerCase().startsWith("error"))
+                                ? <p key={i} className="message error">{message}</p>
+                                : <p key={i} className="message">{message}</p>
+                            }
+                        )
+                    }
                     </div>
                     <div id="view-controls">
                         <form>
