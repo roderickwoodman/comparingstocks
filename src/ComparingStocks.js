@@ -1,9 +1,6 @@
 import React from 'react'
 import { GridRow } from './components/GridRow'
-import { AddTransaction } from './components/AddTransaction'
-import { AddTicker } from './components/AddTicker'
-import { AddTag } from './components/AddTag'
-import { DeleteTag } from './components/DeleteTag'
+import { InputForms } from './components/InputForms'
 
 
 const zero_performance = { short: 0, medium: 0, long: 0 }
@@ -651,21 +648,12 @@ export class ComparingStocks extends React.Component {
             <div id="page-wrapper">
                 <div id="page-controls">
                     <div id="input-controls">
-                        <AddTicker
+                        <InputForms
                             all_stocks={this.state.allStocks}
                             all_tags={this.state.allTags}
                             on_new_tickers={this.onNewTickers}
-                        />
-                        <AddTag
-                            all_tags={this.state.allTags}
                             on_new_tags={this.onNewTags}
-                        />
-                        <DeleteTag
-                            all_tags={this.state.allTags}
                             on_delete_tag={this.onDeleteTag}
-                        />
-                        <AddTransaction
-                            all_stocks={this.state.allStocks}
                             on_new_transaction={this.onNewTransaction}
                         />
                     </div>
