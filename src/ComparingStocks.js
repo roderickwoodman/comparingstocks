@@ -328,7 +328,7 @@ export class ComparingStocks extends React.Component {
         let action, num_shares, ticker, total
         [action, num_shares, ticker, total]  = new_transaction.split(' ')
         num_shares = parseInt(num_shares)
-        total = parseFloat(total)
+        total = parseFloat(total.substr(1))
         this.setState(prevState => {
 
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))

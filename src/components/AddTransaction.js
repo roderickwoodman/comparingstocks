@@ -68,7 +68,7 @@ export class AddTransaction extends React.Component {
                 total = parseFloat((Math.round(total * 100) / 100).toFixed(2));
             }
 
-            let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' ' + total
+            let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' $' + total
             if (!new_status_messages.length) {
                 new_status_messages.push('Transaction "' + valid_transaction + '" has now been added.')
             }
