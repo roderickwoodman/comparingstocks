@@ -75,6 +75,14 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
+        const view_controls = ['show_baseline', 'show_holdings', 'show_tagged', 'show_untagged']
+        view_controls.forEach(function(control) {
+            const stored_control = JSON.parse(localStorage.getItem(control))
+            if (stored_control !== null) {
+                self.setState({ [control]: stored_control })
+            }
+        })
+
         let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
 
         let raw_current_quote_data = require('./api/sample_current_quotes.json').sample_current_quotes
