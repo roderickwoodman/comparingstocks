@@ -27,6 +27,7 @@ export class ComparingStocks extends React.Component {
             allPerformanceNumbers: {},
             show_baseline: true,
             show_holdings: true,
+            show_cash: true,
             show_tagged: true,
             show_untagged: true,
             sort_column: 'symbol',
@@ -83,7 +84,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_baseline', 'show_holdings', 'show_tagged', 'show_untagged']
+        const view_controls = ['show_baseline', 'show_holdings', 'show_cash', 'show_tagged', 'show_untagged']
         view_controls.forEach(function(control) {
             const stored_control = JSON.parse(localStorage.getItem(control))
             if (stored_control !== null) {
@@ -152,7 +153,7 @@ export class ComparingStocks extends React.Component {
 
         all_stocks.forEach(function(ticker) {
 
-            if (self.state.done && indexed_transaction_data.hasOwnProperty(ticker)) {
+            if (indexed_transaction_data.hasOwnProperty(ticker)) {
                 let newPosition = {}
                 newPosition = self.getPositionFromTransactions(indexed_transaction_data[ticker])
                 newPosition['symbol'] = ticker
@@ -576,14 +577,12 @@ export class ComparingStocks extends React.Component {
         let total_value = 0
         if (this.state.done) {
             total_value = Object.entries(this.state.allPositions).reduce(function (total, current_val) {
-                if (current_val[1] !== null) {
-                    if (current_val[0] === 'cash') {
-                        return total + current_val[1]['current_shares'] * 1
-                    } else {
-                        return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
-                    }
-                } else {
+                if (current_val[0] === 'cash' && self.state.show_cash) {
+                    return total + current_val[1]['current_shares'] * 1
+                } else if (current_val[0] === 'cash' && !self.state.show_cash) {
                     return total
+                } else {
+                    return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
                 }
             }, 0)
         }
@@ -594,7 +593,10 @@ export class ComparingStocks extends React.Component {
                 tickers_to_show = [...tickers_to_show, ...this.getIndicies()]
             }
             if (this.state.show_holdings) {
-                tickers_to_show = [...tickers_to_show, ...this.getHoldings()]
+                tickers_to_show = [...tickers_to_show, ...this.getHoldings()].filter(ticker => ticker !== 'cash')
+            }
+            if (this.state.show_cash) {
+                tickers_to_show.push('cash')
             }
             if (this.state.show_tagged) {
                 tickers_to_show = [...tickers_to_show, ...this.getTagged()]
@@ -849,6 +851,14 @@ export class ComparingStocks extends React.Component {
                                     <div className="switch_wrapper">
                                         <input id="show_holdings" name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
                                         <label htmlFor="show_holdings" className="switch"></label>
+                                    </div>
+                                </div>
+
+                                <div className="switch_control">
+                                    <div className="switch_label">show cash:</div>
+                                    <div className="switch_wrapper">
+                                        <input id="show_cash" name="show_cash" type="checkbox" checked={this.state.show_cash} onChange={this.onShowInputChange} />
+                                        <label htmlFor="show_cash" className="switch"></label>
                                     </div>
                                 </div>
 
