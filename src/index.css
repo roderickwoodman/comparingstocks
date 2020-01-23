@@ -72,6 +72,12 @@ code {
   font-style: italic;
 }
 
+.position-is-cash {
+  background: #64e764;
+  font-weight: 800;
+  font-style: italic;
+}
+
 th,
 .position-cell {
   width: 125px;

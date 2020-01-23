@@ -171,6 +171,9 @@ export class GridRow extends React.Component {
         if (this.props.ticker_is_index(current_quote.symbol)) {
             row_classes += ' position-is-index'
         }
+        if (current_quote.symbol === 'cash') {
+            row_classes += ' position-is-cash'
+        }
 
         let current_value = (current_position.current_shares) ? current_quote.current_price * current_position.current_shares : 'n/a'
         let percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
