@@ -725,16 +725,19 @@ export class ComparingStocks extends React.Component {
                                 on_new_messages={this.onNewMessages}
                             />
                         </div>
-                        <div id="status-messages">
-                        { this.state.status_messages
-                            .map(
-                                (message, i) => {
-                                    return (message.toLowerCase().startsWith("error"))
-                                    ? <p key={i} className="message error">{message}</p>
-                                    : <p key={i} className="message">{message}</p>
-                                }
-                            )
-                        }
+                        <div id="status-messages-wrapper">
+                            { this.state.status_messages.length ? 'History:' : '' }
+                            <div id="status-messages">
+                            { this.state.status_messages.reverse()
+                                .map(
+                                    (message, i) => {
+                                        return (message.toLowerCase().startsWith("error"))
+                                        ? <p key={i} className="message error">{message}</p>
+                                        : <p key={i} className="message">{message}</p>
+                                    }
+                                )
+                            }
+                            </div>
                         </div>
                     </div>
                     <div id="view-controls">

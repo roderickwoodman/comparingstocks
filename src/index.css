@@ -38,9 +38,17 @@ code {
   min-width: 400px;
 }
 
-#status-messages {
+#status-messages-wrapper {
   display: inline-block;
+  vertical-align: top;
   min-width: 450px;
+  font-weight: 800;
+}
+
+#status-messages {
+  font-weight: 400;
+  max-height: 125px;
+  overflow-y: scroll;
 }
 
 #position-listing {
