@@ -36,10 +36,12 @@ export class ComparingStocks extends React.Component {
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
         this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
+        this.getPositionFromCashTransactions = this.getPositionFromCashTransactions.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
+        this.onNewCash = this.onNewCash.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
         this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
@@ -128,7 +130,7 @@ export class ComparingStocks extends React.Component {
 
         let all_stocks = []
         Object.keys(indexed_transaction_data).forEach(function(ticker) {
-            if (!all_stocks.includes(ticker)) {
+            if (!all_stocks.includes(ticker) && ticker !== 'cash') {
                 all_stocks.push(ticker)
             }
         })
@@ -199,6 +201,32 @@ export class ComparingStocks extends React.Component {
             }
         })
 
+        // quote for cash
+        let cashCurrentQuote = {
+            change: 0,
+            change_pct: 0,
+            current_price: 1,
+            symbol: 'cash',
+            volume: 0
+        }
+        newCurrentQuotes['cash'] = cashCurrentQuote
+
+        // performance for cash
+        let cashPerformance = {
+            short_change_pct: 0,
+            medium_change_pct: 0,
+            long_change_pct: 0,
+        }
+        newPerformanceNumbers['cash'] = cashPerformance
+
+        // position for cash
+        if (indexed_transaction_data.hasOwnProperty('cash')) {
+            let newPosition = {}
+            newPosition = self.getPositionFromCashTransactions(indexed_transaction_data['cash'])
+            newPosition['symbol'] = 'cash'
+            newPositions['cash'] = newPosition
+        }
+
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
@@ -257,6 +285,28 @@ export class ComparingStocks extends React.Component {
             current_shares: current_shares,
             basis: Math.round((outflows > inflows) ? outflows - inflows : 0),
             realized_gains: Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
+        }
+
+        return newPosition
+    }
+
+    getPositionFromCashTransactions(cash_transactions) {
+        let total = 0, action, value
+
+        cash_transactions.forEach(function(cash_transaction) {
+            [action, value] = cash_transaction.split(' ')
+            let cash_amount = parseFloat(value.substr(1))
+            if (action === 'add') {
+                total += cash_amount
+            } else if (action === 'remove') {
+                total -= cash_amount
+            }
+        })
+        let newPosition = {
+            symbol: 'cash',
+            current_shares: total,
+            basis: total,
+            realized_gains: 0
         }
 
         return newPosition
@@ -404,6 +454,40 @@ export class ComparingStocks extends React.Component {
         this.onNewTickers('untagged', [ticker])
     }
 
+    onNewCash(new_cash_transaction) {
+        let action, total
+        [action, total]  = new_cash_transaction.split(' ')
+        total = parseFloat(total.substr(1))
+        this.setState(prevState => {
+
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
+            if (newAllTransactions.hasOwnProperty('cash') && newAllTransactions['cash'] !== null) {
+                newAllTransactions['cash'] = newAllTransactions['cash'].concat([new_cash_transaction])
+            } else {
+                newAllTransactions['cash'] = [new_cash_transaction]
+            }
+
+            let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
+            let orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
+            if (newAllPositions.hasOwnProperty('cash') && newAllPositions['cash'] !== null) {
+                orig_basis = newAllPositions['cash']['basis']
+                orig_current_shares = newAllPositions['cash']['current_shares']
+                orig_realized_gains = newAllPositions['cash']['realized_gains']
+            }
+            let updatedPosition = {
+                symbol: 'cash',
+                basis: (action === 'add') ? orig_basis + total : orig_basis - total,
+                current_shares: (action === 'add') ? orig_current_shares + total : orig_current_shares - total,
+                realized_gains: orig_realized_gains // FIXME: refactor out this attribute, merge with "basis"
+            }
+
+            newAllPositions['cash'] = updatedPosition
+
+            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
+            return { allTransactions: newAllTransactions, allPositions: newAllPositions }
+        })
+    }
+
     onRemoveFromTag(event, remove_from_tag, remove_ticker) {
         this.setState(prevState => {
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
@@ -493,7 +577,11 @@ export class ComparingStocks extends React.Component {
         if (this.state.done) {
             total_value = Object.entries(this.state.allPositions).reduce(function (total, current_val) {
                 if (current_val[1] !== null) {
-                    return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
+                    if (current_val[0] === 'cash') {
+                        return total + current_val[1]['current_shares'] * 1
+                    } else {
+                        return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
+                    }
                 } else {
                     return total
                 }
@@ -516,7 +604,6 @@ export class ComparingStocks extends React.Component {
             }
         }
         let unique_tickers_to_show = Array.from(new Set(tickers_to_show))
-
         let sort_column = self.state.sort_column
         let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
         let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_gains']
@@ -525,7 +612,7 @@ export class ComparingStocks extends React.Component {
         let sorted_tickers = unique_tickers_to_show.sort(function(a, b) {
             let value_a, value_b
             if (quote_columns.includes(sort_column)) {
-                if (self.state.allCurrentQuotes[a] !== null && self.state.allCurrentQuotes[b] !== null) {
+                if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
                     if (sort_column === 'dollar_volume') {
                         value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
                         value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
@@ -535,15 +622,15 @@ export class ComparingStocks extends React.Component {
                     }
                 } 
             } else if (performance_columns.includes(sort_column)) {
-                if (self.state.allMonthlyQuotes[a] !== null && self.state.allMonthlyQuotes[b] !== null) {
+                if (self.state.allMonthlyQuotes.hasOwnProperty(a) && self.state.allMonthlyQuotes.hasOwnProperty(b)) {
                     value_a = self.state.allPerformanceNumbers[a][sort_column]
                     value_b = self.state.allPerformanceNumbers[b][sort_column]
                 }
             } else if (holdings_columns.includes(sort_column)) {
                 let positionvalue_a, positionvalue_b
-                if (self.state.allPositions[a] !== null) {
+                if (self.state.allPositions.hasOwnProperty(a)) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes[a] !== null && self.state.allPositions[a]['current_shares']) {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allPositions.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
                             if (sort_column === 'percent_gains') {
                                 let basis_a = self.state.allPositions[a]['basis']
@@ -562,9 +649,9 @@ export class ComparingStocks extends React.Component {
                 } else {
                     value_a = 'n/a'
                 }
-                if (self.state.allPositions[b] !== null) {
+                if (self.state.allPositions.hasOwnProperty(b)) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes[b] !== null && self.state.allPositions[b]['current_shares']) {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(b) && self.state.allPositions.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
                             if (sort_column === 'percent_gains' && positionvalue_b !== 0) {
                                 let basis_b = self.state.allPositions[b]['basis']
@@ -722,6 +809,7 @@ export class ComparingStocks extends React.Component {
                                 on_new_tags={this.onNewTags}
                                 on_delete_tag={this.onDeleteTag}
                                 on_new_transaction={this.onNewTransaction}
+                                on_new_cash={this.onNewCash}
                                 on_new_messages={this.onNewMessages}
                             />
                         </div>

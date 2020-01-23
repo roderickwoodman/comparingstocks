@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { AddTransaction } from './AddTransaction'
 import { AddTicker } from './AddTicker'
 import { AddTag } from './AddTag'
+import { AddTransaction } from './AddTransaction'
+import { AddCash } from './AddCash'
 import { DeleteTag } from './DeleteTag'
 
 
@@ -33,6 +34,10 @@ export class InputForms extends React.Component {
                     on_new_transaction={this.props.on_new_transaction}
                     on_new_messages={this.props.on_new_messages}
                 />
+                <AddCash
+                    on_new_cash={this.props.on_new_cash}
+                    on_new_messages={this.props.on_new_messages}
+                />
             </section>
         )
     }
@@ -42,6 +47,7 @@ InputForms.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
     on_new_tickers: PropTypes.func.isRequired,
+    on_new_cash: PropTypes.func.isRequired,
     on_new_tags: PropTypes.func.isRequired,
     on_delete_tag: PropTypes.func.isRequired,
     on_new_transaction: PropTypes.func.isRequired,

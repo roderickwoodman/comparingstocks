@@ -85,8 +85,8 @@ export class AddTransaction extends React.Component {
                     new_status_messages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
                 }
 
-                let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' $' + total
-                new_status_messages.push('Transaction "' + valid_transaction + '" has now been added.')
+                let valid_transaction = action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
+                new_status_messages.push('Transaction "' + valid_transaction + '" has now been recorded.')
                 this.props.on_new_transaction(valid_transaction)
             }
 
