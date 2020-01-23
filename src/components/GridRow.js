@@ -11,6 +11,7 @@ export class GridRow extends React.Component {
         const performance = this.props.performance_numbers
         const performance_baseline = this.props.performance_baseline
         const performance_baseline_numbers = this.props.performance_baseline_numbers
+        const ticker_is_index = this.props.ticker_is_index
         let current_position = this.props.current_position
         if (current_position == null) {
             current_position = {
@@ -120,7 +121,7 @@ export class GridRow extends React.Component {
         }
 
         function populateButton(column) {
-            if (column.variable_name === 'symbol') {
+            if (column.variable_name === 'symbol' && !ticker_is_index(current_quote.symbol)) {
                 return (
                     <button onClick={ (e) => {on_delete_ticker(e, current_quote.symbol)}}>x</button>
                 )

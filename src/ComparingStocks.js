@@ -151,11 +151,11 @@ export class ComparingStocks extends React.Component {
 
         all_stocks.forEach(function(ticker) {
 
-            if (indexed_transaction_data.hasOwnProperty(ticker)) {
-                newPositions[ticker] = self.getPositionFromTransactions(indexed_transaction_data[ticker])
-                newPositions[ticker]['symbol'] = ticker
-            } else {
-                newPositions[ticker] = null
+            if (self.state.done && indexed_transaction_data.hasOwnProperty(ticker)) {
+                let newPosition = {}
+                newPosition = self.getPositionFromTransactions(indexed_transaction_data[ticker])
+                newPosition['symbol'] = ticker
+                newPositions[ticker] = newPosition
             }
 
             // get current quote
@@ -168,8 +168,6 @@ export class ComparingStocks extends React.Component {
                 newCurrentQuote['change_pct'] = parseFloat((Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2))
                 newCurrentQuote['volume'] = parseInt(quoteResult['06. volume'])
                 newCurrentQuotes[ticker] = newCurrentQuote
-            } else {
-                newCurrentQuotes[ticker] = null
             }
 
             // get monthly quote
@@ -199,8 +197,6 @@ export class ComparingStocks extends React.Component {
                     newPerformance['long_change_pct'] = ticker_perf_long
                 }
                 newPerformanceNumbers[ticker] = newPerformance
-            } else {
-                newPerformanceNumbers[ticker] = null
             }
         })
 
@@ -208,7 +204,8 @@ export class ComparingStocks extends React.Component {
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthlyQuotes: newMonthlyQuotes,
-                        allPerformanceNumbers: newPerformanceNumbers })
+                        allPerformanceNumbers: newPerformanceNumbers,
+                        done: true })
 
     }
 
@@ -243,6 +240,7 @@ export class ComparingStocks extends React.Component {
 
     getPositionFromTransactions(transactions) {
         let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
+
         transactions.forEach(function(transaction) {
             [action, num_shares, ticker, value] = transaction.split(' ')
             num_shares = parseInt(num_shares)
@@ -261,6 +259,7 @@ export class ComparingStocks extends React.Component {
             basis: Math.round((outflows > inflows) ? outflows - inflows : 0),
             realized_gains: Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
         }
+
         return newPosition
     }
 
@@ -354,11 +353,11 @@ export class ComparingStocks extends React.Component {
 
             // update position
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
-            newAllPositions[delete_ticker] = null
+            delete newAllPositions[delete_ticker]
 
             // update transactions
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
-            newAllTransactions[delete_ticker] = null
+            delete newAllTransactions[delete_ticker]
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add status messages
@@ -378,7 +377,7 @@ export class ComparingStocks extends React.Component {
         this.setState(prevState => {
 
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
-            if (newAllTransactions.hasOwnProperty(ticker)) {
+            if (newAllTransactions.hasOwnProperty(ticker) && newAllTransactions[ticker] !== null) {
                 newAllTransactions[ticker] = newAllTransactions[ticker].concat([new_transaction])
             } else {
                 newAllTransactions[ticker] = [new_transaction]
@@ -465,11 +464,11 @@ export class ComparingStocks extends React.Component {
     }
 
     getHoldings() {
-        return this.state.allStocks.filter(ticker => this.state.allPositions[ticker] !== null && this.state.allPositions[ticker]['current_shares'])
+        return Object.entries(this.state.allPositions).filter(holding => holding[1]['current_shares'] > 0).map(holding => holding[0])
     }
 
     getIndicies() {
-        return this.state.allIndiciesAliases
+        return [...this.state.allIndiciesAliases]
     }
 
     getTagged() {
@@ -491,20 +490,40 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        let total_value = Object.entries(this.state.allPositions).filter(position => position[1] !== null).reduce(function (total, current_val) {
-            if (self.state.allCurrentQuotes[current_val[0]] !== null) {
-                return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
-            } else {
-                return total
+        let total_value = 0
+        if (this.state.done) {
+            total_value = Object.entries(this.state.allPositions).reduce(function (total, current_val) {
+                if (current_val[1] !== null) {
+                    return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
+                } else {
+                    return total
+                }
+            }, 0)
+        }
+
+        let tickers_to_show = []
+        if (this.state.done) {
+            if (this.state.show_baseline) {
+                tickers_to_show = [...tickers_to_show, ...this.getIndicies()]
             }
-        }, 0)
+            if (this.state.show_holdings) {
+                tickers_to_show = [...tickers_to_show, ...this.getHoldings()]
+            }
+            if (this.state.show_tagged) {
+                tickers_to_show = [...tickers_to_show, ...this.getTagged()]
+            }
+            if (this.state.show_untagged) {
+                tickers_to_show = [...tickers_to_show, ...this.getUntagged()]
+            }
+        }
+        let unique_tickers_to_show = Array.from(new Set(tickers_to_show))
 
         let sort_column = self.state.sort_column
         let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
         let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_gains']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
-        let sorted_tickers = Object.keys(this.state.allPositions).sort(function(a, b) {
+        let sorted_tickers = unique_tickers_to_show.sort(function(a, b) {
             let value_a, value_b
             if (quote_columns.includes(sort_column)) {
                 if (self.state.allCurrentQuotes[a] !== null && self.state.allCurrentQuotes[b] !== null) {
@@ -601,21 +620,6 @@ export class ComparingStocks extends React.Component {
             }
             return 0
         })
-
-        let tickers_to_show = []
-        if (this.state.show_baseline) {
-            tickers_to_show = [...tickers_to_show, ...this.getIndicies()]
-        }
-        if (this.state.show_holdings) {
-            tickers_to_show = [...tickers_to_show, ...this.getHoldings()]
-        }
-        if (this.state.show_tagged) {
-            tickers_to_show = [...tickers_to_show, ...this.getTagged()]
-        }
-        if (this.state.show_untagged) {
-            tickers_to_show = [...tickers_to_show, ...this.getUntagged()]
-        }
-        let filtered_sorted_tickers = [...sorted_tickers].filter(ticker => tickers_to_show.includes(ticker))
 
         let all_columns = {
             'symbol': {
@@ -789,7 +793,7 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered_sorted_tickers.map(ticker => (
+                        {this.state.done && sorted_tickers.map(ticker => (
                             <GridRow 
                                 key={ticker}
                                 columns={display_columns}
@@ -803,7 +807,8 @@ export class ComparingStocks extends React.Component {
                                 ticker_is_index={this.tickerIsIndex}
                                 on_remove_from_tag={this.onRemoveFromTag}
                                 on_delete_ticker={this.onDeleteTicker}
-                        />))}
+                            />
+                        ))}
                     </tbody>
                 </table>
             </div>
