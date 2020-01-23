@@ -616,14 +616,19 @@ export class ComparingStocks extends React.Component {
                     if (sort_column === 'dollar_volume') {
                         value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
                         value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
+                    } else if (sort_column === 'symbol') {
+                        value_a = self.state.allCurrentQuotes[a][sort_column].toUpperCase()
+                        value_b = self.state.allCurrentQuotes[b][sort_column].toUpperCase()
                     } else {
                         value_a = self.state.allCurrentQuotes[a][sort_column]
                         value_b = self.state.allCurrentQuotes[b][sort_column]
                     }
                 } 
             } else if (performance_columns.includes(sort_column)) {
-                if (self.state.allMonthlyQuotes.hasOwnProperty(a) && self.state.allMonthlyQuotes.hasOwnProperty(b)) {
+                if (self.state.allMonthlyQuotes.hasOwnProperty(a) || a === 'cash') {
                     value_a = self.state.allPerformanceNumbers[a][sort_column]
+                }
+                if (self.state.allMonthlyQuotes.hasOwnProperty(b) || b === 'cash') {
                     value_b = self.state.allPerformanceNumbers[b][sort_column]
                 }
             } else if (holdings_columns.includes(sort_column)) {
