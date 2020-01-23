@@ -89,7 +89,6 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        // let indexed_transaction_data = require('./api/sample_transactions.json').sample_transactions
         let indexed_transaction_data = {}
         if (stored_allTransactions !== null) {
             indexed_transaction_data = JSON.parse(JSON.stringify(stored_allTransactions))
