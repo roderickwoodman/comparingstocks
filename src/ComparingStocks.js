@@ -25,7 +25,7 @@ export class ComparingStocks extends React.Component {
             performance_baseline_numbers: {},
             index_performance: {},
             allPerformanceNumbers: {},
-            show_baseline: true,
+            show_index: true,
             show_holdings: true,
             show_cash: true,
             show_tagged: true,
@@ -84,7 +84,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_baseline', 'show_holdings', 'show_cash', 'show_tagged', 'show_untagged']
+        const view_controls = ['show_index', 'show_holdings', 'show_cash', 'show_tagged', 'show_untagged']
         view_controls.forEach(function(control) {
             const stored_control = JSON.parse(localStorage.getItem(control))
             if (stored_control !== null) {
@@ -589,7 +589,7 @@ export class ComparingStocks extends React.Component {
 
         let tickers_to_show = []
         if (this.state.done) {
-            if (this.state.show_baseline) {
+            if (this.state.show_index) {
                 tickers_to_show = [...tickers_to_show, ...this.getIndicies()]
             }
             if (this.state.show_holdings) {
@@ -839,10 +839,10 @@ export class ComparingStocks extends React.Component {
                         <form>
                             <div className="switch_controls">
                                 <div className="switch_control">
-                                    <div className="switch_label">show baseline:</div>
+                                    <div className="switch_label">show index:</div>
                                     <div className="switch_wrapper">
-                                        <input id="show_baseline" name="show_baseline" type="checkbox" checked={this.state.show_baseline} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_baseline" className="switch"></label>
+                                        <input id="show_index" name="show_index" type="checkbox" checked={this.state.show_index} onChange={this.onShowInputChange} />
+                                        <label htmlFor="show_index" className="switch"></label>
                                     </div>
                                 </div>
 

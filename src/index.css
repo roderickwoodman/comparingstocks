@@ -38,6 +38,10 @@ code {
   min-width: 400px;
 }
 
+#input-forms form {
+  margin: 15px 0;
+}
+
 #status-messages-wrapper {
   display: inline-block;
   vertical-align: top;
