@@ -65,8 +65,8 @@ export class GridRow extends React.Component {
                 case 'basis':
                     value = basis
                     break
-                case 'percent_gains':
-                    value = percent_gains
+                case 'percent_profit':
+                    value = percent_profit
                     break
                 case 'realized_gains':
                     value = current_position.realized_gains
@@ -178,13 +178,13 @@ export class GridRow extends React.Component {
         let current_value = (current_position.current_shares) ? current_quote.current_price * current_position.current_shares : 'n/a'
         let percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
         let basis = (current_position.basis) ? current_position.basis : 'n/a'
-        let percent_gains
+        let percent_profit
         if (current_position.current_shares === 0) {
-            percent_gains = 'n/a'
+            percent_profit = 'n/a'
         } else if (current_position.basis >= current_value) {
-            percent_gains = 'losing'
+            percent_profit = 'losing'
         } else if (current_value > current_position.basis) {
-            percent_gains = (1 - current_position.basis / current_value) * 100
+            percent_profit = (1 - current_position.basis / current_value) * 100
         }
 
         let all_tags = this.props.all_tags

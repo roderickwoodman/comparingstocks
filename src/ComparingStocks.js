@@ -740,7 +740,7 @@ export class ComparingStocks extends React.Component {
             },
             'percent_value': {
                 variable_name: 'percent_value',
-                display_name: 'Pct Value',
+                display_name: 'Pct of Total Value',
                 variable_type: 'percentage',
                 num_decimals: 1
             },
@@ -752,7 +752,7 @@ export class ComparingStocks extends React.Component {
             },
             'percent_gains': {
                 variable_name: 'percent_gains',
-                display_name: 'Pct Gains',
+                display_name: 'Pct Profit',
                 variable_type: 'percentage',
                 num_decimals: 1
             },
