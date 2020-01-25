@@ -577,17 +577,81 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        let total_value = 0
+        // if (this.state.done) {
+        //     total_value = Object.entries(this.state.allPositions).reduce(function (total, current_val) {
+        //         if (current_val[0] === 'cash' && self.state.show_cash) {
+        //             return total + current_val[1]['current_shares'] * 1
+        //         } else if (current_val[0] === 'cash' && !self.state.show_cash) {
+        //             return total
+        //         } else {
+        //             return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
+        //         }
+        //     }, 0)
+        // }
+        let aggr_totalvalue_by_tag = {}
         if (this.state.done) {
-            total_value = Object.entries(this.state.allPositions).reduce(function (total, current_val) {
-                if (current_val[0] === 'cash' && self.state.show_cash) {
-                    return total + current_val[1]['current_shares'] * 1
-                } else if (current_val[0] === 'cash' && !self.state.show_cash) {
-                    return total
-                } else {
-                    return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
+            aggr_totalvalue_by_tag = Object.entries(this.state.allPositions).reduce(function(accumulator, current_position_info) {
+                let ticker = current_position_info[0]
+                let ticker_shares = current_position_info[1]['current_shares']
+                let ticker_price = self.state.allCurrentQuotes[ticker]['current_price'] || 1
+                if (ticker !== 'cash' || (ticker === 'cash' && self.state.show_cash)) {
+                    accumulator['everything'] = (accumulator['everything'] || 0) + ticker_price * ticker_shares
                 }
-            }, 0)
+                self.state.allTags || self.state.allTags.forEach(function(tag) {
+                    if (self.state.allTags[tag].includes(ticker)) {
+                        accumulator[tag] = (accumulator[tag] || 0) + ticker_price * ticker_shares
+                    }
+                })
+                return accumulator
+            }, {})
+        }
+
+        let all_stocks_of_interest = []
+        Object.values(this.state.allTags).forEach(function(array_of_tickers) {
+            array_of_tickers.forEach(ticker => all_stocks_of_interest.push(ticker))
+        })
+        all_stocks_of_interest = Array.from(new Set(all_stocks_of_interest))
+
+        let aggr_performance_by_tag = {}
+        if (this.state.done) {
+            aggr_performance_by_tag = all_stocks_of_interest.reduce(function(accumulator, ticker) {
+
+                let short = self.state.allPerformanceNumbers[ticker]['short_change_pct']
+                let medium = self.state.allPerformanceNumbers[ticker]['medium_change_pct']
+                let long = self.state.allPerformanceNumbers[ticker]['long_change_pct']
+
+                Object.keys(self.state.allTags).forEach(function(tag) {
+                    let newPerformance = {
+                        short_change_pct: short,
+                        medium_change_pct: medium,
+                        long_change_pct: long,
+                    }
+                    if (self.state.allTags[tag].includes(ticker)) {
+                        if (accumulator.hasOwnProperty(tag)) {
+                            accumulator[tag]['short_change_pct'] += short
+                            accumulator[tag]['medium_change_pct'] += medium
+                            accumulator[tag]['long_change_pct'] += long
+                        } else {
+                            accumulator[tag] = newPerformance
+                        }
+                    }
+                    if (accumulator.hasOwnProperty('everything')) {
+                        accumulator['everything']['short_change_pct'] += short
+                        accumulator['everything']['medium_change_pct'] += medium
+                        accumulator['everything']['long_change_pct'] += long
+                    } else {
+                        accumulator[tag] = newPerformance
+                    }
+                })
+                return accumulator
+            }, {})
+            Object.keys(aggr_performance_by_tag).forEach(function(tag) {
+                if (tag === 'everything') {
+                    aggr_performance_by_tag[tag] /= all_stocks_of_interest.length
+                } else {
+                    aggr_performance_by_tag[tag] /= self.state.allTags[tag].length
+                }
+            })
         }
 
         let tickers_to_show = []
@@ -915,7 +979,7 @@ export class ComparingStocks extends React.Component {
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
                                 performance_baseline={this.state.performance_baseline}
                                 performance_baseline_numbers={this.state.performance_baseline_numbers}
-                                total_value = {total_value}
+                                total_value = {aggr_totalvalue_by_tag['everything']}
                                 ticker_is_index={this.tickerIsIndex}
                                 on_remove_from_tag={this.onRemoveFromTag}
                                 on_delete_ticker={this.onDeleteTicker}
@@ -923,7 +987,7 @@ export class ComparingStocks extends React.Component {
                         ))}
                         <GridRowTotals
                             columns={display_columns}
-                            total_value={total_value}
+                            total_value={aggr_totalvalue_by_tag['everything']}
                         />
                     </tbody>
                 </table>
