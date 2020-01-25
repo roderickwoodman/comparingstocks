@@ -444,7 +444,10 @@ export class ComparingStocks extends React.Component {
                 symbol: ticker,
                 basis: (action === 'buy') ? orig_basis + total : orig_basis - total,
                 current_shares: (action === 'buy') ? orig_current_shares + num_shares : orig_current_shares - num_shares,
-                realized_gains: orig_realized_gains // FIXME: refactor out this attribute, merge with "basis"
+                realized_gains: (action === 'sell') ? orig_realized_gains + total : orig_realized_gains
+            }
+            if (updatedPosition['basis'] < 0) {
+                updatedPosition['basis'] = 0
             }
 
             newAllPositions[ticker] = updatedPosition
@@ -469,17 +472,16 @@ export class ComparingStocks extends React.Component {
             }
 
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
-            let orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
-            if (newAllPositions.hasOwnProperty('cash') && newAllPositions['cash'] !== null) {
-                orig_basis = newAllPositions['cash']['basis']
+            let orig_current_shares = 0
+            if (newAllPositions.hasOwnProperty('cash')) {
                 orig_current_shares = newAllPositions['cash']['current_shares']
-                orig_realized_gains = newAllPositions['cash']['realized_gains']
             }
+            let new_cash = (action === 'add') ? orig_current_shares + total : orig_current_shares - total
             let updatedPosition = {
                 symbol: 'cash',
-                basis: (action === 'add') ? orig_basis + total : orig_basis - total,
-                current_shares: (action === 'add') ? orig_current_shares + total : orig_current_shares - total,
-                realized_gains: orig_realized_gains // FIXME: refactor out this attribute, merge with "basis"
+                basis: (new_cash >= 0) ? new_cash : 0,
+                current_shares: new_cash,
+                realized_gains: 0
             }
 
             newAllPositions['cash'] = updatedPosition
@@ -608,7 +610,7 @@ export class ComparingStocks extends React.Component {
         let unique_tickers_to_show = Array.from(new Set(tickers_to_show))
         let sort_column = self.state.sort_column
         let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_gains']
+        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
         let sorted_tickers = unique_tickers_to_show.sort(function(a, b) {
@@ -636,10 +638,10 @@ export class ComparingStocks extends React.Component {
             } else if (holdings_columns.includes(sort_column)) {
                 let positionvalue_a, positionvalue_b
                 if (self.state.allPositions.hasOwnProperty(a)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allPositions.hasOwnProperty(a)) {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
-                            if (sort_column === 'percent_gains') {
+                            if (sort_column === 'percent_profit') {
                                 let basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
                             } else {
@@ -657,10 +659,10 @@ export class ComparingStocks extends React.Component {
                     value_a = 'n/a'
                 }
                 if (self.state.allPositions.hasOwnProperty(b)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_gains') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(b) && self.state.allPositions.hasOwnProperty(b)) {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
-                            if (sort_column === 'percent_gains' && positionvalue_b !== 0) {
+                            if (sort_column === 'percent_profit' && positionvalue_b !== 0) {
                                 let basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
                             } else {
@@ -750,10 +752,11 @@ export class ComparingStocks extends React.Component {
                 variable_type: 'currency',
                 num_decimals: 0
             },
-            'percent_gains': {
-                variable_name: 'percent_gains',
+            'percent_profit': {
+                variable_name: 'percent_profit',
                 display_name: 'Pct Profit',
                 variable_type: 'percentage',
+                passthrough_strings: true,
                 num_decimals: 1
             },
             'realized_gains': {
@@ -801,7 +804,7 @@ export class ComparingStocks extends React.Component {
             }
         }
         // let display_column_order = Object.keys(all_columns)
-        let display_column_order = ['symbol', 'current_value', 'percent_value', 'percent_gains', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+        let display_column_order = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
         let display_columns = display_column_order.map(column_variable => all_columns[column_variable])
 
         return (

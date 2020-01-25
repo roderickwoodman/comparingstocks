@@ -114,7 +114,8 @@ export class GridRow extends React.Component {
                     value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
                 }
                 return value = prefix + value + suffix
-
+            } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
+                return value
             } else {
                 return '??'
             }
@@ -181,8 +182,10 @@ export class GridRow extends React.Component {
         let percent_profit
         if (current_position.current_shares === 0) {
             percent_profit = 'n/a'
-        } else if (current_position.basis >= current_value) {
+        } else if (current_position.basis > current_value) {
             percent_profit = 'losing'
+        } else if (current_position.basis === current_value) {
+            percent_profit = 0
         } else if (current_value > current_position.basis) {
             percent_profit = (1 - current_position.basis / current_value) * 100
         }
