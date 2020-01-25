@@ -414,7 +414,7 @@ export class ComparingStocks extends React.Component {
             // add status messages
             let newStatusMessages = [...prevState.status_messages]
             let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
-            newStatusMessages = [...newStatusMessages, ...new_message]
+            newStatusMessages = [...new_message, ...newStatusMessages]
 
             return { allTags: newAllTags, allPositions: newAllPositions, allTransactions: newAllTransactions, status_messages: newStatusMessages }
         })
@@ -545,7 +545,7 @@ export class ComparingStocks extends React.Component {
     onNewMessages(new_messages) {
         this.setState(prevState => {
             let newStatusMessages = [...prevState.status_messages]
-            newStatusMessages = [...newStatusMessages, ...new_messages]
+            newStatusMessages = [...new_messages.reverse(), ...newStatusMessages]
             return { status_messages: newStatusMessages }
         })
     }
@@ -827,7 +827,7 @@ export class ComparingStocks extends React.Component {
                         <div id="status-messages-wrapper">
                             { this.state.status_messages.length ? 'History:' : '' }
                             <div id="status-messages">
-                            { this.state.status_messages.reverse()
+                            { this.state.status_messages
                                 .map(
                                     (message, i) => {
                                         return (message.toLowerCase().startsWith("error"))
