@@ -917,6 +917,16 @@ export class ComparingStocks extends React.Component {
                                 on_delete_ticker={this.onDeleteTicker}
                             />
                         ))}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td><div className="totals">${ Math.round(total_value) }</div></td>
+                            <td><div className="totals">100%</div></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
