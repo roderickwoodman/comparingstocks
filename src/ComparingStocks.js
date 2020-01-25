@@ -26,9 +26,9 @@ export class ComparingStocks extends React.Component {
             performance_baseline_numbers: {},
             index_performance: {},
             allPerformanceNumbers: {},
-            show_index: true,
+            show_index: false,
             show_holdings: true,
-            show_cash: true,
+            show_cash: false,
             show_tagged: true,
             show_untagged: true,
             sort_column: 'symbol',
@@ -842,27 +842,12 @@ export class ComparingStocks extends React.Component {
                     <div id="view-controls">
                         <form>
                             <div className="switch_controls">
-                                <div className="switch_control">
-                                    <div className="switch_label">show index:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_index" name="show_index" type="checkbox" checked={this.state.show_index} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_index" className="switch"></label>
-                                    </div>
-                                </div>
 
                                 <div className="switch_control">
                                     <div className="switch_label">show holdings:</div>
                                     <div className="switch_wrapper">
                                         <input id="show_holdings" name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
                                         <label htmlFor="show_holdings" className="switch"></label>
-                                    </div>
-                                </div>
-
-                                <div className="switch_control">
-                                    <div className="switch_label">show cash:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_cash" name="show_cash" type="checkbox" checked={this.state.show_cash} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_cash" className="switch"></label>
                                     </div>
                                 </div>
 
@@ -881,6 +866,23 @@ export class ComparingStocks extends React.Component {
                                         <label htmlFor="show_untagged" className="switch"></label>
                                     </div>
                                 </div>
+
+                                <div className="switch_control">
+                                    <div className="switch_label">show index:</div>
+                                    <div className="switch_wrapper">
+                                        <input id="show_index" name="show_index" type="checkbox" checked={this.state.show_index} onChange={this.onShowInputChange} />
+                                        <label htmlFor="show_index" className="switch"></label>
+                                    </div>
+                                </div>
+
+                                <div className="switch_control">
+                                    <div className="switch_label">show cash:</div>
+                                    <div className="switch_wrapper">
+                                        <input id="show_cash" name="show_cash" type="checkbox" checked={this.state.show_cash} onChange={this.onShowInputChange} />
+                                        <label htmlFor="show_cash" className="switch"></label>
+                                    </div>
+                                </div>
+
                             </div>
                         </form>
                         <div id="baseline-control">
