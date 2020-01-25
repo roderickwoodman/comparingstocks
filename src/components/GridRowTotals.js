@@ -8,10 +8,14 @@ export class GridRowTotals extends React.Component {
 
         const total_value = this.props.total_value
 
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         function populateTotalsCellValue(column) {
             switch (column.variable_name) {
                 case 'current_value':
-                    return '$' + Math.round(total_value)
+                    return '$' + numberWithCommas(Math.round(total_value))
                 case 'percent_value':
                     return '100.0%'
                 default:

@@ -21,6 +21,10 @@ export class GridRow extends React.Component {
             }
         }
 
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         function populateCellValue(column) {
             let prefix = ''
             let suffix = ''
@@ -111,9 +115,10 @@ export class GridRow extends React.Component {
                     if (performance_value && performance_baseline !== 'zero_pct_gain') {
                         value = value - baseline_value
                     }
+                    if (value.toString().indexOf('.'))
                     value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
                 }
-                return value = prefix + value + suffix
+                return value = prefix + numberWithCommas(value) + suffix
             } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
                 return value
             } else {
