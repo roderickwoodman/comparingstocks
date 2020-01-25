@@ -1,5 +1,6 @@
 import React from 'react'
 import { GridRow } from './components/GridRow'
+import { GridRowTotals } from './components/GridRowTotals'
 import { InputForms } from './components/InputForms'
 
 
@@ -904,6 +905,7 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && sorted_tickers.map(ticker => (
                             <GridRow 
                                 key={ticker}
+                                is_footer_row={false}
                                 columns={display_columns}
                                 all_tags={this.state.allTags}
                                 current_position={this.state.allPositions[ticker]}
@@ -917,16 +919,10 @@ export class ComparingStocks extends React.Component {
                                 on_delete_ticker={this.onDeleteTicker}
                             />
                         ))}
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td><div className="totals">${ Math.round(total_value) }</div></td>
-                            <td><div className="totals">100%</div></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                        <GridRowTotals
+                            columns={display_columns}
+                            total_value={total_value}
+                        />
                     </tbody>
                 </table>
             </div>
