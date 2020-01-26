@@ -195,23 +195,17 @@ export class GridRow extends React.Component {
             percent_profit = (1 - current_position.basis / current_value) * 100
         }
 
-        let all_tags = this.props.all_tags
-        let tag_membership = []
-        Object.keys(all_tags).forEach(function(tag_name) {
-            if (tag_name !== 'untagged' && all_tags[tag_name].includes(current_quote.symbol)) {
-                tag_membership.push(tag_name)
-            }
-        })
+
 
         return (
             <tr className={ row_classes }>
                 <td>
-                    { tag_membership.map( tag_name => (
+                    { this.props.tags.map( tag_name => tag_name !== 'untagged' && (
                         <button key={tag_name} onClick={ (e) => {on_remove_from_tag(e, tag_name, current_quote.symbol)}}>
                             {tag_name}
                         </button>
                     ))}
-                    { (!tag_membership.length) ? '-' : '' }
+                    { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
                 <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }{ populateButton(column) }</td>
@@ -224,7 +218,7 @@ export class GridRow extends React.Component {
 
 GridRow.propTypes = {
     columns: PropTypes.array,
-    all_tags: PropTypes.object,
+    tags: PropTypes.array,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,

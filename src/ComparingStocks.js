@@ -872,6 +872,18 @@ export class ComparingStocks extends React.Component {
         let display_column_order = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
         let display_columns = display_column_order.map(column_variable => all_columns[column_variable])
 
+        let row_data = {}
+        sorted_tickers.forEach(function(ticker) {
+            row_data[ticker] = {}
+            let tag_membership = []
+            Object.entries(self.state.allTags).forEach(function(tag_info) {
+                if (tag_info[1].includes(ticker)) {
+                    tag_membership.push(tag_info[0])
+                }
+            })
+            row_data[ticker]['tags'] = tag_membership
+        })
+
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
@@ -972,7 +984,7 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={ticker}
                                 columns={display_columns}
-                                all_tags={this.state.allTags}
+                                tags={row_data[ticker]['tags']}
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
