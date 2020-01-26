@@ -971,7 +971,6 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && sorted_tickers.map(ticker => (
                             <GridRow 
                                 key={ticker}
-                                is_footer_row={false}
                                 columns={display_columns}
                                 all_tags={this.state.allTags}
                                 current_position={this.state.allPositions[ticker]}
