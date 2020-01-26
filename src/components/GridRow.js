@@ -4,14 +4,27 @@ import PropTypes from 'prop-types'
 
 export class GridRow extends React.Component {
 
+    constructor(props) {
+        super(props)
+        this.populateButton = this.populateButton.bind(this)
+    }
+
+    populateButton(column) {
+        if (column.variable_name === 'symbol' && !this.props.special_classes.includes('index')) {
+            return (
+                <button onClick={ (e) => {this.props.on_delete_ticker(e, this.props.symbol)}}>x</button>
+            )
+        } else {
+            return
+        }
+    }
+
     render() {
         const on_remove_from_tag = this.props.on_remove_from_tag
-        const on_delete_ticker = this.props.on_delete_ticker
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
         const performance_baseline = this.props.performance_baseline
         const performance_baseline_numbers = this.props.performance_baseline_numbers
-        const ticker_is_index = this.props.ticker_is_index
         let current_position = this.props.current_position
         if (current_position == null) {
             current_position = {
@@ -126,16 +139,6 @@ export class GridRow extends React.Component {
             }
         }
 
-        function populateButton(column) {
-            if (column.variable_name === 'symbol' && !ticker_is_index(current_quote.symbol)) {
-                return (
-                    <button onClick={ (e) => {on_delete_ticker(e, current_quote.symbol)}}>x</button>
-                )
-            } else {
-                return
-            }
-        }
-
         function styleCell(column) {
             let classes = 'position-cell'
             switch (column) {
@@ -174,12 +177,14 @@ export class GridRow extends React.Component {
         }
 
         let row_classes = 'position-row' 
-        if (this.props.ticker_is_index(current_quote.symbol)) {
-            row_classes += ' position-is-index'
-        }
-        if (current_quote.symbol === 'cash') {
-            row_classes += ' position-is-cash'
-        }
+        this.props.special_classes.forEach(function(special_class) {
+            if (special_class === 'index') {
+                row_classes += ' position-is-index'
+            }
+            if (special_class === 'cash') {
+                row_classes += ' position-is-cash'
+            }
+        })
 
         let current_value = (current_position.current_shares) ? current_quote.current_price * current_position.current_shares : 'n/a'
         let percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
@@ -195,8 +200,6 @@ export class GridRow extends React.Component {
             percent_profit = (1 - current_position.basis / current_value) * 100
         }
 
-
-
         return (
             <tr className={ row_classes }>
                 <td>
@@ -208,7 +211,7 @@ export class GridRow extends React.Component {
                     { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
-                <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }{ populateButton(column) }</td>
+                <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }{ this.populateButton(column) }</td>
                 ))}
             </tr>
         )
@@ -218,14 +221,15 @@ export class GridRow extends React.Component {
 
 GridRow.propTypes = {
     columns: PropTypes.array,
+    symbol: PropTypes.string,
     tags: PropTypes.array,
+    special_classes: PropTypes.array,
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,
     performance_baseline: PropTypes.string,
     performance_baseline_numbers: PropTypes.object,
     total_value: PropTypes.number,
-    ticker_is_index: PropTypes.func,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
 }

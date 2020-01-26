@@ -874,7 +874,9 @@ export class ComparingStocks extends React.Component {
 
         let row_data = {}
         sorted_tickers.forEach(function(ticker) {
+
             row_data[ticker] = {}
+
             let tag_membership = []
             Object.entries(self.state.allTags).forEach(function(tag_info) {
                 if (tag_info[1].includes(ticker)) {
@@ -882,6 +884,15 @@ export class ComparingStocks extends React.Component {
                 }
             })
             row_data[ticker]['tags'] = tag_membership
+
+            let special_classes = []
+            if (self.tickerIsIndex(ticker)) {
+                special_classes.push('index')
+            }
+            if (ticker === 'cash') {
+                special_classes.push('cash')
+            }
+            row_data[ticker]['special_classes'] = special_classes
         })
 
         return (
@@ -983,8 +994,10 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && sorted_tickers.map(ticker => (
                             <GridRow 
                                 key={ticker}
+                                symbol={ticker}
                                 columns={display_columns}
                                 tags={row_data[ticker]['tags']}
+                                special_classes={row_data[ticker]['special_classes']}
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
