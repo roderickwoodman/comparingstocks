@@ -190,17 +190,23 @@ export class GridRow extends React.Component {
             }
         })
 
-        let current_value = (current_shares) ? current_price * current_shares : 'n/a'
-        let percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
-        let percent_profit
-        if (current_shares === 0) {
+        let current_value, percent_value, percent_profit
+        if (isNaN(current_shares)) {
+            current_value = 'n/a'
+            percent_value = 'n/a'
             percent_profit = 'n/a'
-        } else if (basis > current_value) {
-            percent_profit = 'losing'
-        } else if (basis === current_value) {
-            percent_profit = 0
-        } else if (current_value > basis) {
-            percent_profit = (1 - basis / current_value) * 100
+        } else {
+            current_value = (current_shares) ? current_price * current_shares : 'n/a'
+            percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
+            if (current_shares === 0) {
+                percent_profit = 'n/a'
+            } else if (basis > current_value) {
+                percent_profit = 'losing'
+            } else if (basis === current_value) {
+                percent_profit = 0
+            } else if (current_value > basis) {
+                percent_profit = (1 - basis / current_value) * 100
+            }
         }
 
         return (
