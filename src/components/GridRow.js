@@ -232,6 +232,14 @@ export class GridRow extends React.Component {
 
 }
 
+GridRow.defaultProps = {
+    performance_numbers: {
+        short_change_pct: 0,
+        medium_change_pct: 0,
+        long_change_pct: 0
+    }
+}
+
 GridRow.propTypes = {
     columns: PropTypes.array,
     symbol: PropTypes.string,

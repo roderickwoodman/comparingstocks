@@ -944,8 +944,9 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['current_price'] = 1
             new_aggr_data['change_pct'] = 'n/a'
             new_aggr_data['volume'] = 'n/a'
-            new_aggr_data['basis'] = 'n/a'
+            new_aggr_data['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
             new_aggr_data['realized_gains'] = 'n/a'
+            new_aggr_data['performance'] = aggr_performance_by_tag[aggr_ticker]
 
             aggr_row_data[aggr_ticker] = new_aggr_data
         })
@@ -1095,7 +1096,7 @@ export class ComparingStocks extends React.Component {
                                 basis={aggr_totalbasis_by_tag[aggr_ticker]}
                                 current_shares={aggr_row_data[aggr_ticker]['current_shares']}
                                 realized_gains={aggr_row_data[aggr_ticker]['realized_gains']}
-                                performance_numbers={aggr_performance_by_tag[aggr_ticker]}
+                                performance_numbers={aggr_row_data[aggr_ticker]['performance']}
                                 baseline={this.state.baseline}
                                 total_value = {aggr_totalvalue_by_tag['_everything_']}
                                 on_remove_from_tag={this.onRemoveFromTag}
