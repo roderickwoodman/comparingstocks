@@ -23,8 +23,7 @@ export class GridRow extends React.Component {
         const on_remove_from_tag = this.props.on_remove_from_tag
         const current_quote = this.props.current_quote
         const performance = this.props.performance_numbers
-        const performance_baseline = this.props.performance_baseline
-        const performance_baseline_numbers = this.props.performance_baseline_numbers
+        const baseline = this.props.baseline
         let current_position = this.props.current_position
         if (current_position == null) {
             current_position = {
@@ -100,17 +99,17 @@ export class GridRow extends React.Component {
                 case 'short_change_pct':
                     value = performance.short_change_pct
                     performance_value = true
-                    baseline_value = performance_baseline_numbers.short
+                    baseline_value = baseline.short_change_pct
                     break
                 case 'medium_change_pct':
                     value = performance.medium_change_pct
                     performance_value = true
-                    baseline_value = performance_baseline_numbers.medium
+                    baseline_value = baseline.medium_change_pct
                     break
                 case 'long_change_pct':
                     value = performance.long_change_pct
                     performance_value = true
-                    baseline_value = performance_baseline_numbers.long
+                    baseline_value = baseline.long_change_pct
                     break
                 default:
                     break
@@ -125,7 +124,7 @@ export class GridRow extends React.Component {
                     if (column.hasOwnProperty('scaling_power')) {
                         value *= Math.pow(10, column.scaling_power)
                     }
-                    if (performance_value && performance_baseline !== 'zero_pct_gain') {
+                    if (performance_value && baseline.name !== 'zero_pct_gain') {
                         value = value - baseline_value
                     }
                     if (value.toString().indexOf('.'))
@@ -150,23 +149,23 @@ export class GridRow extends React.Component {
                     }
                     break
                 case 'short_change_pct':
-                    if (performance.short_change_pct > 0 && performance.short_change_pct > performance_baseline_numbers.short) {
+                    if (performance.short_change_pct > 0 && performance.short_change_pct > baseline.short_change_pct) {
                         classes += ' text-green'
-                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < performance_baseline_numbers.short) {
+                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
                         classes += ' text-red'
                     }
                     break
                 case 'medium_change_pct':
-                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > performance_baseline_numbers.medium) {
+                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
                         classes += ' text-green'
-                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < performance_baseline_numbers.medium) {
+                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
                         classes += ' text-red'
                     }
                     break
                 case 'long_change_pct':
-                    if (performance.long_change_pct > 0 && performance.long_change_pct > performance_baseline_numbers.long) {
+                    if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
                         classes += ' text-green'
-                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < performance_baseline_numbers.long) {
+                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
                         classes += ' text-red'
                     }
                     break
@@ -227,8 +226,7 @@ GridRow.propTypes = {
     current_quote: PropTypes.object,
     current_position: PropTypes.object,
     performance_numbers: PropTypes.object,
-    performance_baseline: PropTypes.string,
-    performance_baseline_numbers: PropTypes.object,
+    baseline: PropTypes.object,
     total_value: PropTypes.number,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,

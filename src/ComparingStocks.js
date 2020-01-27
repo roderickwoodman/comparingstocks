@@ -4,8 +4,6 @@ import { GridRowTotals } from './components/GridRowTotals'
 import { InputForms } from './components/InputForms'
 
 
-const zero_performance = { short: 0, medium: 0, long: 0 }
-
 export class ComparingStocks extends React.Component {
 
     constructor(props) {
@@ -22,9 +20,12 @@ export class ComparingStocks extends React.Component {
                 'untagged': []
             },
             status_messages: [],
-            performance_baseline: 'zero_pct_gain',
-            performance_baseline_numbers: {},
-            index_performance: {},
+            baseline: {
+                name: 'zero_pct_gain',
+                short_change_pct: 0,
+                medium_change_pct: 0,
+                long_change_pct: 0,
+            },
             allPerformanceNumbers: {},
             show_index: false,
             show_holdings: true,
@@ -58,9 +59,17 @@ export class ComparingStocks extends React.Component {
 
     componentDidMount() {
 
-        const stored_performance_baseline = JSON.parse(localStorage.getItem("performance_baseline"))
-        if (stored_performance_baseline !== null) {
-            this.setState({ performance_baseline: stored_performance_baseline })
+        let baseline = {}
+        const stored_baseline = JSON.parse(localStorage.getItem("baseline"))
+        if (stored_baseline !== null) {
+            baseline = Object.assign({}, stored_baseline)
+        } else {
+            baseline = {
+                name: 'zero_pct_gain',
+                short_pct_gain: 0,
+                medium_pct_gain: 0,
+                long_pct_gain: 0,
+            }
         }
 
         const stored_sort_column = JSON.parse(localStorage.getItem("sort_column"))
@@ -118,16 +127,17 @@ export class ComparingStocks extends React.Component {
                 let prev_short = monthly_prices[5]
                 let prev_medium = monthly_prices[11]
                 let prev_long = monthly_prices[23]
-                index_performance['short'] = (now - prev_short) / now * 100
-                index_performance['medium'] = (now - prev_medium) / now * 100
-                index_performance['long'] = (now - prev_long) / now * 100
+                index_performance['short_change_pct'] = (now - prev_short) / now * 100
+                index_performance['medium_change_pct'] = (now - prev_medium) / now * 100
+                index_performance['long_change_pct'] = (now - prev_long) / now * 100
+                baseline['short_change_pct'] = index_performance['short_change_pct']
+                baseline['medium_change_pct'] = index_performance['medium_change_pct']
+                baseline['long_change_pct'] = index_performance['long_change_pct']
+                self.setState({ baseline: baseline })
+                localStorage.setItem('baseline', JSON.stringify(baseline))
             }
         })
-        if (stored_performance_baseline !== 'sp500_pct_gain') {
-            this.setState({ performance_baseline_numbers: index_performance })
-        } else {
-            this.setState({ performance_baseline_numbers: zero_performance })
-        }
+
         this.setState({ index_performance: index_performance })
 
         let all_stocks = []
@@ -190,10 +200,10 @@ export class ComparingStocks extends React.Component {
                 let ticker_perf_short = (ticker_now - ticker_prev_short) / ticker_now * 100
                 let ticker_perf_medium = (ticker_now - ticker_prev_medium) / ticker_now * 100
                 let ticker_perf_long = (ticker_now - ticker_prev_long) / ticker_now * 100
-                if (stored_performance_baseline === 'sp500_pct_gain') {
-                    newPerformance['short_change_pct'] = ticker_perf_short - index_performance.short
-                    newPerformance['medium_change_pct'] = ticker_perf_medium - index_performance.medium
-                    newPerformance['long_change_pct'] = ticker_perf_long - index_performance.long
+                if (baseline.name === 'sp500_pct_gain') {
+                    newPerformance['short_change_pct'] = ticker_perf_short - index_performance.short_change_pct
+                    newPerformance['medium_change_pct'] = ticker_perf_medium - index_performance.medium_change_pct
+                    newPerformance['long_change_pct'] = ticker_perf_long - index_performance.long_change_pct
                 } else {
                     newPerformance['short_change_pct'] = ticker_perf_short
                     newPerformance['medium_change_pct'] = ticker_perf_medium
@@ -318,11 +328,21 @@ export class ComparingStocks extends React.Component {
         let name = event.target.name
 
         if (name === 'baseline') {
-            let new_baseline = event.target.value
-            localStorage.setItem('performance_baseline', JSON.stringify(new_baseline))
-            let new_baseline_numbers = (new_baseline === 'sp500_pct_gain') ? this.state.index_performance : zero_performance
-            this.setState({ performance_baseline: new_baseline })
-            this.setState({ performance_baseline_numbers: new_baseline_numbers })
+            let new_baseline_name = event.target.value
+            let new_baseline = {}
+            new_baseline['name'] = new_baseline_name
+            if (new_baseline_name === 'sp500_pct_gain') {
+                new_baseline['short_change_pct'] = this.state.allPerformanceNumbers['S&P500']['short_change_pct']
+                new_baseline['medium_change_pct'] = this.state.allPerformanceNumbers['S&P500']['medium_change_pct']
+                new_baseline['long_change_pct'] = this.state.allPerformanceNumbers['S&P500']['long_change_pct']
+            } else {
+                new_baseline['short_change_pct'] = 0
+                new_baseline['medium_change_pct'] = 0
+                new_baseline['long_change_pct'] = 0
+            }
+
+            localStorage.setItem('baseline', JSON.stringify(new_baseline))
+            this.setState({ baseline: new_baseline })
         }
     }
     
@@ -577,17 +597,6 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        // if (this.state.done) {
-        //     total_value = Object.entries(this.state.allPositions).reduce(function (total, current_val) {
-        //         if (current_val[0] === 'cash' && self.state.show_cash) {
-        //             return total + current_val[1]['current_shares'] * 1
-        //         } else if (current_val[0] === 'cash' && !self.state.show_cash) {
-        //             return total
-        //         } else {
-        //             return total + current_val[1]['current_shares'] * self.state.allCurrentQuotes[current_val[0]]['current_price']
-        //         }
-        //     }, 0)
-        // }
         let aggr_totalvalue_by_tag = {}
         if (this.state.done) {
             aggr_totalvalue_by_tag = Object.entries(this.state.allPositions).reduce(function(accumulator, current_position_info) {
@@ -974,7 +983,7 @@ export class ComparingStocks extends React.Component {
                         </form>
                         <div id="baseline-control">
                             <label htmlFor="baseline">Performance Baseline:</label>
-                            <select id="baseline" name="baseline" value={this.state.performance_baseline} onChange={this.onInputChange}>
+                            <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
                                 <option value="zero_pct_gain">0% gain</option>
                                 <option value="sp500_pct_gain">SP&amp;500 Index</option>
                             </select>
@@ -1001,8 +1010,7 @@ export class ComparingStocks extends React.Component {
                                 current_position={this.state.allPositions[ticker]}
                                 current_quote={this.state.allCurrentQuotes[ticker]}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
-                                performance_baseline={this.state.performance_baseline}
-                                performance_baseline_numbers={this.state.performance_baseline_numbers}
+                                baseline={this.state.baseline}
                                 total_value = {aggr_totalvalue_by_tag['everything']}
                                 ticker_is_index={this.tickerIsIndex}
                                 on_remove_from_tag={this.onRemoveFromTag}
