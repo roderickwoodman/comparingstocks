@@ -598,22 +598,23 @@ export class ComparingStocks extends React.Component {
         let self = this
 
         let aggr_totalvalue_by_tag = {}
-        if (this.state.done) {
-            aggr_totalvalue_by_tag = Object.entries(this.state.allPositions).reduce(function(accumulator, current_position_info) {
-                let ticker = current_position_info[0]
-                let ticker_shares = current_position_info[1]['current_shares']
-                let ticker_price = self.state.allCurrentQuotes[ticker]['current_price'] || 1
-                if (ticker !== 'cash' || (ticker === 'cash' && self.state.show_cash)) {
-                    accumulator['everything'] = (accumulator['everything'] || 0) + ticker_price * ticker_shares
-                }
-                self.state.allTags || self.state.allTags.forEach(function(tag) {
+        aggr_totalvalue_by_tag['_everything_'] = 0
+        Object.keys(this.state.allTags).forEach(function(tag) {
+            aggr_totalvalue_by_tag[tag] = 0 
+        })
+        Object.entries(this.state.allPositions).forEach(function(position_info) {
+            let ticker = position_info[0]
+            let ticker_shares = position_info[1]['current_shares']
+            let ticker_price = self.state.allCurrentQuotes[ticker]['current_price'] || 1
+            if ((ticker !== 'cash' && self.state.show_holdings) || (ticker === 'cash' && self.state.show_cash)) {
+                aggr_totalvalue_by_tag['_everything_'] += ticker_price * ticker_shares
+                Object.keys(self.state.allTags).forEach(function(tag) {
                     if (self.state.allTags[tag].includes(ticker)) {
-                        accumulator[tag] = (accumulator[tag] || 0) + ticker_price * ticker_shares
+                        aggr_totalvalue_by_tag[tag] += ticker_price * ticker_shares
                     }
                 })
-                return accumulator
-            }, {})
-        }
+            }
+        })
 
         let all_stocks_of_interest = []
         Object.values(this.state.allTags).forEach(function(array_of_tickers) {
@@ -621,47 +622,65 @@ export class ComparingStocks extends React.Component {
         })
         all_stocks_of_interest = Array.from(new Set(all_stocks_of_interest))
 
-        let aggr_performance_by_tag = {}
-        if (this.state.done) {
-            aggr_performance_by_tag = all_stocks_of_interest.reduce(function(accumulator, ticker) {
-
-                let short = self.state.allPerformanceNumbers[ticker]['short_change_pct']
-                let medium = self.state.allPerformanceNumbers[ticker]['medium_change_pct']
-                let long = self.state.allPerformanceNumbers[ticker]['long_change_pct']
-
-                Object.keys(self.state.allTags).forEach(function(tag) {
-                    let newPerformance = {
-                        short_change_pct: short,
-                        medium_change_pct: medium,
-                        long_change_pct: long,
-                    }
-                    if (self.state.allTags[tag].includes(ticker)) {
-                        if (accumulator.hasOwnProperty(tag)) {
-                            accumulator[tag]['short_change_pct'] += short
-                            accumulator[tag]['medium_change_pct'] += medium
-                            accumulator[tag]['long_change_pct'] += long
-                        } else {
-                            accumulator[tag] = newPerformance
-                        }
-                    }
-                    if (accumulator.hasOwnProperty('everything')) {
-                        accumulator['everything']['short_change_pct'] += short
-                        accumulator['everything']['medium_change_pct'] += medium
-                        accumulator['everything']['long_change_pct'] += long
-                    } else {
-                        accumulator[tag] = newPerformance
-                    }
-                })
-                return accumulator
-            }, {})
-            Object.keys(aggr_performance_by_tag).forEach(function(tag) {
-                if (tag === 'everything') {
-                    aggr_performance_by_tag[tag] /= all_stocks_of_interest.length
-                } else {
-                    aggr_performance_by_tag[tag] /= self.state.allTags[tag].length
-                }
-            })
+        let aggr_performance = {
+            short_change_pct: 0,
+            medium_change_pct: 0,
+            long_change_pct: 0
         }
+        // let aggr_performance_by_tag = {}
+        // if (this.state.done) {
+        //     aggr_performance_by_tag = all_stocks_of_interest.reduce(function(accumulator, ticker) {
+
+        //         let short = self.state.allPerformanceNumbers[ticker]['short_change_pct']
+        //         let medium = self.state.allPerformanceNumbers[ticker]['medium_change_pct']
+        //         let long = self.state.allPerformanceNumbers[ticker]['long_change_pct']
+
+        //         Object.keys(self.state.allTags).forEach(function(tag) {
+        //             let newPerformance = {
+        //                 short_change_pct: short,
+        //                 medium_change_pct: medium,
+        //                 long_change_pct: long,
+        //             }
+        //             if (self.state.allTags[tag].includes(ticker)) {
+        //                 if (accumulator.hasOwnProperty(tag)) {
+        //                     accumulator[tag]['short_change_pct'] += short
+        //                     accumulator[tag]['medium_change_pct'] += medium
+        //                     accumulator[tag]['long_change_pct'] += long
+        //                 } else {
+        //                     accumulator[tag] = newPerformance
+        //                 }
+        //             }
+        //             if (accumulator.hasOwnProperty('_everything_')) {
+        //                 accumulator['_everything_']['short_change_pct'] += short
+        //                 accumulator['_everything_']['medium_change_pct'] += medium
+        //                 accumulator['_everything_']['long_change_pct'] += long
+        //             } else {
+        //                 accumulator[tag] = newPerformance
+        //             }
+        //         })
+        //         return accumulator
+        //     }, {})
+        //     Object.entries(aggr_performance_by_tag).forEach(function(tag_performance) {
+        //         let tag = tag_performance[0]
+        //         let performance = tag_performance[1]
+        //         Object.keys(performance).forEach(function(time_range) {
+        //             if (tag === '_everything_') {
+        //                 if (!all_stocks_of_interest.length) {
+        //                     aggr_performance_by_tag[tag][time_range] /= all_stocks_of_interest.length
+        //                 } else {
+        //                     aggr_performance_by_tag[tag][time_range] = 'n/a'
+        //                 }
+        //             } else {
+        //                 if (!all_stocks_of_interest.length) {
+        //                     aggr_performance_by_tag[tag][time_range] /= self.state.allTags[tag].length
+        //                 } else {
+        //                     aggr_performance_by_tag[tag][time_range] = 'n/a'
+        //                 }
+        //             }
+        //         })
+        //     })
+        // }
+        // console.log(aggr_performance_by_tag)
 
         let tickers_to_show = []
         if (this.state.done) {
@@ -914,6 +933,26 @@ export class ComparingStocks extends React.Component {
             }
         })
 
+        let aggr_tickers = Object.keys(this.state.allTags)
+        let aggr_row_data = {}
+        aggr_tickers.forEach(function(aggr_ticker) {
+
+            let new_aggr_data = {}
+
+            new_aggr_data['symbol'] = aggr_ticker
+            new_aggr_data['tags'] = []
+            new_aggr_data['special_classes'] = []
+            new_aggr_data['basis'] = 'n/a'
+            new_aggr_data['current_shares'] = aggr_totalvalue_by_tag[aggr_ticker]
+            new_aggr_data['current_price'] = 1
+            new_aggr_data['change_pct'] = 'n/a'
+            new_aggr_data['volume'] = 'n/a'
+            new_aggr_data['basis'] = 'n/a'
+            new_aggr_data['realized_gains'] = 'n/a'
+
+            aggr_row_data[aggr_ticker] = new_aggr_data
+        })
+
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
@@ -1025,16 +1064,47 @@ export class ComparingStocks extends React.Component {
                                 realized_gains={row_data[ticker]['realized_gains']}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
                                 baseline={this.state.baseline}
-                                total_value = {aggr_totalvalue_by_tag['everything']}
-                                ticker_is_index={this.tickerIsIndex}
+                                total_value = {aggr_totalvalue_by_tag['_everything_']}
                                 on_remove_from_tag={this.onRemoveFromTag}
                                 on_delete_ticker={this.onDeleteTicker}
                             />
                         ))}
                         <GridRowTotals
                             columns={display_columns}
-                            total_value={aggr_totalvalue_by_tag['everything']}
+                            total_value={aggr_totalvalue_by_tag['_everything_']}
                         />
+                    </tbody>
+                </table>
+                <table id="aggr-position-listing" cellSpacing="0">
+                    <thead>
+                        <tr>
+                            <th>Tags</th>
+                            {display_columns.map(column => (
+                            <th key={ column.variable_name}>{ column.display_name }</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.done && aggr_tickers.map(aggr_ticker => (
+                            <GridRow 
+                                key={aggr_ticker}
+                                symbol={aggr_ticker}
+                                columns={display_columns}
+                                tags={aggr_row_data[aggr_ticker]['tags']}
+                                special_classes={aggr_row_data[aggr_ticker]['special_classes']}
+                                current_price={aggr_row_data[aggr_ticker]['current_price']}
+                                change_pct={aggr_row_data[aggr_ticker]['change_pct']}
+                                volume={aggr_row_data[aggr_ticker]['volume']}
+                                basis={aggr_row_data[aggr_ticker]['basis']}
+                                current_shares={aggr_row_data[aggr_ticker]['current_shares']}
+                                realized_gains={aggr_row_data[aggr_ticker]['realized_gains']}
+                                performance_numbers={aggr_performance}
+                                baseline={this.state.baseline}
+                                total_value = {aggr_totalvalue_by_tag['_everything_']}
+                                on_remove_from_tag={this.onRemoveFromTag}
+                                on_delete_ticker={this.onDeleteTicker}
+                            />
+                        ))}
                     </tbody>
                 </table>
             </div>
