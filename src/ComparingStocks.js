@@ -597,24 +597,36 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        let aggr_totalvalue_by_tag = {}
+        let aggr_totalvalue_by_tag = {}, aggr_totalbasis_by_tag = {}
+        aggr_totalbasis_by_tag['_everything_'] = 0
         aggr_totalvalue_by_tag['_everything_'] = 0
         Object.keys(this.state.allTags).forEach(function(tag) {
+            aggr_totalbasis_by_tag[tag] = 0 
             aggr_totalvalue_by_tag[tag] = 0 
         })
         Object.entries(this.state.allPositions).forEach(function(position_info) {
             let ticker = position_info[0]
+            let ticker_basis = position_info[1]['basis']
+            let ticker_realized_gains = position_info[1]['realized_gains']
             let ticker_shares = position_info[1]['current_shares']
             let ticker_price = self.state.allCurrentQuotes[ticker]['current_price'] || 1
             if ((ticker !== 'cash' && self.state.show_holdings) || (ticker === 'cash' && self.state.show_cash)) {
+                aggr_totalbasis_by_tag['_everything_'] += ticker_basis - ticker_realized_gains
                 aggr_totalvalue_by_tag['_everything_'] += ticker_price * ticker_shares
                 Object.keys(self.state.allTags).forEach(function(tag) {
                     if (self.state.allTags[tag].includes(ticker)) {
+                        aggr_totalbasis_by_tag[tag] += ticker_basis - ticker_realized_gains
+                        if (aggr_totalbasis_by_tag[tag] < 0) {
+                            aggr_totalbasis_by_tag[tag] = 0
+                        }
                         aggr_totalvalue_by_tag[tag] += ticker_price * ticker_shares
                     }
                 })
             }
         })
+        if (aggr_totalbasis_by_tag['_everything_'] < 0) {
+            aggr_totalbasis_by_tag['_everything_'] = 0
+        }
 
         let all_stocks_of_interest = []
         Object.values(this.state.allTags).forEach(function(array_of_tickers) {
@@ -1095,7 +1107,7 @@ export class ComparingStocks extends React.Component {
                                 current_price={aggr_row_data[aggr_ticker]['current_price']}
                                 change_pct={aggr_row_data[aggr_ticker]['change_pct']}
                                 volume={aggr_row_data[aggr_ticker]['volume']}
-                                basis={aggr_row_data[aggr_ticker]['basis']}
+                                basis={aggr_totalbasis_by_tag[aggr_ticker]}
                                 current_shares={aggr_row_data[aggr_ticker]['current_shares']}
                                 realized_gains={aggr_row_data[aggr_ticker]['realized_gains']}
                                 performance_numbers={aggr_performance}
