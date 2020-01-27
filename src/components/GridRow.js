@@ -233,12 +233,30 @@ GridRow.propTypes = {
     symbol: PropTypes.string,
     tags: PropTypes.array,
     special_classes: PropTypes.array,
-    current_shares: PropTypes.number,
-    current_price: PropTypes.number,
-    change_pct: PropTypes.number,
-    volume: PropTypes.number,
-    basis: PropTypes.number,
-    realized_gains: PropTypes.number,
+    current_shares: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    current_price: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    change_pct: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    volume: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    basis: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    realized_gains: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
     performance_numbers: PropTypes.object,
     baseline: PropTypes.object,
     total_value: PropTypes.number,
