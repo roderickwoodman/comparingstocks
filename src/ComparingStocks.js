@@ -634,65 +634,50 @@ export class ComparingStocks extends React.Component {
         })
         all_stocks_of_interest = Array.from(new Set(all_stocks_of_interest))
 
-        let aggr_performance = {
+        let aggr_performance_by_tag = {}
+        aggr_performance_by_tag['_everything_'] = {
             short_change_pct: 0,
             medium_change_pct: 0,
-            long_change_pct: 0
+            long_change_pct: 0,
+            num_tickers: 0
         }
-        // let aggr_performance_by_tag = {}
-        // if (this.state.done) {
-        //     aggr_performance_by_tag = all_stocks_of_interest.reduce(function(accumulator, ticker) {
+        if (this.state.done) {
+            all_stocks_of_interest.forEach(function(ticker) {
 
-        //         let short = self.state.allPerformanceNumbers[ticker]['short_change_pct']
-        //         let medium = self.state.allPerformanceNumbers[ticker]['medium_change_pct']
-        //         let long = self.state.allPerformanceNumbers[ticker]['long_change_pct']
+                let short = self.state.allPerformanceNumbers[ticker]['short_change_pct']
+                let medium = self.state.allPerformanceNumbers[ticker]['medium_change_pct']
+                let long = self.state.allPerformanceNumbers[ticker]['long_change_pct']
 
-        //         Object.keys(self.state.allTags).forEach(function(tag) {
-        //             let newPerformance = {
-        //                 short_change_pct: short,
-        //                 medium_change_pct: medium,
-        //                 long_change_pct: long,
-        //             }
-        //             if (self.state.allTags[tag].includes(ticker)) {
-        //                 if (accumulator.hasOwnProperty(tag)) {
-        //                     accumulator[tag]['short_change_pct'] += short
-        //                     accumulator[tag]['medium_change_pct'] += medium
-        //                     accumulator[tag]['long_change_pct'] += long
-        //                 } else {
-        //                     accumulator[tag] = newPerformance
-        //                 }
-        //             }
-        //             if (accumulator.hasOwnProperty('_everything_')) {
-        //                 accumulator['_everything_']['short_change_pct'] += short
-        //                 accumulator['_everything_']['medium_change_pct'] += medium
-        //                 accumulator['_everything_']['long_change_pct'] += long
-        //             } else {
-        //                 accumulator[tag] = newPerformance
-        //             }
-        //         })
-        //         return accumulator
-        //     }, {})
-        //     Object.entries(aggr_performance_by_tag).forEach(function(tag_performance) {
-        //         let tag = tag_performance[0]
-        //         let performance = tag_performance[1]
-        //         Object.keys(performance).forEach(function(time_range) {
-        //             if (tag === '_everything_') {
-        //                 if (!all_stocks_of_interest.length) {
-        //                     aggr_performance_by_tag[tag][time_range] /= all_stocks_of_interest.length
-        //                 } else {
-        //                     aggr_performance_by_tag[tag][time_range] = 'n/a'
-        //                 }
-        //             } else {
-        //                 if (!all_stocks_of_interest.length) {
-        //                     aggr_performance_by_tag[tag][time_range] /= self.state.allTags[tag].length
-        //                 } else {
-        //                     aggr_performance_by_tag[tag][time_range] = 'n/a'
-        //                 }
-        //             }
-        //         })
-        //     })
-        // }
-        // console.log(aggr_performance_by_tag)
+                aggr_performance_by_tag['_everything_'].short_change_pct += short
+                aggr_performance_by_tag['_everything_'].medium_change_pct += medium
+                aggr_performance_by_tag['_everything_'].long_change_pct += long
+                aggr_performance_by_tag['_everything_'].num_tickers += 1
+
+                Object.keys(self.state.allTags).forEach(function(tag) {
+                    if (aggr_performance_by_tag.hasOwnProperty(tag) && self.state.allTags[tag].includes(ticker)) {
+                        aggr_performance_by_tag[tag].short_change_pct += short
+                        aggr_performance_by_tag[tag].medium_change_pct += medium
+                        aggr_performance_by_tag[tag].long_change_pct += long
+                        aggr_performance_by_tag[tag].num_tickers += 1
+                    } else if (self.state.allTags[tag].includes(ticker)) {
+                        let new_aggr_performance = {}
+                        new_aggr_performance['short_change_pct'] = short
+                        new_aggr_performance['medium_change_pct'] = medium
+                        new_aggr_performance['long_change_pct'] = long
+                        new_aggr_performance['num_tickers'] = 1
+                        aggr_performance_by_tag[tag] = new_aggr_performance
+                    }
+                })
+            })
+        }
+        Object.entries(aggr_performance_by_tag).forEach(function(tag_performance) {
+            let tag = tag_performance[0]
+            let performance = tag_performance[1]
+            Object.keys(performance).filter(time_range => time_range !== 'num_tickers').forEach(function(time_range) {
+                let value = (performance['num_tickers']) ? performance[time_range] / performance.num_tickers : 'n/a'
+                aggr_performance_by_tag[tag][time_range] = value
+            })
+        })
 
         let tickers_to_show = []
         if (this.state.done) {
@@ -1110,7 +1095,7 @@ export class ComparingStocks extends React.Component {
                                 basis={aggr_totalbasis_by_tag[aggr_ticker]}
                                 current_shares={aggr_row_data[aggr_ticker]['current_shares']}
                                 realized_gains={aggr_row_data[aggr_ticker]['realized_gains']}
-                                performance_numbers={aggr_performance}
+                                performance_numbers={aggr_performance_by_tag[aggr_ticker]}
                                 baseline={this.state.baseline}
                                 total_value = {aggr_totalvalue_by_tag['_everything_']}
                                 on_remove_from_tag={this.onRemoveFromTag}
