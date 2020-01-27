@@ -13,13 +13,21 @@ export class GridRowTotals extends React.Component {
         }
 
         function populateTotalsCellValue(column) {
+            let value
             switch (column.variable_name) {
                 case 'current_value':
-                    return '$' + numberWithCommas(Math.round(total_value))
+                    value = '$' + numberWithCommas(Math.round(total_value))
+                    break
                 case 'percent_value':
-                    return '100.0%'
+                    value = (total_value) ? '100.0%' : 'n/a'
+                    break
                 default:
-                    return
+                    break
+            }
+            if (value === null || value === 'n/a') {
+                return '-'
+            } else {
+                return value
             }
         }
 
