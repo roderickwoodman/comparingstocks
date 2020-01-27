@@ -902,6 +902,16 @@ export class ComparingStocks extends React.Component {
                 special_classes.push('cash')
             }
             row_data[ticker]['special_classes'] = special_classes
+
+            if (self.state.allPositions.hasOwnProperty(ticker)) {
+                row_data[ticker]['basis'] = self.state.allPositions[ticker].basis
+                row_data[ticker]['current_shares'] = self.state.allPositions[ticker].current_shares
+                row_data[ticker]['realized_gains'] = self.state.allPositions[ticker].realized_gains
+            } else {
+                row_data[ticker]['basis'] = 'n/a'
+                row_data[ticker]['current_shares'] = 'n/a'
+                row_data[ticker]['realized_gains'] = 'n/a'
+            }
         })
 
         return (
@@ -1007,8 +1017,12 @@ export class ComparingStocks extends React.Component {
                                 columns={display_columns}
                                 tags={row_data[ticker]['tags']}
                                 special_classes={row_data[ticker]['special_classes']}
-                                current_position={this.state.allPositions[ticker]}
-                                current_quote={this.state.allCurrentQuotes[ticker]}
+                                current_price={this.state.allCurrentQuotes[ticker].current_price}
+                                change_pct={this.state.allCurrentQuotes[ticker].change_pct}
+                                volume={this.state.allCurrentQuotes[ticker].volume}
+                                basis={row_data[ticker]['basis']}
+                                current_shares={row_data[ticker]['current_shares']}
+                                realized_gains={row_data[ticker]['realized_gains']}
                                 performance_numbers={this.state.allPerformanceNumbers[ticker]}
                                 baseline={this.state.baseline}
                                 total_value = {aggr_totalvalue_by_tag['everything']}

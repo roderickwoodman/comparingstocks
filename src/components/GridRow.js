@@ -20,17 +20,20 @@ export class GridRow extends React.Component {
     }
 
     render() {
+        const symbol = this.props.symbol
         const on_remove_from_tag = this.props.on_remove_from_tag
-        const current_quote = this.props.current_quote
+        let current_shares = this.props.current_shares
+        const current_price = this.props.current_price
+        const change_pct = this.props.change_pct
+        let basis = this.props.basis
+        let realized_gains = this.props.realized_gains
+        const volume = this.props.volume
         const performance = this.props.performance_numbers
         const baseline = this.props.baseline
-        let current_position = this.props.current_position
-        if (current_position == null) {
-            current_position = {
-                current_shares: 0,
-                basis: 'n/a',
-                realized_gains: 'n/a'
-            }
+        if (isNaN(current_shares) || current_shares === 0) {
+            current_shares = 'n/a'
+            basis = 'n/a'
+            realized_gains = 'n/a'
         }
 
         function numberWithCommas(x) {
@@ -64,13 +67,13 @@ export class GridRow extends React.Component {
             }
             switch (column.variable_name) {
                 case 'symbol':
-                    value = current_quote.symbol
+                    value = symbol
                     break
                 case 'current_shares':
-                    value = current_position.current_shares
+                    value = current_shares
                     break
                 case 'current_price':
-                    value = current_quote.current_price
+                    value = current_price
                     break
                 case 'current_value':
                     value = current_value
@@ -85,16 +88,16 @@ export class GridRow extends React.Component {
                     value = percent_profit
                     break
                 case 'realized_gains':
-                    value = current_position.realized_gains
+                    value = realized_gains
                     break
                 case 'change_pct':
-                    value = current_quote.change_pct
+                    value = change_pct
                     break
                 case 'volume':
-                    value = current_quote.volume
+                    value = volume
                     break
                 case 'dollar_volume':
-                    value = current_quote.current_price * current_quote.volume
+                    value = current_price * volume
                     break
                 case 'short_change_pct':
                     value = performance.short_change_pct
@@ -133,6 +136,8 @@ export class GridRow extends React.Component {
                 return value = prefix + numberWithCommas(value) + suffix
             } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
                 return value
+            } else if (column.variable_type === 'number' || column.variable_type === 'percentage' || column.variable_type === 'currency') {
+                return '-'
             } else {
                 return '??'
             }
@@ -142,9 +147,9 @@ export class GridRow extends React.Component {
             let classes = 'position-cell'
             switch (column) {
                 case 'change_pct':
-                    if (current_quote.change_pct > 0) {
+                    if (change_pct > 0) {
                         classes += ' text-green'
-                    } else if (current_quote.change_pct < 0) {
+                    } else if (change_pct < 0) {
                         classes += ' text-red'
                     }
                     break
@@ -185,25 +190,24 @@ export class GridRow extends React.Component {
             }
         })
 
-        let current_value = (current_position.current_shares) ? current_quote.current_price * current_position.current_shares : 'n/a'
+        let current_value = (current_shares) ? current_price * current_shares : 'n/a'
         let percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
-        let basis = (current_position.basis) ? current_position.basis : 'n/a'
         let percent_profit
-        if (current_position.current_shares === 0) {
+        if (current_shares === 0) {
             percent_profit = 'n/a'
-        } else if (current_position.basis > current_value) {
+        } else if (basis > current_value) {
             percent_profit = 'losing'
-        } else if (current_position.basis === current_value) {
+        } else if (basis === current_value) {
             percent_profit = 0
-        } else if (current_value > current_position.basis) {
-            percent_profit = (1 - current_position.basis / current_value) * 100
+        } else if (current_value > basis) {
+            percent_profit = (1 - basis / current_value) * 100
         }
 
         return (
             <tr className={ row_classes }>
                 <td>
                     { this.props.tags.map( tag_name => tag_name !== 'untagged' && (
-                        <button key={tag_name} onClick={ (e) => {on_remove_from_tag(e, tag_name, current_quote.symbol)}}>
+                        <button key={tag_name} onClick={ (e) => {on_remove_from_tag(e, tag_name, symbol)}}>
                             {tag_name}
                         </button>
                     ))}
@@ -223,8 +227,12 @@ GridRow.propTypes = {
     symbol: PropTypes.string,
     tags: PropTypes.array,
     special_classes: PropTypes.array,
-    current_quote: PropTypes.object,
-    current_position: PropTypes.object,
+    current_shares: PropTypes.number,
+    current_price: PropTypes.number,
+    change_pct: PropTypes.number,
+    volume: PropTypes.number,
+    basis: PropTypes.number,
+    realized_gains: PropTypes.number,
     performance_numbers: PropTypes.object,
     baseline: PropTypes.object,
     total_value: PropTypes.number,
