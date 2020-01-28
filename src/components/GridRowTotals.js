@@ -14,7 +14,7 @@ export class GridRowTotals extends React.Component {
 
         function populateTotalsCellValue(column) {
             let value
-            switch (column.variable_name) {
+            switch (column.name) {
                 case 'current_value':
                     value = '$' + numberWithCommas(Math.round(total_value))
                     break
@@ -49,7 +49,7 @@ export class GridRowTotals extends React.Component {
             <tr>
                 <td></td>
                 { this.props.columns.map(column => (
-                <td key={column.variable_name} className={ styleTotalsCell(column.variable_name) }>{ populateTotalsCellValue(column) }</td>
+                <td key={column.name} className={ styleTotalsCell(column.name) }>{ populateTotalsCellValue(column) }</td>
                 ))}
             </tr>
         )

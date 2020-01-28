@@ -4,6 +4,96 @@ import { GridRowTotals } from './components/GridRowTotals'
 import { InputForms } from './components/InputForms'
 
 
+const all_columns = [
+    {
+        name: 'symbol',
+        display_name: 'Symbol',
+        type: 'string'
+    },
+    {
+        name: 'current_shares',
+        display_name: 'Shares',
+        type: 'number',
+        num_decimals: 0
+    },
+    {
+        name: 'current_price',
+        display_name: 'Price',
+        type: 'currency',
+        num_decimals: 2
+    },
+    {
+        name: 'current_value',
+        display_name: 'Value',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
+        name: 'percent_value',
+        display_name: 'Pct of Total Value',
+        type: 'percentage',
+        num_decimals: 1
+    },
+    {
+        name: 'basis',
+        display_name: 'Basis',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
+        name: 'percent_profit',
+        display_name: 'Pct Profit',
+        type: 'percentage',
+        passthrough_strings: true,
+        num_decimals: 1
+    },
+    {
+        name: 'realized_gains',
+        display_name: 'Realized',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
+        name: 'change_pct',
+        display_name: 'Change',
+        type: 'percentage',
+        num_decimals: 2
+    },
+    {
+        name: 'volume',
+        display_name: 'Volume',
+        type: 'number',
+        num_decimals: 0
+    },
+    {
+        name: 'dollar_volume',
+        display_name: 'Dollar Vol (M)',
+        type: 'currency',
+        scaling_power: -6,
+        num_decimals: 0
+    },
+    {
+        name: 'short_change_pct',
+        display_name: '6-month',
+        type: 'percentage',
+        num_decimals: 1
+    },
+    {
+        name: 'medium_change_pct',
+        display_name: '1-year',
+        type: 'percentage',
+        num_decimals: 1
+    },
+    {
+        name: 'long_change_pct',
+        display_name: '2-year',
+        type: 'percentage',
+        num_decimals: 1
+    }
+]
+
+const default_displayed_columns = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+
 export class ComparingStocks extends React.Component {
 
     constructor(props) {
@@ -34,6 +124,7 @@ export class ComparingStocks extends React.Component {
             show_untagged: true,
             sort_column: 'symbol',
             sort_dir_asc: true,
+            displayed_columns: [],
             done: false
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
@@ -239,11 +330,14 @@ export class ComparingStocks extends React.Component {
             newPositions['cash'] = newPosition
         }
 
+        let init_displayed_columns = all_columns.filter(column => default_displayed_columns.includes(column.name))
+
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthlyQuotes: newMonthlyQuotes,
                         allPerformanceNumbers: newPerformanceNumbers,
+                        displayed_columns: init_displayed_columns,
                         done: true })
 
     }
@@ -813,97 +907,6 @@ export class ComparingStocks extends React.Component {
             return 0
         })
 
-        let all_columns = {
-            'symbol': {
-                variable_name: 'symbol',
-                display_name: 'Symbol',
-                variable_type: 'string'
-            },
-            'current_shares': {
-                variable_name: 'current_shares',
-                display_name: 'Shares',
-                variable_type: 'number',
-                num_decimals: 0
-            },
-            'current_price': {
-                variable_name: 'current_price',
-                display_name: 'Price',
-                variable_type: 'currency',
-                num_decimals: 2
-            },
-            'current_value': {
-                variable_name: 'current_value',
-                display_name: 'Value',
-                variable_type: 'currency',
-                num_decimals: 0
-            },
-            'percent_value': {
-                variable_name: 'percent_value',
-                display_name: 'Pct of Total Value',
-                variable_type: 'percentage',
-                num_decimals: 1
-            },
-            'basis': {
-                variable_name: 'basis',
-                display_name: 'Basis',
-                variable_type: 'currency',
-                num_decimals: 0
-            },
-            'percent_profit': {
-                variable_name: 'percent_profit',
-                display_name: 'Pct Profit',
-                variable_type: 'percentage',
-                passthrough_strings: true,
-                num_decimals: 1
-            },
-            'realized_gains': {
-                variable_name: 'realized_gains',
-                display_name: 'Realized',
-                variable_type: 'currency',
-                num_decimals: 0
-            },
-            'change_pct': {
-                variable_name: 'change_pct',
-                display_name: 'Change',
-                variable_type: 'percentage',
-                num_decimals: 2
-            },
-            'volume': {
-                variable_name: 'volume',
-                display_name: 'Volume',
-                variable_type: 'number',
-                num_decimals: 0
-            },
-            'dollar_volume': {
-                variable_name: 'dollar_volume',
-                display_name: 'Dollar Vol (M)',
-                variable_type: 'currency',
-                scaling_power: -6,
-                num_decimals: 0
-            },
-            'short_change_pct': {
-                variable_name: 'short_change_pct',
-                display_name: '6-month',
-                variable_type: 'percentage',
-                num_decimals: 1
-            },
-            'medium_change_pct': {
-                variable_name: 'medium_change_pct',
-                display_name: '1-year',
-                variable_type: 'percentage',
-                num_decimals: 1
-            },
-            'long_change_pct': {
-                variable_name: 'long_change_pct',
-                display_name: '2-year',
-                variable_type: 'percentage',
-                num_decimals: 1
-            }
-        }
-        let display_column_order = Object.keys(all_columns)
-        // let display_column_order = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
-        let display_columns = display_column_order.map(column_variable => all_columns[column_variable])
-
         let row_data = {}
         sorted_tickers.forEach(function(ticker) {
 
@@ -1048,8 +1051,8 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             <th>Tags</th>
-                            {display_columns.map(column => (
-                            <th key={ column.variable_name} onClick={ (e) => this.onChangeSort(column.variable_name) }>{ column.display_name }{ sort_column === column.variable_name ? sort_triangle : '' }</th>
+                            {this.state.displayed_columns.map(column => (
+                            <th key={ column.name} onClick={ (e) => this.onChangeSort(column.name) }>{ column.display_name }{ sort_column === column.name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
@@ -1058,7 +1061,7 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={ticker}
                                 symbol={ticker}
-                                columns={display_columns}
+                                columns={this.state.displayed_columns}
                                 tags={row_data[ticker]['tags']}
                                 special_classes={row_data[ticker]['special_classes']}
                                 current_price={this.state.allCurrentQuotes[ticker].current_price}
@@ -1075,7 +1078,7 @@ export class ComparingStocks extends React.Component {
                             />
                         ))}
                         <GridRowTotals
-                            columns={display_columns}
+                            columns={this.state.displayed_columns}
                             total_value={aggr_totalvalue_by_tag['_everything_']}
                         />
                     </tbody>
@@ -1084,8 +1087,8 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             <th>Tags</th>
-                            {display_columns.map(column => (
-                            <th key={ column.variable_name}>{ column.display_name }</th>
+                            {this.state.displayed_columns.map(column => (
+                            <th key={ column.name}>{ column.display_name }</th>
                             ))}
                         </tr>
                     </thead>
@@ -1094,7 +1097,7 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={aggr_ticker}
                                 symbol={aggr_ticker}
-                                columns={display_columns}
+                                columns={this.state.displayed_columns}
                                 tags={aggr_row_data[aggr_ticker]['tags']}
                                 special_classes={aggr_row_data[aggr_ticker]['special_classes']}
                                 current_price={aggr_row_data[aggr_ticker]['current_price']}

@@ -10,7 +10,7 @@ export class GridRow extends React.Component {
     }
 
     populateButton(column) {
-        if (column.variable_name === 'symbol' && !this.props.special_classes.includes('index')) {
+        if (column.name === 'symbol' && !this.props.special_classes.includes('index')) {
             return (
                 <button onClick={ (e) => {this.props.on_delete_ticker(e, this.props.symbol)}}>x</button>
             )
@@ -47,7 +47,7 @@ export class GridRow extends React.Component {
             let num_decimals
             let value, baseline_value
             let performance_value = false
-            switch (column.variable_type) {
+            switch (column.type) {
                 case 'number':
                     adjust_decimal = true
                     num_decimals = column.num_decimals
@@ -65,7 +65,7 @@ export class GridRow extends React.Component {
                 default:
                     break
             }
-            switch (column.variable_name) {
+            switch (column.name) {
                 case 'symbol':
                     value = symbol
                     break
@@ -120,7 +120,7 @@ export class GridRow extends React.Component {
 
             if (value === null || value === 'n/a') {
                 return '-'
-            } else if (column.variable_type === 'string') {
+            } else if (column.type === 'string') {
                 return value
             } else if (!isNaN(value)) {
                 if (adjust_decimal) {
@@ -136,7 +136,7 @@ export class GridRow extends React.Component {
                 return value = prefix + numberWithCommas(value) + suffix
             } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
                 return value
-            } else if (column.variable_type === 'number' || column.variable_type === 'percentage' || column.variable_type === 'currency') {
+            } else if (column.type === 'number' || column.type === 'percentage' || column.type === 'currency') {
                 return '-'
             } else {
                 return '??'
@@ -224,7 +224,7 @@ export class GridRow extends React.Component {
                     { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
-                <td key={column.variable_name} className={ styleCell(column.variable_name) }>{ populateCellValue(column) }{ this.populateButton(column) }</td>
+                <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ this.populateButton(column) }</td>
                 ))}
             </tr>
         )
