@@ -66,8 +66,33 @@ code {
   padding: 20px 0 0;
 }
 
+#view-controls {
+  max-width: 500px;
+}
+
 #view-controls form label {
-  display: block
+  display: block;
+}
+
+#column-control {
+  margin: 10px 0;
+  max-width: 400px;
+}
+
+#column-control span {
+  display: inline-block;
+  padding: 0 9px;
+  font-size: 0.85em;
+  cursor: pointer;
+  border: 1px solid white;
+}
+
+#column-control span:hover {
+  border: 1px solid silver;
+}
+
+#column-control span.strikethrough {
+  text-decoration: line-through;
 }
 
 table {

@@ -53,12 +53,13 @@ const all_columns = [
         type: 'currency',
         num_decimals: 0
     },
-    {
-        name: 'change_pct',
-        display_name: 'Change',
-        type: 'percentage',
-        num_decimals: 2
-    },
+    // this column is too short-term ;-P
+    // {
+    //     name: 'change_pct',
+    //     display_name: 'Change',
+    //     type: 'percentage',
+    //     num_decimals: 2
+    // },
     {
         name: 'volume',
         display_name: 'Volume',
@@ -92,7 +93,7 @@ const all_columns = [
     }
 ]
 
-const default_displayed_columns = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+const default_shown_columns = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
 
 export class ComparingStocks extends React.Component {
 
@@ -124,7 +125,7 @@ export class ComparingStocks extends React.Component {
             show_untagged: true,
             sort_column: 'symbol',
             sort_dir_asc: true,
-            displayed_columns: [],
+            shown_columns: [],
             done: false
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
@@ -134,6 +135,7 @@ export class ComparingStocks extends React.Component {
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
+        this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
         this.onNewCash = this.onNewCash.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
@@ -330,14 +332,14 @@ export class ComparingStocks extends React.Component {
             newPositions['cash'] = newPosition
         }
 
-        let init_displayed_columns = all_columns.filter(column => default_displayed_columns.includes(column.name))
+        let init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
 
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthlyQuotes: newMonthlyQuotes,
                         allPerformanceNumbers: newPerformanceNumbers,
-                        displayed_columns: init_displayed_columns,
+                        shown_columns: init_shown_columns,
                         done: true })
 
     }
@@ -457,6 +459,19 @@ export class ComparingStocks extends React.Component {
         }
         localStorage.setItem('sort_column', JSON.stringify(new_sort_column))
         this.setState({ sort_column: new_sort_column })
+    }
+
+    onToggleShowColumn(column_name) {
+        this.setState(prevState => {
+            let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
+            if (new_shown_column_names.includes(column_name)) {
+                new_shown_column_names.splice(new_shown_column_names.findIndex(name => name === column_name), 1)
+            } else {
+                new_shown_column_names.push(column_name)
+            }
+            let new_shown_columns = all_columns.filter(column => new_shown_column_names.includes(column.name))
+            return { shown_columns: new_shown_columns }
+        })
     }
 
     tickerIsIndex(ticker) {
@@ -704,8 +719,6 @@ export class ComparingStocks extends React.Component {
             let ticker = position_info[0]
             let ticker_basis = position_info[1]['basis']
             let ticker_realized_gains = position_info[1]['realized_gains']
-            console.log(position_info[1])
-            // console.log(ticker + ': ' + ticker_realized_gains)
             let ticker_shares = position_info[1]['current_shares']
             let ticker_price = self.state.allCurrentQuotes[ticker]['current_price'] || 1
             if ((ticker !== 'cash' && self.state.show_holdings) || (ticker === 'cash' && self.state.show_cash)) {
@@ -727,7 +740,6 @@ export class ComparingStocks extends React.Component {
         if (aggr_totalbasis_by_tag['_everything_'] < 0) {
             aggr_totalbasis_by_tag['_everything_'] = 0
         }
-        console.log(aggr_totalrealized_by_tag)
 
         let all_stocks_of_interest = []
         Object.values(this.state.allTags).forEach(function(array_of_tickers) {
@@ -961,6 +973,8 @@ export class ComparingStocks extends React.Component {
             aggr_row_data[aggr_ticker] = new_aggr_data
         })
 
+        let shown_column_names = this.state.shown_columns.map(column => column.name)
+
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
@@ -1045,14 +1059,19 @@ export class ComparingStocks extends React.Component {
                                 <option value="sp500_pct_gain">SP&amp;500 Index</option>
                             </select>
                         </div>
+                        <div id="column-control">
+                            {all_columns.map(column => (
+                                <span key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name) } className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</span>
+                            ))}
+                        </div>
                     </div>
                 </div>
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
                             <th>Tags</th>
-                            {this.state.displayed_columns.map(column => (
-                            <th key={ column.name} onClick={ (e) => this.onChangeSort(column.name) }>{ column.display_name }{ sort_column === column.name ? sort_triangle : '' }</th>
+                            {this.state.shown_columns.map(column => (
+                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.display_name }{ sort_column === column.name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
@@ -1061,7 +1080,7 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={ticker}
                                 symbol={ticker}
-                                columns={this.state.displayed_columns}
+                                columns={this.state.shown_columns}
                                 tags={row_data[ticker]['tags']}
                                 special_classes={row_data[ticker]['special_classes']}
                                 current_price={this.state.allCurrentQuotes[ticker].current_price}
@@ -1078,7 +1097,7 @@ export class ComparingStocks extends React.Component {
                             />
                         ))}
                         <GridRowTotals
-                            columns={this.state.displayed_columns}
+                            columns={this.state.shown_columns}
                             total_value={aggr_totalvalue_by_tag['_everything_']}
                         />
                     </tbody>
@@ -1087,8 +1106,8 @@ export class ComparingStocks extends React.Component {
                     <thead>
                         <tr>
                             <th>Tags</th>
-                            {this.state.displayed_columns.map(column => (
-                            <th key={ column.name}>{ column.display_name }</th>
+                            {this.state.shown_columns.map(column => (
+                            <th key={ column.name }>{ column.display_name }</th>
                             ))}
                         </tr>
                     </thead>
@@ -1097,7 +1116,7 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={aggr_ticker}
                                 symbol={aggr_ticker}
-                                columns={this.state.displayed_columns}
+                                columns={this.state.shown_columns}
                                 tags={aggr_row_data[aggr_ticker]['tags']}
                                 special_classes={aggr_row_data[aggr_ticker]['special_classes']}
                                 current_price={aggr_row_data[aggr_ticker]['current_price']}
