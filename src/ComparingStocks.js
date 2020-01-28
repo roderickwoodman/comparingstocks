@@ -974,6 +974,27 @@ export class ComparingStocks extends React.Component {
         })
 
         let shown_column_names = this.state.shown_columns.map(column => column.name)
+        let all_columns_namesorted = JSON.parse(JSON.stringify(all_columns)).sort(function (a,b) {
+            let value_a = a.display_name
+            if (value_a.includes('year')) {
+                value_a = '0' + value_a
+            } else if (value_a.includes('month')) {
+                value_a = '00' + value_a
+            }
+            let value_b = b.display_name
+            if (value_b.includes('year')) {
+                value_b = '0' + value_b
+            } else if (value_b.includes('month')) {
+                value_b = '00' + value_b
+            }
+            if (value_a < value_b) {
+                return -1
+            } else if (value_a < value_b) {
+                return 1
+            } else {
+                return 0
+            }
+        })
 
         return (
             <div id="page-wrapper">
@@ -1060,7 +1081,7 @@ export class ComparingStocks extends React.Component {
                             </select>
                         </div>
                         <div id="column-control">
-                            {all_columns.map(column => (
+                            {all_columns_namesorted.map(column => (
                                 <span key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name) } className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</span>
                             ))}
                         </div>
