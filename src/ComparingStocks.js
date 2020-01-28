@@ -332,7 +332,14 @@ export class ComparingStocks extends React.Component {
             newPositions['cash'] = newPosition
         }
 
-        let init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
+
+        let init_shown_columns = []
+        const stored_shown_columns = JSON.parse(localStorage.getItem("shown_columns"))
+        if (stored_shown_columns !== null) {
+            init_shown_columns = [...stored_shown_columns]
+        } else {
+            init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
+        }
 
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
@@ -470,6 +477,7 @@ export class ComparingStocks extends React.Component {
                 new_shown_column_names.push(column_name)
             }
             let new_shown_columns = all_columns.filter(column => new_shown_column_names.includes(column.name))
+            localStorage.setItem('shown_columns', JSON.stringify(new_shown_columns))
             return { shown_columns: new_shown_columns }
         })
     }
