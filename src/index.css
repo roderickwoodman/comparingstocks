@@ -70,6 +70,10 @@ code {
   display: block
 }
 
+table {
+  margin-bottom: 30px;
+}
+
 .position-is-index {
   background: orange;
   font-weight: 800;
