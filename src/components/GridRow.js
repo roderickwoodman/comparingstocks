@@ -47,7 +47,7 @@ export class GridRow extends React.Component {
     // this button deletes the ticker or tag completely
     populateDeleteButton(column_name, is_aggregate) {
         if (is_aggregate) {
-            if (column_name === 'symbol' && this.props.symbol !== 'untagged') {
+            if (column_name === 'symbol' && this.props.row_name !== 'untagged') {
                 return (
                     <button onClick={ (e) => {this.props.on_delete_tag(this.props.row_name)}}>x</button>
                 )
