@@ -1115,7 +1115,7 @@ export class ComparingStocks extends React.Component {
                         <tr>
                             <th>Tags</th>
                             {this.state.shown_columns.map(column => (
-                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.display_name }{ column.name === 'symbol' ? this.populateSymbolCount(sorted_tickers.length) : ''}{ sort_column === column.name ? sort_triangle : '' }</th>
+                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.name === 'symbol' ? 'Ticker' : column.display_name }{ column.name === 'symbol' ? this.populateSymbolCount(sorted_tickers.length) : ''}{ sort_column === column.name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
@@ -1124,9 +1124,9 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={ticker}
                                 is_aggregate={false}
-                                symbol={ticker}
+                                row_name={ticker}
+                                membership_set={row_data[ticker]['tags']}
                                 columns={this.state.shown_columns}
-                                tags={row_data[ticker]['tags']}
                                 special_classes={row_data[ticker]['special_classes']}
                                 current_price={this.state.allCurrentQuotes[ticker].current_price}
                                 change_pct={this.state.allCurrentQuotes[ticker].change_pct}
@@ -1150,9 +1150,9 @@ export class ComparingStocks extends React.Component {
                 <table id="aggr-position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <th>Tags</th>
+                            <th>Tickers</th>
                             {this.state.shown_columns.map(column => (
-                            <th key={ column.name }>{ column.display_name }</th>
+                            <th key={ column.name }>{ column.name === 'symbol' ? 'Tag' : column.display_name }</th>
                             ))}
                         </tr>
                     </thead>
@@ -1161,9 +1161,9 @@ export class ComparingStocks extends React.Component {
                             <GridRow 
                                 key={aggr_ticker}
                                 is_aggregate={true}
-                                symbol={aggr_ticker}
+                                row_name={aggr_ticker}
+                                membership_set={this.state.allTags[aggr_ticker]}
                                 columns={this.state.shown_columns}
-                                tags={this.state.allTags[aggr_ticker]}
                                 special_classes={aggr_row_data[aggr_ticker]['special_classes']}
                                 current_price={aggr_row_data[aggr_ticker]['current_price']}
                                 change_pct={aggr_row_data[aggr_ticker]['change_pct']}

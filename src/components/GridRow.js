@@ -2,36 +2,39 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
+// This component displays table data for either tickers (is_aggregate === 0) or tags (is_aggregate === 1).
+// For tickers, the membership_set prop is all of the tags that it belongs to.
+// For tags, the membership_set prop is all of the tags that belong to it.
 export class GridRow extends React.Component {
 
     constructor(props) {
         super(props)
-        this.populateTags = this.populateTags.bind(this)
+        this.populateMemberButton = this.populateMemberButton.bind(this)
         this.populateDeleteButton = this.populateDeleteButton.bind(this)
     }
 
     // this button removes a ticker from a tag
-    populateTags(ticker_or_tag) {
+    populateMemberButton(symbol) {
         let is_aggr = this.props.is_aggregate
-        let symbol = this.props.symbol
+        let row_name = this.props.row_name
         if (is_aggr) {
-            // symbol is a TAG
-            // ticker_or_tag is a TICKER 
-            if (symbol !== 'untagged') {
+            // row_name is a TAG
+            // symbol is a TICKER 
+            if (row_name !== 'untagged') {
                 return (
-                    <button onClick={ (e) => { this.props.on_remove_from_tag(symbol, ticker_or_tag)} }>{ ticker_or_tag }</button>
+                    <button onClick={ (e) => { this.props.on_remove_from_tag(row_name, symbol)} }>{ symbol }</button>
                 )
             } else {
                 return (
-                    <button disabled="true">{ ticker_or_tag }</button>
+                    <button disabled="true">{ symbol }</button>
                 )
             }
         } else {
-            // symbol is a TICKER
-            // ticker_or_tag is a TAG 
-            if (!this.props.special_classes.includes('index') && !this.props.special_classes.includes('cash') && !this.props.tags.includes('untagged')) {
+            // row_name is a TICKER
+            // symbol is a TAG 
+            if (!this.props.special_classes.includes('index') && !this.props.special_classes.includes('cash') && !this.props.membership_set.includes('untagged')) {
                 return (
-                    <button onClick={ (e) => { this.props.on_remove_from_tag(ticker_or_tag, symbol)} }>{ ticker_or_tag }</button>
+                    <button onClick={ (e) => { this.props.on_remove_from_tag(symbol, row_name)} }>{ symbol }</button>
                 )
             } else {
                 return (
@@ -46,7 +49,7 @@ export class GridRow extends React.Component {
         if (is_aggregate) {
             if (column_name === 'symbol' && this.props.symbol !== 'untagged') {
                 return (
-                    <button onClick={ (e) => {this.props.on_delete_tag(this.props.symbol)}}>x</button>
+                    <button onClick={ (e) => {this.props.on_delete_tag(this.props.row_name)}}>x</button>
                 )
             } else {
                 return
@@ -54,7 +57,7 @@ export class GridRow extends React.Component {
         } else {
             if (column_name === 'symbol' && !this.props.special_classes.includes('index')) {
                 return (
-                    <button onClick={ (e) => {this.props.on_delete_ticker(this.props.symbol)}}>x</button>
+                    <button onClick={ (e) => {this.props.on_delete_ticker(this.props.row_name)}}>x</button>
                 )
             } else {
                 return
@@ -64,8 +67,7 @@ export class GridRow extends React.Component {
 
     render() {
         const is_aggr = this.props.is_aggregate
-        const symbol = this.props.symbol
-        const on_remove_from_tag = this.props.on_remove_from_tag
+        const row_name = this.props.row_name
         let current_shares = this.props.current_shares
         const current_price = this.props.current_price
         const change_pct = this.props.change_pct
@@ -111,7 +113,7 @@ export class GridRow extends React.Component {
             }
             switch (column.name) {
                 case 'symbol':
-                    value = symbol
+                    value = row_name
                     break
                 case 'current_shares':
                     value = current_shares
@@ -257,15 +259,15 @@ export class GridRow extends React.Component {
             }
         }
 
-        let tag_count = this.props.tags.length
+        let member_count = this.props.membership_set.length
 
         return (
             <tr className={ row_classes }>
                 <td>
-                    { tag_count ? this.props.tags.map(tag_name => this.populateTags(tag_name)) : (this.props.special_classes.length ? '' : '-') }
+                    { member_count ? this.props.membership_set.map(symbol => this.populateMemberButton(symbol)) : (this.props.special_classes.length ? '' : '-') }
                 </td>
                 { this.props.columns.map(column => (
-                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ is_aggr && column.name === 'symbol' && tag_count ? '('+tag_count+')' : '' }{ this.populateDeleteButton(column.name, is_aggr) }</td>
+                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ is_aggr && column.name === 'symbol' && member_count ? '('+member_count+')' : '' }{ this.populateDeleteButton(column.name, is_aggr) }</td>
                 ))}
             </tr>
         )
@@ -284,8 +286,8 @@ GridRow.defaultProps = {
 GridRow.propTypes = {
     is_aggregate: PropTypes.bool,
     columns: PropTypes.array,
-    symbol: PropTypes.string,
-    tags: PropTypes.array,
+    row_name: PropTypes.string,
+    membership_set: PropTypes.array,
     special_classes: PropTypes.array,
     current_shares: PropTypes.oneOfType([
         PropTypes.number,
