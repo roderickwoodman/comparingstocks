@@ -525,7 +525,7 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onDeleteTicker(event, delete_ticker) {
+    onDeleteTicker(delete_ticker) {
         this.setState(prevState => {
 
             // update tags
@@ -629,7 +629,7 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onRemoveFromTag(event, remove_from_tag, remove_ticker) {
+    onRemoveFromTag(remove_from_tag, remove_ticker) {
         this.setState(prevState => {
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             newAllTags[remove_from_tag] = newAllTags[remove_from_tag].filter(ticker => ticker !== remove_ticker)
@@ -1148,7 +1148,7 @@ export class ComparingStocks extends React.Component {
                                 is_aggregate={true}
                                 symbol={aggr_ticker}
                                 columns={this.state.shown_columns}
-                                tags={aggr_row_data[aggr_ticker]['tags']}
+                                tags={this.state.allTags[aggr_ticker]}
                                 special_classes={aggr_row_data[aggr_ticker]['special_classes']}
                                 current_price={aggr_row_data[aggr_ticker]['current_price']}
                                 change_pct={aggr_row_data[aggr_ticker]['change_pct']}

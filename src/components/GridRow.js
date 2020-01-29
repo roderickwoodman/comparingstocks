@@ -235,7 +235,7 @@ export class GridRow extends React.Component {
                     { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
-                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ column.name === 'symbol' && is_aggr ? '('+performance.num_tickers+')' : '' }{ this.populateButton(column.name, is_aggr) }</td>
+                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ is_aggr && column.name === 'symbol' && this.props.tags.length ? '('+this.props.tags.length+')' : '' }{ this.populateButton(column.name, is_aggr) }</td>
                 ))}
             </tr>
         )
