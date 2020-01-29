@@ -6,10 +6,43 @@ export class GridRow extends React.Component {
 
     constructor(props) {
         super(props)
-        this.populateButton = this.populateButton.bind(this)
+        this.populateTags = this.populateTags.bind(this)
+        this.populateDeleteButton = this.populateDeleteButton.bind(this)
     }
 
-    populateButton(column_name, is_aggregate) {
+    // this button removes a ticker from a tag
+    populateTags(ticker_or_tag) {
+        let is_aggr = this.props.is_aggregate
+        let symbol = this.props.symbol
+        if (is_aggr) {
+            // symbol is a TAG
+            // ticker_or_tag is a TICKER 
+            if (symbol !== 'untagged') {
+                return (
+                    <button onClick={ (e) => { this.props.on_remove_from_tag(symbol, ticker_or_tag)} }>{ ticker_or_tag }</button>
+                )
+            } else {
+                return (
+                    <button disabled="true">{ ticker_or_tag }</button>
+                )
+            }
+        } else {
+            // symbol is a TICKER
+            // ticker_or_tag is a TAG 
+            if (!this.props.special_classes.includes('index') && !this.props.special_classes.includes('cash') && !this.props.tags.includes('untagged')) {
+                return (
+                    <button onClick={ (e) => { this.props.on_remove_from_tag(ticker_or_tag, symbol)} }>{ ticker_or_tag }</button>
+                )
+            } else {
+                return (
+                    '-'
+                )
+            }
+        }
+    }
+
+    // this button deletes the ticker or tag completely
+    populateDeleteButton(column_name, is_aggregate) {
         if (is_aggregate) {
             if (column_name === 'symbol' && this.props.symbol !== 'untagged') {
                 return (
@@ -224,18 +257,15 @@ export class GridRow extends React.Component {
             }
         }
 
+        let tag_count = this.props.tags.length
+
         return (
             <tr className={ row_classes }>
                 <td>
-                    { this.props.tags.map( tag_name => tag_name !== 'untagged' && (
-                        <button key={tag_name} onClick={ (e) => {on_remove_from_tag(e, tag_name, symbol)}}>
-                            {tag_name}
-                        </button>
-                    ))}
-                    { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
+                    { tag_count ? this.props.tags.map(tag_name => this.populateTags(tag_name)) : (this.props.special_classes.length ? '' : '-') }
                 </td>
                 { this.props.columns.map(column => (
-                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ is_aggr && column.name === 'symbol' && this.props.tags.length ? '('+this.props.tags.length+')' : '' }{ this.populateButton(column.name, is_aggr) }</td>
+                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ is_aggr && column.name === 'symbol' && tag_count ? '('+tag_count+')' : '' }{ this.populateDeleteButton(column.name, is_aggr) }</td>
                 ))}
             </tr>
         )
