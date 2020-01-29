@@ -224,7 +224,7 @@ export class GridRow extends React.Component {
                     { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
-                <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ this.populateButton(column) }</td>
+    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ column.name === 'symbol' && performance.hasOwnProperty('num_tickers') ? '('+performance.num_tickers+')' : '' }{ this.populateButton(column) }</td>
                 ))}
             </tr>
         )
