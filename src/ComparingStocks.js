@@ -1100,7 +1100,7 @@ export class ComparingStocks extends React.Component {
                         <tr>
                             <th>Tags</th>
                             {this.state.shown_columns.map(column => (
-                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.display_name }{ sort_column === column.name ? sort_triangle : '' }</th>
+                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.display_name }{ column.name === 'symbol' ? '('+sorted_tickers.length+')' : ''}{ sort_column === column.name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
