@@ -132,6 +132,7 @@ export class ComparingStocks extends React.Component {
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
         this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
         this.getPositionFromCashTransactions = this.getPositionFromCashTransactions.bind(this)
+        this.populateSymbolCount = this.populateSymbolCount.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
@@ -710,6 +711,20 @@ export class ComparingStocks extends React.Component {
         return Array.from(this.state.allTags['untagged'])
     }
 
+    populateSymbolCount(grid_rows) {
+        if (this.state.show_index) {
+            grid_rows -= 1
+        }
+        if (this.state.show_cash) {
+            grid_rows -= 1
+        }
+        if (grid_rows) {
+            return '(' + grid_rows + ')'
+        } else {
+            return
+        }
+    }
+
     render() {
 
         let self = this
@@ -1100,7 +1115,7 @@ export class ComparingStocks extends React.Component {
                         <tr>
                             <th>Tags</th>
                             {this.state.shown_columns.map(column => (
-                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.display_name }{ column.name === 'symbol' ? '('+sorted_tickers.length+')' : ''}{ sort_column === column.name ? sort_triangle : '' }</th>
+                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.display_name }{ column.name === 'symbol' ? this.populateSymbolCount(sorted_tickers.length) : ''}{ sort_column === column.name ? sort_triangle : '' }</th>
                             ))}
                         </tr>
                     </thead>
