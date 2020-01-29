@@ -1108,6 +1108,7 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && sorted_tickers.map(ticker => (
                             <GridRow 
                                 key={ticker}
+                                is_aggregate={false}
                                 symbol={ticker}
                                 columns={this.state.shown_columns}
                                 tags={row_data[ticker]['tags']}
@@ -1144,6 +1145,7 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && aggr_tickers.map(aggr_ticker => (
                             <GridRow 
                                 key={aggr_ticker}
+                                is_aggregate={true}
                                 symbol={aggr_ticker}
                                 columns={this.state.shown_columns}
                                 tags={aggr_row_data[aggr_ticker]['tags']}
@@ -1158,7 +1160,7 @@ export class ComparingStocks extends React.Component {
                                 baseline={this.state.baseline}
                                 total_value = {aggr_totalvalue_by_tag['_everything_']}
                                 on_remove_from_tag={this.onRemoveFromTag}
-                                on_delete_ticker={this.onDeleteTicker}
+                                on_delete_tag={this.onDeleteTag}
                             />
                         ))}
                     </tbody>

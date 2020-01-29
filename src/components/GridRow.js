@@ -9,17 +9,28 @@ export class GridRow extends React.Component {
         this.populateButton = this.populateButton.bind(this)
     }
 
-    populateButton(column) {
-        if (column.name === 'symbol' && !this.props.special_classes.includes('index')) {
-            return (
-                <button onClick={ (e) => {this.props.on_delete_ticker(e, this.props.symbol)}}>x</button>
-            )
+    populateButton(column_name, is_aggregate) {
+        if (is_aggregate) {
+            if (column_name === 'symbol' && this.props.symbol !== 'untagged') {
+                return (
+                    <button onClick={ (e) => {this.props.on_delete_tag(this.props.symbol)}}>x</button>
+                )
+            } else {
+                return
+            }
         } else {
-            return
+            if (column_name === 'symbol' && !this.props.special_classes.includes('index')) {
+                return (
+                    <button onClick={ (e) => {this.props.on_delete_ticker(this.props.symbol)}}>x</button>
+                )
+            } else {
+                return
+            }
         }
     }
 
     render() {
+        const is_aggr = this.props.is_aggregate
         const symbol = this.props.symbol
         const on_remove_from_tag = this.props.on_remove_from_tag
         let current_shares = this.props.current_shares
@@ -224,7 +235,7 @@ export class GridRow extends React.Component {
                     { (!this.props.tags.length || this.props.tags[0] === 'untagged') ? '-' : '' }
                 </td>
                 { this.props.columns.map(column => (
-    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ column.name === 'symbol' && performance.hasOwnProperty('num_tickers') ? '('+performance.num_tickers+')' : '' }{ this.populateButton(column) }</td>
+                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ column.name === 'symbol' && is_aggr ? '('+performance.num_tickers+')' : '' }{ this.populateButton(column.name, is_aggr) }</td>
                 ))}
             </tr>
         )
@@ -241,6 +252,7 @@ GridRow.defaultProps = {
 }
 
 GridRow.propTypes = {
+    is_aggregate: PropTypes.bool,
     columns: PropTypes.array,
     symbol: PropTypes.string,
     tags: PropTypes.array,
@@ -274,4 +286,5 @@ GridRow.propTypes = {
     total_value: PropTypes.number,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
+    on_delete_tag: PropTypes.func,
 }
