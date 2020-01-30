@@ -15,7 +15,9 @@ export class GridRow extends React.Component {
         this.toggleHover = this.toggleHover.bind(this)
         this.populateMemberButton = this.populateMemberButton.bind(this)
         this.populateDeleteButton = this.populateDeleteButton.bind(this)
+        this.populateCellValue = this.populateCellValue.bind(this)
         this.styleCell = this.styleCell.bind(this)
+        this.numberWithCommas = this.numberWithCommas.bind(this)
     }
 
     toggleHover() {
@@ -136,144 +138,171 @@ export class GridRow extends React.Component {
         return classes
     }
 
-    render() {
-        const is_aggr = this.props.is_aggregate
-        const row_name = this.props.row_name
+    // prints the value that is (usually) explicitly passed in via props
+    // AND is responsible for calculating values "current_value", "percent_value", and "percent_profit"
+    populateCellValue(column) {
+        let prefix = ''
+        let suffix = ''
+        let adjust_decimal = false
+        let num_decimals
+        let value, baseline_value
+        let performance_value = false
+
+        const total_value = this.props.total_value
         let current_shares = this.props.current_shares
         const current_price = this.props.current_price
-        const change_pct = this.props.change_pct
         let basis = this.props.basis
         let realized_gains = this.props.realized_gains
-        const volume = this.props.volume
-        const performance = this.props.performance_numbers
-        const baseline = this.props.baseline
+
+        let current_value, percent_value, percent_profit
         if (isNaN(current_shares) || current_shares === 0) {
             current_shares = 'n/a'
             basis = 'n/a'
             realized_gains = 'n/a'
-        }
+            current_value = 'n/a'
+            percent_value = 'n/a'
+            percent_profit = 'n/a'
+        } else {
+            // calculate current_value
+            current_value = (current_shares) ? current_price * current_shares : 'n/a'
 
-        function numberWithCommas(x) {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        function populateCellValue(column) {
-            let prefix = ''
-            let suffix = ''
-            let adjust_decimal = false
-            let num_decimals
-            let value, baseline_value
-            let performance_value = false
-            switch (column.type) {
-                case 'number':
-                    adjust_decimal = true
-                    num_decimals = column.num_decimals
-                    break
-                case 'currency':
-                    adjust_decimal = true
-                    num_decimals = column.num_decimals
-                    prefix = '$'
-                    break
-                case 'percentage':
-                    adjust_decimal = true
-                    num_decimals = column.num_decimals
-                    suffix = '%'
-                    break
-                default:
-                    break
-            }
-            switch (column.name) {
-                case 'symbol':
-                    value = row_name
-                    break
-                case 'current_shares':
-                    value = current_shares
-                    break
-                case 'current_price':
-                    value = current_price
-                    break
-                case 'current_value':
-                    value = current_value
-                    break
-                case 'percent_value':
-                    value = percent_value
-                    break
-                case 'basis':
-                    value = basis
-                    break
-                case 'percent_profit':
-                    value = percent_profit
-                    break
-                case 'realized_gains':
-                    value = realized_gains
-                    break
-                case 'change_pct':
-                    value = change_pct
-                    break
-                case 'volume':
-                    value = volume
-                    break
-                case 'dollar_volume':
-                    value = current_price * volume
-                    break
-                case 'short_change_pct':
-                    value = performance.short_change_pct
-                    performance_value = true
-                    baseline_value = baseline.short_change_pct
-                    break
-                case 'medium_change_pct':
-                    value = performance.medium_change_pct
-                    performance_value = true
-                    baseline_value = baseline.medium_change_pct
-                    break
-                case 'long_change_pct':
-                    value = performance.long_change_pct
-                    performance_value = true
-                    baseline_value = baseline.long_change_pct
-                    break
-                default:
-                    break
-            }
-            if (row_name === 'cash') {
-                switch (column.name) {
-                    case 'realized_gains': 
-                    case 'percent_profit': 
-                    case 'volume': 
-                    case 'dollar_volume': 
-                    case 'short_change_pct': 
-                    case 'medium_change_pct': 
-                    case 'long_change_pct': 
-                        value = 'n/a'
-                        break
-                    default:
-                        break
-                }
-            }
-
-            if (value === null || value === 'n/a') {
-                return '-'
-            } else if (column.type === 'string') {
-                return value
-            } else if (!isNaN(value)) {
-                if (adjust_decimal) {
-                    if (column.hasOwnProperty('scaling_power')) {
-                        value *= Math.pow(10, column.scaling_power)
-                    }
-                    if (performance_value && baseline.name !== 'zero_pct_gain') {
-                        value = value - baseline_value
-                    }
-                    if (value.toString().indexOf('.'))
-                    value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
-                }
-                return value = prefix + numberWithCommas(value) + suffix
-            } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
-                return value
-            } else if (column.type === 'number' || column.type === 'percentage' || column.type === 'currency') {
-                return '-'
+            // calculate percent_value
+            if (isNaN(total_value) || total_value === 0) {
+                percent_value = 'n/a'
             } else {
-                return '??'
+                percent_value = (current_value !== 'n/a') ? current_value / total_value * 100 : 'n/a'
+            }
+
+            // calculate percent_profit
+            if (current_shares === 0) {
+                percent_profit = 'n/a'
+            } else if (basis > current_value) {
+                percent_profit = 'losing'
+            } else if (basis < current_value) {
+                percent_profit = (1 - basis / current_value) * 100
+            } else {
+                percent_profit = 0
             }
         }
+
+        switch (column.type) {
+            case 'number':
+                adjust_decimal = true
+                num_decimals = column.num_decimals
+                break
+            case 'currency':
+                adjust_decimal = true
+                num_decimals = column.num_decimals
+                prefix = '$'
+                break
+            case 'percentage':
+                adjust_decimal = true
+                num_decimals = column.num_decimals
+                suffix = '%'
+                break
+            default:
+                break
+        }
+
+        switch (column.name) {
+            case 'symbol':
+                value = this.props.row_name
+                break
+            case 'current_shares':
+                value = current_shares
+                break
+            case 'current_price':
+                value = current_price
+                break
+            case 'current_value':
+                value = current_value
+                break
+            case 'percent_value':
+                value = percent_value
+                break
+            case 'basis':
+                value = basis
+                break
+            case 'percent_profit':
+                value = percent_profit
+                break
+            case 'realized_gains':
+                value = realized_gains
+                break
+            case 'change_pct':
+                value = this.props.change_pct
+                break
+            case 'volume':
+                value = this.props.volume
+                break
+            case 'dollar_volume':
+                value = this.props.current_price * this.props.volume
+                break
+            case 'short_change_pct':
+                value = this.props.performance_numbers.short_change_pct
+                performance_value = true
+                baseline_value = this.props.baseline.short_change_pct
+                break
+            case 'medium_change_pct':
+                value = this.props.performance_numbers.medium_change_pct
+                performance_value = true
+                baseline_value = this.props.baseline.medium_change_pct
+                break
+            case 'long_change_pct':
+                value = this.props.performance_numbers.long_change_pct
+                performance_value = true
+                baseline_value = this.props.baseline.long_change_pct
+                break
+            default:
+                break
+        }
+        if ( this.props.row_name === 'cash' || (this.props.is_aggregate && !this.props.membership_set.length) ) {
+            switch (column.name) {
+                case 'realized_gains': 
+                case 'percent_profit': 
+                case 'volume': 
+                case 'dollar_volume': 
+                case 'short_change_pct': 
+                case 'medium_change_pct': 
+                case 'long_change_pct': 
+                    value = 'n/a'
+                    break
+                default:
+                    break
+            }
+        }
+
+        if (value === null || value === 'n/a') {
+            return '-'
+        } else if (column.type === 'string') {
+            return value
+        } else if (!isNaN(value)) {
+            if (adjust_decimal) {
+                if (column.hasOwnProperty('scaling_power')) {
+                    value *= Math.pow(10, column.scaling_power)
+                }
+                if (performance_value && this.props.baseline.name !== 'zero_pct_gain') {
+                    value = value - baseline_value
+                }
+                if (value.toString().indexOf('.'))
+                value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
+            }
+            return value = prefix + this.numberWithCommas(value) + suffix
+        } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
+            return value
+        } else if (column.type === 'number' || column.type === 'percentage' || column.type === 'currency') {
+            return '-'
+        } else {
+            return '??'
+        }
+    }
+
+    numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    render() {
+        const is_aggr = this.props.is_aggregate
 
         let row_classes = 'position-row' 
         this.props.special_classes.forEach(function(special_class) {
@@ -284,29 +313,6 @@ export class GridRow extends React.Component {
                 row_classes += ' position-is-cash'
             }
         })
-
-        let current_value, percent_value, percent_profit
-        if (isNaN(current_shares)) {
-            current_value = 'n/a'
-            percent_value = 'n/a'
-            percent_profit = 'n/a'
-        } else {
-            current_value = (current_shares) ? current_price * current_shares : 'n/a'
-            if (isNaN(this.props.total_value) || this.props.total_value === 0) {
-                percent_value = 'n/a'
-            } else {
-                percent_value = (current_value !== 'n/a') ? current_value / this.props.total_value * 100 : 'n/a'
-            }
-            if (current_shares === 0) {
-                percent_profit = 'n/a'
-            } else if (basis > current_value) {
-                percent_profit = 'losing'
-            } else if (basis === current_value) {
-                percent_profit = 0
-            } else if (current_value > basis) {
-                percent_profit = (1 - basis / current_value) * 100
-            }
-        }
 
         let member_count = this.props.membership_set.length
 
@@ -319,11 +325,11 @@ export class GridRow extends React.Component {
                 { this.props.columns.map(function(column) {
                     if (column.name === 'symbol') {
                         return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
+                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ self.populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
                         )
                     } else {
                         return (
-                            <td key={column.name} className={ self.styleCell(column.name) }>{ populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
+                            <td key={column.name} className={ self.styleCell(column.name) }>{ self.populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
                         )
                     }
                 })}
