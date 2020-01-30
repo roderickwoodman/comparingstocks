@@ -234,6 +234,21 @@ export class GridRow extends React.Component {
                 default:
                     break
             }
+            if (row_name === 'cash') {
+                switch (column.name) {
+                    case 'realized_gains': 
+                    case 'percent_profit': 
+                    case 'volume': 
+                    case 'dollar_volume': 
+                    case 'short_change_pct': 
+                    case 'medium_change_pct': 
+                    case 'long_change_pct': 
+                        value = 'n/a'
+                        break
+                    default:
+                        break
+                }
+            }
 
             if (value === null || value === 'n/a') {
                 return '-'
