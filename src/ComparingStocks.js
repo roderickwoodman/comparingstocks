@@ -675,8 +675,13 @@ export class ComparingStocks extends React.Component {
                 }
             })
 
+            // add status messages
+            let newStatusMessages = [...prevState.status_messages]
+            let new_message = ['Tag "' + delete_tag + '" has now been deleted.']
+            newStatusMessages = [...new_message, ...newStatusMessages]
+
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags }
+            return { allTags: newAllTags, status_messages: newStatusMessages }
         })
     }
 

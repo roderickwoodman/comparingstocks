@@ -9,8 +9,17 @@ export class GridRow extends React.Component {
 
     constructor(props) {
         super(props)
+        this.state = {
+            hover: false
+        }
+        this.toggleHover = this.toggleHover.bind(this)
         this.populateMemberButton = this.populateMemberButton.bind(this)
         this.populateDeleteButton = this.populateDeleteButton.bind(this)
+        this.styleCell = this.styleCell.bind(this)
+    }
+
+    toggleHover() {
+        this.setState({ hover: !this.state.hover })
     }
 
     // this button removes a ticker from a tag
@@ -46,23 +55,82 @@ export class GridRow extends React.Component {
 
     // this button deletes the ticker or tag completely
     populateDeleteButton(column_name, is_aggregate) {
+        let classes = 'delete'
+        if (this.state.hover) {
+            classes += ' hovering'
+        }
         if (is_aggregate) {
             if (column_name === 'symbol' && this.props.row_name !== 'untagged') {
                 return (
-                    <button onClick={ (e) => {this.props.on_delete_tag(this.props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {this.props.on_delete_tag(this.props.row_name)}}>x</button>
                 )
             } else {
                 return
             }
         } else {
-            if (column_name === 'symbol' && !this.props.special_classes.includes('index')) {
+            if (column_name === 'symbol' 
+                && !this.props.special_classes.includes('index')
+                && !(this.props.row_name === 'cash' && isNaN(this.props.current_shares)) ) {
                 return (
-                    <button onClick={ (e) => {this.props.on_delete_ticker(this.props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {this.props.on_delete_ticker(this.props.row_name)}}>x</button>
                 )
             } else {
                 return
             }
         }
+    }
+
+    styleCell(column_name) {
+        let classes = 'position-cell'
+        const row_name = this.props.row_name
+        const change_pct = this.props.change_pct
+        const current_shares = this.props.current_shares
+        const special_classes = this.props.special_classes
+        const performance = this.props.performance_numbers
+        const baseline = this.props.baseline
+        if ( this.state.hover 
+            && column_name === 'symbol' 
+            && !special_classes.includes('index') 
+            && row_name !== 'untagged'
+            && !(row_name === 'cash' && isNaN(current_shares)) ) {
+            classes += ' hovering'
+        }
+        switch (column_name) {
+            case 'symbol':
+                classes += ' col-symbol'
+                break
+            case 'change_pct':
+                if (change_pct > 0) {
+                    classes += ' text-green'
+                } else if (change_pct < 0) {
+                    classes += ' text-red'
+                }
+                break
+            case 'short_change_pct':
+                if (performance.short_change_pct > 0 && performance.short_change_pct > baseline.short_change_pct) {
+                    classes += ' text-green'
+                } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
+                    classes += ' text-red'
+                }
+                break
+            case 'medium_change_pct':
+                if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
+                    classes += ' text-green'
+                } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
+                    classes += ' text-red'
+                }
+                break
+            case 'long_change_pct':
+                if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
+                    classes += ' text-green'
+                } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
+                    classes += ' text-red'
+                }
+                break
+            default:
+                break
+        }
+        return classes
     }
 
     render() {
@@ -189,43 +257,6 @@ export class GridRow extends React.Component {
             }
         }
 
-        function styleCell(column) {
-            let classes = 'position-cell'
-            switch (column) {
-                case 'change_pct':
-                    if (change_pct > 0) {
-                        classes += ' text-green'
-                    } else if (change_pct < 0) {
-                        classes += ' text-red'
-                    }
-                    break
-                case 'short_change_pct':
-                    if (performance.short_change_pct > 0 && performance.short_change_pct > baseline.short_change_pct) {
-                        classes += ' text-green'
-                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
-                        classes += ' text-red'
-                    }
-                    break
-                case 'medium_change_pct':
-                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
-                        classes += ' text-green'
-                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
-                        classes += ' text-red'
-                    }
-                    break
-                case 'long_change_pct':
-                    if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
-                        classes += ' text-green'
-                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
-                        classes += ' text-red'
-                    }
-                    break
-                default:
-                    break
-            }
-            return classes
-        }
-
         let row_classes = 'position-row' 
         this.props.special_classes.forEach(function(special_class) {
             if (special_class === 'index') {
@@ -261,14 +292,23 @@ export class GridRow extends React.Component {
 
         let member_count = this.props.membership_set.length
 
+        let self = this
         return (
             <tr className={ row_classes }>
                 <td>
                     { member_count ? this.props.membership_set.map(symbol => this.populateMemberButton(symbol)) : (this.props.special_classes.length ? '' : '-') }
                 </td>
-                { this.props.columns.map(column => (
-                    <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ is_aggr && column.name === 'symbol' && member_count ? '('+member_count+')' : '' }{ this.populateDeleteButton(column.name, is_aggr) }</td>
-                ))}
+                { this.props.columns.map(function(column) {
+                    if (column.name === 'symbol') {
+                        return (
+                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
+                        )
+                    } else {
+                        return (
+                            <td key={column.name} className={ self.styleCell(column.name) }>{ populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
+                        )
+                    }
+                })}
             </tr>
         )
     }
