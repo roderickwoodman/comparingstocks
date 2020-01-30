@@ -167,6 +167,23 @@ button.delete:not(.hovering) {
   display: none;
 }
 
+button.tag-removal {
+  margin: 1px;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+
+button.tag-removal:disabled {
+  cursor: default;
+}
+
+button.tag-removal:hover:not(:disabled) {
+  color: red;
+  border-color: red;
+  border-radius: 5px;
+  text-decoration: line-through;
+}
+
 .switch {
   position: relative;
   width: 40px;

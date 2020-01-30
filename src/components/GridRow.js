@@ -31,11 +31,11 @@ export class GridRow extends React.Component {
             // symbol is a TICKER 
             if (row_name !== 'untagged') {
                 return (
-                    <button key={row_name + symbol + is_aggr} onClick={ (e) => { this.props.on_remove_from_tag(row_name, symbol)} }>{ symbol }</button>
+                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { this.props.on_remove_from_tag(row_name, symbol)} }>{ symbol }</button>
                 )
             } else {
                 return (
-                    <button key={row_name + symbol + is_aggr} disabled={true}>{ symbol }</button>
+                    <button key={row_name + symbol + is_aggr} className="tag-removal" disabled={true}>{ symbol }</button>
                 )
             }
         } else {
@@ -43,7 +43,7 @@ export class GridRow extends React.Component {
             // symbol is a TAG 
             if (!this.props.special_classes.includes('index') && !this.props.special_classes.includes('cash') && !this.props.membership_set.includes('untagged')) {
                 return (
-                    <button key={row_name + symbol + is_aggr} onClick={ (e) => { this.props.on_remove_from_tag(symbol, row_name)} }>{ symbol }</button>
+                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { this.props.on_remove_from_tag(symbol, row_name)} }>{ symbol }</button>
                 )
             } else {
                 return (
