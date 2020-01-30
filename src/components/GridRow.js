@@ -95,6 +95,9 @@ export class GridRow extends React.Component {
             && !(row_name === 'cash' && isNaN(current_shares)) ) {
             classes += ' hovering'
         }
+        if ( column_name === 'symbol' && row_name === 'untagged') {
+            classes += ' italics'
+        }
         switch (column_name) {
             case 'symbol':
                 classes += ' col-symbol'

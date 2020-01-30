@@ -980,7 +980,7 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        let aggr_tickers = Object.keys(this.state.allTags)
+        let aggr_tickers = Object.keys(this.state.allTags).filter(ticker => !(ticker === 'untagged' && !this.state.allTags.untagged.length))
         let aggr_row_data = {}
         aggr_tickers.forEach(function(aggr_ticker) {
 

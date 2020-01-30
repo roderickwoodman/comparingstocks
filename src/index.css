@@ -125,6 +125,10 @@ th:hover {
   cursor: pointer;
 }
 
+td.italics {
+  font-style: italic;
+}
+
 .totals {
   font-weight: 800;
   text-align: center;
