@@ -1028,18 +1028,16 @@ export class ComparingStocks extends React.Component {
             <div id="page-wrapper">
                 <div id="page-controls">
                     <div id="input-controls">
-                        <div id="input-forms">
-                            <InputForms
-                                all_stocks={this.state.allStocks}
-                                all_tags={this.state.allTags}
-                                on_new_tickers={this.onNewTickers}
-                                on_new_tags={this.onNewTags}
-                                on_delete_tag={this.onDeleteTag}
-                                on_new_transaction={this.onNewTransaction}
-                                on_new_cash={this.onNewCash}
-                                on_new_messages={this.onNewMessages}
-                            />
-                        </div>
+                        <InputForms
+                            all_stocks={this.state.allStocks}
+                            all_tags={this.state.allTags}
+                            on_new_tickers={this.onNewTickers}
+                            on_new_tags={this.onNewTags}
+                            on_delete_tag={this.onDeleteTag}
+                            on_new_transaction={this.onNewTransaction}
+                            on_new_cash={this.onNewCash}
+                            on_new_messages={this.onNewMessages}
+                        />
                         <div id="status-messages-wrapper">
                             { this.state.status_messages.length ? 'History:' : '' }
                             <div id="status-messages">
