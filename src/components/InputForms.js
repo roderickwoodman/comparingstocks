@@ -24,12 +24,12 @@ export class InputForms extends React.Component {
     render() {
         return (
             <div id="input-forms">
-                <ul id="which-input-forms">
-                    <li onClick={ (e)=>this.onWhichInputs('tickers')}>tickers</li>
-                    <li onClick={ (e)=>this.onWhichInputs('tags')}>tags</li>
-                    <li onClick={ (e)=>this.onWhichInputs('transactions')}>transactions</li>
-                </ul>
-                <section>
+                <section id="input-form-selectors">
+                    <span className={"input-form-selector" + (this.state.which_inputs==="tickers" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tickers')}>Tickers</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="tags" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tags')}>Tags</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
+                </section>
+                <section id="input-form-forms">
                     {this.state.which_inputs === 'tickers' && (
                         <React.Fragment>
                         <AddTicker

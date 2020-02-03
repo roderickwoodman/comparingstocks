@@ -12,6 +12,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+ul {
+  list-style: none;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -28,18 +32,40 @@ code {
   padding: 10px;
 }
 
-#input-controls > * {
-  margin: 5px 5px 5px 0;
-  padding: 5px;
-}
-
 #input-forms {
   display: inline-block;
-  min-width: 400px;
+  height: 140px;
+  width: 425px;
+  margin-bottom: 15px;
+  padding: 10px 0 0 0;
+  background-color: #e8d9c5;
+}
+
+.input-form-selector {
+  padding: 3px 0;
+  width: 33%;
+  display: inline-block;
+  text-align: center;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.input-form-selector:last-child {
+  width: 34%;
+}
+
+.input-form-selector.selected {
+  background-color: #f6f0e8;
+}
+
+#input-form-forms {
+  background-color: #f6f0e8;
+  height: 140px;
+  padding-top: 5px;
 }
 
 #input-forms form {
-  margin: 15px 0;
+  padding: 10px 15px;
 }
 
 #status-messages-wrapper {
