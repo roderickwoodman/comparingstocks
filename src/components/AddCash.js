@@ -57,7 +57,6 @@ export class AddCash extends React.Component {
                         <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="15" placeholder="$1000" required />
                     </label>
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-secondary" type="reset" value="Clear" placeholder="$500.99" disabled={this.state.user_cash_amount===''} />
                         <input className="btn btn-sm btn-secondary" type="submit" value="Adjust Cash" disabled={this.state.user_cash_amount===''}/>
                     </section>
                 </form>

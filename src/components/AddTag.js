@@ -57,7 +57,6 @@ export class AddTag extends React.Component {
                     <label>New Tag Name(s):</label>
                     <input value={this.state.user_tags_string} onChange={this.handleChange} required />
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-secondary" type="reset" value="Clear" disabled={this.state.user_tags_string===''} />
                         <input className="btn btn-sm btn-secondary" type="submit" value="Create Tag(s)" disabled={this.state.user_tags_string===''} />
                     </section>
                 </form>
