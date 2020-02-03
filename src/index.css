@@ -34,7 +34,7 @@ code {
 
 #input-forms {
   display: inline-block;
-  height: 140px;
+  height: 160px;
   width: 425px;
   margin-bottom: 15px;
   padding: 10px 0 0 0;
@@ -65,11 +65,12 @@ code {
 }
 
 #input-forms form {
-  padding: 10px 15px;
+  padding: 5px 15px;
 }
 
 #status-messages-wrapper {
   display: inline-block;
+  padding: 0 5px;
   vertical-align: top;
   min-width: 450px;
   font-weight: 800;
@@ -79,6 +80,10 @@ code {
   font-weight: 400;
   max-height: 125px;
   overflow-y: scroll;
+}
+
+#status-messages p {
+  margin-bottom: 0;
 }
 
 #position-listing {
@@ -125,6 +130,10 @@ form input {
   margin: 0 5px;
   font-size: 0.9em;
   background-color: white;
+}
+
+#input-forms input {
+  line-height: 1.0em;
 }
 
 #position-listing button,

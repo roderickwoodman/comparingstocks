@@ -98,8 +98,8 @@ export class AddTicker extends React.Component {
                         </select>
                     </label>
                     <section className="buttonrow">
-                        <input type="reset" value="Clear" disabled={this.state.user_tickers_string===''} />
-                        <input type="submit" value="Add Ticker(s)" disabled={this.state.user_tickers_string===''}/>
+                        <input className="btn btn-sm btn-secondary" type="reset" value="Clear" disabled={this.state.user_tickers_string===''} />
+                        <input className="btn btn-sm btn-secondary" type="submit" value="Add Ticker(s)" disabled={this.state.user_tickers_string===''}/>
                     </section>
                 </form>
             </section>

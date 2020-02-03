@@ -44,7 +44,7 @@ export class DeleteTag extends React.Component {
                         </select>
                     </label>
                     <section className="buttonrow">
-                        <input type="submit" value="Delete Tag" disabled={this.state.delete_tag==='untagged'} />
+                        <input className="btn btn-sm btn-secondary" type="submit" value="Delete Tag" disabled={this.state.delete_tag==='untagged'} />
                     </section>
                 </form>
             </section>
