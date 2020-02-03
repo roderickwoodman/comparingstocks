@@ -1,4 +1,5 @@
 import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import { GridRow } from './components/GridRow'
 import { GridRowTotals } from './components/GridRowTotals'
 import { InputForms } from './components/InputForms'

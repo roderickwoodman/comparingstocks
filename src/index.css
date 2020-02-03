@@ -121,6 +121,17 @@ code {
   text-decoration: line-through;
 }
 
+form input {
+  margin: 0 5px;
+  font-size: 0.9em;
+  background-color: white;
+}
+
+#position-listing button,
+#aggr-position-listing button {
+  font-size: 0.7em;
+}
+
 table {
   margin-bottom: 30px;
 }
@@ -141,8 +152,10 @@ tr.position-row {
   font-style: italic;
 }
 
-th,
-.position-cell {
+#position-listing th,
+#aggr-position-listing th,
+#position-listing .position-cell,
+#aggr-position-listing .position-cell {
   width: 125px;
   text-align: center;
 }
