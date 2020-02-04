@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { GridRow } from './components/GridRow'
 import { GridRowTotals } from './components/GridRowTotals'
 import { InputForms } from './components/InputForms'
+import { Popover } from 'react-bootstrap'
+import { OverlayTrigger } from 'react-bootstrap'
 
 
 const all_columns = [
@@ -1025,6 +1027,24 @@ export class ComparingStocks extends React.Component {
             }
         })
 
+        const popover = (
+            <Popover id="popover-basic">
+                <Popover.Title as="h3">included columns:</Popover.Title>
+                <Popover.Content>
+                <div id="column-control">
+                    {all_columns_namesorted.map(column => (
+                        <span key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name) } className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</span>
+                    ))}
+                </div>
+                </Popover.Content>
+            </Popover>
+        )
+        const ColumnSettings = () => (
+            <OverlayTrigger trigger="click" placement="left" overlay={popover}>
+                <button class="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
+            </OverlayTrigger>
+          );
+          
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
@@ -1107,11 +1127,11 @@ export class ComparingStocks extends React.Component {
                                 <option value="sp500_pct_gain">SP&amp;500 Index</option>
                             </select>
                         </div>
-                        <div id="column-control">
-                            {all_columns_namesorted.map(column => (
-                                <span key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name) } className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</span>
-                            ))}
+
+                        <div id="page-settings">
+                            <ColumnSettings />
                         </div>
+
                     </div>
                 </div>
                 <table id="position-listing" cellSpacing="0">
