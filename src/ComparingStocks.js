@@ -1027,7 +1027,66 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        const popover = (
+        const row_popover = (
+            <Popover id="popover-basic">
+                <Popover.Title as="h3">included rows:</Popover.Title>
+                <Popover.Content>
+                <div id="row-control">
+                    <form>
+                        <div className="switch_controls">
+
+                            <div className="switch_control">
+                                <div className="switch_label">show holdings:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_holdings" name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_holdings" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show tagged:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_tagged" name="show_tagged" type="checkbox" checked={this.state.show_tagged} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_tagged" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show untagged:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_untagged" name="show_untagged" type="checkbox" checked={this.state.show_untagged} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_untagged" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show index:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_index" name="show_index" type="checkbox" checked={this.state.show_index} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_index" className="switch"></label>
+                                </div>
+                            </div>
+
+                            <div className="switch_control">
+                                <div className="switch_label">show cash:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_cash" name="show_cash" type="checkbox" checked={this.state.show_cash} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_cash" className="switch"></label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                </Popover.Content>
+            </Popover>
+        )
+        const RowSettings = () => (
+            <OverlayTrigger trigger="click" placement="left" overlay={row_popover}>
+                <button class="btn btn-sm btn-secondary" variant="success">&#x2699; Rows</button>
+            </OverlayTrigger>
+        );
+        const column_popover = (
             <Popover id="popover-basic">
                 <Popover.Title as="h3">included columns:</Popover.Title>
                 <Popover.Content>
@@ -1040,10 +1099,10 @@ export class ComparingStocks extends React.Component {
             </Popover>
         )
         const ColumnSettings = () => (
-            <OverlayTrigger trigger="click" placement="left" overlay={popover}>
+            <OverlayTrigger trigger="click" placement="left" overlay={column_popover}>
                 <button class="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
             </OverlayTrigger>
-          );
+        );
           
         return (
             <div id="page-wrapper">
@@ -1075,51 +1134,6 @@ export class ComparingStocks extends React.Component {
                         </div>
                     </div>
                     <div id="view-controls">
-                        <form>
-                            <div className="switch_controls">
-
-                                <div className="switch_control">
-                                    <div className="switch_label">show holdings:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_holdings" name="show_holdings" type="checkbox" checked={this.state.show_holdings} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_holdings" className="switch"></label>
-                                    </div>
-                                </div>
-
-                                <div className="switch_control">
-                                    <div className="switch_label">show tagged:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_tagged" name="show_tagged" type="checkbox" checked={this.state.show_tagged} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_tagged" className="switch"></label>
-                                    </div>
-                                </div>
-
-                                <div className="switch_control">
-                                    <div className="switch_label">show untagged:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_untagged" name="show_untagged" type="checkbox" checked={this.state.show_untagged} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_untagged" className="switch"></label>
-                                    </div>
-                                </div>
-
-                                <div className="switch_control">
-                                    <div className="switch_label">show index:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_index" name="show_index" type="checkbox" checked={this.state.show_index} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_index" className="switch"></label>
-                                    </div>
-                                </div>
-
-                                <div className="switch_control">
-                                    <div className="switch_label">show cash:</div>
-                                    <div className="switch_wrapper">
-                                        <input id="show_cash" name="show_cash" type="checkbox" checked={this.state.show_cash} onChange={this.onShowInputChange} />
-                                        <label htmlFor="show_cash" className="switch"></label>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </form>
                         <div id="baseline-control">
                             <label htmlFor="baseline">Performance Baseline:</label>
                             <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
@@ -1129,6 +1143,7 @@ export class ComparingStocks extends React.Component {
                         </div>
 
                         <div id="page-settings">
+                            <RowSettings />
                             <ColumnSettings />
                         </div>
 
