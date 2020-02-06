@@ -86,7 +86,8 @@ code {
   margin-bottom: 0;
 }
 
-#position-listing {
+#position-listing,
+#aggr-position-listing {
   padding: 10px;
   width: 100%;
 }
