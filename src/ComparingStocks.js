@@ -1103,6 +1103,48 @@ export class ComparingStocks extends React.Component {
                 <button class="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
             </OverlayTrigger>
         );
+        
+        let all_row_data = []
+        sorted_tickers.forEach(function(ticker) {
+            let new_row = {}
+            new_row['is_aggregate'] = false
+            new_row['row_name'] = ticker
+            new_row['membership_set'] = row_data[ticker]['tags']
+            new_row['columns'] = self.state.shown_columns
+            new_row['special_classes'] = row_data[ticker]['special_classes']
+            new_row['current_price'] = self.state.allCurrentQuotes[ticker].current_price
+            new_row['change_pct'] = self.state.allCurrentQuotes[ticker].change_pct
+            new_row['volume'] = self.state.allCurrentQuotes[ticker].volume
+            new_row['basis'] = row_data[ticker]['basis']
+            new_row['current_shares'] = row_data[ticker]['current_shares']
+            new_row['realized_gains'] = row_data[ticker]['realized_gains']
+            new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
+            new_row['baseline'] = self.state.baseline
+            new_row['total_value'] = aggr_totalvalue_by_tag['_everything_']
+            new_row['on_remove_from_tag'] = self.onRemoveFromTag
+            new_row['on_delete_ticker'] = self.onDeleteTicker
+            all_row_data.push(new_row)
+        })
+        aggr_tickers.forEach(function(aggr_ticker) {
+            let new_row = {}
+            new_row['is_aggregate'] = true
+            new_row['row_name'] = aggr_ticker
+            new_row['membership_set'] = self.state.allTags[aggr_ticker]
+            new_row['columns'] = self.state.shown_columns
+            new_row['special_classes'] = aggr_row_data[aggr_ticker]['special_classes']
+            new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
+            new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
+            new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
+            new_row['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
+            new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
+            new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
+            new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
+            new_row['baseline'] = self.state.baseline
+            new_row['total_value'] = aggr_totalvalue_by_tag['_everything_']
+            new_row['on_remove_from_tag'] = self.onRemoveFromTag
+            new_row['on_delete_ticker'] = self.onDeleteTicker
+            all_row_data.push(new_row)
+        })
           
         return (
             <div id="page-wrapper">
@@ -1159,25 +1201,25 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.done && sorted_tickers.map(ticker => (
+                        {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
                             <GridRow 
-                                key={ticker}
-                                is_aggregate={false}
-                                row_name={ticker}
-                                membership_set={row_data[ticker]['tags']}
-                                columns={this.state.shown_columns}
-                                special_classes={row_data[ticker]['special_classes']}
-                                current_price={this.state.allCurrentQuotes[ticker].current_price}
-                                change_pct={this.state.allCurrentQuotes[ticker].change_pct}
-                                volume={this.state.allCurrentQuotes[ticker].volume}
-                                basis={row_data[ticker]['basis']}
-                                current_shares={row_data[ticker]['current_shares']}
-                                realized_gains={row_data[ticker]['realized_gains']}
-                                performance_numbers={this.state.allPerformanceNumbers[ticker]}
-                                baseline={this.state.baseline}
-                                total_value = {aggr_totalvalue_by_tag['_everything_']}
-                                on_remove_from_tag={this.onRemoveFromTag}
-                                on_delete_ticker={this.onDeleteTicker}
+                                key={row_data.row_name}
+                                is_aggregate={row_data.is_aggregate}
+                                row_name={row_data.row_name}
+                                membership_set={row_data.membership_set}
+                                columns={row_data.columns}
+                                special_classes={row_data.special_classes}
+                                current_price={row_data.current_price}
+                                change_pct={row_data.change_pct}
+                                volume={row_data.volume}
+                                basis={row_data.basis}
+                                current_shares={row_data.current_shares}
+                                realized_gains={row_data.realized_gains}
+                                performance_numbers={row_data.performance_numbers}
+                                baseline={row_data.baseline}
+                                total_value={row_data.total_value}
+                                on_remove_from_tag={row_data.on_remove_from_tag}
+                                on_delete_ticker={row_data.on_delete_ticker}
                             />
                         ))}
                         <GridRowTotals
@@ -1196,27 +1238,27 @@ export class ComparingStocks extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.done && aggr_tickers.map(aggr_ticker => (
+                        {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
                             <GridRow 
-                                key={aggr_ticker}
-                                is_aggregate={true}
-                                row_name={aggr_ticker}
-                                membership_set={this.state.allTags[aggr_ticker]}
-                                columns={this.state.shown_columns}
-                                special_classes={aggr_row_data[aggr_ticker]['special_classes']}
-                                current_price={aggr_row_data[aggr_ticker]['current_price']}
-                                change_pct={aggr_row_data[aggr_ticker]['change_pct']}
-                                volume={aggr_row_data[aggr_ticker]['volume']}
-                                basis={aggr_totalbasis_by_tag[aggr_ticker]}
-                                current_shares={aggr_row_data[aggr_ticker]['current_shares']}
-                                realized_gains={aggr_row_data[aggr_ticker]['realized_gains']}
-                                performance_numbers={aggr_row_data[aggr_ticker]['performance']}
-                                baseline={this.state.baseline}
-                                total_value = {aggr_totalvalue_by_tag['_everything_']}
-                                on_remove_from_tag={this.onRemoveFromTag}
-                                on_delete_tag={this.onDeleteTag}
+                                key={row_data.row_name}
+                                is_aggregate={row_data.is_aggregate}
+                                row_name={row_data.row_name}
+                                membership_set={row_data.membership_set}
+                                columns={row_data.columns}
+                                special_classes={row_data.special_classes}
+                                current_price={row_data.current_price}
+                                change_pct={row_data.change_pct}
+                                volume={row_data.volume}
+                                basis={row_data.basis}
+                                current_shares={row_data.current_shares}
+                                realized_gains={row_data.realized_gains}
+                                performance_numbers={row_data.performance_numbers}
+                                baseline={row_data.baseline}
+                                total_value={row_data.total_value}
+                                on_remove_from_tag={row_data.on_remove_from_tag}
+                                on_delete_ticker={row_data.on_delete_ticker}
                             />
-                        ))}
+                        ))}}
                     </tbody>
                 </table>
             </div>
