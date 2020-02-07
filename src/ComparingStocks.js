@@ -1094,7 +1094,7 @@ export class ComparingStocks extends React.Component {
             <OverlayTrigger trigger="click" placement="left" overlay={row_popover}>
                 <button className="btn btn-sm btn-secondary" variant="success">&#x2699; Rows</button>
             </OverlayTrigger>
-        );
+        )
         const column_popover = (
             <Popover id="popover-basic">
                 <Popover.Title as="h3">included columns:</Popover.Title>
@@ -1111,8 +1111,30 @@ export class ComparingStocks extends React.Component {
             <OverlayTrigger trigger="click" placement="left" overlay={column_popover}>
                 <button className="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
             </OverlayTrigger>
-        );
+        )
         
+        const PopulateRow = ({row_data}) => (
+            <GridRow 
+                key={row_data.row_name}
+                is_aggregate={row_data.is_aggregate}
+                row_name={row_data.row_name}
+                membership_set={row_data.membership_set}
+                columns={row_data.columns}
+                special_classes={row_data.special_classes}
+                current_price={row_data.current_price}
+                change_pct={row_data.change_pct}
+                volume={row_data.volume}
+                basis={row_data.basis}
+                current_shares={row_data.current_shares}
+                realized_gains={row_data.realized_gains}
+                performance_numbers={row_data.performance_numbers}
+                baseline={row_data.baseline}
+                total_value={row_data.total_value}
+                on_remove_from_tag={row_data.on_remove_from_tag}
+                on_delete_ticker={row_data.on_delete_ticker}
+            />
+        )
+
         let all_row_data = []
         sorted_tickers.forEach(function(ticker) {
             let new_row = {}
@@ -1213,25 +1235,7 @@ export class ComparingStocks extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
-                            <GridRow 
-                                key={row_data.row_name}
-                                is_aggregate={row_data.is_aggregate}
-                                row_name={row_data.row_name}
-                                membership_set={row_data.membership_set}
-                                columns={row_data.columns}
-                                special_classes={row_data.special_classes}
-                                current_price={row_data.current_price}
-                                change_pct={row_data.change_pct}
-                                volume={row_data.volume}
-                                basis={row_data.basis}
-                                current_shares={row_data.current_shares}
-                                realized_gains={row_data.realized_gains}
-                                performance_numbers={row_data.performance_numbers}
-                                baseline={row_data.baseline}
-                                total_value={row_data.total_value}
-                                on_remove_from_tag={row_data.on_remove_from_tag}
-                                on_delete_ticker={row_data.on_delete_ticker}
-                            />
+                            <PopulateRow key={row_data.row_name} row_data={row_data} />
                         ))}
                         <GridRowTotals
                             columns={this.state.shown_columns}
@@ -1250,25 +1254,7 @@ export class ComparingStocks extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
-                            <GridRow 
-                                key={row_data.row_name}
-                                is_aggregate={row_data.is_aggregate}
-                                row_name={row_data.row_name}
-                                membership_set={row_data.membership_set}
-                                columns={row_data.columns}
-                                special_classes={row_data.special_classes}
-                                current_price={row_data.current_price}
-                                change_pct={row_data.change_pct}
-                                volume={row_data.volume}
-                                basis={row_data.basis}
-                                current_shares={row_data.current_shares}
-                                realized_gains={row_data.realized_gains}
-                                performance_numbers={row_data.performance_numbers}
-                                baseline={row_data.baseline}
-                                total_value={row_data.total_value}
-                                on_remove_from_tag={row_data.on_remove_from_tag}
-                                on_delete_ticker={row_data.on_delete_ticker}
-                            />
+                            <PopulateRow key={row_data.row_name} row_data={row_data} />
                         ))}
                     </tbody>
                 </table>
