@@ -1083,7 +1083,7 @@ export class ComparingStocks extends React.Component {
         )
         const RowSettings = () => (
             <OverlayTrigger trigger="click" placement="left" overlay={row_popover}>
-                <button class="btn btn-sm btn-secondary" variant="success">&#x2699; Rows</button>
+                <button className="btn btn-sm btn-secondary" variant="success">&#x2699; Rows</button>
             </OverlayTrigger>
         );
         const column_popover = (
@@ -1100,7 +1100,7 @@ export class ComparingStocks extends React.Component {
         )
         const ColumnSettings = () => (
             <OverlayTrigger trigger="click" placement="left" overlay={column_popover}>
-                <button class="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
+                <button className="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
             </OverlayTrigger>
         );
         
@@ -1258,7 +1258,7 @@ export class ComparingStocks extends React.Component {
                                 on_remove_from_tag={row_data.on_remove_from_tag}
                                 on_delete_ticker={row_data.on_delete_ticker}
                             />
-                        ))}}
+                        ))}
                     </tbody>
                 </table>
             </div>
