@@ -312,6 +312,9 @@ export class GridRow extends React.Component {
             if (special_class === 'cash') {
                 row_classes += ' position-is-cash'
             }
+            if (special_class === 'aggregate') {
+                row_classes += ' position-is-aggregate'
+            }
         })
 
         let member_count = this.props.membership_set.length

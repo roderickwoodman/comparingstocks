@@ -992,7 +992,7 @@ export class ComparingStocks extends React.Component {
 
             new_aggr_data['symbol'] = aggr_ticker
             new_aggr_data['tags'] = []
-            new_aggr_data['special_classes'] = []
+            new_aggr_data['special_classes'] = ['aggregate']
             new_aggr_data['basis'] = 'n/a'
             new_aggr_data['current_shares'] = aggr_totalvalue_by_tag[aggr_ticker]
             new_aggr_data['current_price'] = 1
