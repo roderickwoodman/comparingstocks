@@ -121,11 +121,12 @@ export class ComparingStocks extends React.Component {
                 long_change_pct: 0,
             },
             allPerformanceNumbers: {},
-            show_index: false,
             show_holdings: true,
-            show_cash: false,
             show_tagged: true,
             show_untagged: true,
+            show_index: false,
+            show_cash: false,
+            show_aggregates: true,
             sort_column: 'symbol',
             sort_dir_asc: true,
             shown_columns: [],
@@ -191,7 +192,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_index', 'show_holdings', 'show_cash', 'show_tagged', 'show_untagged']
+        const view_controls = ['show_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates']
         view_controls.forEach(function(control) {
             const stored_control = JSON.parse(localStorage.getItem(control))
             if (stored_control !== null) {
@@ -1075,6 +1076,14 @@ export class ComparingStocks extends React.Component {
                                 </div>
                             </div>
 
+                            <div className="switch_control">
+                                <div className="switch_label">show aggregates:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_aggregates" name="show_aggregates" type="checkbox" checked={this.state.show_aggregates} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_aggregates" className="switch"></label>
+                                </div>
+                            </div>
+
                         </div>
                     </form>
                 </div>
@@ -1125,26 +1134,28 @@ export class ComparingStocks extends React.Component {
             new_row['on_delete_ticker'] = self.onDeleteTicker
             all_row_data.push(new_row)
         })
-        aggr_tickers.forEach(function(aggr_ticker) {
-            let new_row = {}
-            new_row['is_aggregate'] = true
-            new_row['row_name'] = aggr_ticker
-            new_row['membership_set'] = self.state.allTags[aggr_ticker]
-            new_row['columns'] = self.state.shown_columns
-            new_row['special_classes'] = aggr_row_data[aggr_ticker]['special_classes']
-            new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
-            new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
-            new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
-            new_row['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
-            new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
-            new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
-            new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
-            new_row['baseline'] = self.state.baseline
-            new_row['total_value'] = aggr_totalvalue_by_tag['_everything_']
-            new_row['on_remove_from_tag'] = self.onRemoveFromTag
-            new_row['on_delete_ticker'] = self.onDeleteTicker
-            all_row_data.push(new_row)
-        })
+        if (this.state.show_aggregates) {
+            aggr_tickers.forEach(function(aggr_ticker) {
+                let new_row = {}
+                new_row['is_aggregate'] = true
+                new_row['row_name'] = aggr_ticker
+                new_row['membership_set'] = self.state.allTags[aggr_ticker]
+                new_row['columns'] = self.state.shown_columns
+                new_row['special_classes'] = aggr_row_data[aggr_ticker]['special_classes']
+                new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
+                new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
+                new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
+                new_row['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
+                new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
+                new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
+                new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
+                new_row['baseline'] = self.state.baseline
+                new_row['total_value'] = aggr_totalvalue_by_tag['_everything_']
+                new_row['on_remove_from_tag'] = self.onRemoveFromTag
+                new_row['on_delete_ticker'] = self.onDeleteTicker
+                all_row_data.push(new_row)
+            })
+        }
           
         return (
             <div id="page-wrapper">
