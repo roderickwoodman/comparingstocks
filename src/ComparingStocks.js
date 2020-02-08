@@ -154,6 +154,7 @@ export class ComparingStocks extends React.Component {
         this.getHoldings = this.getHoldings.bind(this)
         this.getTagged = this.getTagged.bind(this)
         this.getUntagged = this.getUntagged.bind(this)
+        this.sortTickers = this.sortTickers.bind(this)
     }
 
     componentDidMount() {
@@ -735,6 +736,121 @@ export class ComparingStocks extends React.Component {
         }
     }
 
+    sortTickers(ticker_list) {
+
+        let sort_column = this.state.sort_column
+        let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
+        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_profit']
+        let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
+
+        let sorted_list = [...ticker_list]
+        let self = this
+        sorted_list.sort(function(a,b) {
+            let value_a, value_b
+            if (quote_columns.includes(sort_column)) {
+                if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
+                    if (sort_column === 'dollar_volume') {
+                        value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
+                        value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
+                    } else if (sort_column === 'symbol') {
+                        value_a = self.state.allCurrentQuotes[a][sort_column].toUpperCase()
+                        value_b = self.state.allCurrentQuotes[b][sort_column].toUpperCase()
+                    } else {
+                        value_a = self.state.allCurrentQuotes[a][sort_column]
+                        value_b = self.state.allCurrentQuotes[b][sort_column]
+                    }
+                } 
+            } else if (performance_columns.includes(sort_column)) {
+                if (self.state.allMonthlyQuotes.hasOwnProperty(a) || a === 'cash') {
+                    value_a = self.state.allPerformanceNumbers[a][sort_column]
+                }
+                if (self.state.allMonthlyQuotes.hasOwnProperty(b) || b === 'cash') {
+                    value_b = self.state.allPerformanceNumbers[b][sort_column]
+                }
+            } else if (holdings_columns.includes(sort_column)) {
+                let positionvalue_a, positionvalue_b
+                if (self.state.allPositions.hasOwnProperty(a)) {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
+                            positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
+                            if (sort_column === 'percent_profit') {
+                                let basis_a = self.state.allPositions[a]['basis']
+                                value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
+                            } else {
+                                value_a = positionvalue_a
+                            }
+                        } else {
+                            value_a = 'n/a'
+                        }
+                    } else if (self.state.allPositions[a]['current_shares'] || sort_column === 'realized_gains') {
+                        value_a = self.state.allPositions[a][sort_column]
+                    } else {
+                        value_a = 'n/a'
+                    }
+                } else {
+                    value_a = 'n/a'
+                }
+                if (self.state.allPositions.hasOwnProperty(b)) {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
+                        if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
+                            positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
+                            if (sort_column === 'percent_profit' && positionvalue_b !== 0) {
+                                let basis_b = self.state.allPositions[b]['basis']
+                                value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
+                            } else {
+                                value_b = positionvalue_b
+                            }
+                        } else {
+                            value_b = 'n/a'
+                        }
+                    } else if (self.state.allPositions[b]['current_shares'] || sort_column === 'realized_gains') {
+                        value_b = self.state.allPositions[b][sort_column]
+                    } else {
+                        value_b = 'n/a'
+                    }
+                } else {
+                    value_b = 'n/a'
+                }
+            } else {
+                return 0
+            }
+                
+            if (value_a === value_b) {
+                return 0
+            }
+            if (self.state.sort_dir_asc === true) {
+                if (value_a === 'n/a') {
+                    return 1
+                }
+                if (value_b === 'n/a') {
+                    return -1
+                }
+                if (value_a < value_b) {
+                    return -1
+                }
+                if (value_a > value_b) {
+                    return 1
+                }
+            } else {
+                if (value_a === 'n/a') {
+                    return 1
+                }
+                if (value_b === 'n/a') {
+                    return -1
+                }
+                if (value_a < value_b) {
+                    return 1
+                }
+                if (value_a > value_b) {
+                    return -1
+                }
+            }
+            return 0
+        })
+
+        return sorted_list
+    }
+
     render() {
 
         let self = this
@@ -844,113 +960,8 @@ export class ComparingStocks extends React.Component {
             }
         }
         let unique_tickers_to_show = Array.from(new Set(tickers_to_show))
-        let sort_column = self.state.sort_column
-        let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_profit']
-        let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
         let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
-        let sorted_tickers = unique_tickers_to_show.sort(function(a, b) {
-            let value_a, value_b
-            if (quote_columns.includes(sort_column)) {
-                if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                    if (sort_column === 'dollar_volume') {
-                        value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
-                        value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
-                    } else if (sort_column === 'symbol') {
-                        value_a = self.state.allCurrentQuotes[a][sort_column].toUpperCase()
-                        value_b = self.state.allCurrentQuotes[b][sort_column].toUpperCase()
-                    } else {
-                        value_a = self.state.allCurrentQuotes[a][sort_column]
-                        value_b = self.state.allCurrentQuotes[b][sort_column]
-                    }
-                } 
-            } else if (performance_columns.includes(sort_column)) {
-                if (self.state.allMonthlyQuotes.hasOwnProperty(a) || a === 'cash') {
-                    value_a = self.state.allPerformanceNumbers[a][sort_column]
-                }
-                if (self.state.allMonthlyQuotes.hasOwnProperty(b) || b === 'cash') {
-                    value_b = self.state.allPerformanceNumbers[b][sort_column]
-                }
-            } else if (holdings_columns.includes(sort_column)) {
-                let positionvalue_a, positionvalue_b
-                if (self.state.allPositions.hasOwnProperty(a)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
-                            positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
-                            if (sort_column === 'percent_profit') {
-                                let basis_a = self.state.allPositions[a]['basis']
-                                value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
-                            } else {
-                                value_a = positionvalue_a
-                            }
-                        } else {
-                            value_a = 'n/a'
-                        }
-                    } else if (self.state.allPositions[a]['current_shares'] || sort_column === 'realized_gains') {
-                        value_a = self.state.allPositions[a][sort_column]
-                    } else {
-                        value_a = 'n/a'
-                    }
-                } else {
-                    value_a = 'n/a'
-                }
-                if (self.state.allPositions.hasOwnProperty(b)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
-                        if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                            positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
-                            if (sort_column === 'percent_profit' && positionvalue_b !== 0) {
-                                let basis_b = self.state.allPositions[b]['basis']
-                                value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
-                            } else {
-                                value_b = positionvalue_b
-                            }
-                        } else {
-                            value_b = 'n/a'
-                        }
-                    } else if (self.state.allPositions[b]['current_shares'] || sort_column === 'realized_gains') {
-                        value_b = self.state.allPositions[b][sort_column]
-                    } else {
-                        value_b = 'n/a'
-                    }
-                } else {
-                    value_b = 'n/a'
-                }
-            } else {
-                return 0
-            }
-                
-            if (value_a === value_b) {
-                return 0
-            }
-            if (self.state.sort_dir_asc === true) {
-                if (value_a === 'n/a') {
-                    return 1
-                }
-                if (value_b === 'n/a') {
-                    return -1
-                }
-                if (value_a < value_b) {
-                    return -1
-                }
-                if (value_a > value_b) {
-                    return 1
-                }
-            } else {
-                if (value_a === 'n/a') {
-                    return 1
-                }
-                if (value_b === 'n/a') {
-                    return -1
-                }
-                if (value_a < value_b) {
-                    return 1
-                }
-                if (value_a > value_b) {
-                    return -1
-                }
-            }
-            return 0
-        })
+        let sorted_tickers = this.sortTickers(unique_tickers_to_show)
 
         let row_data = {}
         sorted_tickers.forEach(function(ticker) {
