@@ -1114,6 +1114,17 @@ export class ComparingStocks extends React.Component {
             </OverlayTrigger>
         )
         
+        const PopulateHeaderRow = ({is_aggregate}) => (
+            <GridHeaderRow
+                is_aggregate={is_aggregate}
+                columns={this.state.shown_columns}
+                symbol_count_str={symbol_count}
+                sort_column={this.state.sort_column}
+                sort_triangle={sort_triangle}
+                on_change_sort={this.onChangeSort}
+            />
+        )
+
         const PopulateRow = ({row_data}) => (
             <GridRow 
                 key={row_data.row_name}
@@ -1230,14 +1241,7 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <GridHeaderRow
-                                is_aggregate={false}
-                                columns={this.state.shown_columns}
-                                symbol_count_str={symbol_count}
-                                sort_column={this.state.sort_column}
-                                sort_triangle={sort_triangle}
-                                on_change_sort={this.onChangeSort}
-                            />
+                            <PopulateHeaderRow is_aggregate={false} />
                         </tr>
                     </thead>
                     <tbody>
@@ -1253,14 +1257,7 @@ export class ComparingStocks extends React.Component {
                 <table id="aggr-position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <GridHeaderRow
-                                is_aggregate={true}
-                                columns={this.state.shown_columns}
-                                symbol_count_str={''}
-                                sort_column={this.state.sort_column}
-                                sort_triangle={sort_triangle}
-                                on_change_sort={this.onChangeSort}
-                            />
+                            <PopulateHeaderRow is_aggregate={true} />
                         </tr>
                     </thead>
                     <tbody>
