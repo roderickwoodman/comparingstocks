@@ -1,5 +1,6 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { GridHeaderRow } from './components/GridHeaderRow'
 import { GridRow } from './components/GridRow'
 import { GridRowTotals } from './components/GridRowTotals'
 import { InputForms } from './components/InputForms'
@@ -1178,6 +1179,8 @@ export class ComparingStocks extends React.Component {
                 all_row_data.push(new_row)
             })
         }
+
+        let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
           
         return (
             <div id="page-wrapper">
@@ -1227,10 +1230,14 @@ export class ComparingStocks extends React.Component {
                 <table id="position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <th>Tags</th>
-                            {this.state.shown_columns.map(column => (
-                            <th key={ column.name } onClick={ (e)=>this.onChangeSort(column.name) }>{ column.name === 'symbol' ? 'Ticker' : column.display_name }{ column.name === 'symbol' ? this.populateSymbolCount(sorted_tickers.length) : ''}{ sort_column === column.name ? sort_triangle : '' }</th>
-                            ))}
+                            <GridHeaderRow
+                                is_aggregate={false}
+                                columns={this.state.shown_columns}
+                                symbol_count_str={symbol_count}
+                                sort_column={this.state.sort_column}
+                                sort_triangle={sort_triangle}
+                                on_change_sort={this.onChangeSort}
+                            />
                         </tr>
                     </thead>
                     <tbody>
@@ -1246,10 +1253,14 @@ export class ComparingStocks extends React.Component {
                 <table id="aggr-position-listing" cellSpacing="0">
                     <thead>
                         <tr>
-                            <th>Tickers</th>
-                            {this.state.shown_columns.map(column => (
-                            <th key={ column.name }>{ column.name === 'symbol' ? 'Tag' : column.display_name }</th>
-                            ))}
+                            <GridHeaderRow
+                                is_aggregate={true}
+                                columns={this.state.shown_columns}
+                                symbol_count_str={''}
+                                sort_column={this.state.sort_column}
+                                sort_triangle={sort_triangle}
+                                on_change_sort={this.onChangeSort}
+                            />
                         </tr>
                     </thead>
                     <tbody>
