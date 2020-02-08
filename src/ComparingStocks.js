@@ -1254,18 +1254,20 @@ export class ComparingStocks extends React.Component {
                         />
                     </tbody>
                 </table>
-                <table id="aggr-position-listing" cellSpacing="0">
-                    <thead>
-                        <tr>
-                            <PopulateHeaderRow is_aggregate={true} />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
-                            <PopulateRow key={row_data.row_name} row_data={row_data} />
-                        ))}
-                    </tbody>
-                </table>
+                {this.state.done && this.state.show_aggregates && (
+                    <table id="aggr-position-listing" cellSpacing="0">
+                        <thead>
+                            <tr>
+                                <PopulateHeaderRow is_aggregate={true} />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
+                                <PopulateRow key={row_data.row_name} row_data={row_data} />
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
         )
     }
