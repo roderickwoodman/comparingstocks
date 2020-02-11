@@ -1602,6 +1602,7 @@ export class ComparingStocks extends React.Component {
                         <GridRowTotals
                             columns={this.state.shown_columns}
                             total_value={this.state.aggrTotalValue['_everything_']}
+                            total_basis={this.state.aggrBasis['_everything_']}
                         />
                     </tbody>
                 </table>
