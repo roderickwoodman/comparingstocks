@@ -1006,8 +1006,9 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['tags'] = []
             new_aggr_data['special_classes'] = ['aggregate']
             new_aggr_data['basis'] = 'n/a'
-            new_aggr_data['current_shares'] = aggr_totalvalue_by_tag[aggr_ticker]
-            new_aggr_data['current_price'] = 1
+            new_aggr_data['current_shares'] = 'n/a'
+            new_aggr_data['current_price'] = 'n/a'
+            new_aggr_data['current_value'] = aggr_totalvalue_by_tag[aggr_ticker]
             new_aggr_data['change_pct'] = 'n/a'
             new_aggr_data['volume'] = 'n/a'
             new_aggr_data['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
@@ -1149,6 +1150,7 @@ export class ComparingStocks extends React.Component {
                 volume={row_data.volume}
                 basis={row_data.basis}
                 current_shares={row_data.current_shares}
+                current_value={row_data.current_value}
                 realized_gains={row_data.realized_gains}
                 performance_numbers={row_data.performance_numbers}
                 baseline={row_data.baseline}
@@ -1171,6 +1173,7 @@ export class ComparingStocks extends React.Component {
             new_row['volume'] = self.state.allCurrentQuotes[ticker].volume
             new_row['basis'] = row_data[ticker]['basis']
             new_row['current_shares'] = row_data[ticker]['current_shares']
+            new_row['current_value'] = new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
@@ -1192,6 +1195,7 @@ export class ComparingStocks extends React.Component {
                 new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
                 new_row['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
                 new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
+                new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline

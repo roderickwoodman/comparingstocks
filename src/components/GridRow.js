@@ -139,7 +139,7 @@ export class GridRow extends React.Component {
     }
 
     // prints the value that is (usually) explicitly passed in via props
-    // AND is responsible for calculating values "current_value", "percent_value", and "percent_profit"
+    // AND is responsible for calculating "percent_value" and "percent_profit"
     populateCellValue(column) {
         let prefix = ''
         let suffix = ''
@@ -149,23 +149,20 @@ export class GridRow extends React.Component {
         let performance_value = false
 
         const total_value = this.props.total_value
-        let current_shares = this.props.current_shares
         const current_price = this.props.current_price
+        let current_shares = this.props.current_shares
+        const current_value = this.props.current_value
         let basis = this.props.basis
         let realized_gains = this.props.realized_gains
 
-        let current_value, percent_value, percent_profit
-        if (isNaN(current_shares) || current_shares === 0) {
+        let percent_value, percent_profit
+        if (isNaN(current_price) || isNaN(current_shares) || isNaN(current_value)) {
             current_shares = 'n/a'
             basis = 'n/a'
             realized_gains = 'n/a'
-            current_value = 'n/a'
             percent_value = 'n/a'
             percent_profit = 'n/a'
         } else {
-            // calculate current_value
-            current_value = (current_shares) ? current_price * current_shares : 'n/a'
-
             // calculate percent_value
             if (isNaN(total_value) || total_value === 0) {
                 percent_value = 'n/a'
@@ -361,6 +358,10 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     current_price: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    current_value: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
