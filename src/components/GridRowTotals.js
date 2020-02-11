@@ -8,6 +8,7 @@ export class GridRowTotals extends React.Component {
 
         const total_value = this.props.total_value
         const total_basis = this.props.total_basis
+        const total_performance = this.props.total_performance
 
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -28,6 +29,15 @@ export class GridRowTotals extends React.Component {
                 case 'percent_basis':
                     value = (total_basis) ? '100%' : 'n/a'
                     break
+                case 'short_change_pct':
+                    value = (Math.round(10 * total_performance.short_change_pct / 10)).toFixed(1) + '%'
+                    break
+                case 'medium_change_pct':
+                    value = (Math.round(10 * total_performance.medium_change_pct / 10)).toFixed(1) + '%'
+                    break
+                case 'long_change_pct':
+                    value = (Math.round(10 * total_performance.long_change_pct / 10)).toFixed(1) + '%'
+                    break
                 default:
                     break
             }
@@ -45,6 +55,9 @@ export class GridRowTotals extends React.Component {
                 case 'percent_value':
                 case 'basis':
                 case 'percent_basis':
+                case 'short_change_pct':
+                case 'medium_change_pct':
+                case 'long_change_pct':
                     classes += 'totals'
                     break
                 default:
@@ -70,4 +83,5 @@ GridRowTotals.propTypes = {
     columns: PropTypes.array,
     total_value: PropTypes.number,
     total_basis: PropTypes.number,
+    total_performance: PropTypes.object,
 }

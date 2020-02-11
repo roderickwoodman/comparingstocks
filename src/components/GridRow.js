@@ -297,8 +297,9 @@ export class GridRow extends React.Component {
                 if (performance_value && this.props.baseline.name !== 'zero_pct_gain') {
                     value = value - baseline_value
                 }
-                if (value.toString().indexOf('.'))
-                value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
+                if (value.toString().indexOf('.')) {
+                    value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
+                }
             }
             return value = prefix + this.numberWithCommas(value) + suffix
         } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {

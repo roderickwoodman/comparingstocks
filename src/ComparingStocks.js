@@ -1603,6 +1603,7 @@ export class ComparingStocks extends React.Component {
                             columns={this.state.shown_columns}
                             total_value={this.state.aggrTotalValue['_everything_']}
                             total_basis={this.state.aggrBasis['_everything_']}
+                            total_performance={this.state.aggrPerformance['_everything_']}
                         />
                     </tbody>
                 </table>
