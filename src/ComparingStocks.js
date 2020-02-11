@@ -759,13 +759,16 @@ export class ComparingStocks extends React.Component {
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
 
+            // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             if (newAllTransactions.hasOwnProperty(ticker) && newAllTransactions[ticker] !== null) {
                 newAllTransactions[ticker] = newAllTransactions[ticker].concat([new_transaction])
             } else {
                 newAllTransactions[ticker] = [new_transaction]
             }
+            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
+            // recalculate the position numbers
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
             let orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
             if (newAllPositions.hasOwnProperty(ticker) && newAllPositions[ticker] !== null) {
@@ -782,11 +785,29 @@ export class ComparingStocks extends React.Component {
             if (updatedPosition['basis'] < 0) {
                 updatedPosition['basis'] = 0
             }
-
             newAllPositions[ticker] = updatedPosition
 
-            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
-            return { allTransactions: newAllTransactions, allPositions: newAllPositions }
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    this.state.allTags, 
+                    newAllPositions,
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    this.state.allTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTransactions: newAllTransactions, 
+                allPositions: newAllPositions, 
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
         this.onNewTickers('untagged', [ticker])
     }
@@ -797,13 +818,16 @@ export class ComparingStocks extends React.Component {
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
 
+            // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             if (newAllTransactions.hasOwnProperty('cash') && newAllTransactions['cash'] !== null) {
                 newAllTransactions['cash'] = newAllTransactions['cash'].concat([new_cash_transaction])
             } else {
                 newAllTransactions['cash'] = [new_cash_transaction]
             }
+            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
+            // recalculate the position numbers
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
             let orig_current_shares = 0
             if (newAllPositions.hasOwnProperty('cash')) {
@@ -816,11 +840,29 @@ export class ComparingStocks extends React.Component {
                 current_shares: new_cash,
                 realized_gains: 0
             }
-
             newAllPositions['cash'] = updatedPosition
 
-            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
-            return { allTransactions: newAllTransactions, allPositions: newAllPositions }
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    this.state.allTags, 
+                    newAllPositions,
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    this.state.allTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTransactions: newAllTransactions, 
+                allPositions: newAllPositions, 
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
     }
 
@@ -841,9 +883,28 @@ export class ComparingStocks extends React.Component {
                 newUntagged.push(remove_ticker)
                 newAllTags['untagged'] = newUntagged
             }
-
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags }
+
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    newAllTags, 
+                    this.state.allPositions, 
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    newAllTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTags: newAllTags,
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
     }
 
