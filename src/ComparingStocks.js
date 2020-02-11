@@ -640,6 +640,8 @@ export class ComparingStocks extends React.Component {
 
     onNewTickers(tag, new_tickers) {
         this.setState(prevState => {
+
+            // update tag membership info
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             new_tickers.forEach(function(ticker) {
                 if (!newAllTags[tag].includes(ticker)) {
@@ -650,14 +652,34 @@ export class ComparingStocks extends React.Component {
                 }
             })
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags }
+
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    newAllTags, 
+                    this.state.allPositions, 
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    newAllTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTags: newAllTags,
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
     }
 
     onDeleteTicker(delete_ticker) {
         this.setState(prevState => {
 
-            // update tags
+            // update tag membership info
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             let all_tags_for_this_ticker = []
             Object.keys(newAllTags).forEach(function(tag_name) {
@@ -682,7 +704,29 @@ export class ComparingStocks extends React.Component {
             let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
             newStatusMessages = [...new_message, ...newStatusMessages]
 
-            return { allTags: newAllTags, allPositions: newAllPositions, allTransactions: newAllTransactions, status_messages: newStatusMessages }
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    newAllTags, 
+                    newAllPositions, 
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    newAllTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTags: newAllTags, 
+                allPositions: newAllPositions, 
+                allTransactions: newAllTransactions, 
+                status_messages: newStatusMessages,
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
     }
 
