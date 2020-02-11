@@ -122,6 +122,7 @@ export class ComparingStocks extends React.Component {
                 long_change_pct: 0,
             },
             allPerformanceNumbers: {},
+            aggrPerformance: {},
             show_holdings: true,
             show_tagged: true,
             show_untagged: true,
@@ -137,6 +138,7 @@ export class ComparingStocks extends React.Component {
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
         this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
         this.getPositionFromCashTransactions = this.getPositionFromCashTransactions.bind(this)
+        this.calculateAggrPerformance = this.calculateAggrPerformance.bind(this)
         this.populateSymbolCount = this.populateSymbolCount.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
@@ -348,11 +350,14 @@ export class ComparingStocks extends React.Component {
             init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
         }
 
+        let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(stored_allTags, newPerformanceNumbers)))
+
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthlyQuotes: newMonthlyQuotes,
                         allPerformanceNumbers: newPerformanceNumbers,
+                        aggrPerformance: aggr_performance,
                         shown_columns: init_shown_columns,
                         done: true })
 
@@ -432,6 +437,63 @@ export class ComparingStocks extends React.Component {
         }
 
         return newPosition
+    }
+
+    calculateAggrPerformance(all_tags, all_performance_numbers) {
+
+        let aggr_performance_by_tag = {}
+        aggr_performance_by_tag['_everything_'] = {
+            short_change_pct: 0,
+            medium_change_pct: 0,
+            long_change_pct: 0,
+            num_tickers: 0
+        }
+
+        let all_stocks_of_interest = []
+        Object.values(all_tags).forEach(function(array_of_tickers) {
+            array_of_tickers.forEach(ticker => all_stocks_of_interest.push(ticker))
+        })
+        all_stocks_of_interest = Array.from(new Set(all_stocks_of_interest))
+
+        all_stocks_of_interest.forEach(function(ticker) {
+
+            let short = all_performance_numbers[ticker]['short_change_pct']
+            let medium = all_performance_numbers[ticker]['medium_change_pct']
+            let long = all_performance_numbers[ticker]['long_change_pct']
+
+            aggr_performance_by_tag['_everything_'].short_change_pct += short
+            aggr_performance_by_tag['_everything_'].medium_change_pct += medium
+            aggr_performance_by_tag['_everything_'].long_change_pct += long
+            aggr_performance_by_tag['_everything_'].num_tickers += 1
+
+            Object.keys(all_tags).forEach(function(tag) {
+                if (aggr_performance_by_tag.hasOwnProperty(tag) && all_tags[tag].includes(ticker)) {
+                    aggr_performance_by_tag[tag].short_change_pct += short
+                    aggr_performance_by_tag[tag].medium_change_pct += medium
+                    aggr_performance_by_tag[tag].long_change_pct += long
+                    aggr_performance_by_tag[tag].num_tickers += 1
+                } else if (all_tags[tag].includes(ticker)) {
+                    let new_aggr_performance = {}
+                    new_aggr_performance['short_change_pct'] = short
+                    new_aggr_performance['medium_change_pct'] = medium
+                    new_aggr_performance['long_change_pct'] = long
+                    new_aggr_performance['num_tickers'] = 1
+                    aggr_performance_by_tag[tag] = new_aggr_performance
+                }
+            })
+        })
+
+        Object.entries(aggr_performance_by_tag).forEach(function(tag_performance) {
+            let tag = tag_performance[0]
+            let performance = tag_performance[1]
+            Object.keys(performance).filter(time_range => time_range !== 'num_tickers').forEach(function(time_range) {
+                let value = (performance['num_tickers']) ? performance[time_range] / performance.num_tickers : 'n/a'
+                aggr_performance_by_tag[tag][time_range] = value
+            })
+        })
+        console.log(aggr_performance_by_tag)
+
+        return aggr_performance_by_tag
     }
 
     onInputChange(event) {
@@ -897,57 +959,6 @@ export class ComparingStocks extends React.Component {
             aggr_totalbasis_by_tag['_everything_'] = 0
         }
 
-        let all_stocks_of_interest = []
-        Object.values(this.state.allTags).forEach(function(array_of_tickers) {
-            array_of_tickers.forEach(ticker => all_stocks_of_interest.push(ticker))
-        })
-        all_stocks_of_interest = Array.from(new Set(all_stocks_of_interest))
-
-        let aggr_performance_by_tag = {}
-        aggr_performance_by_tag['_everything_'] = {
-            short_change_pct: 0,
-            medium_change_pct: 0,
-            long_change_pct: 0,
-            num_tickers: 0
-        }
-        if (this.state.done) {
-            all_stocks_of_interest.forEach(function(ticker) {
-
-                let short = self.state.allPerformanceNumbers[ticker]['short_change_pct']
-                let medium = self.state.allPerformanceNumbers[ticker]['medium_change_pct']
-                let long = self.state.allPerformanceNumbers[ticker]['long_change_pct']
-
-                aggr_performance_by_tag['_everything_'].short_change_pct += short
-                aggr_performance_by_tag['_everything_'].medium_change_pct += medium
-                aggr_performance_by_tag['_everything_'].long_change_pct += long
-                aggr_performance_by_tag['_everything_'].num_tickers += 1
-
-                Object.keys(self.state.allTags).forEach(function(tag) {
-                    if (aggr_performance_by_tag.hasOwnProperty(tag) && self.state.allTags[tag].includes(ticker)) {
-                        aggr_performance_by_tag[tag].short_change_pct += short
-                        aggr_performance_by_tag[tag].medium_change_pct += medium
-                        aggr_performance_by_tag[tag].long_change_pct += long
-                        aggr_performance_by_tag[tag].num_tickers += 1
-                    } else if (self.state.allTags[tag].includes(ticker)) {
-                        let new_aggr_performance = {}
-                        new_aggr_performance['short_change_pct'] = short
-                        new_aggr_performance['medium_change_pct'] = medium
-                        new_aggr_performance['long_change_pct'] = long
-                        new_aggr_performance['num_tickers'] = 1
-                        aggr_performance_by_tag[tag] = new_aggr_performance
-                    }
-                })
-            })
-        }
-        Object.entries(aggr_performance_by_tag).forEach(function(tag_performance) {
-            let tag = tag_performance[0]
-            let performance = tag_performance[1]
-            Object.keys(performance).filter(time_range => time_range !== 'num_tickers').forEach(function(time_range) {
-                let value = (performance['num_tickers']) ? performance[time_range] / performance.num_tickers : 'n/a'
-                aggr_performance_by_tag[tag][time_range] = value
-            })
-        })
-
         let tickers_to_show = []
         if (this.state.done) {
             if (this.state.show_index) {
@@ -1020,7 +1031,7 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['volume'] = 'n/a'
             new_aggr_data['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
             new_aggr_data['realized_gains'] = aggr_totalrealized_by_tag[aggr_ticker]
-            new_aggr_data['performance'] = aggr_performance_by_tag[aggr_ticker]
+            new_aggr_data['performance'] = self.state.aggrPerformance[aggr_ticker]
 
             aggr_row_data[aggr_ticker] = new_aggr_data
         })
