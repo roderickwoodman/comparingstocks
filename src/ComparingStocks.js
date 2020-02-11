@@ -161,6 +161,7 @@ export class ComparingStocks extends React.Component {
         this.getAdded = this.getAdded.bind(this)
         this.getTagged = this.getTagged.bind(this)
         this.getUntagged = this.getUntagged.bind(this)
+        this.nameIsAnAggregate = this.nameIsAnAggregate.bind(this)
         this.sortTickers = this.sortTickers.bind(this)
     }
 
@@ -1022,45 +1023,116 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    sortTickers(ticker_list) {
+    nameIsAnAggregate(name) {
+        return Object.keys(this.state.allTags).includes(name)
+    }
+
+    sortTickers(names_list) {
 
         let sort_column = this.state.sort_column
-        let quote_columns = ['symbol', 'current_price', 'change_pct', 'volume', 'dollar_volume']
+        let quote_columns = ['current_price', 'change_pct', 'volume', 'dollar_volume']
         let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
-        let sorted_list = [...ticker_list]
+        let sorted_names_list = [...names_list]
         let self = this
-        sorted_list.sort(function(a,b) {
+        sorted_names_list.sort(function(a,b) {
             let value_a, value_b
-            if (quote_columns.includes(sort_column)) {
-                if (self.state.allCurrentQuotes.hasOwnProperty(a) && self.state.allCurrentQuotes.hasOwnProperty(b)) {
+
+            // pin certain names to the top, regardless of the user sort
+            if (sort_column === 'symbol') {
+                if (a === 'untagged') {
+                    return -1
+                } else if (b === 'untagged') {
+                    return 1
+                } else if (a === 'S&P500') {
+                    return -1
+                } else if (b === 'S&P500') {
+                    return 1
+                } else if (a === 'cash') {
+                    return -1
+                } else if (b === 'cash') {
+                    return 1
+                }
+                value_a = a
+                value_b = b
+
+            // sort by a quote column
+            } else if (quote_columns.includes(sort_column)) {
+                if (self.nameIsAnAggregate(a) || !self.state.allCurrentQuotes.hasOwnProperty(a)) {
+                    value_a = 'n/a'
+                } else {
                     if (sort_column === 'dollar_volume') {
                         value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
-                        value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
-                    } else if (sort_column === 'symbol') {
-                        value_a = self.state.allCurrentQuotes[a][sort_column].toUpperCase()
-                        value_b = self.state.allCurrentQuotes[b][sort_column].toUpperCase()
                     } else {
                         value_a = self.state.allCurrentQuotes[a][sort_column]
+                    }
+                }
+                if (self.nameIsAnAggregate(b) || !self.state.allCurrentQuotes.hasOwnProperty(b)) {
+                    value_b = 'n/a'
+                } else {
+                    if (sort_column === 'dollar_volume') {
+                        value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
+                    } else {
                         value_b = self.state.allCurrentQuotes[b][sort_column]
                     }
-                } 
+                }
+
+            // sort by a performance column
             } else if (performance_columns.includes(sort_column)) {
-                if (self.state.allMonthlyQuotes.hasOwnProperty(a) || a === 'cash') {
+                if (self.nameIsAnAggregate(a) && self.state.aggrPerformance.hasOwnProperty(a)) {
+                    value_a = self.state.aggrPerformance[a][sort_column]
+                } else if (!self.nameIsAnAggregate(a) && self.state.allPerformanceNumbers.hasOwnProperty(a)) {
                     value_a = self.state.allPerformanceNumbers[a][sort_column]
+                } else {
+                    value_a = 'n/a'
                 }
-                if (self.state.allMonthlyQuotes.hasOwnProperty(b) || b === 'cash') {
+                if (self.nameIsAnAggregate(b) && self.state.aggrPerformance.hasOwnProperty(b)) {
+                    value_b = self.state.aggrPerformance[b][sort_column]
+                } else if (!self.nameIsAnAggregate(b) && self.state.allPerformanceNumbers.hasOwnProperty(b)) {
                     value_b = self.state.allPerformanceNumbers[b][sort_column]
+                } else {
+                    value_b = 'n/a'
                 }
+
+            // sort by a holdings column
             } else if (holdings_columns.includes(sort_column)) {
-                let positionvalue_a, positionvalue_b
-                if (self.state.allPositions.hasOwnProperty(a)) {
+                let positionvalue_a, positionvalue_b, basis_a, basis_b
+                if (self.nameIsAnAggregate(a)) {
+                    switch(sort_column) {
+                        case 'current_shares':
+                            value_a = 'n/a'
+                            break;
+                        case 'current_value':
+                        case 'percent_value':
+                            value_a = self.state.aggrTotalValue[a]
+                            break;
+                        case 'basis':
+                            value_a = self.state.aggrBasis[a]
+                            break;
+                        case 'realized_gains':
+                            value_a = self.state.aggrRealized[a]
+                            break;
+                        case 'percent_profit':
+                            positionvalue_a = self.state.aggrTotalValue[a]
+                            basis_a = self.state.aggrBasis[a]
+                            if (isNaN(positionvalue_a) || isNaN(basis_a)) {
+                                value_a = 'n/a' 
+                            } else if (positionvalue_a !== 0) {
+                                value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
+                            } else {
+                                value_a = positionvalue_a
+                            }
+                            break;
+                        default:
+                            value_a = 'n/a'
+                    }
+                } else if (self.state.allPositions.hasOwnProperty(a)) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
-                            if (sort_column === 'percent_profit') {
-                                let basis_a = self.state.allPositions[a]['basis']
+                            if (sort_column === 'percent_profit' && positionvalue_a !== 0) {
+                                basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
                             } else {
                                 value_a = positionvalue_a
@@ -1076,12 +1148,41 @@ export class ComparingStocks extends React.Component {
                 } else {
                     value_a = 'n/a'
                 }
-                if (self.state.allPositions.hasOwnProperty(b)) {
+                if (self.nameIsAnAggregate(b)) {
+                    switch(sort_column) {
+                        case 'current_shares':
+                            value_b = 'n/a'
+                            break;
+                        case 'current_value':
+                        case 'percent_value':
+                            value_b = self.state.aggrTotalValue[b]
+                            break;
+                        case 'basis':
+                            value_b = self.state.aggrBasis[b]
+                            break;
+                        case 'realized_gains':
+                            value_b = self.state.aggrRealized[b]
+                            break;
+                        case 'percent_profit':
+                            positionvalue_b = self.state.aggrTotalValue[b]
+                            basis_b = self.state.aggrBasis[b]
+                            if (isNaN(positionvalue_b) || isNaN(basis_b)) {
+                                value_b = 'n/a' 
+                            } else if (positionvalue_b !== 0) {
+                                value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
+                            } else {
+                                value_b = positionvalue_b
+                            }
+                            break;
+                        default:
+                            value_b = 'n/a'
+                    }
+                } else if (self.state.allPositions.hasOwnProperty(b)) {
                     if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
                             if (sort_column === 'percent_profit' && positionvalue_b !== 0) {
-                                let basis_b = self.state.allPositions[b]['basis']
+                                basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
                             } else {
                                 value_b = positionvalue_b
@@ -1097,6 +1198,8 @@ export class ComparingStocks extends React.Component {
                 } else {
                     value_b = 'n/a'
                 }
+
+            // default, do not reorder this pair
             } else {
                 return 0
             }
@@ -1107,41 +1210,33 @@ export class ComparingStocks extends React.Component {
             if (self.state.sort_dir_asc === true) {
                 if (value_a === 'n/a') {
                     return 1
-                }
-                if (value_b === 'n/a') {
+                } else if (value_b === 'n/a') {
                     return -1
-                }
-                if (value_a < value_b) {
+                } else if (value_a < value_b) {
                     return -1
-                }
-                if (value_a > value_b) {
+                } else if (value_a > value_b) {
                     return 1
                 }
             } else {
                 if (value_a === 'n/a') {
                     return 1
-                }
-                if (value_b === 'n/a') {
+                } else if (value_b === 'n/a') {
                     return -1
-                }
-                if (value_a < value_b) {
+                } else if (value_a < value_b) {
                     return 1
-                }
-                if (value_a > value_b) {
+                } else if (value_a > value_b) {
                     return -1
                 }
             }
             return 0
         })
 
-        return sorted_list
+        return sorted_names_list
     }
 
     render() {
 
         let self = this
-
-
 
         let tickers_to_show = []
         if (this.state.done) {
@@ -1198,9 +1293,9 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        let aggr_tickers = Object.keys(this.state.allTags).filter(ticker => !(ticker === 'untagged' && !this.state.allTags.untagged.length))
+        let sorted_aggr_tickers = this.sortTickers(Object.keys(this.state.allTags).filter(ticker => !(ticker === 'untagged' && !this.state.allTags.untagged.length)))
         let aggr_row_data = {}
-        aggr_tickers.forEach(function(aggr_ticker) {
+        sorted_aggr_tickers.forEach(function(aggr_ticker) {
 
             let new_aggr_data = {}
 
@@ -1387,7 +1482,7 @@ export class ComparingStocks extends React.Component {
             all_row_data.push(new_row)
         })
         if (this.state.show_aggregates) {
-            aggr_tickers.forEach(function(aggr_ticker) {
+            sorted_aggr_tickers.forEach(function(aggr_ticker) {
                 let new_row = {}
                 new_row['is_aggregate'] = true
                 new_row['row_name'] = aggr_ticker
