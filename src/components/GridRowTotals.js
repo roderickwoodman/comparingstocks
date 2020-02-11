@@ -30,13 +30,13 @@ export class GridRowTotals extends React.Component {
                     value = (total_basis) ? '100%' : 'n/a'
                     break
                 case 'short_change_pct':
-                    value = (Math.round(10 * total_performance.short_change_pct / 10)).toFixed(1) + '%'
+                    value = (Math.round(10 * total_performance.short_change_pct) / 10).toFixed(1) + '%'
                     break
                 case 'medium_change_pct':
-                    value = (Math.round(10 * total_performance.medium_change_pct / 10)).toFixed(1) + '%'
+                    value = (Math.round(10 * total_performance.medium_change_pct) / 10).toFixed(1) + '%'
                     break
                 case 'long_change_pct':
-                    value = (Math.round(10 * total_performance.long_change_pct / 10)).toFixed(1) + '%'
+                    value = (Math.round(10 * total_performance.long_change_pct) / 10).toFixed(1) + '%'
                     break
                 default:
                     break
