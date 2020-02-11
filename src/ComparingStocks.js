@@ -860,9 +860,16 @@ export class ComparingStocks extends React.Component {
         aggr_totalrealized_by_tag['_everything_'] = 0
         aggr_totalvalue_by_tag['_everything_'] = 0
         Object.keys(this.state.allTags).forEach(function(tag) {
-            aggr_totalrealized_by_tag[tag] = 0 
-            aggr_totalbasis_by_tag[tag] = 0 
-            aggr_totalvalue_by_tag[tag] = 0 
+            aggr_totalrealized_by_tag[tag] = 'n/a';
+            aggr_totalbasis_by_tag[tag] = 'n/a';
+            aggr_totalvalue_by_tag[tag] = 'n/a';
+            Object.keys(self.state.allPositions).forEach(function(ticker) {
+                if (self.state.allTags[tag].includes(ticker)) {
+                    aggr_totalrealized_by_tag[tag] = 0 
+                    aggr_totalbasis_by_tag[tag] = 0 
+                    aggr_totalvalue_by_tag[tag] = 0 
+                }
+            })
         })
         Object.entries(this.state.allPositions).forEach(function(position_info) {
             let ticker = position_info[0]
@@ -1173,7 +1180,7 @@ export class ComparingStocks extends React.Component {
             new_row['volume'] = self.state.allCurrentQuotes[ticker].volume
             new_row['basis'] = row_data[ticker]['basis']
             new_row['current_shares'] = row_data[ticker]['current_shares']
-            new_row['current_value'] = new_row.current_price * new_row.current_shares
+            new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline

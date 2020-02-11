@@ -156,21 +156,22 @@ export class GridRow extends React.Component {
         let realized_gains = this.props.realized_gains
 
         let percent_value, percent_profit
-        if (isNaN(current_price) || isNaN(current_shares) || isNaN(current_value)) {
-            current_shares = 'n/a'
-            basis = 'n/a'
-            realized_gains = 'n/a'
+
+        // calculate percent_value
+        if (isNaN(current_value)) {
             percent_value = 'n/a'
-            percent_profit = 'n/a'
         } else {
-            // calculate percent_value
             if (isNaN(total_value) || total_value === 0) {
                 percent_value = 'n/a'
             } else {
                 percent_value = (current_value !== 'n/a') ? current_value / total_value * 100 : 'n/a'
             }
+        }
 
-            // calculate percent_profit
+        // calculate percent_profit
+        if (isNaN(current_value) || isNaN(basis)) {
+            percent_profit = 'n/a'
+        } else {
             if (current_shares === 0) {
                 percent_profit = 'n/a'
             } else if (basis > current_value) {
