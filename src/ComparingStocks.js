@@ -584,8 +584,25 @@ export class ComparingStocks extends React.Component {
         const target = event.target
         const new_value = target.type === 'checkbox' ? target.checked : target.value
         const name = target.name
-        this.setState({ [name]: new_value })
         localStorage.setItem(name, JSON.stringify(new_value))
+
+        // recalculate the aggregate numbers
+        let show_cash = (name === 'show_cash') ? new_value : this.state.show_cash
+        let show_holdings = (name === 'show_holdings') ? new_value : this.state.show_holdings
+        let aggr_position_info = JSON.parse(JSON.stringify(
+            this.calculateAggrPositionInfo(
+                this.state.allTags, 
+                this.state.allPositions, 
+                this.state.allCurrentQuotes, 
+                show_holdings,
+                show_cash)))
+
+        this.setState({ 
+            [name]: new_value,
+            aggrBasis: aggr_position_info[0],
+            aggrRealized: aggr_position_info[1],
+            aggrTotalValue: aggr_position_info[2],
+        })
     }
 
     onChangeSort(new_sort_column) {
@@ -1019,7 +1036,7 @@ export class ComparingStocks extends React.Component {
         if (grid_rows) {
             return '(' + grid_rows + ')'
         } else {
-            return
+            return ''
         }
     }
 
