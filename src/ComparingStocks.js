@@ -1281,6 +1281,7 @@ export class ComparingStocks extends React.Component {
                 total_value={row_data.total_value}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
+                on_delete_tag={row_data.on_delete_tag}
             />
         )
 
@@ -1304,6 +1305,7 @@ export class ComparingStocks extends React.Component {
             new_row['total_value'] = self.state.aggrTotalValue['_everything_']
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
+            new_row['on_delete_tag'] = self.onDeleteTag
             all_row_data.push(new_row)
         })
         if (this.state.show_aggregates) {
@@ -1326,6 +1328,7 @@ export class ComparingStocks extends React.Component {
                 new_row['total_value'] = self.state.aggrTotalValue['_everything_']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
+                new_row['on_delete_tag'] = self.onDeleteTag
                 all_row_data.push(new_row)
             })
         }
