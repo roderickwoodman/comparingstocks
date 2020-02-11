@@ -123,6 +123,9 @@ export class ComparingStocks extends React.Component {
             },
             allPerformanceNumbers: {},
             aggrPerformance: {},
+            aggrBasis: {},
+            aggrRealized: {},
+            aggrTotalValue: {},
             show_holdings: true,
             show_tagged: true,
             show_untagged: true,
@@ -138,6 +141,7 @@ export class ComparingStocks extends React.Component {
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
         this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
         this.getPositionFromCashTransactions = this.getPositionFromCashTransactions.bind(this)
+        this.calculateAggrPositionInfo = this.calculateAggrPositionInfo.bind(this)
         this.calculateAggrPerformance = this.calculateAggrPerformance.bind(this)
         this.populateSymbolCount = this.populateSymbolCount.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
@@ -197,9 +201,12 @@ export class ComparingStocks extends React.Component {
         let self = this
 
         const view_controls = ['show_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates']
+        let stored_controls = {}
         view_controls.forEach(function(control) {
+            stored_controls[control] = null
             const stored_control = JSON.parse(localStorage.getItem(control))
             if (stored_control !== null) {
+                stored_controls[control] = stored_control
                 self.setState({ [control]: stored_control })
             }
         })
@@ -350,6 +357,7 @@ export class ComparingStocks extends React.Component {
             init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
         }
 
+        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(stored_allTags, newPositions, newCurrentQuotes, stored_controls['show_holdings'], stored_controls['show_cash'])))
         let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(stored_allTags, newPerformanceNumbers)))
 
         this.setState({ allStocks: all_stocks,
@@ -357,6 +365,9 @@ export class ComparingStocks extends React.Component {
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthlyQuotes: newMonthlyQuotes,
                         allPerformanceNumbers: newPerformanceNumbers,
+                        aggrBasis: aggr_position_info[0],
+                        aggrRealized: aggr_position_info[1],
+                        aggrTotalValue: aggr_position_info[2],
                         aggrPerformance: aggr_performance,
                         shown_columns: init_shown_columns,
                         done: true })
@@ -439,6 +450,56 @@ export class ComparingStocks extends React.Component {
         return newPosition
     }
 
+    calculateAggrPositionInfo(all_tags, all_positions, all_quotes, show_holdings, show_cash) {
+
+        let holdings = (show_holdings === null) ? this.state.show_holdings : show_holdings
+        let cash = (show_cash === null) ? this.state.show_cash : show_cash
+
+        let aggr_totalbasis_by_tag = {}, aggr_totalrealized_by_tag = {}, aggr_totalvalue_by_tag = {}
+        aggr_totalbasis_by_tag['_everything_'] = 0
+        aggr_totalrealized_by_tag['_everything_'] = 0
+        aggr_totalvalue_by_tag['_everything_'] = 0
+        Object.keys(all_tags).forEach(function(tag) {
+            aggr_totalrealized_by_tag[tag] = 'n/a';
+            aggr_totalbasis_by_tag[tag] = 'n/a';
+            aggr_totalvalue_by_tag[tag] = 'n/a';
+            Object.keys(all_positions).forEach(function(ticker) {
+                if (all_tags[tag].includes(ticker)) {
+                    aggr_totalrealized_by_tag[tag] = 0 
+                    aggr_totalbasis_by_tag[tag] = 0 
+                    aggr_totalvalue_by_tag[tag] = 0 
+                }
+            })
+        })
+        Object.entries(all_positions).forEach(function(position_info) {
+            let ticker = position_info[0]
+            let ticker_basis = position_info[1]['basis']
+            let ticker_realized_gains = position_info[1]['realized_gains']
+            let ticker_shares = position_info[1]['current_shares']
+            let ticker_price = all_quotes[ticker]['current_price'] || 1
+            if ((ticker !== 'cash' && holdings) || (ticker === 'cash' && cash)) {
+                aggr_totalbasis_by_tag['_everything_'] += ticker_basis - ticker_realized_gains
+                aggr_totalrealized_by_tag['_everything_'] += ticker_realized_gains
+                aggr_totalvalue_by_tag['_everything_'] += ticker_price * ticker_shares
+                Object.keys(all_tags).forEach(function(tag) {
+                    if (all_tags[tag].includes(ticker)) {
+                        aggr_totalbasis_by_tag[tag] += ticker_basis - ticker_realized_gains
+                        aggr_totalrealized_by_tag[tag] += parseFloat(ticker_realized_gains)
+                        if (aggr_totalbasis_by_tag[tag] < 0) {
+                            aggr_totalbasis_by_tag[tag] = 0
+                        }
+                        aggr_totalvalue_by_tag[tag] += ticker_price * ticker_shares
+                    }
+                })
+            }
+        })
+        if (aggr_totalbasis_by_tag['_everything_'] < 0) {
+            aggr_totalbasis_by_tag['_everything_'] = 0
+        }
+
+        return [aggr_totalbasis_by_tag, aggr_totalrealized_by_tag, aggr_totalvalue_by_tag]
+    }
+
     calculateAggrPerformance(all_tags, all_performance_numbers) {
 
         let aggr_performance_by_tag = {}
@@ -491,7 +552,6 @@ export class ComparingStocks extends React.Component {
                 aggr_performance_by_tag[tag][time_range] = value
             })
         })
-        console.log(aggr_performance_by_tag)
 
         return aggr_performance_by_tag
     }
@@ -917,47 +977,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        let aggr_totalbasis_by_tag = {}, aggr_totalrealized_by_tag = {}, aggr_totalvalue_by_tag = {}
-        aggr_totalbasis_by_tag['_everything_'] = 0
-        aggr_totalrealized_by_tag['_everything_'] = 0
-        aggr_totalvalue_by_tag['_everything_'] = 0
-        Object.keys(this.state.allTags).forEach(function(tag) {
-            aggr_totalrealized_by_tag[tag] = 'n/a';
-            aggr_totalbasis_by_tag[tag] = 'n/a';
-            aggr_totalvalue_by_tag[tag] = 'n/a';
-            Object.keys(self.state.allPositions).forEach(function(ticker) {
-                if (self.state.allTags[tag].includes(ticker)) {
-                    aggr_totalrealized_by_tag[tag] = 0 
-                    aggr_totalbasis_by_tag[tag] = 0 
-                    aggr_totalvalue_by_tag[tag] = 0 
-                }
-            })
-        })
-        Object.entries(this.state.allPositions).forEach(function(position_info) {
-            let ticker = position_info[0]
-            let ticker_basis = position_info[1]['basis']
-            let ticker_realized_gains = position_info[1]['realized_gains']
-            let ticker_shares = position_info[1]['current_shares']
-            let ticker_price = self.state.allCurrentQuotes[ticker]['current_price'] || 1
-            if ((ticker !== 'cash' && self.state.show_holdings) || (ticker === 'cash' && self.state.show_cash)) {
-                aggr_totalbasis_by_tag['_everything_'] += ticker_basis - ticker_realized_gains
-                aggr_totalrealized_by_tag['_everything_'] += ticker_realized_gains
-                aggr_totalvalue_by_tag['_everything_'] += ticker_price * ticker_shares
-                Object.keys(self.state.allTags).forEach(function(tag) {
-                    if (self.state.allTags[tag].includes(ticker)) {
-                        aggr_totalbasis_by_tag[tag] += ticker_basis - ticker_realized_gains
-                        aggr_totalrealized_by_tag[tag] += parseFloat(ticker_realized_gains)
-                        if (aggr_totalbasis_by_tag[tag] < 0) {
-                            aggr_totalbasis_by_tag[tag] = 0
-                        }
-                        aggr_totalvalue_by_tag[tag] += ticker_price * ticker_shares
-                    }
-                })
-            }
-        })
-        if (aggr_totalbasis_by_tag['_everything_'] < 0) {
-            aggr_totalbasis_by_tag['_everything_'] = 0
-        }
+
 
         let tickers_to_show = []
         if (this.state.done) {
@@ -1026,11 +1046,11 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['basis'] = 'n/a'
             new_aggr_data['current_shares'] = 'n/a'
             new_aggr_data['current_price'] = 'n/a'
-            new_aggr_data['current_value'] = aggr_totalvalue_by_tag[aggr_ticker]
+            new_aggr_data['current_value'] = self.state.aggrTotalValue[aggr_ticker]
             new_aggr_data['change_pct'] = 'n/a'
             new_aggr_data['volume'] = 'n/a'
-            new_aggr_data['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
-            new_aggr_data['realized_gains'] = aggr_totalrealized_by_tag[aggr_ticker]
+            new_aggr_data['basis'] = self.state.aggrBasis[aggr_ticker]
+            new_aggr_data['realized_gains'] = self.state.aggrRealized[aggr_ticker]
             new_aggr_data['performance'] = self.state.aggrPerformance[aggr_ticker]
 
             aggr_row_data[aggr_ticker] = new_aggr_data
@@ -1195,7 +1215,7 @@ export class ComparingStocks extends React.Component {
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
-            new_row['total_value'] = aggr_totalvalue_by_tag['_everything_']
+            new_row['total_value'] = self.state.aggrTotalValue['_everything_']
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
             all_row_data.push(new_row)
@@ -1211,13 +1231,13 @@ export class ComparingStocks extends React.Component {
                 new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
                 new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
                 new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
-                new_row['basis'] = aggr_totalbasis_by_tag[aggr_ticker]
+                new_row['basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
                 new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
-                new_row['total_value'] = aggr_totalvalue_by_tag['_everything_']
+                new_row['total_value'] = self.state.aggrTotalValue['_everything_']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
                 all_row_data.push(new_row)
@@ -1283,7 +1303,7 @@ export class ComparingStocks extends React.Component {
                         ))}
                         <GridRowTotals
                             columns={this.state.shown_columns}
-                            total_value={aggr_totalvalue_by_tag['_everything_']}
+                            total_value={this.state.aggrTotalValue['_everything_']}
                         />
                     </tbody>
                 </table>
