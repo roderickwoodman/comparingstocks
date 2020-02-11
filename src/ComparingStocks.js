@@ -45,6 +45,12 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'percent_basis',
+        display_name: 'Pct of Total Basis',
+        type: 'percentage',
+        num_decimals: 1
+    },
+    {
         name: 'percent_profit',
         display_name: 'Pct Profit',
         type: 'percentage',
@@ -97,7 +103,7 @@ const all_columns = [
     }
 ]
 
-const default_shown_columns = ['symbol', 'current_value', 'percent_value', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+const default_shown_columns = ['symbol', 'current_value', 'percent_value', 'percent_basis', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
 
 export class ComparingStocks extends React.Component {
 
@@ -1048,7 +1054,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = this.state.sort_column
         let quote_columns = ['current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_profit']
+        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_basis', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
         let sorted_names_list = [...names_list]
@@ -1125,6 +1131,7 @@ export class ComparingStocks extends React.Component {
                             value_a = self.state.aggrTotalValue[a]
                             break;
                         case 'basis':
+                        case 'percent_basis':
                             value_a = self.state.aggrBasis[a]
                             break;
                         case 'realized_gains':
@@ -1157,8 +1164,12 @@ export class ComparingStocks extends React.Component {
                         } else {
                             value_a = 'n/a'
                         }
-                    } else if (self.state.allPositions[a]['current_shares'] || sort_column === 'realized_gains') {
-                        value_a = self.state.allPositions[a][sort_column]
+                    } else if (self.state.allPositions[a]['current_shares']) {
+                        if (sort_column === 'percent_basis') {
+                            value_a = self.state.allPositions[a]['basis']
+                        } else {
+                            value_a = self.state.allPositions[a][sort_column]
+                        }
                     } else {
                         value_a = 'n/a'
                     }
@@ -1175,6 +1186,7 @@ export class ComparingStocks extends React.Component {
                             value_b = self.state.aggrTotalValue[b]
                             break;
                         case 'basis':
+                        case 'percent_basis':
                             value_b = self.state.aggrBasis[b]
                             break;
                         case 'realized_gains':
@@ -1207,8 +1219,12 @@ export class ComparingStocks extends React.Component {
                         } else {
                             value_b = 'n/a'
                         }
-                    } else if (self.state.allPositions[b]['current_shares'] || sort_column === 'realized_gains') {
-                        value_b = self.state.allPositions[b][sort_column]
+                    } else if (self.state.allPositions[b]['current_shares']) {
+                        if (sort_column === 'percent_basis') {
+                            value_b = self.state.allPositions[b]['basis']
+                        } else {
+                            value_b = self.state.allPositions[b][sort_column]
+                        }
                     } else {
                         value_b = 'n/a'
                     }
@@ -1469,6 +1485,7 @@ export class ComparingStocks extends React.Component {
                 performance_numbers={row_data.performance_numbers}
                 baseline={row_data.baseline}
                 total_value={row_data.total_value}
+                total_basis={row_data.total_basis}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tag={row_data.on_delete_tag}
@@ -1493,6 +1510,7 @@ export class ComparingStocks extends React.Component {
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
             new_row['total_value'] = self.state.aggrTotalValue['_everything_']
+            new_row['total_basis'] = self.state.aggrBasis['_everything_']
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
             new_row['on_delete_tag'] = self.onDeleteTag
@@ -1516,6 +1534,7 @@ export class ComparingStocks extends React.Component {
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
                 new_row['total_value'] = self.state.aggrTotalValue['_everything_']
+                new_row['total_basis'] = self.state.aggrBasis['_everything_']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
                 new_row['on_delete_tag'] = self.onDeleteTag

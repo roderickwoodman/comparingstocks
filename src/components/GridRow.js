@@ -139,7 +139,7 @@ export class GridRow extends React.Component {
     }
 
     // prints the value that is (usually) explicitly passed in via props
-    // AND is responsible for calculating "percent_value" and "percent_profit"
+    // AND is responsible for calculating "percent_value", "percent_basis", and "percent_profit"
     populateCellValue(column) {
         let prefix = ''
         let suffix = ''
@@ -149,13 +149,14 @@ export class GridRow extends React.Component {
         let performance_value = false
 
         const total_value = this.props.total_value
+        const total_basis = this.props.total_basis
         const current_price = this.props.current_price
         let current_shares = this.props.current_shares
         const current_value = this.props.current_value
         let basis = this.props.basis
         let realized_gains = this.props.realized_gains
 
-        let percent_value, percent_profit
+        let percent_value, percent_basis, percent_profit
 
         // calculate percent_value
         if (isNaN(current_value)) {
@@ -165,6 +166,17 @@ export class GridRow extends React.Component {
                 percent_value = 'n/a'
             } else {
                 percent_value = (current_value !== 'n/a') ? current_value / total_value * 100 : 'n/a'
+            }
+        }
+
+        // calculate percent_basis
+        if (isNaN(current_value)) {
+            percent_basis = 'n/a'
+        } else {
+            if (isNaN(total_basis) || total_basis === 0) {
+                percent_basis = 'n/a'
+            } else {
+                percent_basis = (current_value !== 'n/a') ? basis / total_basis * 100 : 'n/a'
             }
         }
 
@@ -220,6 +232,9 @@ export class GridRow extends React.Component {
                 break
             case 'basis':
                 value = basis
+                break
+            case 'percent_basis':
+                value = percent_basis
                 break
             case 'percent_profit':
                 value = percent_profit
@@ -385,6 +400,7 @@ GridRow.propTypes = {
     performance_numbers: PropTypes.object,
     baseline: PropTypes.object,
     total_value: PropTypes.number,
+    total_basis: PropTypes.number,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,
