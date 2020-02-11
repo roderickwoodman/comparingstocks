@@ -158,6 +158,7 @@ export class ComparingStocks extends React.Component {
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
         this.getHoldings = this.getHoldings.bind(this)
+        this.getAdded = this.getAdded.bind(this)
         this.getTagged = this.getTagged.bind(this)
         this.getUntagged = this.getUntagged.bind(this)
         this.sortTickers = this.sortTickers.bind(this)
@@ -759,6 +760,13 @@ export class ComparingStocks extends React.Component {
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
 
+            // update tag membership info only if this is a new ticker
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
+            if (!(this.getAdded().includes(ticker))){
+                newAllTags['untagged'].push(ticker)
+            }
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             if (newAllTransactions.hasOwnProperty(ticker) && newAllTransactions[ticker] !== null) {
@@ -790,17 +798,18 @@ export class ComparingStocks extends React.Component {
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
                 this.calculateAggrPositionInfo(
-                    this.state.allTags, 
+                    newAllTags,
                     newAllPositions,
                     this.state.allCurrentQuotes, 
                     this.state.show_holdings,
                     this.state.show_cash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
-                    this.state.allTags, 
+                    newAllTags,
                     this.state.allPerformanceNumbers)))
 
             return { 
+                allTags: newAllTags, 
                 allTransactions: newAllTransactions, 
                 allPositions: newAllPositions, 
                 aggrBasis: aggr_position_info[0],
@@ -809,7 +818,6 @@ export class ComparingStocks extends React.Component {
                 aggrPerformance: aggr_performance,
             }
         })
-        this.onNewTickers('untagged', [ticker])
     }
 
     onNewCash(new_cash_transaction) {
@@ -974,6 +982,15 @@ export class ComparingStocks extends React.Component {
 
     getIndicies() {
         return [...this.state.allIndiciesAliases]
+    }
+
+    getAdded() {
+        let added_tickers = []
+        let self = this
+        Object.keys(this.state.allTags).forEach(function(tag) {
+            added_tickers = added_tickers.concat(self.state.allTags[tag])
+        })
+        return Array.from(new Set(added_tickers))
     }
 
     getTagged() {
