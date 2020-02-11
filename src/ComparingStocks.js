@@ -626,6 +626,8 @@ export class ComparingStocks extends React.Component {
 
     onNewTags(new_tags) {
         this.setState(prevState => {
+
+            // update tag membership info
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             new_tags.forEach(function(tag) {
                 let newTag = []
@@ -634,7 +636,27 @@ export class ComparingStocks extends React.Component {
                 }
             })
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags }
+
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    newAllTags, 
+                    this.state.allPositions, 
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    newAllTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTags: newAllTags,
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
     }
 
@@ -846,14 +868,34 @@ export class ComparingStocks extends React.Component {
                     newAllTags['untagged'] = newUntagged
                 }
             })
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
 
             // add status messages
             let newStatusMessages = [...prevState.status_messages]
             let new_message = ['Tag "' + delete_tag + '" has now been deleted.']
             newStatusMessages = [...new_message, ...newStatusMessages]
 
-            localStorage.setItem('allTags', JSON.stringify(newAllTags))
-            return { allTags: newAllTags, status_messages: newStatusMessages }
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    newAllTags, 
+                    this.state.allPositions, 
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+            let aggr_performance = JSON.parse(JSON.stringify(
+                this.calculateAggrPerformance(
+                    newAllTags, 
+                    this.state.allPerformanceNumbers)))
+
+            return { 
+                allTags: newAllTags, 
+                status_messages: newStatusMessages,
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+                aggrPerformance: aggr_performance,
+            }
         })
     }
 
