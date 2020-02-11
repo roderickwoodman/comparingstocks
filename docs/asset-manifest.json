@@ -1,22 +1,25 @@
 {
   "files": {
-    "main.css": "/comparingstocks/static/css/main.8500a1a1.chunk.css",
-    "main.js": "/comparingstocks/static/js/main.81409c90.chunk.js",
-    "main.js.map": "/comparingstocks/static/js/main.81409c90.chunk.js.map",
-    "runtime-main.js": "/comparingstocks/static/js/runtime-main.21a04d31.js",
-    "runtime-main.js.map": "/comparingstocks/static/js/runtime-main.21a04d31.js.map",
-    "static/js/2.77cdd2dc.chunk.js": "/comparingstocks/static/js/2.77cdd2dc.chunk.js",
-    "static/js/2.77cdd2dc.chunk.js.map": "/comparingstocks/static/js/2.77cdd2dc.chunk.js.map",
+    "main.css": "/comparingstocks/static/css/main.e892ae3f.chunk.css",
+    "main.js": "/comparingstocks/static/js/main.e1c3aa37.chunk.js",
+    "main.js.map": "/comparingstocks/static/js/main.e1c3aa37.chunk.js.map",
+    "runtime-main.js": "/comparingstocks/static/js/runtime-main.81ce229d.js",
+    "runtime-main.js.map": "/comparingstocks/static/js/runtime-main.81ce229d.js.map",
+    "static/css/2.47e06e2e.chunk.css": "/comparingstocks/static/css/2.47e06e2e.chunk.css",
+    "static/js/2.fe47bbe8.chunk.js": "/comparingstocks/static/js/2.fe47bbe8.chunk.js",
+    "static/js/2.fe47bbe8.chunk.js.map": "/comparingstocks/static/js/2.fe47bbe8.chunk.js.map",
     "index.html": "/comparingstocks/index.html",
-    "precache-manifest.4baeff6dbf9f8b9f187aecc9bdae2564.js": "/comparingstocks/precache-manifest.4baeff6dbf9f8b9f187aecc9bdae2564.js",
+    "precache-manifest.b45a954979eaad733698463eff5a5ee3.js": "/comparingstocks/precache-manifest.b45a954979eaad733698463eff5a5ee3.js",
     "service-worker.js": "/comparingstocks/service-worker.js",
-    "static/css/main.8500a1a1.chunk.css.map": "/comparingstocks/static/css/main.8500a1a1.chunk.css.map",
-    "static/js/2.77cdd2dc.chunk.js.LICENSE": "/comparingstocks/static/js/2.77cdd2dc.chunk.js.LICENSE"
+    "static/css/2.47e06e2e.chunk.css.map": "/comparingstocks/static/css/2.47e06e2e.chunk.css.map",
+    "static/css/main.e892ae3f.chunk.css.map": "/comparingstocks/static/css/main.e892ae3f.chunk.css.map",
+    "static/js/2.fe47bbe8.chunk.js.LICENSE": "/comparingstocks/static/js/2.fe47bbe8.chunk.js.LICENSE"
   },
   "entrypoints": [
-    "static/js/runtime-main.21a04d31.js",
-    "static/js/2.77cdd2dc.chunk.js",
-    "static/css/main.8500a1a1.chunk.css",
-    "static/js/main.81409c90.chunk.js"
+    "static/js/runtime-main.81ce229d.js",
+    "static/css/2.47e06e2e.chunk.css",
+    "static/js/2.fe47bbe8.chunk.js",
+    "static/css/main.e892ae3f.chunk.css",
+    "static/js/main.e1c3aa37.chunk.js"
   ]
 }
