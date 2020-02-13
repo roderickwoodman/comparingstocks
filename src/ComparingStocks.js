@@ -133,6 +133,7 @@ export class ComparingStocks extends React.Component {
                 'untagged': []
             },
             allWhatifs: {},
+            whatif_format: 'deltas', // deltas | new_values
             column_balanced: '',
             status_messages: [],
             baseline: {
@@ -209,6 +210,11 @@ export class ComparingStocks extends React.Component {
         const stored_sort_dir_asc = JSON.parse(localStorage.getItem("sort_dir_asc"))
         if (stored_sort_dir_asc !== null) {
             this.setState({ sort_dir_asc: stored_sort_dir_asc })
+        }
+
+        const stored_whatif_format = JSON.parse(localStorage.getItem("whatif_format"))
+        if (stored_whatif_format !== null) {
+            this.setState({ whatif_format: stored_whatif_format })
         }
 
         const stored_allTags = JSON.parse(localStorage.getItem("allTags"))
@@ -1515,6 +1521,7 @@ export class ComparingStocks extends React.Component {
                 total_value={row_data.total_value}
                 total_basis={row_data.total_basis}
                 whatif={row_data.whatif}
+                whatif_format={this.state.whatif_format}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tag={row_data.on_delete_tag}

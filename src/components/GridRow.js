@@ -223,7 +223,13 @@ export class GridRow extends React.Component {
                 value = current_shares
                 break
             case 'whatif_current_shares':
-                value = (whatif !== null && whatif.hasOwnProperty('current_shares')) ? whatif.current_shares : 'n/a'
+                if (whatif === null || !whatif.hasOwnProperty('current_shares')) {
+                    value = 'n/a'
+                } else if (this.props.whatif_format === 'deltas') {
+                    value = whatif.current_shares - current_shares
+                } else {
+                    value = whatif.current_shares
+                }
                 break
             case 'current_price':
                 value = current_price
@@ -232,7 +238,13 @@ export class GridRow extends React.Component {
                 value = current_value
                 break
             case 'whatif_current_value':
-                value = (whatif !== null && whatif.hasOwnProperty('current_value')) ? whatif.current_value : 'n/a'
+                if (whatif === null || !whatif.hasOwnProperty('current_value')) {
+                    value = 'n/a'
+                } else if (this.props.whatif_format === 'deltas') {
+                    value = whatif.current_value - current_value
+                } else {
+                    value = whatif.current_value
+                }
                 break
             case 'percent_value':
                 value = percent_value
@@ -308,7 +320,12 @@ export class GridRow extends React.Component {
                     value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
                 }
             }
-            return value = prefix + this.numberWithCommas(value) + suffix
+            if (value >= 0) {
+                prefix = (column.name.startsWith('whatif_') && this.props.whatif_format === 'deltas') ? '+' + prefix : prefix
+                return value = prefix + this.numberWithCommas(value) + suffix
+            } else {
+                return value = '-' + prefix + this.numberWithCommas(Math.abs(value)) + suffix
+            }
         } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
             return value
         } else if (column.type === 'number' || column.type === 'percentage' || column.type === 'currency') {
@@ -410,6 +427,7 @@ GridRow.propTypes = {
     total_value: PropTypes.number,
     total_basis: PropTypes.number,
     whatif: PropTypes.object,
+    whatif_format: PropTypes.string,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,
