@@ -155,6 +155,7 @@ export class GridRow extends React.Component {
         const current_value = this.props.current_value
         let basis = this.props.basis
         let realized_gains = this.props.realized_gains
+        const whatif = this.props.whatif
 
         let percent_value, percent_basis, percent_profit
 
@@ -221,11 +222,17 @@ export class GridRow extends React.Component {
             case 'current_shares':
                 value = current_shares
                 break
+            case 'whatif_current_shares':
+                value = (whatif !== null && whatif.hasOwnProperty('current_shares')) ? whatif.current_shares : 'n/a'
+                break
             case 'current_price':
                 value = current_price
                 break
             case 'current_value':
                 value = current_value
+                break
+            case 'whatif_current_value':
+                value = (whatif !== null && whatif.hasOwnProperty('current_value')) ? whatif.current_value : 'n/a'
                 break
             case 'percent_value':
                 value = percent_value
@@ -402,6 +409,7 @@ GridRow.propTypes = {
     baseline: PropTypes.object,
     total_value: PropTypes.number,
     total_basis: PropTypes.number,
+    whatif: PropTypes.object,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,

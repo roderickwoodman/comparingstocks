@@ -21,6 +21,12 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'whatif_current_shares',
+        display_name: 'What-If Shares',
+        type: 'number',
+        num_decimals: 0
+    },
+    {
         name: 'current_price',
         display_name: 'Price',
         type: 'currency',
@@ -29,6 +35,12 @@ const all_columns = [
     {
         name: 'current_value',
         display_name: 'Value',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
+        name: 'whatif_current_value',
+        display_name: 'What-If Value',
         type: 'currency',
         num_decimals: 0
     },
@@ -103,7 +115,7 @@ const all_columns = [
     }
 ]
 
-const default_shown_columns = ['symbol', 'current_value', 'percent_value', 'percent_basis', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+const default_shown_columns = ['symbol', 'current_shares', 'current_value', 'percent_value', 'percent_basis', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
 
 export class ComparingStocks extends React.Component {
 
@@ -120,6 +132,8 @@ export class ComparingStocks extends React.Component {
             allTags: {
                 'untagged': []
             },
+            allWhatifs: {},
+            column_balanced: '',
             status_messages: [],
             baseline: {
                 name: 'zero_pct_gain',
@@ -1002,7 +1016,8 @@ export class ComparingStocks extends React.Component {
     }
 
     onWhatif(new_whatif) {
-        console.log('got whatif:', new_whatif)
+        let new_whatifs = JSON.parse(JSON.stringify(new_whatif))
+        this.setState({ allWhatifs: new_whatifs.values, column_balanced: new_whatifs.column_balanced })
     }
 
     getHoldings() {
@@ -1329,6 +1344,13 @@ export class ComparingStocks extends React.Component {
                 row_data[ticker]['current_shares'] = 'n/a'
                 row_data[ticker]['realized_gains'] = 'n/a'
             }
+
+            if (self.state.allWhatifs.hasOwnProperty(ticker)) {
+                row_data[ticker]['whatif'] = self.state.allWhatifs[ticker]
+
+            } else {
+                row_data[ticker]['whatif'] = null
+            }
         })
 
         let sorted_aggr_tickers = this.sortTickers(Object.keys(this.state.allTags).filter(ticker => !(ticker === 'untagged' && !this.state.allTags.untagged.length)))
@@ -1349,6 +1371,7 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['basis'] = self.state.aggrBasis[aggr_ticker]
             new_aggr_data['realized_gains'] = self.state.aggrRealized[aggr_ticker]
             new_aggr_data['performance'] = self.state.aggrPerformance[aggr_ticker]
+            new_aggr_data['whatif'] = null
 
             aggr_row_data[aggr_ticker] = new_aggr_data
         })
@@ -1491,6 +1514,7 @@ export class ComparingStocks extends React.Component {
                 baseline={row_data.baseline}
                 total_value={row_data.total_value}
                 total_basis={row_data.total_basis}
+                whatif={row_data.whatif}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tag={row_data.on_delete_tag}
@@ -1516,6 +1540,7 @@ export class ComparingStocks extends React.Component {
             new_row['baseline'] = self.state.baseline
             new_row['total_value'] = self.state.aggrTotalValue['_everything_']
             new_row['total_basis'] = self.state.aggrBasis['_everything_']
+            new_row['whatif'] = row_data[ticker]['whatif']
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
             new_row['on_delete_tag'] = self.onDeleteTag
@@ -1540,6 +1565,7 @@ export class ComparingStocks extends React.Component {
                 new_row['baseline'] = self.state.baseline
                 new_row['total_value'] = self.state.aggrTotalValue['_everything_']
                 new_row['total_basis'] = self.state.aggrBasis['_everything_']
+                new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
                 new_row['on_delete_tag'] = self.onDeleteTag
