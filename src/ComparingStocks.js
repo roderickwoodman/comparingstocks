@@ -156,12 +156,13 @@ export class ComparingStocks extends React.Component {
         this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
         this.onNewCash = this.onNewCash.bind(this)
-        this.onNewMessages = this.onNewMessages.bind(this)
         this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
+        this.onNewMessages = this.onNewMessages.bind(this)
+        this.onWhatif = this.onWhatif.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
         this.getHoldings = this.getHoldings.bind(this)
         this.getAdded = this.getAdded.bind(this)
@@ -1000,6 +1001,10 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onWhatif(new_whatif) {
+        console.log('got whatif:', new_whatif)
+    }
+
     getHoldings() {
         return Object.entries(this.state.allPositions).filter(holding => holding[1]['current_shares'] > 0).map(holding => holding[0])
     }
@@ -1551,6 +1556,8 @@ export class ComparingStocks extends React.Component {
                         <InputForms
                             all_stocks={this.state.allStocks}
                             all_tags={this.state.allTags}
+                            all_current_quotes={this.state.allCurrentQuotes}
+                            all_positions={this.state.allPositions}
                             on_new_tickers={this.onNewTickers}
                             on_new_tags={this.onNewTags}
                             on_delete_tag={this.onDeleteTag}
@@ -1558,6 +1565,7 @@ export class ComparingStocks extends React.Component {
                             on_new_cash={this.onNewCash}
                             all_status_messages={this.state.status_messages}
                             on_new_messages={this.onNewMessages}
+                            on_whatif={this.onWhatif}
                         />
                     </div>
                     <div id="view-controls">

@@ -6,6 +6,7 @@ import { AddTransaction } from './AddTransaction'
 import { AddCash } from './AddCash'
 import { DeleteTag } from './DeleteTag'
 import { StatusMessages } from './StatusMessages'
+import { WhatIf } from './WhatIf'
 
 
 export class InputForms extends React.Component {
@@ -13,7 +14,7 @@ export class InputForms extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            which_inputs: "tickers" // tickers | tags | transactions | logs
+            which_inputs: "tickers" // tickers | tags | transactions | logs | what-ifs
         }
         this.onWhichInputs = this.onWhichInputs.bind(this)
     }
@@ -30,6 +31,7 @@ export class InputForms extends React.Component {
                     <span className={"input-form-selector" + (this.state.which_inputs==="tags" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tags')}>Tags</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="logs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('logs')}>Logs</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="what-ifs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('what-ifs')}>What If?</span>
                 </section>
                 <section id="input-form-forms">
                     {this.state.which_inputs === 'tickers' && (
@@ -77,6 +79,15 @@ export class InputForms extends React.Component {
                         />
                         </React.Fragment>
                     )}
+                    {this.state.which_inputs === 'what-ifs' && (
+                        <React.Fragment>
+                        <WhatIf
+                            all_current_quotes={this.props.all_current_quotes}
+                            all_positions={this.props.all_positions}
+                            on_whatif={this.props.on_whatif}
+                        />
+                        </React.Fragment>
+                    )}
                 </section>
             </div>
         )
@@ -86,6 +97,8 @@ export class InputForms extends React.Component {
 InputForms.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
+    all_current_quotes: PropTypes.object,
+    all_positions: PropTypes.object,
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,
     on_new_tags: PropTypes.func.isRequired,
@@ -93,4 +106,5 @@ InputForms.propTypes = {
     on_new_transaction: PropTypes.func.isRequired,
     all_status_messages: PropTypes.array.isRequired,
     on_new_messages: PropTypes.func.isRequired,
+    on_whatif: PropTypes.func
 }
