@@ -1556,22 +1556,9 @@ export class ComparingStocks extends React.Component {
                             on_delete_tag={this.onDeleteTag}
                             on_new_transaction={this.onNewTransaction}
                             on_new_cash={this.onNewCash}
+                            all_status_messages={this.state.status_messages}
                             on_new_messages={this.onNewMessages}
                         />
-                        <div id="status-messages-wrapper">
-                            { this.state.status_messages.length ? 'History:' : '' }
-                            <div id="status-messages">
-                            { this.state.status_messages
-                                .map(
-                                    (message, i) => {
-                                        return (message.toLowerCase().startsWith("error"))
-                                        ? <p key={i} className="message error">{message}</p>
-                                        : <p key={i} className="message">{message}</p>
-                                    }
-                                )
-                            }
-                            </div>
-                        </div>
                     </div>
                     <div id="view-controls">
                         <div id="baseline-control">

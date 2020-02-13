@@ -5,6 +5,7 @@ import { AddTag } from './AddTag'
 import { AddTransaction } from './AddTransaction'
 import { AddCash } from './AddCash'
 import { DeleteTag } from './DeleteTag'
+import { StatusMessages } from './StatusMessages'
 
 
 export class InputForms extends React.Component {
@@ -12,7 +13,7 @@ export class InputForms extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            which_inputs: "tickers" // tickers | tags | transactions
+            which_inputs: "tickers" // tickers | tags | transactions | logs
         }
         this.onWhichInputs = this.onWhichInputs.bind(this)
     }
@@ -28,6 +29,7 @@ export class InputForms extends React.Component {
                     <span className={"input-form-selector" + (this.state.which_inputs==="tickers" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tickers')}>Tickers</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="tags" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tags')}>Tags</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="logs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('logs')}>Logs</span>
                 </section>
                 <section id="input-form-forms">
                     {this.state.which_inputs === 'tickers' && (
@@ -68,6 +70,13 @@ export class InputForms extends React.Component {
                         />
                     </React.Fragment>
                     )}
+                    {this.state.which_inputs === 'logs' && (
+                        <React.Fragment>
+                        <StatusMessages
+                            all_status_messages={this.props.all_status_messages}
+                        />
+                        </React.Fragment>
+                    )}
                 </section>
             </div>
         )
@@ -82,5 +91,6 @@ InputForms.propTypes = {
     on_new_tags: PropTypes.func.isRequired,
     on_delete_tag: PropTypes.func.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
+    all_status_messages: PropTypes.array.isRequired,
     on_new_messages: PropTypes.func.isRequired,
 }
