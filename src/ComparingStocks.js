@@ -167,6 +167,7 @@ export class ComparingStocks extends React.Component {
         this.populateSymbolCount = this.populateSymbolCount.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
         this.onShowInputChange = this.onShowInputChange.bind(this)
+        this.onChangeWhatifFormat = this.onChangeWhatifFormat.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
@@ -630,6 +631,12 @@ export class ComparingStocks extends React.Component {
             aggrRealized: aggr_position_info[1],
             aggrTotalValue: aggr_position_info[2],
         })
+    }
+
+    onChangeWhatifFormat() {
+        let new_whatif_format = (this.state.whatif_format === 'deltas') ? 'new_values' : 'deltas'
+        localStorage.setItem('whatif_format', JSON.stringify(new_whatif_format))
+        this.setState({ whatif_format: new_whatif_format })
     }
 
     onChangeSort(new_sort_column) {
@@ -1497,7 +1504,9 @@ export class ComparingStocks extends React.Component {
                 symbol_count_str={symbol_count}
                 sort_column={this.state.sort_column}
                 sort_triangle={sort_triangle}
+                whatif_format={this.state.whatif_format}
                 on_change_sort={this.onChangeSort}
+                on_change_whatif_format={this.onChangeWhatifFormat}
             />
         )
 
@@ -1522,6 +1531,7 @@ export class ComparingStocks extends React.Component {
                 total_basis={row_data.total_basis}
                 whatif={row_data.whatif}
                 whatif_format={this.state.whatif_format}
+                on_change_whatif_format={this.onChangeWhatifFormat}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tag={row_data.on_delete_tag}

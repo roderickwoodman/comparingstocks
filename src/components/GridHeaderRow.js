@@ -5,6 +5,19 @@ import PropTypes from 'prop-types'
 // This component displays table headers for either tickers (is_aggregate === 0) or tags (is_aggregate === 1).
 export class GridHeaderRow extends React.Component {
 
+    constructor(props) {
+        super(props)
+        this.onHeaderCellClick = this.onHeaderCellClick.bind(this)
+    }
+
+    onHeaderCellClick(column_name) {
+        if (column_name.startsWith('whatif_')) {
+            this.props.on_change_whatif_format()
+        } else {
+            this.props.on_change_sort(column_name)
+        }
+    }
+
     render() {
 
         let is_aggregate = this.props.is_aggregate
@@ -24,6 +37,7 @@ export class GridHeaderRow extends React.Component {
         }
         all_columns.push(first_column)
 
+        let self = this
         this.props.columns.forEach(function(column) {
             let new_column = {}
             new_column['name'] = column.name
@@ -33,6 +47,12 @@ export class GridHeaderRow extends React.Component {
                 } else {
                     new_column['display_name'] = 'Tickers'
                 }
+            } else if (column.name.startsWith('whatif_')) {
+                if (self.props.whatif_format === 'deltas') {
+                    new_column['display_name'] = column.display_name.replace('What-If', 'What-If DELTA')
+                } else {
+                    new_column['display_name'] = column.display_name.replace('What-If', 'What-If NEW')
+                }
             } else {
                 new_column['display_name'] = column.display_name
             }
@@ -41,7 +61,13 @@ export class GridHeaderRow extends React.Component {
 
         return (
             all_columns.map( (column,i) => (
-                <th key={ column.name } onClick={ (i!==0) ? (e)=>this.props.on_change_sort(column.name) : undefined }>{ (i===1 && !is_aggregate) ? column.display_name + symbol_count_str : column.display_name }{ column.name === sort_column ? sort_triangle : '' }</th>
+                <th 
+                    key={ column.name } 
+                    className={(i!==0) ? "clickable" : ""} 
+                    onClick={ (i!==0) ? (e)=>this.onHeaderCellClick(column.name) : undefined }
+                >   { (i===1 && !is_aggregate) ? column.display_name + symbol_count_str : column.display_name }
+                    { column.name === sort_column ? sort_triangle : '' }
+                </th>
             ))
         )
     }
@@ -54,5 +80,7 @@ GridHeaderRow.propTypes = {
     symbol_count_str: PropTypes.string,
     sort_column: PropTypes.string,
     sort_triangle: PropTypes.string,
-    on_change_sort: PropTypes.func
+    whatif_format: PropTypes.string,
+    on_change_sort: PropTypes.func,
+    on_change_whatif_format: PropTypes.func
 }

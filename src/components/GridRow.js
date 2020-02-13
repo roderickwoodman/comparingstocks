@@ -12,12 +12,17 @@ export class GridRow extends React.Component {
         this.state = {
             hover: false
         }
+        this.onWhatifCellClick = this.onWhatifCellClick.bind(this)
         this.toggleHover = this.toggleHover.bind(this)
         this.populateMemberButton = this.populateMemberButton.bind(this)
         this.populateDeleteButton = this.populateDeleteButton.bind(this)
         this.populateCellValue = this.populateCellValue.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
+    }
+
+    onWhatifCellClick() {
+        this.props.on_change_whatif_format()
     }
 
     toggleHover() {
@@ -96,6 +101,9 @@ export class GridRow extends React.Component {
             && row_name !== 'untagged'
             && !(row_name === 'cash' && isNaN(current_shares)) ) {
             classes += ' hovering'
+        }
+        if ( column_name.startsWith('whatif_') ) {
+            classes += ' clickable'
         }
         if ( column_name === 'symbol' && row_name === 'untagged') {
             classes += ' italics'
@@ -368,6 +376,10 @@ export class GridRow extends React.Component {
                         return (
                             <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ self.populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
                         )
+                    } else if (column.name.startsWith('whatif_')) {
+                        return (
+                            <td key={column.name} className={ self.styleCell(column.name) } onClick={ (column.name.startsWith('whatif_')) ? (e)=>self.onWhatifCellClick() : undefined }>{ self.populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
+                        )
                     } else {
                         return (
                             <td key={column.name} className={ self.styleCell(column.name) }>{ self.populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
@@ -428,6 +440,7 @@ GridRow.propTypes = {
     total_basis: PropTypes.number,
     whatif: PropTypes.object,
     whatif_format: PropTypes.string,
+    on_change_whatif_format: PropTypes.func,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,

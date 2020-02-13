@@ -173,7 +173,8 @@ tr.position-row {
   text-align: center;
 }
 
-th:hover {
+th.clickable:hover,
+td.clickable:hover {
   cursor: pointer;
 }
 
