@@ -11,6 +11,8 @@ Nearly all financial websites surface the most superficial portfolio data and ar
 
 This is why this app intentionally hides many of the common investment numbers like shares, daily prices, and total dollars. Instead, it favors numbers like market caps, index-relative long-term performance, and percent portfolio values. It is these metrics which are the highest-level of bearings that every individual investor should have in mind when taking portfolio actions.
 
+This app also has controls and output for "what-if" rebalancing scenarios, so that the user has an actionable snapshot of the delta needed to get a set of positions into balance.
+
 In all, **ComparingStocks** attempts to be a long-term portfolio monitoring and rebalancing tool.
 
 ### Development
