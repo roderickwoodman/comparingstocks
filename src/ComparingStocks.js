@@ -178,7 +178,8 @@ export class ComparingStocks extends React.Component {
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
-        this.onWhatif = this.onWhatif.bind(this)
+        this.onWhatifSubmit = this.onWhatifSubmit.bind(this)
+        this.onWhatifGo = this.onWhatifGo.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
         this.getHoldings = this.getHoldings.bind(this)
         this.getAdded = this.getAdded.bind(this)
@@ -625,6 +626,10 @@ export class ComparingStocks extends React.Component {
                 show_holdings,
                 show_cash)))
 
+        if (name === 'show_cash') {
+            this.onWhatifGo(new_value)
+        }
+
         this.setState({ 
             [name]: new_value,
             aggrBasis: aggr_position_info[0],
@@ -1028,9 +1033,34 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onWhatif(new_whatif) {
-        let new_whatifs = JSON.parse(JSON.stringify(new_whatif))
-        this.setState({ allWhatifs: new_whatifs.values, column_balanced: new_whatifs.column_balanced })
+    onWhatifSubmit() {
+        this.onWhatifGo(this.state.show_cash)
+    }
+
+    onWhatifGo(show_cash) {
+
+        let self = this
+        // determine the target value for each row
+        let total_values = {}
+        let total_value = 0
+        Object.keys(this.state.allPositions).filter(ticker => ticker !== 'cash' || show_cash).forEach(function(ticker) {
+            total_values[ticker] = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+            total_value += total_values[ticker]
+        })
+        let target_balanced_value = total_value / Object.keys(this.state.allPositions).length
+
+        // determine the what-if values for each relevant column
+        let new_whatif = {
+            column_balanced: 'current_value',
+            values: {}
+        }
+        Object.keys(this.state.allPositions).forEach(function(ticker) {
+            let whatif_shares = Math.floor(target_balanced_value / self.state.allCurrentQuotes[ticker].current_price)
+            new_whatif.values[ticker] = {}
+            new_whatif.values[ticker]['current_shares'] = whatif_shares
+            new_whatif.values[ticker]['current_value'] = whatif_shares * self.state.allCurrentQuotes[ticker].current_price
+        })
+        this.setState({ allWhatifs: new_whatif.values, column_balanced: new_whatif.column_balanced })
     }
 
     getHoldings() {
@@ -1608,7 +1638,7 @@ export class ComparingStocks extends React.Component {
                             on_new_cash={this.onNewCash}
                             all_status_messages={this.state.status_messages}
                             on_new_messages={this.onNewMessages}
-                            on_whatif={this.onWhatif}
+                            on_whatif_submit={this.onWhatifSubmit}
                         />
                     </div>
                     <div id="view-controls">
