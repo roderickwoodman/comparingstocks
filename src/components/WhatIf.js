@@ -34,7 +34,7 @@ export class WhatIf extends React.Component {
                     <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" onChange={this.handleChange} />ignore cash</label>
                     <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />use cash, leaving $0 remaining</label>
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-secondary" type="submit" value="Generate What-If Deltas" />
+                        <input className="btn btn-sm btn-secondary" type="submit" value="Generate What-If Deltas" disabled={!this.props.show_cash}/>
                     </section>
                 </form>
             </section>
