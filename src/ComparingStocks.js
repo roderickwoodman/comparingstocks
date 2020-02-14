@@ -135,6 +135,7 @@ export class ComparingStocks extends React.Component {
             allWhatifs: {},
             whatif_format: 'deltas', // deltas | new_values
             column_balanced: '',
+            remaining_cash: null,
             status_messages: [],
             baseline: {
                 name: 'zero_pct_gain',
@@ -627,7 +628,7 @@ export class ComparingStocks extends React.Component {
                 show_cash)))
 
         if (name === 'show_cash') {
-            this.onWhatifGo(new_value)
+            this.onWhatifGo(new_value, this.state.remaining_cash)
         }
 
         this.setState({ 
@@ -1033,33 +1034,57 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onWhatifSubmit() {
-        this.onWhatifGo(this.state.show_cash)
+    onWhatifSubmit(show_cash, remaining_cash) {
+        this.setState({ remaining_cash: remaining_cash })
+        this.onWhatifGo(show_cash, remaining_cash)
     }
 
-    onWhatifGo(show_cash) {
+    onWhatifGo(show_cash, remaining_cash) {
 
         let self = this
-        // determine the target value for each row
-        let total_values = {}
-        let total_value = 0
-        Object.keys(this.state.allPositions).filter(ticker => ticker !== 'cash' || show_cash).forEach(function(ticker) {
-            total_values[ticker] = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-            total_value += total_values[ticker]
+        let adjusting_cash = show_cash && remaining_cash !== null
+
+        // determine the total value to be balanced
+        let total_ticker_values = {}, total_ticker_value = 0, num_tickers = 0
+        Object.keys(this.state.allPositions).filter(ticker => ticker !== 'cash').forEach(function(ticker) {
+            total_ticker_values[ticker] = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+            total_ticker_value += total_ticker_values[ticker]
+            num_tickers += 1
         })
-        let target_balanced_value = total_value / Object.keys(this.state.allPositions).length
+        let original_cash_position = this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price
+        if (adjusting_cash) {
+            let cash_delta = remaining_cash - original_cash_position
+            if (cash_delta <= 0) { // negative cash delta means more value in tickers would be purchased than sold
+                total_ticker_value -= cash_delta
+            } else {
+                total_ticker_value += cash_delta
+            }
+        }
+        let target_balanced_value = total_ticker_value / num_tickers
 
         // determine the what-if values for each relevant column
         let new_whatif = {
             column_balanced: 'current_value',
             values: {}
         }
-        Object.keys(this.state.allPositions).forEach(function(ticker) {
+        let actual_remaining_cash = original_cash_position
+        Object.keys(this.state.allPositions).filter(ticker => ticker !== 'cash').forEach(function(ticker) {
             let whatif_shares = Math.floor(target_balanced_value / self.state.allCurrentQuotes[ticker].current_price)
+            let whatif_value = whatif_shares * self.state.allCurrentQuotes[ticker].current_price
+            let original_value = total_ticker_values[ticker]
             new_whatif.values[ticker] = {}
             new_whatif.values[ticker]['current_shares'] = whatif_shares
-            new_whatif.values[ticker]['current_value'] = whatif_shares * self.state.allCurrentQuotes[ticker].current_price
+            new_whatif.values[ticker]['current_value'] = whatif_value
+            if (adjusting_cash) {
+                let value_delta = whatif_value - original_value
+                actual_remaining_cash -= value_delta 
+            }
         })
+        if (adjusting_cash) {
+            new_whatif.values['cash'] = {}
+            new_whatif.values['cash']['current_shares'] = actual_remaining_cash
+            new_whatif.values['cash']['current_value'] = actual_remaining_cash
+        }
         this.setState({ allWhatifs: new_whatif.values, column_balanced: new_whatif.column_balanced })
     }
 
@@ -1631,6 +1656,7 @@ export class ComparingStocks extends React.Component {
                             all_tags={this.state.allTags}
                             all_current_quotes={this.state.allCurrentQuotes}
                             all_positions={this.state.allPositions}
+                            show_cash={this.state.show_cash}
                             on_new_tickers={this.onNewTickers}
                             on_new_tags={this.onNewTags}
                             on_delete_tag={this.onDeleteTag}

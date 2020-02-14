@@ -84,6 +84,7 @@ export class InputForms extends React.Component {
                         <WhatIf
                             all_current_quotes={this.props.all_current_quotes}
                             all_positions={this.props.all_positions}
+                            show_cash={this.props.show_cash}
                             on_whatif_submit={this.props.on_whatif_submit}
                         />
                         </React.Fragment>
@@ -99,6 +100,7 @@ InputForms.propTypes = {
     all_tags: PropTypes.object.isRequired,
     all_current_quotes: PropTypes.object,
     all_positions: PropTypes.object,
+    show_cash: PropTypes.bool,
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,
     on_new_tags: PropTypes.func.isRequired,
