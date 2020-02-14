@@ -8,7 +8,7 @@ export class WhatIf extends React.Component {
         super(props)
         this.state = {
             cash_treatment: 'ignore',
-            cash_remaining: '0',
+            cash_remaining: 0,
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -32,9 +32,9 @@ export class WhatIf extends React.Component {
             <section id="what-if">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
                     <div>Balance my holdings by value...</div>
-                    <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" onChange={this.handleChange} />ignoring my cash balance</label>
+                    <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
                     <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
-                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange}></input> remaining</label>
+                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining}></input> remaining</label>
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-secondary" type="submit" value="What If?" disabled={!this.props.show_cash}/>
                     </section>
