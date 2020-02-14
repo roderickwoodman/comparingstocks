@@ -1051,7 +1051,7 @@ export class ComparingStocks extends React.Component {
             total_ticker_value += total_ticker_values[ticker]
             num_tickers += 1
         })
-        let original_cash_position = this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price
+        let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
         if (adjusting_cash) {
             let cash_delta = remaining_cash - original_cash_position
             if (cash_delta <= 0) { // negative cash delta means more value in tickers would be purchased than sold
