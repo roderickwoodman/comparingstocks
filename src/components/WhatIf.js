@@ -8,6 +8,7 @@ export class WhatIf extends React.Component {
         super(props)
         this.state = {
             cash_treatment: 'ignore',
+            cash_remaining: '0',
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -22,7 +23,7 @@ export class WhatIf extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault()
-        let remaining_cash = (this.state.cash_treatment === 'ignore') ? null : 0
+        let remaining_cash = (this.state.cash_treatment === 'ignore') ? null : this.state.cash_remaining
         this.props.on_whatif_submit(this.props.show_cash, remaining_cash)
     }
 
@@ -30,11 +31,12 @@ export class WhatIf extends React.Component {
         return (
             <section id="what-if">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
-                    <label>What if holdings were balanced by value?</label>
-                    <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" onChange={this.handleChange} />ignore cash</label>
-                    <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />use cash, leaving $0 remaining</label>
+                    <div>Balance my holdings by value...</div>
+                    <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" onChange={this.handleChange} />ignoring my cash balance</label>
+                    <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
+                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange}></input> remaining</label>
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-secondary" type="submit" value="Generate What-If Deltas" disabled={!this.props.show_cash}/>
+                        <input className="btn btn-sm btn-secondary" type="submit" value="What If?" disabled={!this.props.show_cash}/>
                     </section>
                 </form>
             </section>
