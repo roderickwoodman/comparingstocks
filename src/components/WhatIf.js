@@ -61,14 +61,13 @@ export class WhatIf extends React.Component {
     }
 
     isDisabled() {
-        if (this.state.balance_target_set === 'my_holdings' && !this.props.show_holdings) {
-            return true
-        } else if (this.state.balance_target_set === 'untagged' && !this.props.show_untagged) {
-            return true
+        if (this.state.balance_target_set === 'my_holdings') {
+            return (this.props.show_holdings) ? false : true
+        } else if (this.state.balance_target_set === 'untagged') {
+            return (this.props.show_untagged) ? false : true
         } else {
-            return false
+            return (this.props.show_tagged) ? false : true
         }
-
     }
 
     render() {
@@ -79,6 +78,9 @@ export class WhatIf extends React.Component {
                         <select name="balance_target_set" value={this.state.balance_target_set} onChange={this.handleChange}>
                             <option value="my_holdings">my holdings</option>
                             <option value="untagged">untagged tickers</option>
+                            {Object.keys(this.props.all_tags).sort().filter(tag => tag !== 'untagged').map(tag => 
+                                <option key={tag} value={tag}>tag: {tag}</option>
+                            )}
                         </select>
                         &nbsp;into equal values...</div>
                     <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
@@ -99,6 +101,7 @@ WhatIf.propTypes = {
     all_positions: PropTypes.object,
     get_balanceable_value: PropTypes.func,
     show_holdings: PropTypes.bool,
+    show_tagged: PropTypes.bool,
     show_untagged: PropTypes.bool,
     show_cash: PropTypes.bool,
     on_whatif_submit: PropTypes.func

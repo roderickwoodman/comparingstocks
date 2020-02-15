@@ -1068,12 +1068,12 @@ export class ComparingStocks extends React.Component {
                     balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                 })
             }
-        // } else { // balance_target_set is a tag name
-        //     if (this.state.show_tagged) {
-        //         this.state.allTags[balance_target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
-        //             balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-        //         })
-        //     }
+        } else { // balance_target_set is a tag name
+            if (this.state.show_tagged) {
+                this.state.allTags[balance_target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
+                    balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                })
+            }
         }
 
         return balanceable_value
@@ -1104,6 +1104,8 @@ export class ComparingStocks extends React.Component {
             tickers_to_balance = [...this.getHoldings().filter( ticker => ticker !== 'cash' )]
         } else if (balance_target_set === 'untagged') {
             tickers_to_balance = [...this.getUntagged()]
+        } else {
+            tickers_to_balance = this.state.allTags[balance_target_set]
         }
 
         // determine these tickers' what-if values for each relevant column
@@ -1702,6 +1704,7 @@ export class ComparingStocks extends React.Component {
                             all_current_quotes={this.state.allCurrentQuotes}
                             all_positions={this.state.allPositions}
                             show_holdings={this.state.show_holdings}
+                            show_tagged={this.state.show_tagged}
                             show_untagged={this.state.show_untagged}
                             show_cash={this.state.show_cash}
                             get_balanceable_value={this.getBalanceableValue}
