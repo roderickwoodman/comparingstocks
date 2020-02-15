@@ -134,6 +134,7 @@ export class ComparingStocks extends React.Component {
             },
             allWhatifs: {},
             whatif_format: 'deltas', // deltas | new_values
+            balance_target_set: 'my_holdings',
             column_balanced: '',
             remaining_cash: null,
             status_messages: [],
@@ -179,6 +180,8 @@ export class ComparingStocks extends React.Component {
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
+        this.getCurrentValue = this.getCurrentValue.bind(this)
+        this.getBalanceableValue = this.getBalanceableValue.bind(this)
         this.onWhatifSubmit = this.onWhatifSubmit.bind(this)
         this.onWhatifGo = this.onWhatifGo.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
@@ -628,7 +631,7 @@ export class ComparingStocks extends React.Component {
                 show_cash)))
 
         if (name === 'show_cash') {
-            this.onWhatifGo(new_value, this.state.remaining_cash)
+            this.onWhatifGo(this.state.balance_target_set, new_value, this.state.remaining_cash)
         }
 
         this.setState({ 
@@ -1034,44 +1037,86 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onWhatifSubmit(show_cash, remaining_cash) {
-        this.setState({ remaining_cash: remaining_cash })
-        this.onWhatifGo(show_cash, remaining_cash)
+    getCurrentValue(ticker) {
+        if (this.state.allPositions.hasOwnProperty(ticker)) {
+            return this.state.allCurrentQuotes[ticker].current_price * this.state.allPositions[ticker].current_shares
+        } else {
+            return 0
+        }
     }
 
-    onWhatifGo(show_cash, remaining_cash) {
+    getBalanceableValue(balance_target_set) { // 'my_holdings' | 'untagged' | {any tag name}
+
+        let self = this
+        let balanceable_value = 0
+
+        let current_cash_position = 0
+        if (this.state.show_cash && this.state.allPositions.hasOwnProperty('cash')) {
+            current_cash_position = self.state.allPositions['cash'].current_shares * self.state.allCurrentQuotes['cash'].current_price
+        }
+        balanceable_value += current_cash_position
+
+        if (balance_target_set === 'my_holdings') {
+            if (this.state.show_holdings) {
+                Object.keys(this.state.allPositions).filter( ticker => ticker !== 'cash' ).forEach( function(ticker) {
+                    balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                })
+            }
+        } else if (balance_target_set === 'untagged') {
+            if (this.state.show_untagged && this.state.allTags.hasOwnProperty('untagged')) {
+                this.state.allTags['untagged'].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
+                    balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                })
+            }
+        // } else { // balance_target_set is a tag name
+        //     if (this.state.show_tagged) {
+        //         this.state.allTags[balance_target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
+        //             balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+        //         })
+        //     }
+        }
+
+        return balanceable_value
+    }
+
+    onWhatifSubmit(balance_target_set, remaining_cash) {
+        this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set })
+        this.onWhatifGo(balance_target_set, this.state.show_cash, remaining_cash)
+    }
+
+    onWhatifGo(balance_target_set, show_cash, remaining_cash) {
 
         let self = this
         let adjusting_cash = show_cash && remaining_cash !== null
+        let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
-        let total_ticker_values = {}, total_ticker_value = 0, num_tickers = 0
-        Object.keys(this.state.allPositions).filter(ticker => ticker !== 'cash').forEach(function(ticker) {
-            total_ticker_values[ticker] = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-            total_ticker_value += total_ticker_values[ticker]
-            num_tickers += 1
-        })
-        let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
-        if (adjusting_cash) {
-            let cash_delta = remaining_cash - original_cash_position
-            if (cash_delta <= 0) { // negative cash delta means more value in tickers would be purchased than sold
-                total_ticker_value -= cash_delta
-            } else {
-                total_ticker_value += cash_delta
-            }
+        let total_balance_value = this.getBalanceableValue(balance_target_set) // includes cash if show_cash is enabled
+        if (remaining_cash === null) {
+            total_balance_value -= original_cash_position
+        } else {
+            total_balance_value -= remaining_cash
         }
-        let target_balanced_value = total_ticker_value / num_tickers
 
-        // determine the what-if values for each relevant column
+        // determine the tickers to balance across
+        let tickers_to_balance = []
+        if (balance_target_set === 'my_holdings') {
+            tickers_to_balance = [...this.getHoldings().filter( ticker => ticker !== 'cash' )]
+        } else if (balance_target_set === 'untagged') {
+            tickers_to_balance = [...this.getUntagged()]
+        }
+
+        // determine these tickers' what-if values for each relevant column
         let new_whatif = {
             column_balanced: 'current_value',
             values: {}
         }
         let actual_remaining_cash = original_cash_position
-        Object.keys(this.state.allPositions).filter(ticker => ticker !== 'cash').forEach(function(ticker) {
-            let whatif_shares = Math.floor(target_balanced_value / self.state.allCurrentQuotes[ticker].current_price)
+        tickers_to_balance.forEach(function(ticker) {
+            let target_value = total_balance_value / tickers_to_balance.length
+            let whatif_shares = Math.floor(target_value / self.state.allCurrentQuotes[ticker].current_price)
             let whatif_value = whatif_shares * self.state.allCurrentQuotes[ticker].current_price
-            let original_value = total_ticker_values[ticker]
+            let original_value = self.getCurrentValue(ticker)
             new_whatif.values[ticker] = {}
             new_whatif.values[ticker]['current_shares'] = whatif_shares
             new_whatif.values[ticker]['current_value'] = whatif_value
@@ -1656,7 +1701,10 @@ export class ComparingStocks extends React.Component {
                             all_tags={this.state.allTags}
                             all_current_quotes={this.state.allCurrentQuotes}
                             all_positions={this.state.allPositions}
+                            show_holdings={this.state.show_holdings}
+                            show_untagged={this.state.show_untagged}
                             show_cash={this.state.show_cash}
+                            get_balanceable_value={this.getBalanceableValue}
                             on_new_tickers={this.onNewTickers}
                             on_new_tags={this.onNewTags}
                             on_delete_tag={this.onDeleteTag}

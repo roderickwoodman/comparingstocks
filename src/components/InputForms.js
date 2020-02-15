@@ -84,6 +84,10 @@ export class InputForms extends React.Component {
                         <WhatIf
                             all_current_quotes={this.props.all_current_quotes}
                             all_positions={this.props.all_positions}
+                            all_tags={this.props.all_tags}
+                            get_balanceable_value={this.props.get_balanceable_value}
+                            show_holdings={this.props.show_holdings}
+                            show_untagged={this.props.show_untagged}
                             show_cash={this.props.show_cash}
                             on_whatif_submit={this.props.on_whatif_submit}
                         />
@@ -101,6 +105,7 @@ InputForms.propTypes = {
     all_current_quotes: PropTypes.object,
     all_positions: PropTypes.object,
     show_cash: PropTypes.bool,
+    get_balanceable_value: PropTypes.func,
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,
     on_new_tags: PropTypes.func.isRequired,
