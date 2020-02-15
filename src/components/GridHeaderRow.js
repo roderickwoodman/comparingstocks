@@ -8,6 +8,18 @@ export class GridHeaderRow extends React.Component {
     constructor(props) {
         super(props)
         this.onHeaderCellClick = this.onHeaderCellClick.bind(this)
+        this.styleCell = this.styleCell.bind(this)
+    }
+
+    styleCell(column_index, column_name) {
+        let classes = ''
+        if (column_index !== 0) {
+            classes += 'clickable '
+        }
+        if (column_name.startsWith('whatif_')) {
+            classes += 'whatif '
+        }
+        return classes
     }
 
     onHeaderCellClick(column_name) {
@@ -63,7 +75,7 @@ export class GridHeaderRow extends React.Component {
             all_columns.map( (column,i) => (
                 <th 
                     key={ column.name } 
-                    className={(i!==0) ? "clickable" : ""} 
+                    className={ self.styleCell(i, column.name) }
                     onClick={ (i!==0) ? (e)=>this.onHeaderCellClick(column.name) : undefined }
                 >   { (i===1 && !is_aggregate) ? column.display_name + symbol_count_str : column.display_name }
                     { column.name === sort_column ? sort_triangle : '' }

@@ -103,7 +103,7 @@ export class GridRow extends React.Component {
             classes += ' hovering'
         }
         if ( column_name.startsWith('whatif_') ) {
-            classes += ' clickable'
+            classes += ' clickable whatif'
         }
         if ( column_name === 'symbol' && row_name === 'untagged') {
             classes += ' italics'

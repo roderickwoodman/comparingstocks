@@ -151,6 +151,11 @@ tr.position-row {
   margin: 5px 0;
 }
 
+th.whatif,
+td.whatif {
+  color: purple;
+}
+
 .position-is-index {
   background: orange;
   font-weight: 800;
