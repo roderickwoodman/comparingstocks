@@ -231,10 +231,10 @@ export class GridRow extends React.Component {
                 value = current_shares
                 break
             case 'whatif_current_shares':
-                if (whatif === null || !whatif.hasOwnProperty('current_shares')) {
+                if (whatif === null) {
                     value = 'n/a'
                 } else if (this.props.whatif_format === 'deltas') {
-                    value = whatif.current_shares - current_shares
+                    value = whatif.current_shares - ((current_shares === 'n/a') ? 0 : current_shares)
                 } else {
                     value = whatif.current_shares
                 }
@@ -246,10 +246,10 @@ export class GridRow extends React.Component {
                 value = current_value
                 break
             case 'whatif_current_value':
-                if (whatif === null || !whatif.hasOwnProperty('current_value')) {
+                if (whatif === null) {
                     value = 'n/a'
                 } else if (this.props.whatif_format === 'deltas') {
-                    value = whatif.current_value - current_value
+                    value = whatif.current_value - ((current_value === 'n/a') ? 0 : current_value)
                 } else {
                     value = whatif.current_value
                 }
