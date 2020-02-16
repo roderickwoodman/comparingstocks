@@ -19,7 +19,15 @@ export class InputForms extends React.Component {
         this.onWhichInputs = this.onWhichInputs.bind(this)
     }
 
+    componentDidMount() {
+        const stored_which_inputs = JSON.parse(localStorage.getItem("which_inputs"))
+        if (stored_which_inputs !== null) {
+            this.setState({ which_inputs: stored_which_inputs })
+        }
+    }
+
     onWhichInputs(new_which_inputs) {
+        localStorage.setItem('which_inputs', JSON.stringify(new_which_inputs))
         this.setState({ which_inputs: new_which_inputs })
     }
 

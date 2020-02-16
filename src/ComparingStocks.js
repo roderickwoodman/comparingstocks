@@ -1580,7 +1580,7 @@ export class ComparingStocks extends React.Component {
                             </div>
 
                             <div className="switch_control">
-                                <div className="switch_label">show aggregates:</div>
+                                <div className="switch_label">show aggregates (tags):</div>
                                 <div className="switch_wrapper">
                                     <input id="show_aggregates" name="show_aggregates" type="checkbox" checked={this.state.show_aggregates} onChange={this.onShowInputChange} />
                                     <label htmlFor="show_aggregates" className="switch"></label>
