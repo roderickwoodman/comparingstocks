@@ -38,14 +38,17 @@ export class WhatIf extends React.Component {
         if (name === 'cash_remaining') {
             let user_whole_dollars_string = value.replace('$','').split('.')[0]
             let user_whole_dollars = parseInt(user_whole_dollars_string)
+            console.log('user_whole_dollars:', user_whole_dollars)
             let valid_whole_dollars_string = value.replace(/[^0-9.]/g,'').split('.')[0]
             if (valid_whole_dollars_string.length 
                 && user_whole_dollars_string === valid_whole_dollars_string 
                 && user_whole_dollars >= 0
                 && user_whole_dollars <= this.state.balanceable_value) { 
+                    console.log('  => true')
                 this.setState({ cash_valid: true })
             } else {
                 this.setState({ cash_valid: false })
+                    console.log('  => false')
             }
         }
 
@@ -61,7 +64,10 @@ export class WhatIf extends React.Component {
     }
 
     isDisabled() {
-        if (this.state.balance_target_set === 'my_holdings') {
+
+        if (this.state.cash_treatment === 'include' && !this.state.cash_valid) {
+            return true
+        } else if (this.state.balance_target_set === 'my_holdings') {
             return (this.props.show_holdings) ? false : true
         } else if (this.state.balance_target_set === 'untagged') {
             return (this.props.show_untagged) ? false : true
