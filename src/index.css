@@ -151,9 +151,33 @@ tr.position-row {
   margin: 5px 0;
 }
 
-th.whatif,
-td.whatif {
-  color: purple;
+th.whatif {
+  border-top: 1px solid black;
+}
+
+#position-listing th,
+#position-listing td,
+#aggr-position-listing th,
+#aggr-position-listing td {
+  padding: 0 5px;
+  border: 1px solid inherit;
+}
+
+#position-listing tbody tr:nth-last-child(2) td.whatif {
+  border-bottom: 1px solid black;
+}
+
+#aggr-position-listing tbody tr:nth-last-child(1) td.whatif {
+  border-bottom: 1px solid black;
+}
+
+#position-listing th.whatif,
+#position-listing td.whatif,
+#aggr-position-listing th.whatif,
+#aggr-position-listing td.whatif {
+  background-color: #dbddff;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
 }
 
 .position-is-index {
@@ -161,14 +185,29 @@ td.whatif {
   font-weight: 800;
 }
 
+.position-is-index .whatif {
+  background-image: linear-gradient(orange, orange), linear-gradient(#dbddff, #dbddff);
+  background-blend-mode: multiply;
+}
+
 .position-is-cash {
   background: #64e764;
   font-weight: 800;
 }
 
+.position-is-cash .whatif {
+  background-image: linear-gradient(#64e764, #64e764), linear-gradient(#dbddff, #dbddff);
+  background-blend-mode: multiply;
+}
+
 .position-is-aggregate {
   background: lightgoldenrodyellow;
   font-weight: 800;
+}
+
+.position-is-aggregate .whatif {
+  background-image: linear-gradient(lightgoldenrodyellow, lightgoldenrodyellow), linear-gradient(#dbddff, #dbddff);
+  background-blend-mode: multiply;
 }
 
 #position-listing th,
