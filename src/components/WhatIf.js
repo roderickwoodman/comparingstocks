@@ -29,9 +29,15 @@ export class WhatIf extends React.Component {
 
         let {name, value } = event.target
 
-        // when the balance target input changes, update the maximum value
+        // when the balance target set input changes, update the maximum value
         if (name === 'balance_target_set') {
-            let new_balanceable_value = this.props.get_balanceable_value(value)
+            let new_balanceable_value = this.props.get_balanceable_value(value, this.state.balance_target_column)
+            this.setState({ balanceable_value: new_balanceable_value })
+        }
+
+        // when the balance target column input changes, update the maximum value
+        if (name === 'balance_target_column') {
+            let new_balanceable_value = this.props.get_balanceable_value(this.state.balance_target_set, value)
             this.setState({ balanceable_value: new_balanceable_value })
         }
 
@@ -89,6 +95,7 @@ export class WhatIf extends React.Component {
                         &nbsp;into&nbsp; 
                         <select name="balance_target_column" value={this.state.balance_target_column} onChange={this.handleChange}>
                             <option value="current_value">equal values</option>
+                            <option value="basis">equal bases</option>
                         </select>
                         &nbsp;...
                     </div>

@@ -260,6 +260,15 @@ export class GridRow extends React.Component {
             case 'basis':
                 value = basis
                 break
+            case 'whatif_basis':
+                if (whatif === null) {
+                    value = 'n/a'
+                } else if (this.props.whatif_format === 'deltas') {
+                    value = whatif.basis - ((basis === 'n/a') ? 0 : basis)
+                } else {
+                    value = whatif.basis
+                }
+                break
             case 'percent_basis':
                 value = percent_basis
                 break

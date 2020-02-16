@@ -57,6 +57,12 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'whatif_basis',
+        display_name: 'What-If Basis',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
         name: 'percent_basis',
         display_name: 'Pct of Total Basis',
         type: 'percentage',
@@ -135,7 +141,7 @@ export class ComparingStocks extends React.Component {
             allWhatifs: {},
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
-            balance_target_column: '',
+            balance_target_column: 'current_value',
             remaining_cash: null,
             status_messages: [],
             baseline: {
@@ -182,6 +188,7 @@ export class ComparingStocks extends React.Component {
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
+        this.getBasis = this.getBasis.bind(this)
         this.getBalanceableValue = this.getBalanceableValue.bind(this)
         this.onWhatifSubmit = this.onWhatifSubmit.bind(this)
         this.onWhatifGo = this.onWhatifGo.bind(this)
@@ -632,7 +639,7 @@ export class ComparingStocks extends React.Component {
                 show_cash)))
 
         if (name === 'show_cash') {
-            this.onWhatifGo(this.state.balance_target_set, new_value, this.state.remaining_cash)
+            this.onWhatifGo(this.state.balance_target_set, this.state.balance_target_column, new_value, this.state.remaining_cash)
         }
 
         this.setState({ 
@@ -1060,7 +1067,15 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    getBalanceableValue(balance_target_set) { // 'my_holdings' | 'untagged' | {any tag name}
+    getBasis(ticker) {
+        if (this.state.allPositions.hasOwnProperty(ticker)) {
+            return this.state.allPositions[ticker].basis
+        } else {
+            return 0
+        }
+    }
+
+    getBalanceableValue(balance_target_set, balance_target_column) {
 
         let self = this
         let balanceable_value = 0
@@ -1074,19 +1089,31 @@ export class ComparingStocks extends React.Component {
         if (balance_target_set === 'my_holdings') {
             if (this.state.show_holdings) {
                 Object.keys(this.state.allPositions).filter( ticker => ticker !== 'cash' ).forEach( function(ticker) {
-                    balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                    if (balance_target_column === 'current_value') {
+                        balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                    } else if (balance_target_column === 'basis') {
+                        balanceable_value += self.state.allPositions[ticker].basis
+                    }
                 })
             }
         } else if (balance_target_set === 'untagged') {
             if (this.state.show_untagged && this.state.allTags.hasOwnProperty('untagged')) {
                 this.state.allTags['untagged'].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
-                    balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                    if (balance_target_column === 'current_value') {
+                        balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                    } else if (balance_target_column === 'basis') {
+                        balanceable_value += self.state.allPositions[ticker].basis
+                    }
                 })
             }
         } else { // balance_target_set is a tag name
             if (this.state.show_tagged) {
                 this.state.allTags[balance_target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
-                    balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                    if (balance_target_column === 'current_value') {
+                        balanceable_value += self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                    } else if (balance_target_column === 'basis') {
+                        balanceable_value += self.state.allPositions[ticker].basis
+                    }
                 })
             }
         }
@@ -1096,19 +1123,19 @@ export class ComparingStocks extends React.Component {
 
     onWhatifSubmit(balance_target_set, balance_target_column, remaining_cash) {
         this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set, balance_target_column: balance_target_column })
-        let whatif_columns = ['whatif_current_shares', 'whatif_current_value']
+        let whatif_columns = ['whatif_current_shares', 'whatif_current_value', 'whatif_basis']
         this.showColumns(whatif_columns)
-        this.onWhatifGo(balance_target_set, this.state.show_cash, remaining_cash)
+        this.onWhatifGo(balance_target_set, balance_target_column, this.state.show_cash, remaining_cash)
     }
 
-    onWhatifGo(balance_target_set, show_cash, remaining_cash) {
+    onWhatifGo(balance_target_set, balance_target_column, show_cash, remaining_cash) {
 
         let self = this
         let adjusting_cash = show_cash && remaining_cash !== null
         let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
-        let total_balance_value = this.getBalanceableValue(balance_target_set) // includes cash if show_cash is enabled
+        let total_balance_value = this.getBalanceableValue(balance_target_set, balance_target_column) // includes cash if show_cash is enabled
         if (remaining_cash === null) {
             total_balance_value -= original_cash_position
         } else {
@@ -1127,20 +1154,29 @@ export class ComparingStocks extends React.Component {
 
         // determine these tickers' what-if values for each relevant column
         let new_whatif = {
-            balance_target_column: 'current_value',
+            balance_target_column: balance_target_column,
             values: {}
         }
         let actual_remaining_cash = original_cash_position
         tickers_to_balance.forEach(function(ticker) {
-            let target_value = total_balance_value / tickers_to_balance.length
-            let whatif_shares = Math.floor(target_value / self.state.allCurrentQuotes[ticker].current_price)
-            let whatif_value = whatif_shares * self.state.allCurrentQuotes[ticker].current_price
-            let original_value = self.getCurrentValue(ticker)
+            let target = total_balance_value / tickers_to_balance.length
+            let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
+            let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
             new_whatif.values[ticker] = {}
-            new_whatif.values[ticker]['current_shares'] = whatif_shares
-            new_whatif.values[ticker]['current_value'] = whatif_value
+            new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+            let value_delta = 0
+            let original_currentvalue = self.getCurrentValue(ticker)
+            let original_basis = self.getBasis(ticker)
+            if (balance_target_column === 'current_value') {
+                new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
+                value_delta = whatif_balancedvalue - original_currentvalue
+                new_whatif.values[ticker]['basis'] = original_basis + value_delta
+            } else if (balance_target_column === 'basis') {
+                new_whatif.values[ticker]['basis'] = whatif_balancedvalue
+                value_delta = whatif_balancedvalue - original_basis
+                new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+            }
             if (adjusting_cash) {
-                let value_delta = whatif_value - original_value
                 actual_remaining_cash -= value_delta 
             }
         })
