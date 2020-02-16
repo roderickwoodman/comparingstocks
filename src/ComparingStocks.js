@@ -135,7 +135,7 @@ export class ComparingStocks extends React.Component {
             allWhatifs: {},
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
-            column_balanced: '',
+            balance_target_column: '',
             remaining_cash: null,
             status_messages: [],
             baseline: {
@@ -661,7 +661,6 @@ export class ComparingStocks extends React.Component {
     }
 
     showColumns(column_names) {
-        console.log(column_names)
         this.setState(prevState => {
             let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
             column_names.forEach(function(column_name) {
@@ -1095,8 +1094,8 @@ export class ComparingStocks extends React.Component {
         return balanceable_value
     }
 
-    onWhatifSubmit(balance_target_set, remaining_cash) {
-        this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set })
+    onWhatifSubmit(balance_target_set, balance_target_column, remaining_cash) {
+        this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set, balance_target_column: balance_target_column })
         let whatif_columns = ['whatif_current_shares', 'whatif_current_value']
         this.showColumns(whatif_columns)
         this.onWhatifGo(balance_target_set, this.state.show_cash, remaining_cash)
@@ -1128,7 +1127,7 @@ export class ComparingStocks extends React.Component {
 
         // determine these tickers' what-if values for each relevant column
         let new_whatif = {
-            column_balanced: 'current_value',
+            balance_target_column: 'current_value',
             values: {}
         }
         let actual_remaining_cash = original_cash_position
@@ -1150,7 +1149,7 @@ export class ComparingStocks extends React.Component {
             new_whatif.values['cash']['current_shares'] = actual_remaining_cash
             new_whatif.values['cash']['current_value'] = actual_remaining_cash
         }
-        this.setState({ allWhatifs: new_whatif.values, column_balanced: new_whatif.column_balanced })
+        this.setState({ allWhatifs: new_whatif.values, balance_target_column: new_whatif.balance_target_column })
     }
 
     getHoldings() {

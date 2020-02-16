@@ -9,6 +9,7 @@ export class WhatIf extends React.Component {
         this.state = {
             balanceable_value: 0,
             balance_target_set: 'my_holdings',
+            balance_target_column: 'current_value',
             cash_treatment: 'ignore',
             cash_remaining: '$0',
             cash_valid: true
@@ -38,17 +39,14 @@ export class WhatIf extends React.Component {
         if (name === 'cash_remaining') {
             let user_whole_dollars_string = value.replace('$','').split('.')[0]
             let user_whole_dollars = parseInt(user_whole_dollars_string)
-            console.log('user_whole_dollars:', user_whole_dollars)
             let valid_whole_dollars_string = value.replace(/[^0-9.]/g,'').split('.')[0]
             if (valid_whole_dollars_string.length 
                 && user_whole_dollars_string === valid_whole_dollars_string 
                 && user_whole_dollars >= 0
                 && user_whole_dollars <= this.state.balanceable_value) { 
-                    console.log('  => true')
                 this.setState({ cash_valid: true })
             } else {
                 this.setState({ cash_valid: false })
-                    console.log('  => false')
             }
         }
 
@@ -60,7 +58,7 @@ export class WhatIf extends React.Component {
         event.preventDefault()
         let user_remaining_cash = this.state.cash_remaining.split('.')[0].replace(/[^0-9]/g, "")
         let remaining_cash = (this.state.cash_treatment === 'ignore') ? null : parseInt(user_remaining_cash)
-        this.props.on_whatif_submit(this.state.balance_target_set, remaining_cash)
+        this.props.on_whatif_submit(this.state.balance_target_set, this.state.balance_target_column, remaining_cash)
     }
 
     isDisabled() {
@@ -88,7 +86,12 @@ export class WhatIf extends React.Component {
                                 <option key={tag} value={tag}>tag: {tag}</option>
                             )}
                         </select>
-                        &nbsp;into equal values...</div>
+                        &nbsp;into&nbsp; 
+                        <select name="balance_target_column" value={this.state.balance_target_column} onChange={this.handleChange}>
+                            <option value="current_value">equal values</option>
+                        </select>
+                        &nbsp;...
+                    </div>
                     <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
                     <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
                     <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining}></input> cash remaining (max: ${this.state.balanceable_value})</label>
