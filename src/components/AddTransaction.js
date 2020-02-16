@@ -105,7 +105,7 @@ export class AddTransaction extends React.Component {
                     <input name="transaction" value={this.state.transaction} onChange={this.handleChange} size="30" placeholder="buy 100 CSCO $2200.32" required />
 
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-secondary" type="submit" value="Add Transaction" disabled={this.state.transaction===''} />
+                        <input className="btn btn-sm btn-primary" type="submit" value="Add Transaction" disabled={this.state.transaction===''} />
                     </section>
                 </form>
             </section>

@@ -87,7 +87,7 @@ export class WhatIf extends React.Component {
                     <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
                     <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining}></input> cash remaining (max: ${this.state.balanceable_value})</label>
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-secondary" type="submit" value="What If?" disabled={this.isDisabled()}/>
+                        <input className="btn btn-sm btn-primary" type="submit" value="What If?" disabled={this.isDisabled()}/>
                     </section>
                 </form>
             </section>
