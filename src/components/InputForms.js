@@ -30,8 +30,8 @@ export class InputForms extends React.Component {
                     <span className={"input-form-selector" + (this.state.which_inputs==="tickers" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tickers')}>Tickers</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="tags" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tags')}>Tags</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="logs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('logs')}>Logs</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="what-ifs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('what-ifs')}>What If?</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="logs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('logs')}>Logs</span>
                 </section>
                 <section id="input-form-forms">
                     {this.state.which_inputs === 'tickers' && (
@@ -72,13 +72,6 @@ export class InputForms extends React.Component {
                         />
                     </React.Fragment>
                     )}
-                    {this.state.which_inputs === 'logs' && (
-                        <React.Fragment>
-                        <StatusMessages
-                            all_status_messages={this.props.all_status_messages}
-                        />
-                        </React.Fragment>
-                    )}
                     {this.state.which_inputs === 'what-ifs' && (
                         <React.Fragment>
                         <WhatIf
@@ -91,6 +84,13 @@ export class InputForms extends React.Component {
                             show_untagged={this.props.show_untagged}
                             show_cash={this.props.show_cash}
                             on_whatif_submit={this.props.on_whatif_submit}
+                        />
+                        </React.Fragment>
+                    )}
+                    {this.state.which_inputs === 'logs' && (
+                        <React.Fragment>
+                        <StatusMessages
+                            all_status_messages={this.props.all_status_messages}
                         />
                         </React.Fragment>
                     )}
