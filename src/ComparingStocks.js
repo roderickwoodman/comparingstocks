@@ -171,6 +171,7 @@ export class ComparingStocks extends React.Component {
         this.onShowInputChange = this.onShowInputChange.bind(this)
         this.onChangeWhatifFormat = this.onChangeWhatifFormat.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
+        this.showColumns = this.showColumns.bind(this)
         this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
         this.onNewCash = this.onNewCash.bind(this)
@@ -659,6 +660,21 @@ export class ComparingStocks extends React.Component {
         this.setState({ sort_column: new_sort_column })
     }
 
+    showColumns(column_names) {
+        console.log(column_names)
+        this.setState(prevState => {
+            let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
+            column_names.forEach(function(column_name) {
+                if (!new_shown_column_names.includes(column_name)) {
+                    new_shown_column_names.push(column_name)
+                }
+            })
+            let new_shown_columns = all_columns.filter(column => new_shown_column_names.includes(column.name))
+            localStorage.setItem('shown_columns', JSON.stringify(new_shown_columns))
+            return { shown_columns: new_shown_columns }
+        })
+    }
+
     onToggleShowColumn(column_name) {
         this.setState(prevState => {
             let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
@@ -1081,6 +1097,8 @@ export class ComparingStocks extends React.Component {
 
     onWhatifSubmit(balance_target_set, remaining_cash) {
         this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set })
+        let whatif_columns = ['whatif_current_shares', 'whatif_current_value']
+        this.showColumns(whatif_columns)
         this.onWhatifGo(balance_target_set, this.state.show_cash, remaining_cash)
     }
 
