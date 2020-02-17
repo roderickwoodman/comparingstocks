@@ -20,9 +20,8 @@ export class WhatIf extends React.Component {
     }
 
     componentDidMount() {
-        let balanceable_value = 0
-        Object.keys(this.props.all_positions).forEach( ticker => balanceable_value += this.props.all_positions[ticker].current_shares * this.props.all_current_quotes[ticker].current_price)
-        this.setState({ balanceable_value: balanceable_value })
+        let new_balanceable_value = this.props.get_balanceable_value(this.state.balance_target_set, this.state.balance_target_column)
+        this.setState({ balanceable_value: new_balanceable_value })
     }
 
     handleChange(event) {
