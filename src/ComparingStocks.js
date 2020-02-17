@@ -1818,9 +1818,7 @@ export class ComparingStocks extends React.Component {
                 </div>
                 <table id="position-listing" cellSpacing="0">
                     <thead>
-                        <tr>
-                            <PopulateHeaderRow is_aggregate={false} />
-                        </tr>
+                        <PopulateHeaderRow is_aggregate={false} />
                     </thead>
                     <tbody>
                         {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
@@ -1837,9 +1835,7 @@ export class ComparingStocks extends React.Component {
                 {this.state.done && this.state.show_aggregates && (
                     <table id="aggr-position-listing" cellSpacing="0">
                         <thead>
-                            <tr>
-                                <PopulateHeaderRow is_aggregate={true} />
-                            </tr>
+                            <PopulateHeaderRow is_aggregate={true} />
                         </thead>
                         <tbody>
                             {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (

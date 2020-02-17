@@ -72,7 +72,8 @@ export class GridHeaderRow extends React.Component {
         })
 
         return (
-            all_columns.map( (column,i) => (
+            <tr>
+            {all_columns.map( (column,i) => (
                 <th 
                     key={ column.name } 
                     className={ self.styleCell(i, column.name) }
@@ -80,7 +81,8 @@ export class GridHeaderRow extends React.Component {
                 >   { (i===1 && !is_aggregate) ? column.display_name + symbol_count_str : column.display_name }
                     { column.name === sort_column ? sort_triangle : '' }
                 </th>
-            ))
+            ))}
+            </tr>
         )
     }
 
