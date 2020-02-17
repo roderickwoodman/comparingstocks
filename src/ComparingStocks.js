@@ -188,6 +188,7 @@ export class ComparingStocks extends React.Component {
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
+        this.getCurrentShares = this.getCurrentShares.bind(this)
         this.getBasis = this.getBasis.bind(this)
         this.getBalanceableValue = this.getBalanceableValue.bind(this)
         this.onWhatifSubmit = this.onWhatifSubmit.bind(this)
@@ -1067,6 +1068,14 @@ export class ComparingStocks extends React.Component {
         }
     }
 
+    getCurrentShares(ticker) {
+        if (this.state.allPositions.hasOwnProperty(ticker)) {
+            return this.state.allPositions[ticker].current_shares
+        } else {
+            return 0
+        }
+    }
+
     getBasis(ticker) {
         if (this.state.allPositions.hasOwnProperty(ticker)) {
             return this.state.allPositions[ticker].basis
@@ -1159,22 +1168,42 @@ export class ComparingStocks extends React.Component {
         }
         let actual_remaining_cash = original_cash_position
         tickers_to_balance.forEach(function(ticker) {
+            let whatif_currentshares, whatif_balancedvalue
             let target = total_balance_value / tickers_to_balance.length
-            let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
-            let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
             new_whatif.values[ticker] = {}
-            new_whatif.values[ticker]['current_shares'] = whatif_currentshares
             let value_delta = 0
             let original_currentvalue = self.getCurrentValue(ticker)
             let original_basis = self.getBasis(ticker)
             if (balance_target_column === 'current_value') {
+
+                whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
+                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+
+                whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                 new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
+
                 value_delta = whatif_balancedvalue - original_currentvalue
-                new_whatif.values[ticker]['basis'] = original_basis + value_delta
+                new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+
             } else if (balance_target_column === 'basis') {
-                new_whatif.values[ticker]['basis'] = whatif_balancedvalue
+
+                let original_currentshares = self.getCurrentShares(ticker)
+                let target_delta = target - original_basis
+                let target_delta_shares
+                if (target_delta >= 0) {
+                    target_delta_shares = Math.floor(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                } else {
+                    target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                }
+                whatif_currentshares = original_currentshares + target_delta_shares
+                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+
+                whatif_balancedvalue = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
+                new_whatif.values[ticker]['basis'] = (whatif_balancedvalue > 0) ? whatif_balancedvalue : 0
+
                 value_delta = whatif_balancedvalue - original_basis
                 new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+
             }
             if (adjusting_cash) {
                 actual_remaining_cash -= value_delta 
