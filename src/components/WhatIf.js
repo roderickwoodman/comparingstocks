@@ -22,6 +22,26 @@ export class WhatIf extends React.Component {
     componentDidMount() {
         let new_balanceable_value = this.props.get_balanceable_value(this.state.balance_target_set, this.state.balance_target_column)
         this.setState({ balanceable_value: new_balanceable_value })
+
+        const stored_balance_target_set = JSON.parse(localStorage.getItem("balance_target_set"))
+        if (stored_balance_target_set !== null) {
+            this.setState({ balance_target_set: stored_balance_target_set })
+        }
+
+        const stored_balance_target_column = JSON.parse(localStorage.getItem("balance_target_column"))
+        if (stored_balance_target_column !== null) {
+            this.setState({ balance_target_column: stored_balance_target_column })
+        }
+
+        const stored_cash_treatment = JSON.parse(localStorage.getItem("cash_treatment"))
+        if (stored_cash_treatment !== null) {
+            this.setState({ cash_treatment: stored_cash_treatment })
+        }
+
+        const stored_cash_remaining = JSON.parse(localStorage.getItem("cash_remaining"))
+        if (stored_cash_remaining !== null) {
+            this.setState({ cash_remaining: stored_cash_remaining })
+        }
     }
 
     handleChange(event) {
@@ -54,6 +74,9 @@ export class WhatIf extends React.Component {
                 this.setState({ cash_valid: false })
             }
         }
+
+        // update local storage
+        localStorage.setItem(name, JSON.stringify(value))
 
         // mirror the input in state, since this is a (React) controlled input
         this.setState({ [name]: value })
