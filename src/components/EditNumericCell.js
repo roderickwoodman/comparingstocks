@@ -20,6 +20,7 @@ export class EditNumericCell extends React.Component {
         } else {
             this.setState({ user_value: this.props.original_value })
         }
+        this.elem.focus()
     }
 
     handleChange(event) {
@@ -44,7 +45,7 @@ export class EditNumericCell extends React.Component {
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <input type="text" name="user_value" value={this.state.user_value} onChange={this.handleChange} size="5" />
+                <input ref={(elem) => {this.elem = elem}} type="text" id="edit-cell" name="user_value" value={this.state.user_value} onChange={this.handleChange} size="5" />
                 <button type="submit" disabled={!this.state.user_value_is_valid}>S</button>
             </form>
         )
