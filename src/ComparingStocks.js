@@ -201,6 +201,7 @@ export class ComparingStocks extends React.Component {
         this.onDeleteTag = this.onDeleteTag.bind(this)
         this.onEditCell = this.onEditCell.bind(this)
         this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
+        this.onEscapeKey = this.onEscapeKey.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
         this.getCurrentShares = this.getCurrentShares.bind(this)
@@ -1131,6 +1132,10 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onEscapeKey() {
+        this.setState({ editing_row: null })
+    }
+
     onNewMessages(new_messages) {
         this.setState(prevState => {
             let newStatusMessages = [...prevState.status_messages]
@@ -1819,6 +1824,7 @@ export class ComparingStocks extends React.Component {
                 current_edit_value={(typeof this.state.editing_row === 'string' && this.state.allRisk.hasOwnProperty(this.state.editing_row)) ? this.state.allRisk[this.state.editing_row].factor : ''}
                 on_edit_cell={row_data.on_edit_cell}
                 on_modify_risk_factor={row_data.on_modify_risk_factor}
+                on_escape_key={this.onEscapeKey}
             />
         )
 

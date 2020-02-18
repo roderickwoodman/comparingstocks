@@ -10,6 +10,7 @@ export class EditNumericCell extends React.Component {
             user_value: '',
             user_value_is_valid: false
         }
+        this.handleEscapeKey = this.handleEscapeKey.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
@@ -21,6 +22,17 @@ export class EditNumericCell extends React.Component {
             this.setState({ user_value: this.props.original_value })
         }
         this.elem.focus()
+        document.addEventListener('keydown', this.handleEscapeKey, false)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleEscapeKey, false)
+    }
+
+    handleEscapeKey(event) {
+        if (event.keyCode === 27) {
+            this.props.on_escape_key()
+        }
     }
 
     handleChange(event) {
@@ -57,7 +69,8 @@ EditNumericCell.propTypes = {
         PropTypes.number,
         PropTypes.string
       ]),
-    on_new_value: PropTypes.func.isRequired
+    on_new_value: PropTypes.func.isRequired,
+    on_escape_key: PropTypes.func.isRequired
 }
 
 

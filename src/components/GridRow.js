@@ -205,6 +205,7 @@ export class GridRow extends React.Component {
                 <EditNumericCell 
                     original_value={this.props.current_edit_value} 
                     on_new_value={this.onNewValue} 
+                    on_escape_key={this.props.on_escape_key}
                 />
             )
         }
@@ -531,4 +532,5 @@ GridRow.propTypes = {
       ]),
     on_edit_cell: PropTypes.func,
     on_modify_risk_factor: PropTypes.func,
+    on_escape_key: PropTypes.func,
 }
