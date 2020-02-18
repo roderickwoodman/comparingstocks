@@ -214,6 +214,7 @@ export class ComparingStocks extends React.Component {
         this.getTagged = this.getTagged.bind(this)
         this.getUntagged = this.getUntagged.bind(this)
         this.nameIsAnAggregate = this.nameIsAnAggregate.bind(this)
+        this.nameIsSpecial = this.nameIsSpecial.bind(this)
         this.sortTickers = this.sortTickers.bind(this)
     }
 
@@ -400,6 +401,8 @@ export class ComparingStocks extends React.Component {
             let newRiskEntry = {}
             if (indexed_risk_data.hasOwnProperty(ticker)) {
                 newRiskEntry['factor'] = indexed_risk_data[ticker].factor
+            } else if (ticker === 'cash' || ticker === 'S&P500') {
+                newRiskEntry['factor'] = 'n/a'
             } else {
                 newRiskEntry['factor'] = 1
             }
@@ -1095,7 +1098,18 @@ export class ComparingStocks extends React.Component {
     }
 
     onEditCell(row_name) {
-        this.setState({ editing_row: row_name })
+        this.setState(prevState => {
+            if (
+                prevState.editing_row !== row_name
+                && row_name !== this.props.editing_row
+                && !this.nameIsAnAggregate(row_name)
+                && !this.nameIsSpecial(row_name)
+            ) {
+                return { editing_row: row_name }
+            } else {
+                return
+            }
+        })
     }
 
     onModifyRiskFactor(ticker, new_value) {
@@ -1330,6 +1344,16 @@ export class ComparingStocks extends React.Component {
 
     nameIsAnAggregate(name) {
         return Object.keys(this.state.allTags).includes(name)
+    }
+
+    nameIsSpecial(name) {
+        if (name === 'cash') {
+            return true
+        } else if (name === 'S&P500') {
+            return true
+        } else {
+            return false
+        }
     }
 
     sortTickers(names_list) {
@@ -1813,7 +1837,7 @@ export class ComparingStocks extends React.Component {
             new_row['current_shares'] = row_data[ticker]['current_shares']
             new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
-            new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : 1
+            new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker) && ticker !== 'cash' && ticker !== 'S&P500') ? self.state.allRisk[ticker].factor : null
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
             new_row['total_value'] = self.state.aggrTotalValue['_everything_']

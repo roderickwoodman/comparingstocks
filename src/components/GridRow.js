@@ -99,7 +99,7 @@ export class GridRow extends React.Component {
         }
     }
 
-    // this button enters edit mode on this cell's value
+    // the edit button is an extra affordance; clicking anywhere in the cell enters edit mode on this cell's value
     populateEditButton(column_name, row_name) {
         let classes = 'edit'
         if (this.state.hovering_risk_factor) {
@@ -111,7 +111,7 @@ export class GridRow extends React.Component {
             && !this.props.is_aggregate 
             && !this.props.special_classes.includes('index') ) {
                 return (
-                    <button className={classes} onClick={ (e) => {this.editRiskFactor(this.props.row_name)}}>x</button>
+                    <button className={classes}>{String.fromCharCode(0x270e)}</button>
                 )
         } else {
             return
@@ -199,8 +199,8 @@ export class GridRow extends React.Component {
     // AND is responsible for calculating "percent_value", "percent_basis", and "percent_profit"
     populateCellValue(column) {
 
-        if (column.name === 'risk_factor' 
-            && this.props.row_name === this.props.editing_row) {
+        if ( column.name === 'risk_factor'
+            && this.props.row_name === this.props.editing_row ) {
             return (
                 <EditNumericCell 
                     original_value={this.props.current_edit_value} 
@@ -450,7 +450,7 @@ export class GridRow extends React.Component {
                         )
                     } else if (column.name === 'risk_factor') {
                         return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHoverRiskFactor} onMouseLeave={self.toggleHoverRiskFactor}>{ self.populateCellValue(column) }{ self.populateEditButton(column.name, self.props.row_name) }</td>
+                            <td key={column.name} className={ self.styleCell(column.name) } onClick={ (e)=>self.editRiskFactor(self.props.row_name) } onMouseEnter={self.toggleHoverRiskFactor} onMouseLeave={self.toggleHoverRiskFactor}>{ self.populateCellValue(column) }{ self.populateEditButton(column.name, self.props.row_name) }</td>
                         )
                     } else if (column.name.startsWith('whatif_')) {
                         return (
@@ -525,7 +525,10 @@ GridRow.propTypes = {
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,
     editing_row: PropTypes.string,
-    current_edit_value: PropTypes.number,
+    current_edit_value: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
     on_edit_cell: PropTypes.func,
     on_modify_risk_factor: PropTypes.func,
 }
