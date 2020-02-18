@@ -11,19 +11,20 @@ export class GridRow extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            hovering: false,
+            hovering_symbol: false,
+            hovering_risk_factor: false,
             editing: null,
             user_risk_factor: '',
             user_risk_factor_valid: false
         }
         this.onWhatifCellClick = this.onWhatifCellClick.bind(this)
-        this.toggleHover = this.toggleHover.bind(this)
+        this.toggleHoverSymbol = this.toggleHoverSymbol.bind(this)
+        this.toggleHoverRiskFactor = this.toggleHoverRiskFactor.bind(this)
         this.populateMemberButton = this.populateMemberButton.bind(this)
         this.populateDeleteButton = this.populateDeleteButton.bind(this)
         this.populateEditButton = this.populateEditButton.bind(this)
         this.editRiskFactor = this.editRiskFactor.bind(this)
         this.onNewValue = this.onNewValue.bind(this)
-        // this.submitNewRiskFactor = this.submitNewRiskFactor.bind(this)
         this.populateCellValue = this.populateCellValue.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
@@ -33,11 +34,13 @@ export class GridRow extends React.Component {
         this.props.on_change_whatif_format()
     }
 
-    toggleHover() {
-        this.setState({ hovering: !this.state.hovering })
+    toggleHoverSymbol() {
+        this.setState({ hovering_symbol: !this.state.hovering_symbol })
     }
 
-
+    toggleHoverRiskFactor() {
+        this.setState({ hovering_risk_factor: !this.state.hovering_risk_factor })
+    }
 
     // this button removes a ticker from a tag
     populateMemberButton(symbol) {
@@ -73,7 +76,7 @@ export class GridRow extends React.Component {
     // this button deletes the ticker or tag completely
     populateDeleteButton(column_name, is_aggregate) {
         let classes = 'delete'
-        if (this.state.hovering) {
+        if (this.state.hovering_symbol) {
             classes += ' hovering'
         }
         if (is_aggregate) {
@@ -100,7 +103,7 @@ export class GridRow extends React.Component {
     // this button edits the cell value of this ticker
     populateEditButton(column_name, row_name) {
         let classes = 'edit'
-        if (this.state.hovering) {
+        if (this.state.hovering_risk_factor) {
             classes += ' hovering'
         }
         if ( !this.state.editing
@@ -120,24 +123,6 @@ export class GridRow extends React.Component {
         this.setState({ editing: row_name })
     }
 
-    // // this button edits the cell value of this ticker
-    // submitNewRiskFactor(row_name) {
-    //         && !this.props.special_classes.includes('index') ) {
-    //             return (
-    //                 <button className={classes} onClick={ (e) => {this.props.on_modify_risk_factor(this.props.row_name)}}>x</button>
-    //             )
-    //     } else {
-    //         return
-    //     }
-
-        // // update local storage
-        // localStorage.setItem(name, JSON.stringify(user_value))
-
-        // // mirror the input in state, since this is a (React) controlled input
-        // this.setState({ [name]: value })
-
-    // }
-
     styleCell(column_name) {
         let classes = 'position-cell'
         const row_name = this.props.row_name
@@ -146,11 +131,18 @@ export class GridRow extends React.Component {
         const special_classes = this.props.special_classes
         const performance = this.props.performance_numbers
         const baseline = this.props.baseline
-        if ( this.state.hovering 
+        if ( this.state.hovering_symbol
             && column_name === 'symbol' 
             && !special_classes.includes('index') 
             && row_name !== 'untagged'
             && !(row_name === 'cash' && isNaN(current_shares)) ) {
+            classes += ' hovering'
+        }
+        if ( this.state.hovering_risk_factor
+            && column_name === 'risk_factor' 
+            && !special_classes.includes('index') 
+            && !this.props.is_aggregate
+            && row_name !== 'cash' ) {
             classes += ' hovering'
         }
         if ( column_name.startsWith('whatif_') ) {
@@ -454,11 +446,11 @@ export class GridRow extends React.Component {
                 { this.props.columns.map(function(column) {
                     if (column.name === 'symbol') {
                         return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ self.populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
+                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHoverSymbol} onMouseLeave={self.toggleHoverSymbol}>{ self.populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
                         )
                     } else if (column.name === 'risk_factor') {
                         return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ self.populateCellValue(column) }{ self.populateEditButton(column.name, self.props.row_name) }</td>
+                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHoverRiskFactor} onMouseLeave={self.toggleHoverRiskFactor}>{ self.populateCellValue(column) }{ self.populateEditButton(column.name, self.props.row_name) }</td>
                         )
                     } else if (column.name.startsWith('whatif_')) {
                         return (
