@@ -193,6 +193,7 @@ export class ComparingStocks extends React.Component {
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
+        this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
         this.getCurrentShares = this.getCurrentShares.bind(this)
@@ -249,6 +250,11 @@ export class ComparingStocks extends React.Component {
             this.setState({ allTransactions: stored_allTransactions })
         }
 
+        const stored_allRisk = JSON.parse(localStorage.getItem("allRisk"))
+        if (stored_allRisk !== null) {
+            this.setState({ allRisk: stored_allRisk })
+        }
+
         let self = this
 
         const view_controls = ['show_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates']
@@ -265,6 +271,11 @@ export class ComparingStocks extends React.Component {
         let indexed_transaction_data = {}
         if (stored_allTransactions !== null) {
             indexed_transaction_data = JSON.parse(JSON.stringify(stored_allTransactions))
+        }
+
+        let indexed_risk_data = {}
+        if (stored_allRisk !== null) {
+            indexed_risk_data = JSON.parse(JSON.stringify(stored_allRisk))
         }
 
         let raw_current_quote_data = require('./api/sample_current_quotes.json').sample_current_quotes
@@ -313,6 +324,11 @@ export class ComparingStocks extends React.Component {
         })
         Object.keys(indexed_monthly_quote_data).forEach(function(ticker) {
             if (!all_stocks.includes(ticker)) {
+                all_stocks.push(ticker)
+            }
+        })
+        Object.keys(indexed_risk_data).forEach(function(ticker) {
+            if (!all_stocks.includes(ticker) && ticker !== 'cash') {
                 all_stocks.push(ticker)
             }
         })
@@ -374,7 +390,12 @@ export class ComparingStocks extends React.Component {
             }
 
             // get risk factor
-            let newRiskEntry = { factor: 1}
+            let newRiskEntry = {}
+            if (indexed_risk_data.hasOwnProperty(ticker)) {
+                newRiskEntry['factor'] = indexed_risk_data[ticker].factor
+            } else {
+                newRiskEntry['factor'] = 1
+            }
             newRisk[ticker] = newRiskEntry
         })
 
@@ -1066,6 +1087,24 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onModifyRiskFactor(ticker, new_value) {
+        this.setState(prevState => {
+
+            let newAllRisk = JSON.parse(JSON.stringify(prevState.allRisk))
+            if (newAllRisk.hasOwnProperty(ticker)) {
+                newAllRisk[ticker]['factor'] = parseFloat(new_value)
+            } else {
+                let newRisk = { factor: parseFloat(new_value) }
+                newAllRisk[ticker] = newRisk
+            }
+            localStorage.setItem('allRisk', JSON.stringify(newAllRisk))
+
+            return { 
+                allRisk: newAllRisk
+            }
+        })
+    }
+
     onNewMessages(new_messages) {
         this.setState(prevState => {
             let newStatusMessages = [...prevState.status_messages]
@@ -1703,8 +1742,6 @@ export class ComparingStocks extends React.Component {
         const PopulateHeaderRow = ({is_aggregate, highlight_column}) => (
             <GridHeaderRow
                 highlight_column={highlight_column}
-                // highlight_column={this.state.balance_target_column}
-                // highlight_column={null}
                 is_aggregate={is_aggregate}
                 columns={this.state.shown_columns}
                 symbol_count_str={symbol_count}
@@ -1742,6 +1779,7 @@ export class ComparingStocks extends React.Component {
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tag={row_data.on_delete_tag}
+                on_modify_risk_factor={row_data.on_modify_risk_factor}
             />
         )
 
@@ -1769,6 +1807,7 @@ export class ComparingStocks extends React.Component {
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
             new_row['on_delete_tag'] = self.onDeleteTag
+            new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
             all_row_data.push(new_row)
         })
         if (this.state.show_aggregates) {
@@ -1795,6 +1834,7 @@ export class ComparingStocks extends React.Component {
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
                 new_row['on_delete_tag'] = self.onDeleteTag
+                new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
                 all_row_data.push(new_row)
             })
         }

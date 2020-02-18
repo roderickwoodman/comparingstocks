@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { EditNumericCell } from './EditNumericCell'
 
 
 // This component displays table data for either tickers (is_aggregate === 0) or tags (is_aggregate === 1).
@@ -10,12 +11,19 @@ export class GridRow extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            hover: false
+            hovering: false,
+            editing: null,
+            user_risk_factor: '',
+            user_risk_factor_valid: false
         }
         this.onWhatifCellClick = this.onWhatifCellClick.bind(this)
         this.toggleHover = this.toggleHover.bind(this)
         this.populateMemberButton = this.populateMemberButton.bind(this)
         this.populateDeleteButton = this.populateDeleteButton.bind(this)
+        this.populateEditButton = this.populateEditButton.bind(this)
+        this.editRiskFactor = this.editRiskFactor.bind(this)
+        this.onNewValue = this.onNewValue.bind(this)
+        // this.submitNewRiskFactor = this.submitNewRiskFactor.bind(this)
         this.populateCellValue = this.populateCellValue.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
@@ -26,8 +34,10 @@ export class GridRow extends React.Component {
     }
 
     toggleHover() {
-        this.setState({ hover: !this.state.hover })
+        this.setState({ hovering: !this.state.hovering })
     }
+
+
 
     // this button removes a ticker from a tag
     populateMemberButton(symbol) {
@@ -63,7 +73,7 @@ export class GridRow extends React.Component {
     // this button deletes the ticker or tag completely
     populateDeleteButton(column_name, is_aggregate) {
         let classes = 'delete'
-        if (this.state.hover) {
+        if (this.state.hovering) {
             classes += ' hovering'
         }
         if (is_aggregate) {
@@ -87,6 +97,47 @@ export class GridRow extends React.Component {
         }
     }
 
+    // this button edits the cell value of this ticker
+    populateEditButton(column_name, row_name) {
+        let classes = 'edit'
+        if (this.state.hovering) {
+            classes += ' hovering'
+        }
+        if ( !this.state.editing
+            && !this.props.is_aggregate 
+            && column_name === 'risk_factor' 
+            && row_name !== 'cash'
+            && !this.props.special_classes.includes('index') ) {
+                return (
+                    <button className={classes} onClick={ (e) => {this.editRiskFactor(this.props.row_name)}}>x</button>
+                )
+        } else {
+            return
+        }
+    }
+
+    editRiskFactor(row_name) {
+        this.setState({ editing: row_name })
+    }
+
+    // // this button edits the cell value of this ticker
+    // submitNewRiskFactor(row_name) {
+    //         && !this.props.special_classes.includes('index') ) {
+    //             return (
+    //                 <button className={classes} onClick={ (e) => {this.props.on_modify_risk_factor(this.props.row_name)}}>x</button>
+    //             )
+    //     } else {
+    //         return
+    //     }
+
+        // // update local storage
+        // localStorage.setItem(name, JSON.stringify(user_value))
+
+        // // mirror the input in state, since this is a (React) controlled input
+        // this.setState({ [name]: value })
+
+    // }
+
     styleCell(column_name) {
         let classes = 'position-cell'
         const row_name = this.props.row_name
@@ -95,7 +146,7 @@ export class GridRow extends React.Component {
         const special_classes = this.props.special_classes
         const performance = this.props.performance_numbers
         const baseline = this.props.baseline
-        if ( this.state.hover 
+        if ( this.state.hovering 
             && column_name === 'symbol' 
             && !special_classes.includes('index') 
             && row_name !== 'untagged'
@@ -111,6 +162,9 @@ export class GridRow extends React.Component {
         switch (column_name) {
             case 'symbol':
                 classes += ' col-symbol'
+                break
+            case 'risk_factor':
+                classes += ' col-riskfactor'
                 break
             case 'change_pct':
                 if (change_pct > 0) {
@@ -146,9 +200,23 @@ export class GridRow extends React.Component {
         return classes
     }
 
+    onNewValue(new_value) {
+        this.props.on_modify_risk_factor(this.props.row_name, new_value)
+    }
+
     // prints the value that is (usually) explicitly passed in via props
     // AND is responsible for calculating "percent_value", "percent_basis", and "percent_profit"
     populateCellValue(column) {
+
+        if (column.name === 'risk_factor' && this.state.editing) {
+            return (
+                <EditNumericCell 
+                    original_value={this.state.user_risk_factor} 
+                    on_new_value={this.onNewValue} 
+                />
+            )
+        }
+
         let prefix = ''
         let suffix = ''
         let adjust_decimal = false
@@ -388,6 +456,10 @@ export class GridRow extends React.Component {
                         return (
                             <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ self.populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
                         )
+                    } else if (column.name === 'risk_factor') {
+                        return (
+                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHover} onMouseLeave={self.toggleHover}>{ self.populateCellValue(column) }{ self.populateEditButton(column.name, self.props.row_name) }</td>
+                        )
                     } else if (column.name.startsWith('whatif_')) {
                         return (
                             <td key={column.name} className={ self.styleCell(column.name) } onClick={ (column.name.startsWith('whatif_')) ? (e)=>self.onWhatifCellClick() : undefined }>{ self.populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
@@ -460,4 +532,5 @@ GridRow.propTypes = {
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,
+    on_modify_risk_factor: PropTypes.func,
 }
