@@ -13,7 +13,6 @@ export class GridRow extends React.Component {
         this.state = {
             hovering_symbol: false,
             hovering_risk_factor: false,
-            editing: null,
             user_risk_factor: '',
             user_risk_factor_valid: false
         }
@@ -100,16 +99,16 @@ export class GridRow extends React.Component {
         }
     }
 
-    // this button edits the cell value of this ticker
+    // this button enters edit mode on this cell's value
     populateEditButton(column_name, row_name) {
         let classes = 'edit'
         if (this.state.hovering_risk_factor) {
             classes += ' hovering'
         }
-        if ( !this.state.editing
-            && !this.props.is_aggregate 
-            && column_name === 'risk_factor' 
+        if ( column_name === 'risk_factor'
+            && row_name !== this.props.editing_row
             && row_name !== 'cash'
+            && !this.props.is_aggregate 
             && !this.props.special_classes.includes('index') ) {
                 return (
                     <button className={classes} onClick={ (e) => {this.editRiskFactor(this.props.row_name)}}>x</button>
@@ -120,7 +119,7 @@ export class GridRow extends React.Component {
     }
 
     editRiskFactor(row_name) {
-        this.setState({ editing: row_name })
+        this.props.on_edit_cell(row_name)
     }
 
     styleCell(column_name) {
@@ -200,10 +199,11 @@ export class GridRow extends React.Component {
     // AND is responsible for calculating "percent_value", "percent_basis", and "percent_profit"
     populateCellValue(column) {
 
-        if (column.name === 'risk_factor' && this.state.editing) {
+        if (column.name === 'risk_factor' 
+            && this.props.row_name === this.props.editing_row) {
             return (
                 <EditNumericCell 
-                    original_value={this.state.user_risk_factor} 
+                    original_value={this.props.current_edit_value} 
                     on_new_value={this.onNewValue} 
                 />
             )
@@ -524,5 +524,8 @@ GridRow.propTypes = {
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tag: PropTypes.func,
+    editing_row: PropTypes.string,
+    current_edit_value: PropTypes.number,
+    on_edit_cell: PropTypes.func,
     on_modify_risk_factor: PropTypes.func,
 }

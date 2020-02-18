@@ -134,6 +134,7 @@ export class ComparingStocks extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+
             allIndiciesTickers: [ 'INX' ],
             allIndiciesAliases: [ 'S&P500' ],
             allStocks: [],
@@ -144,8 +145,10 @@ export class ComparingStocks extends React.Component {
             allTags: {
                 'untagged': []
             },
+            allPerformanceNumbers: {},
             allRisk: {},
             allWhatifs: {},
+
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
             balance_target_column: '',
@@ -157,11 +160,13 @@ export class ComparingStocks extends React.Component {
                 medium_change_pct: 0,
                 long_change_pct: 0,
             },
-            allPerformanceNumbers: {},
+            editing_row: null,
+
             aggrPerformance: {},
             aggrBasis: {},
             aggrRealized: {},
             aggrTotalValue: {},
+
             show_holdings: true,
             show_tagged: true,
             show_untagged: true,
@@ -171,6 +176,7 @@ export class ComparingStocks extends React.Component {
             sort_column: 'symbol',
             sort_dir_asc: true,
             shown_columns: [],
+
             done: false
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
@@ -193,6 +199,7 @@ export class ComparingStocks extends React.Component {
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
+        this.onEditCell = this.onEditCell.bind(this)
         this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
@@ -1087,6 +1094,10 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onEditCell(row_name) {
+        this.setState({ editing_row: row_name })
+    }
+
     onModifyRiskFactor(ticker, new_value) {
         this.setState(prevState => {
 
@@ -1100,7 +1111,8 @@ export class ComparingStocks extends React.Component {
             localStorage.setItem('allRisk', JSON.stringify(newAllRisk))
 
             return { 
-                allRisk: newAllRisk
+                allRisk: newAllRisk,
+                editing_row: null
             }
         })
     }
@@ -1779,6 +1791,9 @@ export class ComparingStocks extends React.Component {
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tag={row_data.on_delete_tag}
+                editing_row={this.state.editing_row}
+                current_edit_value={(typeof this.state.editing_row === 'string' && this.state.allRisk.hasOwnProperty(this.state.editing_row)) ? this.state.allRisk[this.state.editing_row].factor : ''}
+                on_edit_cell={row_data.on_edit_cell}
                 on_modify_risk_factor={row_data.on_modify_risk_factor}
             />
         )
@@ -1807,6 +1822,7 @@ export class ComparingStocks extends React.Component {
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
             new_row['on_delete_tag'] = self.onDeleteTag
+            new_row['on_edit_cell'] = self.onEditCell
             new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
             all_row_data.push(new_row)
         })
@@ -1834,6 +1850,7 @@ export class ComparingStocks extends React.Component {
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
                 new_row['on_delete_tag'] = self.onDeleteTag
+                new_row['on_edit_cell'] = self.onEditCell
                 new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
                 all_row_data.push(new_row)
             })
