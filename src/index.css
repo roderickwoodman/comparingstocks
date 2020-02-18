@@ -218,6 +218,10 @@ th.whatif {
   text-align: center;
 }
 
+td {
+  min-width: 125px;
+}
+
 th.clickable:hover,
 td.clickable:hover {
   cursor: pointer;
