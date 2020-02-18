@@ -281,6 +281,9 @@ export class GridRow extends React.Component {
             case 'change_pct':
                 value = this.props.change_pct
                 break
+            case 'risk_factor':
+                value = this.props.risk_factor
+                break
             case 'volume':
                 value = this.props.volume
                 break
@@ -440,6 +443,10 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     realized_gains: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    risk_factor: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),

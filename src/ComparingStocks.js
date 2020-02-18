@@ -81,6 +81,12 @@ const all_columns = [
         type: 'currency',
         num_decimals: 0
     },
+    {
+        name: 'risk_factor',
+        display_name: 'Risk Factor',
+        type: 'number',
+        num_decimals: 2
+    },
     // this column is too short-term ;-P
     // {
     //     name: 'change_pct',
@@ -138,6 +144,7 @@ export class ComparingStocks extends React.Component {
             allTags: {
                 'untagged': []
             },
+            allRisk: {},
             allWhatifs: {},
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
@@ -314,6 +321,7 @@ export class ComparingStocks extends React.Component {
         let newCurrentQuotes = {}
         let newMonthlyQuotes = {}
         let newPerformanceNumbers = {}
+        let newRisk = {}
 
         all_stocks.forEach(function(ticker) {
 
@@ -364,7 +372,12 @@ export class ComparingStocks extends React.Component {
                 }
                 newPerformanceNumbers[ticker] = newPerformance
             }
+
+            // get risk factor
+            let newRiskEntry = { factor: 1}
+            newRisk[ticker] = newRiskEntry
         })
+
 
         // quote for cash
         let cashCurrentQuote = {
@@ -409,6 +422,7 @@ export class ComparingStocks extends React.Component {
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthlyQuotes: newMonthlyQuotes,
                         allPerformanceNumbers: newPerformanceNumbers,
+                        allRisk: newRisk,
                         aggrBasis: aggr_position_info[0],
                         aggrRealized: aggr_position_info[1],
                         aggrTotalValue: aggr_position_info[2],
@@ -1449,6 +1463,11 @@ export class ComparingStocks extends React.Component {
                     value_b = 'n/a'
                 }
 
+            // miscelaneous columns
+            } else if (sort_column === 'risk_factor') {
+                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : 'n/a'
+                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : 'n/a'
+
             // default, do not reorder this pair
             } else {
                 return 0
@@ -1712,6 +1731,7 @@ export class ComparingStocks extends React.Component {
                 current_shares={row_data.current_shares}
                 current_value={row_data.current_value}
                 realized_gains={row_data.realized_gains}
+                risk_factor={row_data.risk_factor}
                 performance_numbers={row_data.performance_numbers}
                 baseline={row_data.baseline}
                 total_value={row_data.total_value}
@@ -1740,6 +1760,7 @@ export class ComparingStocks extends React.Component {
             new_row['current_shares'] = row_data[ticker]['current_shares']
             new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
+            new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : 1
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
             new_row['total_value'] = self.state.aggrTotalValue['_everything_']
@@ -1765,6 +1786,7 @@ export class ComparingStocks extends React.Component {
                 new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
                 new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
+                new_row['risk_factor'] = 'n/a'
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
                 new_row['total_value'] = self.state.aggrTotalValue['_everything_']
