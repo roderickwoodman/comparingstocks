@@ -141,7 +141,7 @@ export class ComparingStocks extends React.Component {
             allWhatifs: {},
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
-            balance_target_column: 'current_value',
+            balance_target_column: '',
             remaining_cash: null,
             status_messages: [],
             baseline: {
@@ -1681,8 +1681,11 @@ export class ComparingStocks extends React.Component {
             </OverlayTrigger>
         )
         
-        const PopulateHeaderRow = ({is_aggregate}) => (
+        const PopulateHeaderRow = ({is_aggregate, highlight_column}) => (
             <GridHeaderRow
+                highlight_column={highlight_column}
+                // highlight_column={this.state.balance_target_column}
+                // highlight_column={null}
                 is_aggregate={is_aggregate}
                 columns={this.state.shown_columns}
                 symbol_count_str={symbol_count}
@@ -1818,7 +1821,8 @@ export class ComparingStocks extends React.Component {
                 </div>
                 <table id="position-listing" cellSpacing="0">
                     <thead>
-                        <PopulateHeaderRow is_aggregate={false} />
+                        <PopulateHeaderRow is_aggregate={false} highlight_column={this.state.balance_target_column} />
+                        <PopulateHeaderRow is_aggregate={false} highlight_column={null} />
                     </thead>
                     <tbody>
                         {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
@@ -1835,7 +1839,7 @@ export class ComparingStocks extends React.Component {
                 {this.state.done && this.state.show_aggregates && (
                     <table id="aggr-position-listing" cellSpacing="0">
                         <thead>
-                            <PopulateHeaderRow is_aggregate={true} />
+                            <PopulateHeaderRow is_aggregate={true} highlight_column={null} />
                         </thead>
                         <tbody>
                             {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (

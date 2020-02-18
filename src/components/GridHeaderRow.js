@@ -73,7 +73,18 @@ export class GridHeaderRow extends React.Component {
 
         return (
             <tr>
-            {all_columns.map( (column,i) => (
+            {this.props.highlight_column !== null && all_columns.map( (column,i) => (
+                <th
+                key={ column.name }
+                >
+                    { (column.name === this.props.highlight_column) 
+                    ? 'BEFORE BALANCING' 
+                    : (column.name === 'whatif_' + this.props.highlight_column) 
+                        ? 'AFTER BALANCING' 
+                        : String.fromCharCode(160) }
+                </th>
+            ))}
+            {this.props.highlight_column === null && all_columns.map( (column,i) => (
                 <th 
                     key={ column.name } 
                     className={ self.styleCell(i, column.name) }
@@ -89,6 +100,7 @@ export class GridHeaderRow extends React.Component {
 }
 
 GridHeaderRow.propTypes = {
+    highlight_column: PropTypes.string,
     is_aggregate: PropTypes.bool,
     columns: PropTypes.array,
     symbol_count_str: PropTypes.string,
