@@ -1413,6 +1413,8 @@ export class ComparingStocks extends React.Component {
             new_whatif.values['cash'] = {}
             new_whatif.values['cash']['current_shares'] = actual_remaining_cash
             new_whatif.values['cash']['current_value'] = actual_remaining_cash
+            new_whatif.values['cash']['basis'] = actual_remaining_cash
+            new_whatif.values['cash']['at_risk'] = 0
         }
         this.setState({ allWhatifs: new_whatif.values, balance_target_column: new_whatif.balance_target_column })
     }
