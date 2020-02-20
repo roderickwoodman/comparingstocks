@@ -1282,7 +1282,7 @@ export class ComparingStocks extends React.Component {
             let original_currentvalue = self.getCurrentValue(ticker)
             let original_basis = self.getBasis(ticker)
 
-            //balancing by value is a simple average of current values
+            // balancing by value is a simple average of current values
             if (balance_target_column === 'current_value') {
 
                 whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
@@ -1293,6 +1293,8 @@ export class ComparingStocks extends React.Component {
 
                 value_delta = whatif_balancedvalue - original_currentvalue
                 new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+
+                new_whatif.values[ticker]['at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
 
             // balancing by basis must account for sunk costs too; current value is not enough
             } else if (balance_target_column === 'basis') {
@@ -1313,6 +1315,8 @@ export class ComparingStocks extends React.Component {
 
                 value_delta = whatif_balancedvalue - original_basis
                 new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+
+                new_whatif.values[ticker]['at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
             }
 
             if (adjusting_cash) {
