@@ -345,6 +345,9 @@ export class GridRow extends React.Component {
             case 'risk_factor':
                 value = this.props.risk_factor
                 break
+            case 'at_risk':
+                value = current_value * this.props.risk_factor
+                break
             case 'volume':
                 value = this.props.volume
                 break
