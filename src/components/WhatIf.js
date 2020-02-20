@@ -110,7 +110,7 @@ export class WhatIf extends React.Component {
                         <select name="balance_target_set" value={this.state.balance_target_set} onChange={this.handleChange}>
                             <option value="my_holdings">my holdings</option>
                             <option value="untagged">untagged tickers</option>
-                            {Object.keys(this.props.all_tags).sort().filter(tag => tag !== 'untagged').map(tag => 
+                            {Object.entries(this.props.all_tags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
                                 <option key={tag} value={tag}>tag: {tag}</option>
                             )}
                         </select>
