@@ -1238,7 +1238,7 @@ export class ComparingStocks extends React.Component {
 
     onWhatifSubmit(balance_target_set, balance_target_column, remaining_cash) {
         this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set, balance_target_column: balance_target_column })
-        let whatif_columns = ['whatif_current_shares', 'whatif_current_value', 'whatif_basis', 'whatif_at_risk']
+        let whatif_columns = ['whatif_current_shares', 'whatif_'+balance_target_column]
         this.showColumns(whatif_columns)
         this.onWhatifGo(balance_target_set, balance_target_column, this.state.show_cash, remaining_cash)
     }
