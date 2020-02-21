@@ -47,7 +47,7 @@ export class AddCash extends React.Component {
 
     render() {
         return (
-            <section id="add-ticker">
+            <section id="add-cash">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
                     <label>Add/Remove Cash:
                         <select value={this.state.action} onChange={this.handleActionChange}>

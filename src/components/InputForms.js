@@ -4,6 +4,7 @@ import { AddTicker } from './AddTicker'
 import { AddTag } from './AddTag'
 import { AddTransaction } from './AddTransaction'
 import { AddCash } from './AddCash'
+import { TransactionLog } from './TransactionLog'
 import { DeleteTag } from './DeleteTag'
 import { StatusMessages } from './StatusMessages'
 import { WhatIf } from './WhatIf'
@@ -68,16 +69,25 @@ export class InputForms extends React.Component {
                     )}
                     {this.state.which_inputs === 'transactions' && (
                     <React.Fragment>
-                        <AddTransaction
-                            all_stocks={this.props.all_stocks}
-                            all_tags={this.props.all_tags}
-                            on_new_transaction={this.props.on_new_transaction}
-                            on_new_messages={this.props.on_new_messages}
-                        />
-                        <AddCash
-                            on_new_cash={this.props.on_new_cash}
-                            on_new_messages={this.props.on_new_messages}
-                        />
+                        <div className="content-wrapper">
+                            <div className="content-half">
+                                <AddTransaction
+                                    all_stocks={this.props.all_stocks}
+                                    all_tags={this.props.all_tags}
+                                    on_new_transaction={this.props.on_new_transaction}
+                                    on_new_messages={this.props.on_new_messages}
+                                />
+                                <AddCash
+                                    on_new_cash={this.props.on_new_cash}
+                                    on_new_messages={this.props.on_new_messages}
+                                />
+                            </div>
+                            <div className="content-half">
+                                <TransactionLog
+                                    all_transactions={this.props.all_transactions}
+                                />
+                            </div>
+                        </div>
                     </React.Fragment>
                     )}
                     {this.state.which_inputs === 'what-ifs' && (
@@ -113,6 +123,7 @@ InputForms.propTypes = {
     all_tags: PropTypes.object.isRequired,
     all_current_quotes: PropTypes.object,
     all_positions: PropTypes.object,
+    all_transactions: PropTypes.array,
     show_tagged: PropTypes.bool,
     show_untagged: PropTypes.bool,
     show_cash: PropTypes.bool,

@@ -2009,6 +2009,9 @@ export class ComparingStocks extends React.Component {
         }
 
         let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
+
+        let all_transactions = []
+        Object.values(this.state.allTransactions).forEach(entry => all_transactions.push(entry))
           
         return (
             <div id="page-wrapper">
@@ -2019,6 +2022,7 @@ export class ComparingStocks extends React.Component {
                             all_tags={this.state.allTags}
                             all_current_quotes={this.state.allCurrentQuotes}
                             all_positions={this.state.allPositions}
+                            all_transactions={all_transactions}
                             show_holdings={this.state.show_holdings}
                             show_tagged={this.state.show_tagged}
                             show_untagged={this.state.show_untagged}

@@ -32,6 +32,27 @@ code {
   padding: 10px;
 }
 
+.content-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.content-half {
+  width: 50%;
+}
+
+.content-half:last-child {
+  font-weight: 400;
+  max-height: 125px;
+  overflow-y: scroll;
+}
+
+.content-wrapper p {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
 #input-forms {
   display: inline-block;
   height: 200px;
