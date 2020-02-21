@@ -37,9 +37,9 @@ export class AddCash extends React.Component {
             new_status_messages.push('ERROR: Cash amount "' + this.state.user_cash_amount + '" is not in currency format.')
         } else {
             let total = parseFloat((Math.round(user_cash_amount * 100) / 100).toFixed(2));
-            let valid_transaction = user_action + ' $' + total.toFixed(2) + ' cash'
-            new_status_messages.push('Transaction "' + valid_transaction + '" has now been recorded.')
-            this.props.on_new_cash(valid_transaction)
+            let valid_transaction_summary = user_action + ' $' + total.toFixed(2) + ' cash'
+            new_status_messages.push('Transaction "' + valid_transaction_summary + '" has now been recorded.')
+            this.props.on_new_cash(valid_transaction_summary)
             this.handleReset()
         }
         this.props.on_new_messages(new_status_messages)

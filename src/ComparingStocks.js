@@ -510,7 +510,7 @@ export class ComparingStocks extends React.Component {
         let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
 
         transactions.forEach(function(transaction) {
-            [action, num_shares, ticker, value] = transaction.split(' ')
+            [action, num_shares, ticker, value] = transaction.summary.split(' ')
             num_shares = parseInt(num_shares)
             value = parseFloat(value.substr(1))
             if (action === 'buy') {
@@ -535,7 +535,7 @@ export class ComparingStocks extends React.Component {
         let total = 0, action, value
 
         cash_transactions.forEach(function(cash_transaction) {
-            [action, value] = cash_transaction.split(' ')
+            [action, value] = cash_transaction.summary.split(' ')
             let cash_amount = parseFloat(value.substr(1))
             if (action === 'add') {
                 total += cash_amount
@@ -896,9 +896,9 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onNewTransaction(new_transaction) {
+    onNewTransaction(new_transaction_summary) {
         let action, num_shares, ticker, total
-        [action, num_shares, ticker, total]  = new_transaction.split(' ')
+        [action, num_shares, ticker, total]  = new_transaction_summary.split(' ')
         num_shares = parseInt(num_shares)
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
@@ -912,8 +912,9 @@ export class ComparingStocks extends React.Component {
 
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
+            let new_transaction = { summary: new_transaction_summary }
             if (newAllTransactions.hasOwnProperty(ticker) && newAllTransactions[ticker] !== null) {
-                newAllTransactions[ticker] = newAllTransactions[ticker].concat([new_transaction])
+                newAllTransactions[ticker].push(new_transaction)
             } else {
                 newAllTransactions[ticker] = [new_transaction]
             }
@@ -963,16 +964,17 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onNewCash(new_cash_transaction) {
+    onNewCash(new_cash_transaction_summary) {
         let action, total
-        [action, total]  = new_cash_transaction.split(' ')
+        [action, total]  = new_cash_transaction_summary.split(' ')
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
 
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
+            let new_cash_transaction = { summary: new_cash_transaction_summary }
             if (newAllTransactions.hasOwnProperty('cash') && newAllTransactions['cash'] !== null) {
-                newAllTransactions['cash'] = newAllTransactions['cash'].concat([new_cash_transaction])
+                newAllTransactions['cash'].push(new_cash_transaction)
             } else {
                 newAllTransactions['cash'] = [new_cash_transaction]
             }
@@ -2011,7 +2013,7 @@ export class ComparingStocks extends React.Component {
         let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
 
         let all_transactions = []
-        Object.values(this.state.allTransactions).forEach(entry => all_transactions.push(entry))
+        Object.values(this.state.allTransactions).forEach(transactions_list => transactions_list.forEach(transaction => all_transactions.push(transaction)))
           
         return (
             <div id="page-wrapper">
