@@ -153,7 +153,7 @@ export class ComparingStocks extends React.Component {
             allCurrentQuotes: {},
             allMonthlyQuotes: {},
             allPositions: {},
-            allTransactions: {},
+            allTransactions: [],
             allTags: {
                 'untagged': []
             },
@@ -193,6 +193,8 @@ export class ComparingStocks extends React.Component {
         }
         this.tickerIsIndex = this.tickerIsIndex.bind(this)
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
+        this.getTransactionById = this.getTransactionById.bind(this)
+        this.getTransactionsByTicker = this.getTransactionsByTicker.bind(this)
         this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
         this.getPositionFromCashTransactions = this.getPositionFromCashTransactions.bind(this)
         this.calculateAggrPositionInfo = this.calculateAggrPositionInfo.bind(this)
@@ -289,11 +291,6 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        let indexed_transaction_data = {}
-        if (stored_allTransactions !== null) {
-            indexed_transaction_data = JSON.parse(JSON.stringify(stored_allTransactions))
-        }
-
         let indexed_risk_data = {}
         if (stored_allRisk !== null) {
             indexed_risk_data = JSON.parse(JSON.stringify(stored_allRisk))
@@ -333,9 +330,9 @@ export class ComparingStocks extends React.Component {
         this.setState({ index_performance: index_performance })
 
         let all_stocks = []
-        Object.keys(indexed_transaction_data).forEach(function(ticker) {
-            if (!all_stocks.includes(ticker) && ticker !== 'cash') {
-                all_stocks.push(ticker)
+        stored_allTransactions.forEach(function(transaction) {
+            if (transaction.symbol !== 'cash' && !all_stocks.includes(transaction.symbol)) {
+                all_stocks.push(transaction.symbol)
             }
         })
         Object.keys(indexed_current_quote_data).forEach(function(ticker) {
@@ -362,12 +359,16 @@ export class ComparingStocks extends React.Component {
 
         all_stocks.forEach(function(ticker) {
 
-            if (indexed_transaction_data.hasOwnProperty(ticker)) {
-                let newPosition = {}
-                newPosition = self.getPositionFromTransactions(indexed_transaction_data[ticker])
-                newPosition['symbol'] = ticker
-                newPositions[ticker] = newPosition
-            }
+            // create a position if any transactions exist
+            stored_allTransactions.forEach(function(transaction) {
+                if (!newPositions.hasOwnProperty(transaction.ticker) && transaction.ticker !== 'cash') {
+                    let newPosition = {}
+                    let ticker = transaction.ticker
+                    newPosition = self.getPositionFromTransactions(stored_allTransactions.filter(transaction => transaction.ticker === ticker))
+                    newPosition['symbol'] = ticker
+                    newPositions[ticker] = newPosition
+                }
+            })
 
             // get current quote
             if (indexed_current_quote_data.hasOwnProperty(ticker)) {
@@ -439,9 +440,10 @@ export class ComparingStocks extends React.Component {
         newPerformanceNumbers['cash'] = cashPerformance
 
         // position for cash
-        if (indexed_transaction_data.hasOwnProperty('cash')) {
+        let cash_transactions = stored_allTransactions.filter(transaction => transaction.ticker === 'cash')
+        if (cash_transactions.length) {
             let newPosition = {}
-            newPosition = self.getPositionFromCashTransactions(indexed_transaction_data['cash'])
+            newPosition = this.getPositionFromCashTransactions(cash_transactions)
             newPosition['symbol'] = 'cash'
             newPositions['cash'] = newPosition
         }
@@ -505,6 +507,14 @@ export class ComparingStocks extends React.Component {
     //     })
     //     this.setState({ allCurrentQuotes: newQuotes })
     // }
+
+    getTransactionById(transaction_id) {
+        return this.state.allTransactions.filter(transaction => transaction.modified === transaction_id)[0]
+    }
+
+    getTransactionsByTicker(ticker) {
+        return this.state.allTransactions.filter(transaction => transaction.ticker === ticker)
+    }
 
     getPositionFromTransactions(transactions) {
         let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
@@ -861,8 +871,7 @@ export class ComparingStocks extends React.Component {
             delete newAllPositions[delete_ticker]
 
             // update transactions
-            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
-            delete newAllTransactions[delete_ticker]
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.ticker !== delete_ticker)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add status messages
@@ -917,11 +926,7 @@ export class ComparingStocks extends React.Component {
                 ticker: ticker,
                 summary: new_transaction_summary
             }
-            if (newAllTransactions.hasOwnProperty(ticker) && newAllTransactions[ticker] !== null) {
-                newAllTransactions[ticker].push(new_transaction)
-            } else {
-                newAllTransactions[ticker] = [new_transaction]
-            }
+            newAllTransactions.push(new_transaction)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // recalculate the position numbers
@@ -981,11 +986,7 @@ export class ComparingStocks extends React.Component {
                 ticker: 'cash',
                 summary: new_cash_transaction_summary
             }
-            if (newAllTransactions.hasOwnProperty('cash') && newAllTransactions['cash'] !== null) {
-                newAllTransactions['cash'].push(new_cash_transaction)
-            } else {
-                newAllTransactions['cash'] = [new_cash_transaction]
-            }
+            newAllTransactions.push(new_cash_transaction)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // recalculate the position numbers
@@ -2020,9 +2021,6 @@ export class ComparingStocks extends React.Component {
 
         let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
 
-        let all_transactions = []
-        Object.values(this.state.allTransactions).forEach(transactions_list => transactions_list.forEach(transaction => all_transactions.push(transaction)))
-          
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
@@ -2032,7 +2030,7 @@ export class ComparingStocks extends React.Component {
                             all_tags={this.state.allTags}
                             all_current_quotes={this.state.allCurrentQuotes}
                             all_positions={this.state.allPositions}
-                            all_transactions={all_transactions}
+                            all_transactions={this.state.allTransactions}
                             show_holdings={this.state.show_holdings}
                             show_tagged={this.state.show_tagged}
                             show_untagged={this.state.show_untagged}
