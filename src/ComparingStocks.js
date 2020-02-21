@@ -914,6 +914,7 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_transaction = { 
                 modified: new Date().getTime(),
+                ticker: ticker,
                 summary: new_transaction_summary
             }
             if (newAllTransactions.hasOwnProperty(ticker) && newAllTransactions[ticker] !== null) {
@@ -977,6 +978,7 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_cash_transaction = { 
                 modified: new Date().getTime(),
+                ticker: 'cash',
                 summary: new_cash_transaction_summary
             }
             if (newAllTransactions.hasOwnProperty('cash') && newAllTransactions['cash'] !== null) {
