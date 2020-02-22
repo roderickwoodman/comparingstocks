@@ -263,14 +263,18 @@ export class ComparingStocks extends React.Component {
             this.setState({ whatif_format: stored_whatif_format })
         }
 
+        let allTags = {}
         const stored_allTags = JSON.parse(localStorage.getItem("allTags"))
         if (stored_allTags !== null) {
             this.setState({ allTags: stored_allTags })
+            allTags = JSON.parse(JSON.stringify(stored_allTags))
         }
 
+        let allTransactions = []
         const stored_allTransactions = JSON.parse(localStorage.getItem("allTransactions"))
         if (stored_allTransactions !== null) {
             this.setState({ allTransactions: stored_allTransactions })
+            allTransactions = JSON.parse(JSON.stringify(stored_allTransactions))
         }
 
         const stored_allRisk = JSON.parse(localStorage.getItem("allRisk"))
@@ -330,7 +334,7 @@ export class ComparingStocks extends React.Component {
         this.setState({ index_performance: index_performance })
 
         let all_stocks = []
-        stored_allTransactions.forEach(function(transaction) {
+        allTransactions.forEach(function(transaction) {
             if (transaction.symbol !== 'cash' && !all_stocks.includes(transaction.symbol)) {
                 all_stocks.push(transaction.symbol)
             }
@@ -360,11 +364,11 @@ export class ComparingStocks extends React.Component {
         all_stocks.forEach(function(ticker) {
 
             // create a position if any transactions exist
-            stored_allTransactions.forEach(function(transaction) {
+            allTransactions.forEach(function(transaction) {
                 if (!newPositions.hasOwnProperty(transaction.ticker) && transaction.ticker !== 'cash') {
                     let newPosition = {}
                     let ticker = transaction.ticker
-                    newPosition = self.getPositionFromTransactions(stored_allTransactions.filter(transaction => transaction.ticker === ticker))
+                    newPosition = self.getPositionFromTransactions(allTransactions.filter(transaction => transaction.ticker === ticker))
                     newPosition['symbol'] = ticker
                     newPositions[ticker] = newPosition
                 }
@@ -415,7 +419,7 @@ export class ComparingStocks extends React.Component {
             let newRiskEntry = {}
             if (indexed_risk_data.hasOwnProperty(ticker)) {
                 newRiskEntry['factor'] = indexed_risk_data[ticker].factor
-            } else if (ticker === 'S&P500') {
+            } else if (ticker !== 'S&P500') {
                 newRiskEntry['factor'] = 0.25  // based on TradeStops VQ% (range: 0 to 1), this 25% number represents medium risk
             }
             newRisk[ticker] = newRiskEntry
@@ -440,7 +444,7 @@ export class ComparingStocks extends React.Component {
         newPerformanceNumbers['cash'] = cashPerformance
 
         // position for cash
-        let cash_transactions = stored_allTransactions.filter(transaction => transaction.ticker === 'cash')
+        let cash_transactions = allTransactions.filter(transaction => transaction.ticker === 'cash')
         if (cash_transactions.length) {
             let newPosition = {}
             newPosition = this.getPositionFromCashTransactions(cash_transactions)
@@ -461,8 +465,8 @@ export class ComparingStocks extends React.Component {
             init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
         }
 
-        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(stored_allTags, newPositions, newCurrentQuotes, stored_controls['show_holdings'], stored_controls['show_cash'])))
-        let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(stored_allTags, newPerformanceNumbers)))
+        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(allTags, newPositions, newCurrentQuotes, stored_controls['show_holdings'], stored_controls['show_cash'])))
+        let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(allTags, newPerformanceNumbers)))
 
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
