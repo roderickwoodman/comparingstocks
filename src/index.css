@@ -43,8 +43,7 @@ code {
 
 .content-half:last-child {
   font-weight: 400;
-  max-height: 125px;
-  overflow-y: scroll;
+  max-height: 160px;
 }
 
 .content-wrapper p {
@@ -237,6 +236,16 @@ th.whatif {
 #aggr-position-listing .position-cell {
   width: 125px;
   text-align: center;
+}
+
+#transaction-log {
+  display:flex;
+  flex-direction: column;
+}
+
+#transactions {
+  overflow-y: scroll;
+  max-height: 120px;
 }
 
 .transaction:hover {
