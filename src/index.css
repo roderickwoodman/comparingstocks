@@ -239,6 +239,12 @@ th.whatif {
   text-align: center;
 }
 
+.transaction:hover {
+  cursor: pointer;
+  color: red;
+  text-decoration: line-through;
+}
+
 td {
   min-width: 125px;
 }
