@@ -213,6 +213,7 @@ export class ComparingStocks extends React.Component {
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
         this.onDeleteTag = this.onDeleteTag.bind(this)
+        this.onDeleteTransaction = this.onDeleteTransaction.bind(this)
         this.onEditCell = this.onEditCell.bind(this)
         this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
         this.onEscapeKey = this.onEscapeKey.bind(this)
@@ -1032,6 +1033,57 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    onDeleteTransaction(delete_transaction_id) {
+
+        let transaction_to_delete = this.getTransactionById(delete_transaction_id)
+        let ticker = transaction_to_delete.ticker
+
+        this.setState(prevState => {
+
+            // update transactions
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modified !== delete_transaction_id)
+            localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
+
+            // add status message
+            let newStatusMessages = [...prevState.status_messages]
+            let new_message = ['Transaction "' + transaction_to_delete.summary + '" has now been deleted.']
+            newStatusMessages = [...new_message, ...newStatusMessages]
+
+            // recalculate the position numbers
+            let remainingTransactionsForTicker = newAllTransactions.filter(transaction => transaction.ticker === ticker)
+            let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
+            let updatedPosition
+            if (!remainingTransactionsForTicker.length) {
+                delete newAllPositions[ticker]
+            } else {
+                if (ticker === 'cash') {
+                    updatedPosition = this.getPositionFromCashTransactions(remainingTransactionsForTicker)
+                } else {
+                    updatedPosition = this.getPositionFromTransactions(remainingTransactionsForTicker)
+                }
+                newAllPositions[ticker] = updatedPosition
+            }
+
+            // recalculate the aggregate numbers
+            let aggr_position_info = JSON.parse(JSON.stringify(
+                this.calculateAggrPositionInfo(
+                    this.state.allTags,
+                    newAllPositions,
+                    this.state.allCurrentQuotes, 
+                    this.state.show_holdings,
+                    this.state.show_cash)))
+
+            return { 
+                allPositions: newAllPositions, 
+                allTransactions: newAllTransactions, 
+                status_messages: newStatusMessages,
+                aggrBasis: aggr_position_info[0],
+                aggrRealized: aggr_position_info[1],
+                aggrTotalValue: aggr_position_info[2],
+            }
+        })
+    }
+
     onRemoveFromTag(remove_from_tag, remove_ticker) {
         this.setState(prevState => {
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
@@ -1387,7 +1439,7 @@ export class ComparingStocks extends React.Component {
                     }
                 })
             })
-            let denominator = denominator_terms.reduce( (accumulator, currentValue) => accumulator + currentValue )
+            let denominator = denominator_terms.reduce( (accumulator, currentValue) => accumulator + currentValue, 0 )
 
             // determine the balanced target value for each ticker
             let targets = Array(tickers_to_balance.length).fill(0)
@@ -2043,6 +2095,7 @@ export class ComparingStocks extends React.Component {
                             on_new_tickers={this.onNewTickers}
                             on_new_tags={this.onNewTags}
                             on_delete_tag={this.onDeleteTag}
+                            on_delete_transaction={this.onDeleteTransaction}
                             on_new_transaction={this.onNewTransaction}
                             on_new_cash={this.onNewCash}
                             all_status_messages={this.state.status_messages}

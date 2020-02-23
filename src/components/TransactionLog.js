@@ -8,7 +8,7 @@ export class TransactionLog extends React.Component {
         return (
             <section id="transaction-log">
                 {this.props.all_transactions.map( transaction => (
-                    <p key={transaction.modified}>{transaction.summary}</p>
+                    <p key={transaction.modified} onClick={ (e)=>this.props.on_delete_transaction(transaction.modified)}>{transaction.summary}</p>
                 ))}
             </section>
         )
@@ -17,4 +17,5 @@ export class TransactionLog extends React.Component {
 
 TransactionLog.propTypes = {
     all_transactions: PropTypes.array.isRequired,
+    on_delete_transaction: PropTypes.func.isRequired,
 }

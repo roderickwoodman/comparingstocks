@@ -85,6 +85,7 @@ export class InputForms extends React.Component {
                             <div className="content-half">
                                 <TransactionLog
                                     all_transactions={this.props.all_transactions}
+                                    on_delete_transaction={this.props.on_delete_transaction}
                                 />
                             </div>
                         </div>
@@ -133,6 +134,7 @@ InputForms.propTypes = {
     on_new_tags: PropTypes.func.isRequired,
     on_delete_tag: PropTypes.func.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
+    on_delete_transaction: PropTypes.func.isRequired,
     all_status_messages: PropTypes.array.isRequired,
     on_new_messages: PropTypes.func.isRequired,
     on_whatif_submit: PropTypes.func
