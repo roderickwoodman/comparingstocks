@@ -17,6 +17,7 @@ export class WhatIf extends React.Component {
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.isDisabled = this.isDisabled.bind(this)
+        this.numberWithCommas = this.numberWithCommas.bind(this)
     }
 
     componentDidMount() {
@@ -102,6 +103,10 @@ export class WhatIf extends React.Component {
         }
     }
 
+    numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     render() {
         return (
             <section id="what-if">
@@ -124,7 +129,7 @@ export class WhatIf extends React.Component {
                     </div>
                     <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
                     <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
-                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining}></input> cash remaining (max: ${this.state.balanceable_value})</label>
+                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining}></input> cash remaining (max: ${this.numberWithCommas(this.state.balanceable_value)})</label>
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-primary" type="submit" value="What If?" disabled={this.isDisabled()}/>
                     </section>
