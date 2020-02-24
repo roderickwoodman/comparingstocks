@@ -243,6 +243,14 @@ th.whatif {
   flex-direction: column;
 }
 
+#transaction-log-controls label,
+#transaction-log-controls input,
+#transaction-log-controls button,
+#transaction-log-controls div {
+  display: inline;
+  margin-right: 5px;
+}
+
 #transactions {
   overflow-y: scroll;
   max-height: 120px;
