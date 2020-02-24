@@ -54,7 +54,7 @@ export class TransactionLog extends React.Component {
                     </form>
                 </section>
                 <section id="transactions">
-                    {this.props.all_transactions.filter( transaction => transaction.summary.includes(this.state.filter_str) ).map( transaction => (
+                    {this.props.all_transactions.filter( transaction => transaction.summary.toLowerCase().includes(this.state.filter_str.toLowerCase()) ).map( transaction => (
                         <p key={transaction.modified} className="transaction" onClick={ (e)=>this.props.on_delete_transaction(transaction.modified)}>{transaction.summary}</p>
                     ))}
                 </section>
