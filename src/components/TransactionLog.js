@@ -49,7 +49,7 @@ export class TransactionLog extends React.Component {
                     <form>
                         <label>Filter:</label>
                         <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />
-                        <button onClick={this.onExportButton}>export</button>
+                        <button className="btn btn-sm btn-primary" onClick={this.onExportButton} disabled={!this.props.all_transactions.length}>export</button>
                         <div ref={this.exportRef}></div>
                     </form>
                 </section>
