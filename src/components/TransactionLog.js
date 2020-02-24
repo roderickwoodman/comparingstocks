@@ -7,11 +7,14 @@ export class TransactionLog extends React.Component {
     constructor(props) {
         super(props)
         this.exportRef = React.createRef()
+        this.importRef = React.createRef()
         this.state = {
             filter_str: '',
+            file: ''
         }
         this.handleChange = this.handleChange.bind(this)
         this.onExportButton = this.onExportButton.bind(this)
+        this.onHiddenImportChange = this.onHiddenImportChange.bind(this)
     }
 
     handleChange(event) {
@@ -42,6 +45,18 @@ export class TransactionLog extends React.Component {
         a.remove()
     }
 
+    onHiddenImportChange(files) {
+        if (files[0]) {
+            let self = this
+            let reader = new FileReader();
+            reader.readAsText(files[0], "UTF-8");
+            reader.onload = function (evt) {
+                let file_contents = JSON.parse(evt.target.result)
+                self.props.on_import_transactions(file_contents.transactions)
+            }
+        }
+    }
+
     render() {
         return (
             <section id="transaction-log">
@@ -49,8 +64,14 @@ export class TransactionLog extends React.Component {
                     <form>
                         <label>Filter:</label>
                         <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />
+
                         <button className="btn btn-sm btn-primary" onClick={this.onExportButton} disabled={!this.props.all_transactions.length}>export</button>
                         <div ref={this.exportRef}></div>
+
+                        <label className="btn btn-sm btn-primary">
+                        <input type="file" ref={this.importRef} onChange={ (e) => this.onHiddenImportChange(e.target.files) } accept="application/json" style={{width: 0, visibility: "hidden"}} />
+                        import
+                        </label>
                     </form>
                 </section>
                 <section id="transactions">
@@ -66,4 +87,5 @@ export class TransactionLog extends React.Component {
 TransactionLog.propTypes = {
     all_transactions: PropTypes.array.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
+    on_import_transactions: PropTypes.func.isRequired,
 }

@@ -207,6 +207,7 @@ export class ComparingStocks extends React.Component {
         this.showColumns = this.showColumns.bind(this)
         this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
+        this.onImportTransactions = this.onImportTransactions.bind(this)
         this.onNewCash = this.onNewCash.bind(this)
         this.onNewTags = this.onNewTags.bind(this)
         this.onNewTickers = this.onNewTickers.bind(this)
@@ -976,6 +977,11 @@ export class ComparingStocks extends React.Component {
                 aggrPerformance: aggr_performance,
             }
         })
+    }
+
+    onImportTransactions(imported_transactions) {
+        localStorage.setItem('allTransactions', JSON.stringify(imported_transactions))
+        window.location.reload(false)
     }
 
     onNewCash(new_cash_transaction_summary) {
@@ -2097,6 +2103,7 @@ export class ComparingStocks extends React.Component {
                             on_delete_tag={this.onDeleteTag}
                             on_delete_transaction={this.onDeleteTransaction}
                             on_new_transaction={this.onNewTransaction}
+                            on_import_transactions={this.onImportTransactions}
                             on_new_cash={this.onNewCash}
                             all_status_messages={this.state.status_messages}
                             on_new_messages={this.onNewMessages}
