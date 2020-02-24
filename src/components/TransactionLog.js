@@ -6,10 +6,12 @@ export class TransactionLog extends React.Component {
 
     constructor(props) {
         super(props)
+        this.exportRef = React.createRef()
         this.state = {
             filter_str: '',
         }
         this.handleChange = this.handleChange.bind(this)
+        this.onExportButton = this.onExportButton.bind(this)
     }
 
     handleChange(event) {
@@ -19,6 +21,27 @@ export class TransactionLog extends React.Component {
         this.setState({ [name]: new_value })
     }
         
+    onExportButton() {
+
+        // prepare the data
+        let all_transactions = {
+            transactions: JSON.parse(JSON.stringify(this.props.all_transactions))
+        }
+        var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(all_transactions));
+
+        // create the download link
+        var a = document.createElement('a')
+        a.href = 'data:' + data
+        a.download = 'transactions.json'
+        a.innerHTML = 'download'
+
+        // attach the download link, trigger it, and then remove it from the DOM
+        var container = this.exportRef.current
+        container.appendChild(a)
+        a.click()
+        a.remove()
+    }
+
     render() {
         return (
             <section id="transaction-log">
@@ -26,6 +49,8 @@ export class TransactionLog extends React.Component {
                     <form>
                         <label>Filter:</label>
                         <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />
+                        <button onClick={this.onExportButton}>export</button>
+                        <div ref={this.exportRef}></div>
                     </form>
                 </section>
                 <section id="transactions">
