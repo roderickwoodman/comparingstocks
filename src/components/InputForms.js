@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { AddTicker } from './AddTicker'
 import { AddTag } from './AddTag'
 import { AddTransaction } from './AddTransaction'
-import { AddCash } from './AddCash'
 import { TransactionLog } from './TransactionLog'
 import { DeleteTag } from './DeleteTag'
 import { StatusMessages } from './StatusMessages'
@@ -75,9 +74,6 @@ export class InputForms extends React.Component {
                                     all_stocks={this.props.all_stocks}
                                     all_tags={this.props.all_tags}
                                     on_new_transaction={this.props.on_new_transaction}
-                                    on_new_messages={this.props.on_new_messages}
-                                />
-                                <AddCash
                                     on_new_cash={this.props.on_new_cash}
                                     on_new_messages={this.props.on_new_messages}
                                 />

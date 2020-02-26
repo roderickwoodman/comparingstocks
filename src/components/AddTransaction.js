@@ -8,11 +8,16 @@ export class AddTransaction extends React.Component {
         super(props)
         this.state = {
             transaction: '',
+            user_cash_action: 'add',
+            user_cash_amount: '',
         }
         this.handleChange = this.handleChange.bind(this)
-        this.handleReset = this.handleReset.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.validateTransaction = this.validateTransaction.bind(this)
+        this.handleCashChange = this.handleCashChange.bind(this)
+        this.handleCashReset = this.handleCashReset.bind(this)
+        this.handleActionChange = this.handleActionChange.bind(this)
+        this.handleCashSubmit = this.handleCashSubmit.bind(this)
     }
 
     handleChange(event) {
@@ -22,10 +27,33 @@ export class AddTransaction extends React.Component {
         this.setState({ [name]: new_value })
     }
 
-    handleReset(event) {
-        this.setState({ 
-            transaction: ''
-        })
+    handleActionChange(event) {
+        this.setState({ user_cash_action: event.target.value })
+    }
+
+    handleCashChange(event) {
+        this.setState({ user_cash_amount: event.target.value })
+    }
+
+    handleCashReset(event) {
+        this.setState({ user_cash_amount: "" })
+    }
+
+    handleCashSubmit(event) {
+        event.preventDefault()
+        let new_status_messages = []
+        let user_cash_action = this.state.user_cash_action
+        let user_cash_amount = parseFloat(this.state.user_cash_amount.trim().replace(/\$/g, ""))
+        if (isNaN(user_cash_amount)) {
+            new_status_messages.push('ERROR: Cash amount "' + this.state.user_cash_amount + '" is not in currency format.')
+        } else {
+            let total = parseFloat((Math.round(user_cash_amount * 100) / 100).toFixed(2));
+            let valid_transaction_summary = user_cash_action + ' $' + total.toFixed(2) + ' cash'
+            new_status_messages.push('Transaction "' + valid_transaction_summary + '" has now been recorded.')
+            this.props.on_new_cash(valid_transaction_summary)
+            this.handleCashReset()
+        }
+        this.props.on_new_messages(new_status_messages)
     }
 
     handleSubmit(event) {
@@ -99,13 +127,25 @@ export class AddTransaction extends React.Component {
     render() {
         return (
             <section id="add-transaction">
-                <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
+                <form onSubmit={this.handleSubmit}>
                     <label>New Transaction:</label>
 
                     <input name="transaction" value={this.state.transaction} onChange={this.handleChange} size="30" placeholder="buy 100 CSCO $2200.32" required />
 
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-primary" type="submit" value="Add Transaction" disabled={this.state.transaction===''} />
+                    </section>
+                </form>
+                <form onSubmit={this.handleCashSubmit}>
+                    <label>Add/Remove Cash:
+                        <select value={this.state.action} onChange={this.handleActionChange}>
+                            <option value="add">add</option>
+                            <option value="remove">remove</option>
+                        </select>
+                        <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="15" placeholder="$1000" required />
+                    </label>
+                    <section className="buttonrow">
+                        <input className="btn btn-sm btn-primary" type="submit" value="Adjust Cash" disabled={this.state.user_cash_amount===''}/>
                     </section>
                 </form>
             </section>
@@ -117,5 +157,6 @@ AddTransaction.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
+    on_new_cash: PropTypes.func.isRequired,
     on_new_messages: PropTypes.func.isRequired
 }
