@@ -523,10 +523,10 @@ export class ComparingStocks extends React.Component {
     }
 
     getPositionFromTransactions(transactions) {
-        let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
+        let inflows = 0, outflows = 0, current_shares = 0, date, action, num_shares, ticker, value
 
         transactions.forEach(function(transaction) {
-            [action, num_shares, ticker, value] = transaction.summary.split(' ')
+            [date, action, num_shares, ticker, value] = transaction.summary.split(' ')
             num_shares = parseInt(num_shares)
             value = parseFloat(value.substr(1))
             if (action === 'buy') {
@@ -548,10 +548,10 @@ export class ComparingStocks extends React.Component {
     }
 
     getPositionFromCashTransactions(cash_transactions) {
-        let total = 0, action, value
+        let total = 0, date, action, value
 
         cash_transactions.forEach(function(cash_transaction) {
-            [action, value] = cash_transaction.summary.split(' ')
+            [date, action, value] = cash_transaction.summary.split(' ')
             let cash_amount = parseFloat(value.substr(1))
             if (action === 'add') {
                 total += cash_amount
@@ -912,8 +912,9 @@ export class ComparingStocks extends React.Component {
     }
 
     onNewTransaction(new_transaction_summary) {
-        let action, num_shares, ticker, total
-        [action, num_shares, ticker, total]  = new_transaction_summary.split(' ')
+        let date, action, num_shares, ticker, total
+        [date, action, num_shares, ticker, total]  = new_transaction_summary.split(' ')
+        date = date.substr(0, date.length-1)
         num_shares = parseInt(num_shares)
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
@@ -929,6 +930,7 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_transaction = { 
                 modified: new Date().getTime(),
+                date: date,
                 ticker: ticker,
                 summary: new_transaction_summary
             }
@@ -985,8 +987,9 @@ export class ComparingStocks extends React.Component {
     }
 
     onNewCash(new_cash_transaction_summary) {
-        let action, total
-        [action, total]  = new_cash_transaction_summary.split(' ')
+        let date, action, total
+        [date, action, total]  = new_cash_transaction_summary.split(' ')
+        date = date.substr(0, date.length-1)
         total = parseFloat(total.substr(1))
         this.setState(prevState => {
 
@@ -994,6 +997,7 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_cash_transaction = { 
                 modified: new Date().getTime(),
+                date: date,
                 ticker: 'cash',
                 summary: new_cash_transaction_summary
             }
