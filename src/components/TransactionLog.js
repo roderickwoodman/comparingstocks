@@ -58,6 +58,17 @@ export class TransactionLog extends React.Component {
     }
 
     render() {
+        let sorted_filtered_transactions = this.props.all_transactions
+            .filter( transaction => transaction.summary.toLowerCase().includes(this.state.filter_str.toLowerCase()) )
+            .sort( function(a,b) {
+                if (a.summary < b.summary){
+                    return -1
+                } else if (a.summary > b.summary) {
+                    return 1
+                } else {
+                    return 0
+                }
+            })
         return (
             <section id="transaction-log">
                 <section id="transaction-log-controls">
@@ -75,7 +86,7 @@ export class TransactionLog extends React.Component {
                     </form>
                 </section>
                 <section id="transactions">
-                    {this.props.all_transactions.filter( transaction => transaction.summary.toLowerCase().includes(this.state.filter_str.toLowerCase()) ).map( transaction => (
+                    {sorted_filtered_transactions.map( transaction => (
                         <p key={transaction.modified} className="transaction" onClick={ (e)=>this.props.on_delete_transaction(transaction.modified)}>{transaction.summary}</p>
                     ))}
                 </section>
