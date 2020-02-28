@@ -489,6 +489,202 @@
                 "09. change": "0.0741",
                 "10. change percent": "0.1418%"
             }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "FNV",
+                "02. open": "119.4700",
+                "03. high": "119.6500",
+                "04. low": "112.6100",
+                "05. price": "112.6600",
+                "06. volume": "1522598",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "118.0800",
+                "09. change": "-5.4200",
+                "10. change percent": "-4.5901%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "MELI",
+                "02. open": "614.8600",
+                "03. high": "633.1700",
+                "04. low": "600.0000",
+                "05. price": "600.0000",
+                "06. volume": "867478",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "632.0500",
+                "09. change": "-32.0500",
+                "10. change percent": "-5.0708%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "NFLX",
+                "02. open": "371.4600",
+                "03. high": "391.5624",
+                "04. low": "370.5962",
+                "05. price": "371.7100",
+                "06. volume": "10922775",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "379.2400",
+                "09. change": "-7.5300",
+                "10. change percent": "-1.9856%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "OKTA",
+                "02. open": "124.4600",
+                "03. high": "127.3700",
+                "04. low": "119.6200",
+                "05. price": "123.8300",
+                "06. volume": "2115272",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "127.8200",
+                "09. change": "-3.9900",
+                "10. change percent": "-3.1216%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "ROKU",
+                "02. open": "106.8800",
+                "03. high": "115.2000",
+                "04. low": "105.5685",
+                "05. price": "110.0300",
+                "06. volume": "15754016",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "112.7100",
+                "09. change": "-2.6800",
+                "10. change percent": "-2.3778%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "SBUX",
+                "02. open": "78.8300",
+                "03. high": "80.8700",
+                "04. low": "77.3600",
+                "05. price": "78.2900",
+                "06. volume": "17048166",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "80.6700",
+                "09. change": "-2.3800",
+                "10. change percent": "-2.9503%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "SHOP",
+                "02. open": "452.2800",
+                "03. high": "467.9328",
+                "04. low": "427.9350",
+                "05. price": "438.3700",
+                "06. volume": "3656732",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "471.1800",
+                "09. change": "-32.8100",
+                "10. change percent": "-6.9634%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "TDD",
+                "02. open": "0.0000",
+                "03. high": "0.0000",
+                "04. low": "0.0000",
+                "05. price": "25.3001",
+                "06. volume": "0",
+                "07. latest trading day": "2015-05-18",
+                "08. previous close": "25.3001",
+                "09. change": "0.0000",
+                "10. change percent": "0.0000%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "WRTC",
+                "02. open": "5.9500",
+                "03. high": "6.2900",
+                "04. low": "5.6500",
+                "05. price": "6.2900",
+                "06. volume": "339308",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "6.2900",
+                "09. change": "0.0000",
+                "10. change percent": "0.0000%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "ESPR",
+                "02. open": "52.9900",
+                "03. high": "55.4776",
+                "04. low": "50.0200",
+                "05. price": "52.3000",
+                "06. volume": "1795040",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "57.0500",
+                "09. change": "-4.7500",
+                "10. change percent": "-8.3260%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "BKNG",
+                "02. open": "1612.9800",
+                "03. high": "1730.0000",
+                "04. low": "1592.4500",
+                "05. price": "1659.8500",
+                "06. volume": "1336328",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "1678.2000",
+                "09. change": "-18.3500",
+                "10. change percent": "-1.0934%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "HSY",
+                "02. open": "157.8300",
+                "03. high": "159.8600",
+                "04. low": "151.8600",
+                "05. price": "151.9600",
+                "06. volume": "1580622",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "158.3800",
+                "09. change": "-6.4200",
+                "10. change percent": "-4.0535%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "ISRG",
+                "02. open": "550.3900",
+                "03. high": "560.4900",
+                "04. low": "544.1800",
+                "05. price": "544.6200",
+                "06. volume": "1045665",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "559.5300",
+                "09. change": "-14.9100",
+                "10. change percent": "-2.6647%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "MKC",
+                "02. open": "152.8700",
+                "03. high": "154.3300",
+                "04. low": "150.0200",
+                "05. price": "150.2600",
+                "06. volume": "1125716",
+                "07. latest trading day": "2020-02-27",
+                "08. previous close": "153.1100",
+                "09. change": "-2.8500",
+                "10. change percent": "-1.8614%"
+            }
         }
     ]
 }
