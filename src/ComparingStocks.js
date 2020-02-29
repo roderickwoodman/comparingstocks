@@ -523,10 +523,10 @@ export class ComparingStocks extends React.Component {
     }
 
     getPositionFromTransactions(transactions) {
-        let inflows = 0, outflows = 0, current_shares = 0, date, action, num_shares, ticker, value
+        let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
 
         transactions.forEach(function(transaction) {
-            [date, action, num_shares, ticker, value] = transaction.summary.split(' ')
+            [, action, num_shares, ticker, value] = transaction.summary.split(' ')
             num_shares = parseInt(num_shares)
             value = parseFloat(value.substr(1))
             if (action === 'buy') {
@@ -548,10 +548,10 @@ export class ComparingStocks extends React.Component {
     }
 
     getPositionFromCashTransactions(cash_transactions) {
-        let total = 0, date, action, value
+        let total = 0, action, value
 
         cash_transactions.forEach(function(cash_transaction) {
-            [date, action, value] = cash_transaction.summary.split(' ')
+            [, action, value] = cash_transaction.summary.split(' ')
             let cash_amount = parseFloat(value.substr(1))
             if (action === 'add') {
                 total += cash_amount
