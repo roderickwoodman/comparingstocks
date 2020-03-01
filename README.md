@@ -1,19 +1,12 @@
 ## ComparingStocks
 
-Nearly all financial websites surface the most superficial portfolio data and are therefore useless to individual investors who want to manage their portfolios.  But truly useful financial metrics are the big-picture, apples-to-apples ones:
+Most financial websites surface only the most superficial portfolio data. It's all simple math, and it is all useless for managing a portfolio. But truly useful portfolio insights are the big-picture, apples-to-apples ones:
 
-  * Whole positions should be compared.
-  * Whole companies should be compared. 
-  * Comparisons should be in percentage terms.
-  * Performance should be measured against an broad-based index.
-  * The long term is the time frame that matters the most.
-  * Relative allocations and risk matter more than past performance.
+  * Position sizes should be compared with each other. Relative costs and relative values matter more than per-share numbers.
+  * Position performance should be measured against a broad-based index. And time frames should be changeable. Daily performance does not matter.
+  * Balancing tools should be available to everyone.
 
-This is why this app intentionally hides many of the common investment numbers like shares, daily prices, and total dollars. Instead, it favors numbers like market caps, index-relative long-term performance, and percent portfolio values. It is these metrics which are the highest-level of bearings that every individual investor should have in mind when taking portfolio actions.
-
-This app also has controls and output for "what-if" rebalancing scenarios, so that the user has an actionable snapshot of the delta needed to get a set of positions into balance.
-
-In all, **ComparingStocks** attempts to be a long-term portfolio monitoring and rebalancing tool.
+In all, **ComparingStocks** attempts to be a long-term portfolio management. It shows positions as percentages of total value, total basis, and total risk, AND it provides balancing tools to balance to these metrics
 
 ### Development
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
