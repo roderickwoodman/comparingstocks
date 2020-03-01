@@ -6,7 +6,7 @@ Most financial websites surface only the most superficial portfolio data. It's a
   * Position performance should be measured against a broad-based index. And time frames should be changeable. Daily performance does not matter.
   * Balancing tools should be available to everyone.
 
-In all, **ComparingStocks** attempts to be a long-term portfolio management. It shows positions as percentages of total value, total basis, and total risk, AND it provides balancing tools to balance to these metrics
+In all, **ComparingStocks** attempts to be a long-term portfolio management tool. It shows positions as percentages of total value, total basis, and total risk, AND it provides balancing tools for balancing to these metrics
 
 ### Development
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
