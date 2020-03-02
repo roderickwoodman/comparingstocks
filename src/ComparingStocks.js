@@ -982,7 +982,27 @@ export class ComparingStocks extends React.Component {
     }
 
     onImportTransactions(imported_transactions) {
-        localStorage.setItem('allTransactions', JSON.stringify(imported_transactions))
+        let transaction_tickers = []
+        imported_transactions.forEach( transaction => transaction_tickers.push(transaction.ticker))
+        let all_stocks_of_interest = Array.from(new Set(transaction_tickers))
+        let self = this
+        this.setState(prevState => {
+
+            // update the "untagged" tag so that all added tickers belong to a tag
+            let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
+            all_stocks_of_interest.forEach( function(ticker) {
+                if (!(self.getAdded().includes(ticker))){
+                    newAllTags['untagged'].push(ticker)
+                }
+            })
+            localStorage.setItem('allTags', JSON.stringify(newAllTags))
+
+            // replace the stored transactions
+            localStorage.setItem('allTransactions', JSON.stringify(imported_transactions))
+
+            return
+        })
+
         window.location.reload(false)
     }
 
