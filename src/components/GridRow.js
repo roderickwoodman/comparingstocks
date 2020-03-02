@@ -178,7 +178,10 @@ export class GridRow extends React.Component {
                 } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
                     classes += ' text-red'
                 }
-                if (this.daysAgo(this.props.start_date) < 180) {
+                if (this.daysAgo(this.props.start_date) < 180 
+                    && row_name !== 'cash' 
+                    && !special_classes.includes('index') 
+                    && !isNaN(current_shares)) {
                     classes += ' strikethrough'
                 }
                 break
@@ -188,7 +191,10 @@ export class GridRow extends React.Component {
                 } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
                     classes += ' text-red'
                 }
-                if (this.daysAgo(this.props.start_date) < 365) {
+                if (this.daysAgo(this.props.start_date) < 365 
+                    && row_name !== 'cash' 
+                    && !special_classes.includes('index') 
+                    && !isNaN(current_shares)) {
                     classes += ' strikethrough'
                 }
                 break
@@ -198,7 +204,10 @@ export class GridRow extends React.Component {
                 } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
                     classes += ' text-red'
                 }
-                if (this.daysAgo(this.props.start_date) < 730) {
+                if (this.daysAgo(this.props.start_date) < 730 
+                    && row_name !== 'cash' 
+                    && !special_classes.includes('index') 
+                    && !isNaN(current_shares)) {
                     classes += ' strikethrough'
                 }
                 break
