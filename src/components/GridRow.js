@@ -27,6 +27,7 @@ export class GridRow extends React.Component {
         this.populateCellValue = this.populateCellValue.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
+        this.daysAgo = this.daysAgo.bind(this)
     }
 
     onWhatifCellClick() {
@@ -130,6 +131,8 @@ export class GridRow extends React.Component {
         const special_classes = this.props.special_classes
         const performance = this.props.performance_numbers
         const baseline = this.props.baseline
+
+        // hovering
         if ( this.state.hovering_symbol
             && column_name === 'symbol' 
             && !special_classes.includes('index') 
@@ -144,12 +147,17 @@ export class GridRow extends React.Component {
             && row_name !== 'cash' ) {
             classes += ' hovering'
         }
+
+        // whatif
         if ( column_name.startsWith('whatif_') ) {
             classes += ' clickable whatif'
         }
+
+        // italics
         if ( column_name === 'symbol' && row_name === 'untagged') {
             classes += ' italics'
         }
+
         switch (column_name) {
             case 'symbol':
                 classes += ' col-symbol'
@@ -170,6 +178,9 @@ export class GridRow extends React.Component {
                 } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
                     classes += ' text-red'
                 }
+                if (this.daysAgo(this.props.start_date) < 180) {
+                    classes += ' strikethrough'
+                }
                 break
             case 'medium_change_pct':
                 if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
@@ -177,12 +188,18 @@ export class GridRow extends React.Component {
                 } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
                     classes += ' text-red'
                 }
+                if (this.daysAgo(this.props.start_date) < 365) {
+                    classes += ' strikethrough'
+                }
                 break
             case 'long_change_pct':
                 if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
                     classes += ' text-green'
                 } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
                     classes += ' text-red'
+                }
+                if (this.daysAgo(this.props.start_date) < 730) {
+                    classes += ' strikethrough'
                 }
                 break
             default:
@@ -434,6 +451,17 @@ export class GridRow extends React.Component {
 
     numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    daysAgo(date_str) { // yyyy-mm-dd
+        let now = new Date()
+        let then = new Date(date_str)
+        let diff = Math.round((now - then) / 1000 / 60 / 60 / 24)
+        if (date_str === 'n/a') {
+            return 0
+        } else {
+            return diff
+        }
     }
 
     render() {
