@@ -960,17 +960,26 @@ export class ComparingStocks extends React.Component {
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // recalculate the position numbers
+            let orig_start_date, orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
-            let orig_basis = 0, orig_current_shares = 0, orig_realized_gains = 0
             if (newAllPositions.hasOwnProperty(ticker) && newAllPositions[ticker] !== null) {
+                orig_start_date = newAllPositions[ticker]['start_date']
                 orig_basis = newAllPositions[ticker]['basis']
                 orig_current_shares = newAllPositions[ticker]['current_shares']
                 orig_realized_gains = newAllPositions[ticker]['realized_gains']
             }
+            let new_current_shares = (action === 'buy') ? orig_current_shares + num_shares : orig_current_shares - num_shares
+            let new_start_date
+            if (orig_start_date === undefined) {
+                new_start_date = date
+            } else {
+                new_start_date = (new Date(date) < new Date(orig_start_date)) ? date : orig_start_date
+            }
             let updatedPosition = {
+                current_shares: new_current_shares,
+                start_date: (new_current_shares) ? new_start_date : 'n/a',
                 symbol: ticker,
                 basis: (action === 'buy') ? orig_basis + total : orig_basis - total,
-                current_shares: (action === 'buy') ? orig_current_shares + num_shares : orig_current_shares - num_shares,
                 realized_gains: (action === 'sell') ? orig_realized_gains + total : orig_realized_gains
             }
             if (updatedPosition['basis'] < 0) {
