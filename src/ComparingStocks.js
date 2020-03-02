@@ -305,7 +305,7 @@ export class ComparingStocks extends React.Component {
         let raw_current_quote_data = require('./api/sample_current_quotes.json').sample_current_quotes
         let indexed_current_quote_data = {}
         raw_current_quote_data.forEach(function(raw_quote) {
-            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'])
+            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'].toUpperCase())
             indexed_current_quote_data[adjusted_ticker] = raw_quote
         })
 
@@ -313,7 +313,7 @@ export class ComparingStocks extends React.Component {
         let indexed_monthly_quote_data = {}
         let index_performance = {}
         raw_monthly_quote_data.forEach(function(raw_quote) {
-            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'])
+            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'].toUpperCase())
             indexed_monthly_quote_data[adjusted_ticker] = raw_quote
             if (adjusted_ticker === 'S&P500') {
                 let quoteTimeSeries = indexed_monthly_quote_data[adjusted_ticker]['Monthly Adjusted Time Series']
