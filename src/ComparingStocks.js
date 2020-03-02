@@ -120,6 +120,11 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'start_date',
+        display_name: 'Started',
+        type: 'string'
+    },
+    {
         name: 'short_change_pct',
         display_name: '6-month',
         type: 'percentage',
@@ -195,7 +200,7 @@ export class ComparingStocks extends React.Component {
         this.convertNameForIndicies = this.convertNameForIndicies.bind(this)
         this.getTransactionById = this.getTransactionById.bind(this)
         this.getTransactionsByTicker = this.getTransactionsByTicker.bind(this)
-        this.getPositionFromTransactions = this.getPositionFromTransactions.bind(this)
+        this.getPositionFromSingleTickerTransactions = this.getPositionFromSingleTickerTransactions.bind(this)
         this.getPositionFromCashTransactions = this.getPositionFromCashTransactions.bind(this)
         this.calculateAggrPositionInfo = this.calculateAggrPositionInfo.bind(this)
         this.calculateAggrPerformance = this.calculateAggrPerformance.bind(this)
@@ -370,7 +375,7 @@ export class ComparingStocks extends React.Component {
                 if (!newPositions.hasOwnProperty(transaction.ticker) && transaction.ticker !== 'cash') {
                     let newPosition = {}
                     let ticker = transaction.ticker
-                    newPosition = self.getPositionFromTransactions(allTransactions.filter(transaction => transaction.ticker === ticker))
+                    newPosition = self.getPositionFromSingleTickerTransactions(allTransactions.filter(transaction => transaction.ticker === ticker))
                     newPosition['symbol'] = ticker
                     newPositions[ticker] = newPosition
                 }
@@ -522,13 +527,26 @@ export class ComparingStocks extends React.Component {
         return this.state.allTransactions.filter(transaction => transaction.ticker === ticker)
     }
 
-    getPositionFromTransactions(transactions) {
-        let inflows = 0, outflows = 0, current_shares = 0, action, num_shares, ticker, value
-
-        transactions.forEach(function(transaction) {
-            [, action, num_shares, ticker, value] = transaction.summary.split(' ')
+    getPositionFromSingleTickerTransactions(transactions) { // assumes the transactions are all from a single ticker
+        let inflows = 0, outflows = 0, current_shares = 0, date, action, num_shares, ticker, value
+        let sorted_transactions = transactions.sort(function(a,b) {
+            if (a.date > b.date) {
+                return -1
+            } else if (a.date < b.date) {
+                return -1
+            } else {
+                return 0
+            }
+        })
+        let position_start_date = '1970/01/01'
+        sorted_transactions.forEach(function(transaction) {
+            [date, action, num_shares, ticker, value] = transaction.summary.split(' ')
+            date = date.substr(0, date.length-1)
             num_shares = parseInt(num_shares)
             value = parseFloat(value.substr(1))
+            if (current_shares === 0) {
+                position_start_date = date
+            }
             if (action === 'buy') {
                 outflows += value
                 current_shares += num_shares
@@ -536,10 +554,14 @@ export class ComparingStocks extends React.Component {
                 inflows += value
                 current_shares -= num_shares
             }
+            if (current_shares === 0) {
+                position_start_date = 'n/a'
+            }
         })
         let newPosition = {
             symbol: ticker,
             current_shares: current_shares,
+            start_date: position_start_date,
             basis: Math.round((outflows > inflows) ? outflows - inflows : 0),
             realized_gains: Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
         }
@@ -1089,7 +1111,7 @@ export class ComparingStocks extends React.Component {
                 if (ticker === 'cash') {
                     updatedPosition = this.getPositionFromCashTransactions(remainingTransactionsForTicker)
                 } else {
-                    updatedPosition = this.getPositionFromTransactions(remainingTransactionsForTicker)
+                    updatedPosition = this.getPositionFromSingleTickerTransactions(remainingTransactionsForTicker)
                 }
                 newAllPositions[ticker] = updatedPosition
             }
@@ -1580,7 +1602,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = this.state.sort_column
         let quote_columns = ['current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_basis', 'percent_profit', 'at_risk']
+        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_basis', 'percent_profit', 'at_risk']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
         let sorted_names_list = [...names_list]
@@ -1851,10 +1873,12 @@ export class ComparingStocks extends React.Component {
             row_data[ticker]['special_classes'] = special_classes
 
             if (self.state.allPositions.hasOwnProperty(ticker)) {
+                row_data[ticker]['start_date'] = self.state.allPositions[ticker].start_date
                 row_data[ticker]['basis'] = self.state.allPositions[ticker].basis
                 row_data[ticker]['current_shares'] = self.state.allPositions[ticker].current_shares
                 row_data[ticker]['realized_gains'] = self.state.allPositions[ticker].realized_gains
             } else {
+                row_data[ticker]['start_date'] = 'n/a'
                 row_data[ticker]['basis'] = 'n/a'
                 row_data[ticker]['current_shares'] = 'n/a'
                 row_data[ticker]['realized_gains'] = 'n/a'
@@ -1878,6 +1902,7 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['tags'] = []
             new_aggr_data['special_classes'] = ['aggregate']
             new_aggr_data['basis'] = 'n/a'
+            new_aggr_data['start_date'] = 'n/a'
             new_aggr_data['current_shares'] = 'n/a'
             new_aggr_data['current_price'] = 'n/a'
             new_aggr_data['current_value'] = self.state.aggrTotalValue[aggr_ticker]
@@ -2025,6 +2050,7 @@ export class ComparingStocks extends React.Component {
                 change_pct={row_data.change_pct}
                 volume={row_data.volume}
                 basis={row_data.basis}
+                start_date={row_data.start_date}
                 current_shares={row_data.current_shares}
                 current_value={row_data.current_value}
                 realized_gains={row_data.realized_gains}
@@ -2059,6 +2085,7 @@ export class ComparingStocks extends React.Component {
             new_row['change_pct'] = self.state.allCurrentQuotes[ticker].change_pct
             new_row['volume'] = self.state.allCurrentQuotes[ticker].volume
             new_row['basis'] = row_data[ticker]['basis']
+            new_row['start_date'] = row_data[ticker]['start_date']
             new_row['current_shares'] = row_data[ticker]['current_shares']
             new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
@@ -2087,6 +2114,7 @@ export class ComparingStocks extends React.Component {
                 new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
                 new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
                 new_row['basis'] = self.state.aggrBasis[aggr_ticker]
+                new_row['start_date'] = aggr_row_data[aggr_ticker]['start_date']
                 new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
                 new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']

@@ -289,6 +289,9 @@ export class GridRow extends React.Component {
             case 'symbol':
                 value = this.props.row_name
                 break
+            case 'start_date':
+                value = this.props.start_date
+                break
             case 'current_shares':
                 value = current_shares
                 break
@@ -496,6 +499,7 @@ GridRow.propTypes = {
     row_name: PropTypes.string,
     membership_set: PropTypes.array,
     special_classes: PropTypes.array,
+    start_date: PropTypes.string,
     current_shares: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
