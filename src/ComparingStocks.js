@@ -2066,6 +2066,7 @@ export class ComparingStocks extends React.Component {
                 risk_factor={row_data.risk_factor}
                 performance_numbers={row_data.performance_numbers}
                 baseline={row_data.baseline}
+                style_realized_performance={row_data.style_realized_performance}
                 total_value={row_data.total_value}
                 total_basis={row_data.total_basis}
                 whatif={row_data.whatif}
@@ -2101,6 +2102,7 @@ export class ComparingStocks extends React.Component {
             new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker) && ticker !== 'S&P500') ? self.state.allRisk[ticker].factor : null
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
+            new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].current_shares).length) ? true : false
             new_row['total_value'] = self.state.aggrTotalValue['_everything_']
             new_row['total_basis'] = self.state.aggrBasis['_everything_']
             new_row['whatif'] = row_data[ticker]['whatif']
@@ -2130,6 +2132,7 @@ export class ComparingStocks extends React.Component {
                 new_row['risk_factor'] = 'n/a'
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
+                new_row['style_realized_performance'] = false
                 new_row['total_value'] = self.state.aggrTotalValue['_everything_']
                 new_row['total_basis'] = self.state.aggrBasis['_everything_']
                 new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
