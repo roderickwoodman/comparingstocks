@@ -268,6 +268,7 @@ export class GridRow extends React.Component {
         const current_value = this.props.current_value
         let value_at_risk = current_value * this.props.risk_factor
         let basis = this.props.basis
+        let basis_risked = basis * this.props.risk_factor
         let realized_gains = this.props.realized_gains
         const whatif = this.props.whatif
 
@@ -368,6 +369,9 @@ export class GridRow extends React.Component {
                 break
             case 'basis':
                 value = basis
+                break
+            case 'basis_risked':
+                value = basis_risked
                 break
             case 'whatif_basis':
                 if (whatif === null) {

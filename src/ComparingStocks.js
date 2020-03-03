@@ -107,6 +107,12 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'basis_risked',
+        display_name: 'Basis Risked',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
         name: 'volume',
         display_name: 'Volume',
         type: 'number',
@@ -1612,7 +1618,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = this.state.sort_column
         let quote_columns = ['current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_basis', 'percent_profit', 'value_at_risk']
+        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
         let sorted_names_list = [...names_list]
@@ -1725,7 +1731,9 @@ export class ComparingStocks extends React.Component {
                             value_a = 'n/a'
                         }
                     } else if (self.state.allPositions[a]['current_shares']) {
-                        if (sort_column === 'percent_basis') {
+                        if (sort_column === 'basis_risked' && self.state.allRisk.hasOwnProperty(a)) {
+                            value_a = self.state.allPositions[a]['basis'] * self.state.allRisk[a]['factor']
+                        } else if (sort_column === 'percent_basis') {
                             value_a = self.state.allPositions[a]['basis']
                         } else {
                             value_a = self.state.allPositions[a][sort_column]
@@ -1782,7 +1790,9 @@ export class ComparingStocks extends React.Component {
                             value_b = 'n/a'
                         }
                     } else if (self.state.allPositions[b]['current_shares']) {
-                        if (sort_column === 'percent_basis') {
+                        if (sort_column === 'basis_risked' && self.state.allRisk.hasOwnProperty(b)) {
+                            value_b = self.state.allPositions[b]['basis'] * self.state.allRisk[b]['factor']
+                        } else if (sort_column === 'percent_basis') {
                             value_b = self.state.allPositions[b]['basis']
                         } else {
                             value_b = self.state.allPositions[b][sort_column]
