@@ -266,6 +266,10 @@ th.whatif {
   text-decoration: line-through;
 }
 
+.strong {
+  font-weight: 800;
+}
+
 td {
   min-width: 125px;
 }

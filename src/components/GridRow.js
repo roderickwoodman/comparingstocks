@@ -186,6 +186,8 @@ export class GridRow extends React.Component {
                             || this.daysAgo(this.props.start_date) < 180
                             ){
                             classes += ' strikethrough'
+                        } else {
+                            classes += ' strong'
                         }
                 }
                 break
@@ -203,6 +205,8 @@ export class GridRow extends React.Component {
                             || this.daysAgo(this.props.start_date) < 365
                             ){
                             classes += ' strikethrough'
+                        } else {
+                            classes += ' strong'
                         }
                 }
                 break
@@ -220,6 +224,8 @@ export class GridRow extends React.Component {
                             || this.daysAgo(this.props.start_date) < 730
                             ){
                             classes += ' strikethrough'
+                        } else {
+                            classes += ' strong'
                         }
                 }
                 break
