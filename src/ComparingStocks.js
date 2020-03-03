@@ -95,14 +95,14 @@ const all_columns = [
         num_decimals: 2
     },
     {
-        name: 'at_risk',
-        display_name: 'At Risk',
+        name: 'value_at_risk',
+        display_name: 'Value At Risk',
         type: 'currency',
         num_decimals: 0
     },
     {
-        name: 'whatif_at_risk',
-        display_name: 'What-If At Risk',
+        name: 'whatif_value_at_risk',
+        display_name: 'What-If Value At Risk',
         type: 'currency',
         num_decimals: 0
     },
@@ -1327,7 +1327,7 @@ export class ComparingStocks extends React.Component {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                     if (balance_target_column === 'current_value') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'at_risk') {
+                    } else if (balance_target_column === 'value_at_risk') {
                         balanceable_value += current_value
                     } else if (balance_target_column === 'basis') {
                         balanceable_value += self.state.allPositions[ticker].basis
@@ -1340,7 +1340,7 @@ export class ComparingStocks extends React.Component {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                     if (balance_target_column === 'current_value') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'at_risk') {
+                    } else if (balance_target_column === 'value_at_risk') {
                         balanceable_value += current_value
                     } else if (balance_target_column === 'basis') {
                         balanceable_value += self.state.allPositions[ticker].basis
@@ -1353,7 +1353,7 @@ export class ComparingStocks extends React.Component {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                     if (balance_target_column === 'current_value') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'at_risk') {
+                    } else if (balance_target_column === 'value_at_risk') {
                         balanceable_value += current_value
                     } else if (balance_target_column === 'basis') {
                         balanceable_value += self.state.allPositions[ticker].basis
@@ -1423,7 +1423,7 @@ export class ComparingStocks extends React.Component {
                 value_delta = whatif_balancedvalue - original_currentvalue
                 new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
 
-                new_whatif.values[ticker]['at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
 
             // balancing by basis must account for sunk costs too; current value is not enough
             } else if (balance_target_column === 'basis') {
@@ -1445,7 +1445,7 @@ export class ComparingStocks extends React.Component {
                 value_delta = whatif_balancedvalue - original_basis
                 new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
 
-                new_whatif.values[ticker]['at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
             }
 
             if (adjusting_cash) {
@@ -1481,7 +1481,7 @@ export class ComparingStocks extends React.Component {
         //
 
         // balancing by risk requires a complicated algorithm (shown above)
-        if (balance_target_column === 'at_risk') {
+        if (balance_target_column === 'value_at_risk') {
             
             // determine numerator
             let numerator_product = 1
@@ -1530,7 +1530,7 @@ export class ComparingStocks extends React.Component {
                 let value_delta = whatif_balancedvalue - original_currentvalue
                 new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
 
-                new_whatif.values[ticker]['at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
 
                 if (adjusting_cash) {
                     actual_remaining_cash -= value_delta 
@@ -1543,7 +1543,7 @@ export class ComparingStocks extends React.Component {
             new_whatif.values['cash']['current_shares'] = actual_remaining_cash
             new_whatif.values['cash']['current_value'] = actual_remaining_cash
             new_whatif.values['cash']['basis'] = actual_remaining_cash
-            new_whatif.values['cash']['at_risk'] = 0
+            new_whatif.values['cash']['value_at_risk'] = 0
         }
         this.setState({ allWhatifs: new_whatif.values, balance_target_column: new_whatif.balance_target_column })
     }
@@ -1612,7 +1612,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = this.state.sort_column
         let quote_columns = ['current_price', 'change_pct', 'volume', 'dollar_volume']
-        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_basis', 'percent_profit', 'at_risk']
+        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'basis', 'realized_gains', 'percent_basis', 'percent_profit', 'value_at_risk']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
         let sorted_names_list = [...names_list]
@@ -1710,13 +1710,13 @@ export class ComparingStocks extends React.Component {
                             value_a = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(a)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit' || sort_column === 'at_risk') {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
                             if (sort_column === 'percent_profit' && positionvalue_a !== 0) {
                                 basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
-                            } else if (sort_column === 'at_risk' && positionvalue_a !== 0 && self.state.allRisk.hasOwnProperty(a)) {
+                            } else if (sort_column === 'value_at_risk' && positionvalue_a !== 0 && self.state.allRisk.hasOwnProperty(a)) {
                                 value_a = positionvalue_a * self.state.allRisk[a].factor
                             } else {
                                 value_a = positionvalue_a
@@ -1767,13 +1767,13 @@ export class ComparingStocks extends React.Component {
                             value_b = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(b)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit' || sort_column === 'at_risk') {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
                             if (sort_column === 'percent_profit' && positionvalue_b !== 0) {
                                 basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
-                            } else if (sort_column === 'at_risk' && positionvalue_b !== 0 && self.state.allRisk.hasOwnProperty(b)) {
+                            } else if (sort_column === 'value_at_risk' && positionvalue_b !== 0 && self.state.allRisk.hasOwnProperty(b)) {
                                 value_b = positionvalue_b * self.state.allRisk[b].factor
                             } else {
                                 value_b = positionvalue_b

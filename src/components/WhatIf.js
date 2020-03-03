@@ -122,8 +122,8 @@ export class WhatIf extends React.Component {
                         &nbsp;into&nbsp; 
                         <select name="balance_target_column" value={this.state.balance_target_column} onChange={this.handleChange}>
                             <option value="current_value">equal values</option>
+                            <option value="value_at_risk">equal value at risk</option>
                             <option value="basis">equal bases</option>
-                            <option value="at_risk">equal risk</option>
                         </select>
                         &nbsp;...
                     </div>

@@ -266,7 +266,7 @@ export class GridRow extends React.Component {
         const current_price = this.props.current_price
         let current_shares = this.props.current_shares
         const current_value = this.props.current_value
-        let at_risk = current_value * this.props.risk_factor
+        let value_at_risk = current_value * this.props.risk_factor
         let basis = this.props.basis
         let realized_gains = this.props.realized_gains
         const whatif = this.props.whatif
@@ -393,16 +393,16 @@ export class GridRow extends React.Component {
             case 'risk_factor':
                 value = this.props.risk_factor
                 break
-            case 'at_risk':
-                value = at_risk
+            case 'value_at_risk':
+                value = value_at_risk
                 break
-            case 'whatif_at_risk':
+            case 'whatif_value_at_risk':
                 if (whatif === null) {
                     value = 'n/a'
                 } else if (this.props.whatif_format === 'deltas') {
-                    value = whatif.at_risk - ((at_risk === 'n/a') ? 0 : at_risk)
+                    value = whatif.value_at_risk - ((value_at_risk === 'n/a') ? 0 : value_at_risk)
                 } else {
-                    value = whatif.at_risk
+                    value = whatif.value_at_risk
                 }
                 break
             case 'volume':
