@@ -185,7 +185,7 @@ export class GridRow extends React.Component {
                             || !current_shares 
                             || this.daysAgo(this.props.start_date) < 180
                             ){
-                            classes += ' strikethrough'
+                            classes += (this.props.show_unachieved_performance) ? ' strikethrough' : ' hide'
                         } else {
                             classes += ' strong'
                         }
@@ -204,7 +204,7 @@ export class GridRow extends React.Component {
                             || !current_shares 
                             || this.daysAgo(this.props.start_date) < 365
                             ){
-                            classes += ' strikethrough'
+                            classes += (this.props.show_unachieved_performance) ? ' strikethrough' :  ' hide'
                         } else {
                             classes += ' strong'
                         }
@@ -223,7 +223,7 @@ export class GridRow extends React.Component {
                             || !current_shares 
                             || this.daysAgo(this.props.start_date) < 730
                             ){
-                            classes += ' strikethrough'
+                            classes += (this.props.show_unachieved_performance) ? ' strikethrough' : ' hide'
                         } else {
                             classes += ' strong'
                         }
@@ -588,6 +588,7 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     performance_numbers: PropTypes.object,
+    show_unachieved_performance: PropTypes.bool,
     baseline: PropTypes.object,
     style_realized_performance: PropTypes.bool,
     total_value: PropTypes.number,

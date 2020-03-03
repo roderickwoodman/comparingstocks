@@ -266,6 +266,10 @@ th.whatif {
   text-decoration: line-through;
 }
 
+.hide {
+  visibility: hidden;
+}
+
 .strong {
   font-weight: 800;
 }
@@ -402,6 +406,11 @@ button.tag-removal:hover:not(:disabled) {
   margin: 5px 0 0 0;
   display: inline-block;
   height: 20px;
+}
+
+#performance_controls .switch_control .switch_label {
+  width: auto;
+  margin: 0 25px 0;
 }
 
 input[type='checkbox']:checked + .switch::after {
