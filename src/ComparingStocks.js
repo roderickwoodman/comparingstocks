@@ -202,7 +202,7 @@ export class ComparingStocks extends React.Component {
             show_index: false,
             show_cash: false,
             show_aggregates: true,
-            show_unachieved_performance: true,
+            show_only_achieved_performance: false,
             sort_column: 'symbol',
             sort_dir_asc: true,
             shown_columns: [],
@@ -304,7 +304,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_unachieved_performance']
+        const view_controls = ['show_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_only_achieved_performance']
         let stored_controls = {}
         view_controls.forEach(function(control) {
             stored_controls[control] = null
@@ -2125,7 +2125,7 @@ export class ComparingStocks extends React.Component {
                 realized_gains={row_data.realized_gains}
                 risk_factor={row_data.risk_factor}
                 performance_numbers={row_data.performance_numbers}
-                show_unachieved_performance={this.state.show_unachieved_performance}
+                show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
                 style_realized_performance={row_data.style_realized_performance}
                 total_value={row_data.total_value}
@@ -2245,10 +2245,10 @@ export class ComparingStocks extends React.Component {
                         </div>
                         <div id="performance_controls">
                             <div className="switch_control">
-                                <div className="switch_label">show unachieved performance:</div>
+                                <div className="switch_label">show performance only if achieved:</div>
                                 <div className="switch_wrapper">
-                                    <input id="show_unachieved_performance" name="show_unachieved_performance" type="checkbox" checked={this.state.show_unachieved_performance} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_unachieved_performance" className="switch"></label>
+                                    <input id="show_only_achieved_performance" name="show_only_achieved_performance" type="checkbox" checked={this.state.show_only_achieved_performance} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_only_achieved_performance" className="switch"></label>
                                 </div>
                             </div>
                         </div>
