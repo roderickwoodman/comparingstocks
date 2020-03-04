@@ -113,6 +113,12 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'whatif_basis_risked',
+        display_name: 'What-If Basis Risked',
+        type: 'currency',
+        num_decimals: 0
+    },
+    {
         name: 'volume',
         display_name: 'Volume',
         type: 'number',
@@ -1331,11 +1337,9 @@ export class ComparingStocks extends React.Component {
             if (this.state.show_holdings) {
                 Object.keys(this.state.allPositions).filter( ticker => ticker !== 'cash' ).forEach( function(ticker) {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (balance_target_column === 'current_value') {
+                    if (balance_target_column === 'current_value' || 'value_at_risk') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'value_at_risk') {
-                        balanceable_value += current_value
-                    } else if (balance_target_column === 'basis') {
+                    } else if (balance_target_column === 'basis' || 'basis_risked') {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
                 })
@@ -1344,11 +1348,9 @@ export class ComparingStocks extends React.Component {
             if (this.state.show_untagged && this.state.allTags.hasOwnProperty('untagged')) {
                 this.state.allTags['untagged'].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (balance_target_column === 'current_value') {
+                    if (balance_target_column === 'current_value' || 'value_at_risk') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'value_at_risk') {
-                        balanceable_value += current_value
-                    } else if (balance_target_column === 'basis') {
+                    } else if (balance_target_column === 'basis' || 'basis_risked') {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
                 })
@@ -1357,11 +1359,9 @@ export class ComparingStocks extends React.Component {
             if (this.state.show_tagged) {
                 this.state.allTags[balance_target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (balance_target_column === 'current_value') {
+                    if (balance_target_column === 'current_value' || 'value_at_risk') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'value_at_risk') {
-                        balanceable_value += current_value
-                    } else if (balance_target_column === 'basis') {
+                    } else if (balance_target_column === 'basis' || 'basis_risked') {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
                 })
@@ -1373,8 +1373,8 @@ export class ComparingStocks extends React.Component {
 
     onWhatifSubmit(balance_target_set, balance_target_column, remaining_cash) {
         this.setState({ remaining_cash: remaining_cash, balance_target_set: balance_target_set, balance_target_column: balance_target_column })
-        let whatif_columns = ['whatif_current_shares', 'whatif_'+balance_target_column]
-        this.showColumns(whatif_columns)
+        let show_whatif_columns = ['whatif_current_shares', 'whatif_'+balance_target_column]
+        this.showColumns(show_whatif_columns)
         this.onWhatifGo(balance_target_set, balance_target_column, this.state.show_cash, remaining_cash)
     }
 
@@ -1427,7 +1427,12 @@ export class ComparingStocks extends React.Component {
                 new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
 
                 value_delta = whatif_balancedvalue - original_currentvalue
-                new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+                let whatif_basis = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+                if (whatif_basis < 0) {
+                    whatif_basis = 0
+                }
+                new_whatif.values[ticker]['basis'] = whatif_basis
+                new_whatif.values[ticker]['basis_risked'] = whatif_basis * self.state.allRisk[ticker].factor
 
                 new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
 
@@ -1445,10 +1450,14 @@ export class ComparingStocks extends React.Component {
                 whatif_currentshares = original_currentshares + target_delta_shares
                 new_whatif.values[ticker]['current_shares'] = whatif_currentshares
 
-                whatif_balancedvalue = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
-                new_whatif.values[ticker]['basis'] = (whatif_balancedvalue > 0) ? whatif_balancedvalue : 0
+                let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
+                if (whatif_balancedbasis < 0) {
+                    whatif_balancedbasis = 0
+                }
+                new_whatif.values[ticker]['basis'] = whatif_balancedbasis
+                new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * self.state.allRisk[ticker].factor
 
-                value_delta = whatif_balancedvalue - original_basis
+                value_delta = whatif_balancedbasis - original_basis
                 new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
 
                 new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
@@ -1485,11 +1494,15 @@ export class ComparingStocks extends React.Component {
         // then solve for the other ticker positions:
         //   V2 = aV1/b, V3 = aV1/c, V4 = aV1/d, V5=aV1/e
         //
+        // The above applies to risk-balancing VALUE. This results in each position currently
+        // having the same dollar value at risk right now. Similarly, in order to risk-balance 
+        // by BASIS, the same formula may be used except with Btot (total basis) in the numberator.
+        // This results in each position having the same amount of sunk investment dollars at risk.
 
         // balancing by risk requires a complicated algorithm (shown above)
-        if (balance_target_column === 'value_at_risk') {
+        if (balance_target_column === 'value_at_risk' || balance_target_column === 'basis_risked') {
             
-            // determine numerator
+            // determine the numerator
             let numerator_product = 1
             tickers_to_balance.forEach(function(ticker, idx) {
                 if (idx !== 0) {
@@ -1498,7 +1511,7 @@ export class ComparingStocks extends React.Component {
             })
             let numerator = total_balance_value * numerator_product
 
-            // determine denominator
+            // determine the denominator
             let denominator_terms = Array(tickers_to_balance.length).fill(1)
             tickers_to_balance.forEach(function(ticker, ticker_idx) {
                 denominator_terms.forEach(function(term, term_idx) {
@@ -1509,7 +1522,7 @@ export class ComparingStocks extends React.Component {
             })
             let denominator = denominator_terms.reduce( (accumulator, currentValue) => accumulator + currentValue, 0 )
 
-            // determine the balanced target value for each ticker
+            // determine the target value for each ticker; each will be different if their risk factors are different
             let targets = Array(tickers_to_balance.length).fill(0)
             targets[0] = numerator / denominator
             let factor_0 = self.state.allRisk[tickers_to_balance[0]].factor
@@ -1519,24 +1532,55 @@ export class ComparingStocks extends React.Component {
                 }
             })
 
+            // for each ticker, use its target to derive the other metrics
             tickers_to_balance.forEach(function(ticker, idx) {
                 if (!new_whatif.values.hasOwnProperty(ticker)) {
                     new_whatif.values[ticker] = {}
                 }
-                let target = targets[idx]
                 let original_currentvalue = self.getCurrentValue(ticker)
                 let original_basis = self.getBasis(ticker)
+                let value_delta, target = targets[idx]
 
-                let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
-                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                // for values, "target" is the target market value for this position
+                if (balance_target_column === 'value_at_risk') {
 
-                let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
-                new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
+                    let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
+                    new_whatif.values[ticker]['current_shares'] = whatif_currentshares
 
-                let value_delta = whatif_balancedvalue - original_currentvalue
-                new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+                    let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
+                    new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
 
-                new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
+                    value_delta = whatif_balancedvalue - original_currentvalue
+                    new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+
+                    new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
+
+                // for bases, "target" is the target basis for this position
+                } else if (balance_target_column === 'basis_risked') {
+
+                    let original_currentshares = self.getCurrentShares(ticker)
+                    let target_delta = target - original_basis
+                    let target_delta_shares
+                    if (target_delta >= 0) {
+                        target_delta_shares = Math.floor(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                    } else {
+                        target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                    }
+                    let whatif_currentshares = original_currentshares + target_delta_shares
+                    new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+
+                    let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
+                    if (whatif_balancedbasis < 0) {
+                        whatif_balancedbasis = 0
+                    }
+                    new_whatif.values[ticker]['basis'] = whatif_balancedbasis
+                    new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * self.state.allRisk[ticker].factor
+    
+                    value_delta = whatif_balancedbasis - original_basis
+                    new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+    
+                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                }
 
                 if (adjusting_cash) {
                     actual_remaining_cash -= value_delta 
