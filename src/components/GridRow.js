@@ -526,7 +526,7 @@ export class GridRow extends React.Component {
         return (
             <tr className={ row_classes }>
                 <td>
-                    { member_count ? this.props.membership_set.map(symbol => this.populateMemberButton(symbol)) : (this.props.special_classes.length ? '' : '-') }
+                    { member_count ? this.props.membership_set.sort().map(symbol => this.populateMemberButton(symbol)) : (this.props.special_classes.length ? '' : '-') }
                 </td>
                 { this.props.columns.map(function(column) {
                     if (column.name === 'symbol') {
