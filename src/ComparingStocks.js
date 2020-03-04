@@ -1427,14 +1427,14 @@ export class ComparingStocks extends React.Component {
                 new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
 
                 value_delta = whatif_balancedvalue - original_currentvalue
-                let whatif_basis = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+                let whatif_basis = original_basis + value_delta
                 if (whatif_basis < 0) {
                     whatif_basis = 0
                 }
                 new_whatif.values[ticker]['basis'] = whatif_basis
                 new_whatif.values[ticker]['basis_risked'] = whatif_basis * self.state.allRisk[ticker].factor
 
-                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
 
             // balancing by basis must account for sunk costs too; current value is not enough
             } else if (balance_target_column === 'basis') {
@@ -1551,7 +1551,12 @@ export class ComparingStocks extends React.Component {
                     new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
 
                     value_delta = whatif_balancedvalue - original_currentvalue
-                    new_whatif.values[ticker]['basis'] = (original_basis + value_delta > 0) ? original_basis + value_delta : 0
+                    let whatif_basis = original_basis + value_delta
+                    if (whatif_basis < 0) {
+                        whatif_basis = 0
+                    }
+                    new_whatif.values[ticker]['basis'] = whatif_basis
+                    new_whatif.values[ticker]['basis_risked'] = whatif_basis * self.state.allRisk[ticker].factor
 
                     new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
 
