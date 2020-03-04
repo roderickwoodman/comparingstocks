@@ -183,6 +183,11 @@ th.whatif {
   border: 1px solid inherit;
 }
 
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
 #position-listing tbody tr:nth-last-child(2) td.whatif {
   border-bottom: 1px solid black;
 }
