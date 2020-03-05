@@ -1378,7 +1378,10 @@ export class ComparingStocks extends React.Component {
             sell_all_of: sell_all_of,
             balance_target_column: balance_target_column 
             })
-        let show_whatif_columns = ['whatif_current_shares', 'whatif_'+balance_target_column]
+        let show_whatif_columns = ['current_shares', 'whatif_current_shares', balance_target_column, 'whatif_'+balance_target_column]
+        if (balance_target_column.includes('risk')) {
+            show_whatif_columns.push('risk_factor')
+        }
         this.showColumns(show_whatif_columns)
         this.onWhatifGo(balance_target_set, sell_all_of, balance_target_column, this.state.show_cash, remaining_cash)
     }
