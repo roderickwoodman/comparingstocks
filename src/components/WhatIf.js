@@ -10,6 +10,7 @@ export class WhatIf extends React.Component {
             balanceable_value: 0,
             balance_target_set: 'my_holdings',
             balance_target_column: 'current_value',
+            sell_all_of: 'sell_none',
             cash_treatment: 'ignore',
             cash_remaining: '$0',
             cash_valid: true
@@ -87,7 +88,7 @@ export class WhatIf extends React.Component {
         event.preventDefault()
         let user_remaining_cash = this.state.cash_remaining.split('.')[0].replace(/[^0-9]/g, "")
         let remaining_cash = (this.state.cash_treatment === 'ignore') ? null : parseInt(user_remaining_cash)
-        this.props.on_whatif_submit(this.state.balance_target_set, this.state.balance_target_column, remaining_cash)
+        this.props.on_whatif_submit(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column, remaining_cash)
     }
 
     isDisabled() {
@@ -108,6 +109,12 @@ export class WhatIf extends React.Component {
     }
 
     render() {
+        let excludable_tickers = []
+        if (this.state.balance_target_set === "my_holdings") {
+            excludable_tickers = Object.keys(this.props.all_positions).filter( ticker => ticker !== 'cash' && this.props.all_positions[ticker].current_shares)
+        } else if (this.props.all_tags.hasOwnProperty(this.state.balance_target_set)) {
+            excludable_tickers = this.props.all_tags[this.state.balance_target_set].filter( ticker => this.props.all_positions[ticker] && this.props.all_positions[ticker].current_shares)
+        }
         return (
             <section id="what-if">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
@@ -125,6 +132,13 @@ export class WhatIf extends React.Component {
                             <option value="value_at_risk">equal values, risk adjusted</option>
                             <option value="basis">equal bases</option>
                             <option value="basis_risked">equal bases, risk adjusted</option>
+                        </select>
+                        , but sell all of&nbsp;
+                        <select name="sell_all_of" value={this.state.sell_all_of} onChange={this.handleChange}>
+                            <option value="sell_none">(none. keep all.)</option>
+                            {excludable_tickers.map(ticker => 
+                                <option key={ticker} value={ticker}> {ticker} </option>
+                            )}
                         </select>
                         &nbsp;...
                     </div>
