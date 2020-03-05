@@ -182,7 +182,8 @@ export class ComparingStocks extends React.Component {
             balance_target_set: 'my_holdings',
             balance_target_column: '',
             remaining_cash: null,
-            status_messages: [],
+            last_status_messages: [],
+            all_status_messages: [],
             baseline: {
                 name: 'zero_pct_gain',
                 short_change_pct: 0,
@@ -916,9 +917,10 @@ export class ComparingStocks extends React.Component {
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add status messages
-            let newStatusMessages = [...prevState.status_messages]
+            let newAllStatusMessages = [...prevState.all_status_messages]
             let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
-            newStatusMessages = [...new_message, ...newStatusMessages]
+            let newLastStatusMessages = new_message
+            newAllStatusMessages = [...new_message, ...newAllStatusMessages]
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -937,7 +939,8 @@ export class ComparingStocks extends React.Component {
                 allTags: newAllTags, 
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
-                status_messages: newStatusMessages,
+                all_status_messages: newAllStatusMessages,
+                last_status_messages: newLastStatusMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1119,9 +1122,10 @@ export class ComparingStocks extends React.Component {
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add status message
-            let newStatusMessages = [...prevState.status_messages]
+            let newAllStatusMessages = [...prevState.all_status_messages]
             let new_message = ['Transaction "' + transaction_to_delete.summary + '" has now been deleted.']
-            newStatusMessages = [...new_message, ...newStatusMessages]
+            let newLastStatusMessages = new_message
+            newAllStatusMessages = [...new_message, ...newAllStatusMessages]
 
             // recalculate the position numbers
             let remainingTransactionsForTicker = newAllTransactions.filter(transaction => transaction.ticker === ticker)
@@ -1150,7 +1154,8 @@ export class ComparingStocks extends React.Component {
             return { 
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
-                status_messages: newStatusMessages,
+                all_status_messages: newAllStatusMessages,
+                last_status_messages: newLastStatusMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1224,9 +1229,10 @@ export class ComparingStocks extends React.Component {
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
 
             // add status messages
-            let newStatusMessages = [...prevState.status_messages]
+            let newAllStatusMessages = [...prevState.all_status_messages]
             let new_message = ['Tag "' + delete_tag + '" has now been deleted.']
-            newStatusMessages = [...new_message, ...newStatusMessages]
+            let newLastStatusMessages = new_message
+            newAllStatusMessages = [...new_message, ...newAllStatusMessages]
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1243,7 +1249,8 @@ export class ComparingStocks extends React.Component {
 
             return { 
                 allTags: newAllTags, 
-                status_messages: newStatusMessages,
+                all_status_messages: newAllStatusMessages,
+                last_status_messages: newLastStatusMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1292,9 +1299,11 @@ export class ComparingStocks extends React.Component {
 
     onNewMessages(new_messages) {
         this.setState(prevState => {
-            let newStatusMessages = [...prevState.status_messages]
-            newStatusMessages = [...new_messages.reverse(), ...newStatusMessages]
-            return { status_messages: newStatusMessages }
+            let newAllStatusMessages = [...prevState.all_status_messages]
+            newAllStatusMessages = [...new_messages.reverse(), ...newAllStatusMessages]
+            return { 
+                last_status_messages: new_messages.reverse(),
+                all_status_messages: newAllStatusMessages }
         })
     }
 
@@ -2249,10 +2258,15 @@ export class ComparingStocks extends React.Component {
                             on_new_transaction={this.onNewTransaction}
                             on_import_transactions={this.onImportTransactions}
                             on_new_cash={this.onNewCash}
-                            all_status_messages={this.state.status_messages}
+                            all_status_messages={this.state.all_status_messages}
                             on_new_messages={this.onNewMessages}
                             on_whatif_submit={this.onWhatifSubmit}
                         />
+                    </div>
+                    <div id="last_status_messages">
+                        {this.state.last_status_messages.map( status_message => (
+                            <div>{status_message}</div>
+                        ))}
                     </div>
                     <div id="view-controls">
                         <div id="baseline-control">
