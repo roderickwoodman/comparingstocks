@@ -10,7 +10,7 @@ export class WhatIf extends React.Component {
             balanceable_value: 0,
             balance_target_set: 'my_holdings',
             balance_target_column: 'current_value',
-            sell_all_of: 'sell_none',
+            sell_all_of: ['sell_none'],
             cash_treatment: 'ignore',
             cash_remaining: '$0',
             cash_valid: true
@@ -48,7 +48,7 @@ export class WhatIf extends React.Component {
 
     handleChange(event) {
 
-        let {name, value } = event.target
+        let {name, value, selectedOptions } = event.target
 
         // when the balance target set input changes, update the maximum value
         if (name === 'balance_target_set') {
@@ -81,7 +81,15 @@ export class WhatIf extends React.Component {
         localStorage.setItem(name, JSON.stringify(value))
 
         // mirror the input in state, since this is a (React) controlled input
-        this.setState({ [name]: value })
+        if (name !== 'sell_all_of') {
+            this.setState({ [name]: value })
+        } else {
+            let multiple_tickers = Array.from(selectedOptions, (item) => item.value)
+            if (multiple_tickers.includes('sell_none')) {
+                multiple_tickers = ['sell_none']
+            }
+            this.setState({ sell_all_of: multiple_tickers })
+        }
     }
 
     handleSubmit(event) {
@@ -134,7 +142,7 @@ export class WhatIf extends React.Component {
                             <option value="basis_risked">equal bases, risk adjusted</option>
                         </select>
                         , but sell all of&nbsp;
-                        <select name="sell_all_of" value={this.state.sell_all_of} onChange={this.handleChange}>
+                        <select name="sell_all_of" value={this.state.sell_all_of} multiple={true} onChange={this.handleChange}>
                             <option value="sell_none">(none. keep all.)</option>
                             {excludable_tickers.map(ticker => 
                                 <option key={ticker} value={ticker}> {ticker} </option>
