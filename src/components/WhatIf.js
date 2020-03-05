@@ -144,7 +144,7 @@ export class WhatIf extends React.Component {
                         , but sell all of&nbsp;
                         <select name="sell_all_of" value={this.state.sell_all_of} multiple={true} onChange={this.handleChange}>
                             <option value="sell_none">(none. keep all.)</option>
-                            {excludable_tickers.map(ticker => 
+                            {excludable_tickers.sort().map(ticker => 
                                 <option key={ticker} value={ticker}> {ticker} </option>
                             )}
                         </select>
