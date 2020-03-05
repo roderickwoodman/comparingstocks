@@ -534,7 +534,7 @@ export class ComparingStocks extends React.Component {
     // }
 
     getTransactionById(transaction_id) {
-        return this.state.allTransactions.filter(transaction => transaction.modified === transaction_id)[0]
+        return this.state.allTransactions.filter(transaction => transaction.modified_at === transaction_id)[0]
     }
 
     getTransactionsByTicker(ticker) {
@@ -967,7 +967,7 @@ export class ComparingStocks extends React.Component {
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_transaction = { 
-                modified: new Date().getTime(),
+                modified_at: new Date().getTime(),
                 date: date,
                 ticker: ticker,
                 summary: new_transaction_summary
@@ -1063,7 +1063,7 @@ export class ComparingStocks extends React.Component {
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_cash_transaction = { 
-                modified: new Date().getTime(),
+                modified_at: new Date().getTime(),
                 date: date,
                 ticker: 'cash',
                 summary: new_cash_transaction_summary
@@ -1118,7 +1118,7 @@ export class ComparingStocks extends React.Component {
         this.setState(prevState => {
 
             // update transactions
-            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modified !== delete_transaction_id)
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modified_at !== delete_transaction_id)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add status message

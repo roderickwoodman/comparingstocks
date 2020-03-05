@@ -87,7 +87,7 @@ export class TransactionLog extends React.Component {
                 </section>
                 <section id="transactions">
                     {sorted_filtered_transactions.map( transaction => (
-                        <p key={transaction.modified} className="transaction" onClick={ (e)=>this.props.on_delete_transaction(transaction.modified)}>{transaction.summary}</p>
+                        <p key={transaction.modified_at} className="transaction" onClick={ (e)=>this.props.on_delete_transaction(transaction.modified_at)}>{transaction.summary}</p>
                     ))}
                 </section>
             </section>
