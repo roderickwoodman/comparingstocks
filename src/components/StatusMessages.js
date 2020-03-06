@@ -13,8 +13,8 @@ export class StatusMessages extends React.Component {
                     .map(
                         (message, i) => {
                             return (message.content.toLowerCase().startsWith("error"))
-                            ? <p key={i} className="message error">{message.content}</p>
-                            : <p key={i} className="message">{message.content}</p>
+                            ? <p key={i + message.modified_at} className="message error">{message.content}</p>
+                            : <p key={i + message.modified_at} className="message">{message.content}</p>
                         }
                     )
                 }

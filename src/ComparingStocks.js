@@ -823,6 +823,7 @@ export class ComparingStocks extends React.Component {
 
     createMessage(message_content) {
         let new_message = {
+            modified_at: new Date().getTime(),
             content: message_content
         }
         return new_message
@@ -2274,8 +2275,8 @@ export class ComparingStocks extends React.Component {
                             />
                         </div>
                         <div id="last-status-messages">
-                            {this.state.last_status_messages.filter( status_message => status_message.content.includes('ERROR')).map( status_message => (
-                                <div>{status_message.content}</div>
+                            {this.state.last_status_messages.filter( status_message => status_message.content.includes('ERROR')).map( (status_message,i) => (
+                                <div key={i + status_message.modified_at}>({status_message.modified_at}){status_message.content}</div>
                             ))}
                         </div>
                     </div>
