@@ -2239,34 +2239,36 @@ export class ComparingStocks extends React.Component {
         return (
             <div id="page-wrapper">
                 <div id="page-controls">
-                    <div id="input-controls">
-                        <InputForms
-                            all_stocks={this.state.allStocks}
-                            all_tags={this.state.allTags}
-                            all_current_quotes={this.state.allCurrentQuotes}
-                            all_positions={this.state.allPositions}
-                            all_transactions={this.state.allTransactions}
-                            show_holdings={this.state.show_holdings}
-                            show_tagged={this.state.show_tagged}
-                            show_untagged={this.state.show_untagged}
-                            show_cash={this.state.show_cash}
-                            get_balanceable_value={this.getBalanceableValue}
-                            on_new_tickers={this.onNewTickers}
-                            on_new_tags={this.onNewTags}
-                            on_delete_tag={this.onDeleteTag}
-                            on_delete_transaction={this.onDeleteTransaction}
-                            on_new_transaction={this.onNewTransaction}
-                            on_import_transactions={this.onImportTransactions}
-                            on_new_cash={this.onNewCash}
-                            all_status_messages={this.state.all_status_messages}
-                            on_new_messages={this.onNewMessages}
-                            on_whatif_submit={this.onWhatifSubmit}
-                        />
-                    </div>
-                    <div id="last_status_messages">
-                        {this.state.last_status_messages.map( status_message => (
-                            <div>{status_message}</div>
-                        ))}
+                    <div id="left-side">
+                        <div id="input-controls">
+                            <InputForms
+                                all_stocks={this.state.allStocks}
+                                all_tags={this.state.allTags}
+                                all_current_quotes={this.state.allCurrentQuotes}
+                                all_positions={this.state.allPositions}
+                                all_transactions={this.state.allTransactions}
+                                show_holdings={this.state.show_holdings}
+                                show_tagged={this.state.show_tagged}
+                                show_untagged={this.state.show_untagged}
+                                show_cash={this.state.show_cash}
+                                get_balanceable_value={this.getBalanceableValue}
+                                on_new_tickers={this.onNewTickers}
+                                on_new_tags={this.onNewTags}
+                                on_delete_tag={this.onDeleteTag}
+                                on_delete_transaction={this.onDeleteTransaction}
+                                on_new_transaction={this.onNewTransaction}
+                                on_import_transactions={this.onImportTransactions}
+                                on_new_cash={this.onNewCash}
+                                all_status_messages={this.state.all_status_messages}
+                                on_new_messages={this.onNewMessages}
+                                on_whatif_submit={this.onWhatifSubmit}
+                            />
+                        </div>
+                        <div id="last-status-messages">
+                            {this.state.last_status_messages.filter( status_message => status_message.includes('ERROR')).map( status_message => (
+                                <div>{status_message}</div>
+                            ))}
+                        </div>
                     </div>
                     <div id="view-controls">
                         <div id="baseline-control">

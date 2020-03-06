@@ -102,6 +102,19 @@ code {
   margin-bottom: 0;
 }
 
+#left-side {
+  display: flex;
+  flex-direction: column;
+}
+
+#last-status-messages {
+  padding: 5px;
+  color: red;
+  min-height: 2em;
+  max-height: 2em;
+  overflow-y: scroll;
+}
+
 #position-listing,
 #aggr-position-listing {
   padding: 10px;
