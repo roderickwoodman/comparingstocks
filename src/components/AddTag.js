@@ -39,9 +39,9 @@ export class AddTag extends React.Component {
         let self = this
         tags.forEach(function(tag) {
             if (self.props.all_tags.hasOwnProperty(tag)) {
-                new_status_messages.push('ERROR: Tag "' + tag + '" has already been created.')
+                new_status_messages.push(self.props.create_message('ERROR: Tag "' + tag + '" has already been created.'))
             } else {
-                new_status_messages.push('Tag "' + tag + '" has now been created.')
+                new_status_messages.push(self.props.create_message('Tag "' + tag + '" has now been created.'))
                 tags_to_add.push(tag)
             }
         })
@@ -68,5 +68,6 @@ export class AddTag extends React.Component {
 AddTag.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_new_tags: PropTypes.func.isRequired,
+    create_message: PropTypes.func.isRequired,
     on_new_messages: PropTypes.func.isRequired
 }

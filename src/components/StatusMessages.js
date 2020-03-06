@@ -12,9 +12,9 @@ export class StatusMessages extends React.Component {
                 { this.props.all_status_messages
                     .map(
                         (message, i) => {
-                            return (message.toLowerCase().startsWith("error"))
-                            ? <p key={i} className="message error">{message}</p>
-                            : <p key={i} className="message">{message}</p>
+                            return (message.content.toLowerCase().startsWith("error"))
+                            ? <p key={i} className="message error">{message.content}</p>
+                            : <p key={i} className="message">{message.content}</p>
                         }
                     )
                 }

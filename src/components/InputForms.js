@@ -48,6 +48,7 @@ export class InputForms extends React.Component {
                             all_stocks={this.props.all_stocks}
                             all_tags={this.props.all_tags}
                             on_new_tickers={this.props.on_new_tickers}
+                            create_message={this.props.create_message}
                             on_new_messages={this.props.on_new_messages}
                         />
                         </React.Fragment>
@@ -57,11 +58,13 @@ export class InputForms extends React.Component {
                         <AddTag
                             all_tags={this.props.all_tags}
                             on_new_tags={this.props.on_new_tags}
+                            create_message={this.props.create_message}
                             on_new_messages={this.props.on_new_messages}
                         />
                         <DeleteTag
                             all_tags={this.props.all_tags}
                             on_delete_tag={this.props.on_delete_tag}
+                            create_message={this.props.create_message}
                             on_new_messages={this.props.on_new_messages}
                         />
                         </React.Fragment>
@@ -75,6 +78,7 @@ export class InputForms extends React.Component {
                                     all_tags={this.props.all_tags}
                                     on_new_transaction={this.props.on_new_transaction}
                                     on_new_cash={this.props.on_new_cash}
+                                    create_message={this.props.create_message}
                                     on_new_messages={this.props.on_new_messages}
                                 />
                             </div>
@@ -133,6 +137,7 @@ InputForms.propTypes = {
     on_new_transaction: PropTypes.func.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,
+    create_message: PropTypes.func.isRequired,
     all_status_messages: PropTypes.array.isRequired,
     on_new_messages: PropTypes.func.isRequired,
     on_whatif_submit: PropTypes.func

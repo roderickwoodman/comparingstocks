@@ -224,6 +224,7 @@ export class ComparingStocks extends React.Component {
         this.onChangeWhatifFormat = this.onChangeWhatifFormat.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.showColumns = this.showColumns.bind(this)
+        this.createMessage = this.createMessage.bind(this)
         this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
         this.onImportTransactions = this.onImportTransactions.bind(this)
@@ -818,6 +819,13 @@ export class ComparingStocks extends React.Component {
         } else {
             return ticker
         }
+    }
+
+    createMessage(message_content) {
+        let new_message = {
+            content: message_content
+        }
+        return new_message
     }
 
     onNewTags(new_tags) {
@@ -2259,14 +2267,15 @@ export class ComparingStocks extends React.Component {
                                 on_new_transaction={this.onNewTransaction}
                                 on_import_transactions={this.onImportTransactions}
                                 on_new_cash={this.onNewCash}
+                                create_message={this.createMessage}
                                 all_status_messages={this.state.all_status_messages}
                                 on_new_messages={this.onNewMessages}
                                 on_whatif_submit={this.onWhatifSubmit}
                             />
                         </div>
                         <div id="last-status-messages">
-                            {this.state.last_status_messages.filter( status_message => status_message.includes('ERROR')).map( status_message => (
-                                <div>{status_message}</div>
+                            {this.state.last_status_messages.filter( status_message => status_message.content.includes('ERROR')).map( status_message => (
+                                <div>{status_message.content}</div>
                             ))}
                         </div>
                     </div>

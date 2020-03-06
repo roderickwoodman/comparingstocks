@@ -44,17 +44,18 @@ export class AddTicker extends React.Component {
         let tickers_to_add = []
         let new_status_messages = []
         let self = this
+        const create_message = this.props.create_message
         tickers.forEach(function(ticker) {
             // ticker does not exist
             if (!self.props.all_stocks.includes(ticker)) {
-                new_status_messages.push('ERROR: Ticker ' + ticker + ' does not exist.')
+                new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' does not exist.'))
 
             // ticker is already in the target tag
             } else if (self.props.all_tags[tag].includes(ticker)) {
                 if (tag === 'untagged') {
-                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added.')
+                    new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added.'))
                 } else {
-                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to tag "'+ tag +'".')
+                    new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added to tag "'+ tag +'".'))
                 }
 
             // ticker is being added to a tag that it is not already in
@@ -66,12 +67,12 @@ export class AddTicker extends React.Component {
                     }
                 })
                 if (tag === 'untagged' && tagged_tickers.includes(ticker)) {
-                    new_status_messages.push('ERROR: Ticker ' + ticker + ' has already been added to another named tag.')
+                    new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added to another named tag.'))
                 } else {
                     if (tag === 'untagged') {
-                        new_status_messages.push('Ticker ' + ticker + ' has now been added.')
+                        new_status_messages.push(create_message('Ticker ' + ticker + ' has now been added.'))
                     } else {
-                        new_status_messages.push('Ticker ' + ticker + ' has now been added to tag "' + tag + '".')
+                        new_status_messages.push(create_message('Ticker ' + ticker + ' has now been added to tag "' + tag + '".'))
                     }
                     tickers_to_add.push(ticker)
                 }
@@ -110,5 +111,6 @@ AddTicker.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
     on_new_tickers: PropTypes.func.isRequired,
+    create_message: PropTypes.func.isRequired,
     on_new_messages: PropTypes.func.isRequired
 }

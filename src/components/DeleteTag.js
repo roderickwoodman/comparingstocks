@@ -23,7 +23,7 @@ export class DeleteTag extends React.Component {
         let new_status_messages = []
 
         if (user_tag !== 'untagged') {
-            new_status_messages.push('Tag "' + user_tag + '" has now been deleted.')
+            new_status_messages.push(this.props.create_message('Tag "' + user_tag + '" has now been deleted.'))
             this.props.on_new_messages(new_status_messages)
             this.props.on_delete_tag(user_tag)
             this.setState({ delete_tag: 'untagged' })
@@ -55,5 +55,6 @@ export class DeleteTag extends React.Component {
 DeleteTag.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_delete_tag: PropTypes.func.isRequired,
+    create_message: PropTypes.func.isRequired,
     on_new_messages: PropTypes.func.isRequired
 }
