@@ -140,6 +140,7 @@ export class WhatIf extends React.Component {
                             <option value="value_at_risk">equal values, risk adjusted</option>
                             <option value="basis">equal bases</option>
                             <option value="basis_risked">equal bases, risk adjusted</option>
+                            <option value="only_profits">only profits remaining</option>
                         </select>
                         , but sell all of&nbsp;
                         <select name="sell_all_of" value={this.state.sell_all_of} multiple={true} onChange={this.handleChange}>
