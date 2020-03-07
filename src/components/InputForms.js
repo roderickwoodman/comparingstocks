@@ -85,6 +85,7 @@ export class InputForms extends React.Component {
                             <div className="content-half">
                                 <TransactionLog
                                     all_transactions={this.props.all_transactions}
+                                    all_risk={this.props.all_risk}
                                     on_delete_transaction={this.props.on_delete_transaction}
                                     on_import_transactions={this.props.on_import_transactions}
                                 />
@@ -126,6 +127,7 @@ InputForms.propTypes = {
     all_current_quotes: PropTypes.object,
     all_positions: PropTypes.object,
     all_transactions: PropTypes.array,
+    all_risk: PropTypes.object,
     show_tagged: PropTypes.bool,
     show_untagged: PropTypes.bool,
     show_cash: PropTypes.bool,

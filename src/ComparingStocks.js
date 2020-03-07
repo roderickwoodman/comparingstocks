@@ -1038,10 +1038,17 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onImportTransactions(imported_transactions) {
-        let transaction_tickers = []
-        imported_transactions.forEach( transaction => transaction_tickers.push(transaction.ticker))
-        let all_stocks_of_interest = Array.from(new Set(transaction_tickers))
+    onImportTransactions(file_contents) {
+
+        let imported_tickers = []
+
+        let imported_transactions = JSON.parse(JSON.stringify(file_contents.transactions))
+        imported_transactions.forEach( transaction => imported_tickers.push(transaction.ticker) )
+
+        let imported_risk = JSON.parse(JSON.stringify(file_contents.risk))
+        Object.keys(imported_risk).forEach( ticker => imported_tickers.push(ticker))
+
+        let all_stocks_of_interest = Array.from(new Set(imported_tickers))
         let self = this
         this.setState(prevState => {
 
@@ -1056,6 +1063,9 @@ export class ComparingStocks extends React.Component {
 
             // replace the stored transactions
             localStorage.setItem('allTransactions', JSON.stringify(imported_transactions))
+
+            // replace the stored risk
+            localStorage.setItem('allRisk', JSON.stringify(imported_risk))
 
             return
         })
@@ -2323,6 +2333,7 @@ export class ComparingStocks extends React.Component {
                                 all_current_quotes={this.state.allCurrentQuotes}
                                 all_positions={this.state.allPositions}
                                 all_transactions={this.state.allTransactions}
+                                all_risk={this.state.allRisk}
                                 show_holdings={this.state.show_holdings}
                                 show_tagged={this.state.show_tagged}
                                 show_untagged={this.state.show_untagged}

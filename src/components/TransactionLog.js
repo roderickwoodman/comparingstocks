@@ -27,10 +27,11 @@ export class TransactionLog extends React.Component {
     onExportButton() {
 
         // prepare the data
-        let all_transactions = {
-            transactions: JSON.parse(JSON.stringify(this.props.all_transactions))
+        let exported_json = {
+            transactions: JSON.parse(JSON.stringify(this.props.all_transactions)),
+            risk: JSON.parse(JSON.stringify(this.props.all_risk))
         }
-        var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(all_transactions));
+        var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exported_json));
 
         // create the download link
         var a = document.createElement('a')
@@ -52,7 +53,7 @@ export class TransactionLog extends React.Component {
             reader.readAsText(files[0], "UTF-8");
             reader.onload = function (evt) {
                 let file_contents = JSON.parse(evt.target.result)
-                self.props.on_import_transactions(file_contents.transactions)
+                self.props.on_import_transactions(file_contents)
             }
         }
     }
@@ -97,6 +98,7 @@ export class TransactionLog extends React.Component {
 
 TransactionLog.propTypes = {
     all_transactions: PropTypes.array.isRequired,
+    all_risk: PropTypes.array.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,
 }
