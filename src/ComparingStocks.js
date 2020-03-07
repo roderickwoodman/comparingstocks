@@ -1296,6 +1296,7 @@ export class ComparingStocks extends React.Component {
             let newAllRisk = JSON.parse(JSON.stringify(prevState.allRisk))
             if (newAllRisk.hasOwnProperty(ticker)) {
                 newAllRisk[ticker]['factor'] = parseFloat(new_value)
+                newAllRisk[ticker]['modified_at'] = new Date().getTime()
             } else {
                 let newRisk = { 
                     modified_at: new Date().getTime(),
