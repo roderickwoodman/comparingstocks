@@ -89,6 +89,11 @@ const all_columns = [
         num_decimals: 0
     },
     {
+        name: 'risk_factor_modified',
+        display_name: 'Risk Factor Edited Date',
+        type: 'string',
+    },
+    {
         name: 'risk_factor',
         display_name: 'Risk Factor (default=0.20)',
         type: 'number',
@@ -133,7 +138,7 @@ const all_columns = [
     },
     {
         name: 'start_date',
-        display_name: 'Started',
+        display_name: 'Holding Started Date',
         type: 'string'
     },
     {
@@ -1950,6 +1955,10 @@ export class ComparingStocks extends React.Component {
                 value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : 0.20
                 value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : 0.20
 
+            } else if (sort_column === 'risk_factor_modified') {
+                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].modified_at : 'n/a'
+                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].modified_at : 'n/a'
+
             // default, do not reorder this pair
             } else {
                 return 0
@@ -2216,6 +2225,7 @@ export class ComparingStocks extends React.Component {
                 current_value={row_data.current_value}
                 realized_gains={row_data.realized_gains}
                 risk_factor={row_data.risk_factor}
+                risk_factor_modified={row_data.risk_factor_modified}
                 performance_numbers={row_data.performance_numbers}
                 show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
@@ -2252,7 +2262,8 @@ export class ComparingStocks extends React.Component {
             new_row['current_shares'] = row_data[ticker]['current_shares']
             new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
-            new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker) && ticker !== 'S&P500') ? self.state.allRisk[ticker].factor : null
+            new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : null
+            new_row['risk_factor_modified'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].modified_at : null
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
             new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].current_shares).length) ? true : false
@@ -2283,6 +2294,7 @@ export class ComparingStocks extends React.Component {
                 new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
                 new_row['risk_factor'] = 'n/a'
+                new_row['risk_factor_modified'] = 'n/a'
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
                 new_row['style_realized_performance'] = false

@@ -16,6 +16,7 @@ export class GridRow extends React.Component {
             user_risk_factor: '',
             user_risk_factor_valid: false
         }
+        this.formatDate = this.formatDate.bind(this)
         this.onWhatifCellClick = this.onWhatifCellClick.bind(this)
         this.toggleHoverSymbol = this.toggleHoverSymbol.bind(this)
         this.toggleHoverRiskFactor = this.toggleHoverRiskFactor.bind(this)
@@ -28,6 +29,20 @@ export class GridRow extends React.Component {
         this.styleCell = this.styleCell.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.daysAgo = this.daysAgo.bind(this)
+    }
+
+    formatDate(epoch) {
+        var d = new Date(epoch),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+    
+        if (month.length < 2) 
+            month = '0' + month;
+        if (day.length < 2) 
+            day = '0' + day;
+    
+        return [year, month, day].join('-');
     }
 
     onWhatifCellClick() {
@@ -408,6 +423,13 @@ export class GridRow extends React.Component {
             case 'risk_factor':
                 value = visible_risk_factor
                 break
+            case 'risk_factor_modified':
+                if (this.props.risk_factor_modified !== null) {
+                    value = this.formatDate(parseInt(this.props.risk_factor_modified))
+                } else {
+                    value = 'n/a'
+                }
+                break
             case 'value_at_risk':
                 value = value_at_risk
                 break
@@ -599,6 +621,10 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     risk_factor: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    risk_factor_modified: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
