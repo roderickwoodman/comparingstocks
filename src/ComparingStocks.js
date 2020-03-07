@@ -90,7 +90,7 @@ const all_columns = [
     },
     {
         name: 'risk_factor',
-        display_name: 'Risk Factor',
+        display_name: 'Risk Factor (default=0.20)',
         type: 'number',
         num_decimals: 2
     },
@@ -441,10 +441,8 @@ export class ComparingStocks extends React.Component {
             let newRiskEntry = {}
             if (indexed_risk_data.hasOwnProperty(ticker)) {
                 newRiskEntry['factor'] = indexed_risk_data[ticker].factor
-            } else if (ticker !== 'S&P500') {
-                newRiskEntry['factor'] = 0.25  // based on TradeStops VQ% (range: 0 to 1), this 25% number represents medium risk
+                newRisk[ticker] = newRiskEntry
             }
-            newRisk[ticker] = newRiskEntry
         })
 
         // quote for cash
@@ -1439,7 +1437,14 @@ export class ComparingStocks extends React.Component {
         }
 
         let actual_remaining_cash = original_cash_position
-        // let tickers_balanced_set = ticker_set.filter( ticker => !sell_all_set.includes(ticker) )
+        let risk_factors = {}
+        ticker_set.forEach(function(ticker) {
+            if (self.state.allRisk.hasOwnProperty(ticker)){
+                risk_factors[ticker] = self.state.allRisk[ticker].factor
+            } else {
+                risk_factors[ticker] = 0.20
+            }
+        })
         ticker_set.forEach(function(ticker) {
 
             let whatif_currentshares, whatif_balancedvalue
@@ -1484,9 +1489,9 @@ export class ComparingStocks extends React.Component {
                     whatif_basis = 0
                 }
                 new_whatif.values[ticker]['basis'] = whatif_basis
-                new_whatif.values[ticker]['basis_risked'] = whatif_basis * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['basis_risked'] = whatif_basis * risk_factors[ticker]
 
-                new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * risk_factors[ticker]
 
             // balancing by basis must account for sunk costs too; current value is not enough
             } else if (balance_target_column === 'basis') {
@@ -1507,12 +1512,12 @@ export class ComparingStocks extends React.Component {
                     whatif_balancedbasis = 0
                 }
                 new_whatif.values[ticker]['basis'] = whatif_balancedbasis
-                new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * risk_factors[ticker]
 
                 value_delta = whatif_balancedbasis - original_basis
                 new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
 
-                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
 
             } else if (balance_target_column === 'only_profits') {
 
@@ -1540,12 +1545,12 @@ export class ComparingStocks extends React.Component {
                     new_whatif.values[ticker]['value_at_risk'] = 'n/a'
                 } else {
                     new_whatif.values[ticker]['basis'] = whatif_basis
-                    new_whatif.values[ticker]['basis_risked'] = whatif_basis * self.state.allRisk[ticker].factor
+                    new_whatif.values[ticker]['basis_risked'] = whatif_basis * risk_factors[ticker]
 
                     value_delta = whatif_basis - original_basis
                     new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
 
-                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
                 }
             }
 
@@ -1593,7 +1598,7 @@ export class ComparingStocks extends React.Component {
             let numerator_product = 1
             ticker_set.forEach(function(ticker, idx) {
                 if (idx !== 0) {
-                    numerator_product *= self.state.allRisk[ticker].factor
+                    numerator_product *= risk_factors[ticker]
                 }
             })
             let numerator = total_balance_value * numerator_product
@@ -1603,7 +1608,7 @@ export class ComparingStocks extends React.Component {
             ticker_set.forEach(function(ticker, ticker_idx) {
                 denominator_terms.forEach(function(term, term_idx) {
                     if (ticker_idx !== term_idx) {
-                        denominator_terms[term_idx] = term * self.state.allRisk[ticker].factor
+                        denominator_terms[term_idx] = term * risk_factors[ticker]
                     }
                 })
             })
@@ -1612,10 +1617,9 @@ export class ComparingStocks extends React.Component {
             // determine the target value for each ticker; each will be different if their risk factors are different
             let targets = Array(ticker_set.length).fill(0)
             targets[0] = numerator / denominator
-            let factor_0 = self.state.allRisk[ticker_set[0]].factor
             ticker_set.forEach(function(ticker, idx) {
                 if (idx !== 0) {
-                    targets[idx] = Math.round(targets[0] * factor_0 / self.state.allRisk[ticker].factor)
+                    targets[idx] = Math.round(targets[0] * risk_factors[ticker_set[0]] / risk_factors[ticker])
                 }
             })
 
@@ -1643,9 +1647,9 @@ export class ComparingStocks extends React.Component {
                         whatif_basis = 0
                     }
                     new_whatif.values[ticker]['basis'] = whatif_basis
-                    new_whatif.values[ticker]['basis_risked'] = whatif_basis * self.state.allRisk[ticker].factor
+                    new_whatif.values[ticker]['basis_risked'] = whatif_basis * risk_factors[ticker]
 
-                    new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * self.state.allRisk[ticker].factor
+                    new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * risk_factors[ticker]
 
                 // for bases, "target" is the target basis for this position
                 } else if (balance_target_column === 'basis_risked') {
@@ -1666,12 +1670,12 @@ export class ComparingStocks extends React.Component {
                         whatif_balancedbasis = 0
                     }
                     new_whatif.values[ticker]['basis'] = whatif_balancedbasis
-                    new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * self.state.allRisk[ticker].factor
+                    new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * risk_factors[ticker]
     
                     value_delta = whatif_balancedbasis - original_basis
                     new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
     
-                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * self.state.allRisk[ticker].factor
+                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
                 }
 
                 if (adjusting_cash) {
@@ -1942,8 +1946,8 @@ export class ComparingStocks extends React.Component {
 
             // miscelaneous columns
             } else if (sort_column === 'risk_factor') {
-                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : 'n/a'
-                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : 'n/a'
+                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : 0.20
+                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : 0.20
 
             // default, do not reorder this pair
             } else {
