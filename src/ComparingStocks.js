@@ -438,10 +438,8 @@ export class ComparingStocks extends React.Component {
             }
 
             // get risk factor
-            let newRiskEntry = {}
             if (indexed_risk_data.hasOwnProperty(ticker)) {
-                newRiskEntry['factor'] = indexed_risk_data[ticker].factor
-                newRisk[ticker] = newRiskEntry
+                newRisk[ticker] = JSON.parse(JSON.stringify(indexed_risk_data[ticker]))
             }
         })
 
@@ -1288,7 +1286,10 @@ export class ComparingStocks extends React.Component {
             if (newAllRisk.hasOwnProperty(ticker)) {
                 newAllRisk[ticker]['factor'] = parseFloat(new_value)
             } else {
-                let newRisk = { factor: parseFloat(new_value) }
+                let newRisk = { 
+                    modified_at: new Date().getTime(),
+                    factor: parseFloat(new_value) 
+                }
                 newAllRisk[ticker] = newRisk
             }
             localStorage.setItem('allRisk', JSON.stringify(newAllRisk))
