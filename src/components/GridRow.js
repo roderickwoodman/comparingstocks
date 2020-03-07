@@ -283,6 +283,10 @@ export class GridRow extends React.Component {
         const current_value = this.props.current_value
         let risk_factor = (this.props.risk_factor !== null) ? this.props.risk_factor : 0.20
         let visible_risk_factor = (this.props.risk_factor !== null) ? this.props.risk_factor : 'n/a'
+        if (this.props.row_name === 'cash') {
+            risk_factor = 0
+            visible_risk_factor = 0
+        }
         let value_at_risk = current_value * risk_factor
         let basis = this.props.basis
         let basis_risked = basis * risk_factor

@@ -469,16 +469,12 @@ export class ComparingStocks extends React.Component {
         // position for cash
         let cash_transactions = allTransactions.filter(transaction => transaction.ticker === 'cash')
         if (cash_transactions.length) {
+
             let newPosition = {}
             newPosition = this.getPositionFromCashTransactions(cash_transactions)
             newPosition['symbol'] = 'cash'
             newPositions['cash'] = newPosition
         }
-
-        // risk for cash
-        let newRiskEntry = {}
-        newRiskEntry['factor'] = 0
-        newRisk['cash'] = newRiskEntry
 
         let init_shown_columns = []
         const stored_shown_columns = JSON.parse(localStorage.getItem("shown_columns"))
@@ -1962,8 +1958,8 @@ export class ComparingStocks extends React.Component {
 
             // miscelaneous columns
             } else if (sort_column === 'risk_factor') {
-                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : 0.20
-                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : 0.20
+                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : (a === 'cash') ? 0 : 0.20
+                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : (b === 'cash') ? 0 : 0.20
 
             } else if (sort_column === 'risk_factor_modified') {
                 value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].modified_at : 'n/a'
