@@ -98,7 +98,7 @@ export class TransactionLog extends React.Component {
 
 TransactionLog.propTypes = {
     all_transactions: PropTypes.array.isRequired,
-    all_risk: PropTypes.array.isRequired,
+    all_risk: PropTypes.object.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,
 }
