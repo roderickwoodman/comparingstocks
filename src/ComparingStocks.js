@@ -40,6 +40,11 @@ const all_columns = [
     //     num_decimals: 2
     // },
     {
+        name: 'quote_date',
+        display_name: 'Price Date',
+        type: 'string'
+    },
+    {
         name: 'current_value',
         display_name: 'Value',
         type: 'currency',
@@ -410,6 +415,7 @@ export class ComparingStocks extends React.Component {
                 newCurrentQuote['change'] = parseFloat((Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2))
                 newCurrentQuote['change_pct'] = parseFloat((Math.round(100 * parseFloat(quoteResult['10. change percent'].slice(0, -1))) / 100).toFixed(2))
                 newCurrentQuote['volume'] = parseInt(quoteResult['06. volume'])
+                newCurrentQuote['quote_date'] = quoteResult['07. latest trading day']
                 newCurrentQuotes[ticker] = newCurrentQuote
             }
 
@@ -1770,7 +1776,7 @@ export class ComparingStocks extends React.Component {
     sortTickers(names_list) {
 
         let sort_column = this.state.sort_column
-        let quote_columns = ['current_price', 'change_pct', 'volume', 'dollar_volume']
+        let quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
         let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
@@ -2225,6 +2231,7 @@ export class ComparingStocks extends React.Component {
                 special_classes={row_data.special_classes}
                 current_price={row_data.current_price}
                 change_pct={row_data.change_pct}
+                quote_date={row_data.quote_date}
                 volume={row_data.volume}
                 basis={row_data.basis}
                 start_date={row_data.start_date}
@@ -2263,6 +2270,7 @@ export class ComparingStocks extends React.Component {
             new_row['special_classes'] = row_data[ticker]['special_classes']
             new_row['current_price'] = self.state.allCurrentQuotes[ticker].current_price
             new_row['change_pct'] = self.state.allCurrentQuotes[ticker].change_pct
+            new_row['quote_date'] = (ticker !== 'cash' && !self.getIndicies().includes(ticker)) ? self.state.allCurrentQuotes[ticker].quote_date : 'n/a'
             new_row['volume'] = self.state.allCurrentQuotes[ticker].volume
             new_row['basis'] = row_data[ticker]['basis']
             new_row['start_date'] = row_data[ticker]['start_date']
@@ -2294,6 +2302,7 @@ export class ComparingStocks extends React.Component {
                 new_row['special_classes'] = aggr_row_data[aggr_ticker]['special_classes']
                 new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
                 new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
+                new_row['quote_date'] = 'n/a'
                 new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
                 new_row['basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['start_date'] = aggr_row_data[aggr_ticker]['start_date']

@@ -373,6 +373,9 @@ export class GridRow extends React.Component {
             case 'current_price':
                 value = current_price
                 break
+            case 'quote_date':
+                value = this.props.quote_date
+                break
             case 'current_value':
                 value = current_value
                 break
@@ -612,6 +615,7 @@ GridRow.propTypes = {
         PropTypes.number,
         PropTypes.string
       ]),
+    quote_date: PropTypes.string,
     volume: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
