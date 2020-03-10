@@ -66,8 +66,6 @@ export class InputForms extends React.Component {
                         <DeleteTag
                             all_tags={this.props.all_tags}
                             on_delete_tag={this.props.on_delete_tag}
-                            create_message={this.props.create_message}
-                            on_new_messages={this.props.on_new_messages}
                         />
                         </React.Fragment>
                     )}

@@ -932,9 +932,10 @@ export class ComparingStocks extends React.Component {
 
             // add status messages
             let newAllStatusMessages = [...prevState.all_status_messages]
-            let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
-            let newLastErrorMessages = (new_message.includes('ERROR')) ? [new_message] : []
-            newAllStatusMessages = [...new_message, ...newAllStatusMessages]
+            let new_messages = []
+            new_messages.push(this.createMessage('Ticker "' + delete_ticker + '" has now been deleted.'))
+            let newLastErrorMessages = new_messages.filter( message_obj => message_obj.content.includes('ERROR'))
+            newAllStatusMessages = [...new_messages, ...newAllStatusMessages]
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1152,11 +1153,12 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modified_at !== delete_transaction_id)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
-            // add status message
+            // add status messages
             let newAllStatusMessages = [...prevState.all_status_messages]
-            let new_message = ['Transaction "' + transaction_to_delete.summary + '" has now been deleted.']
-            let newLastErrorMessages = (new_message.includes('ERROR')) ? [new_message] : []
-            newAllStatusMessages = [...new_message, ...newAllStatusMessages]
+            let new_messages = []
+            new_messages.push(this.createMessage('Transaction "' + transaction_to_delete.summary + '" has now been deleted.'))
+            let newLastErrorMessages = new_messages.filter( message_obj => message_obj.content.includes('ERROR'))
+            newAllStatusMessages = [...new_messages, ...newAllStatusMessages]
 
             // recalculate the position numbers
             let remainingTransactionsForTicker = newAllTransactions.filter(transaction => transaction.ticker === ticker)
@@ -1261,9 +1263,10 @@ export class ComparingStocks extends React.Component {
 
             // add status messages
             let newAllStatusMessages = [...prevState.all_status_messages]
-            let new_message = ['Tag "' + delete_tag + '" has now been deleted.']
-            let newLastErrorMessages = (new_message.includes('ERROR')) ? [new_message] : []
-            newAllStatusMessages = [...new_message, ...newAllStatusMessages]
+            let new_messages = []
+            new_messages.push(this.createMessage('Tag "' + delete_tag + '" has now been deleted.'))
+            let newLastErrorMessages = new_messages.filter( message_obj => message_obj.content.includes('ERROR'))
+            newAllStatusMessages = [...new_messages, ...newAllStatusMessages]
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1336,8 +1339,9 @@ export class ComparingStocks extends React.Component {
         this.setState(prevState => {
             let newAllStatusMessages = [...prevState.all_status_messages]
             newAllStatusMessages = [...new_messages.reverse(), ...newAllStatusMessages]
+            let newLastErrorMessages = new_messages.filter(message_obj => message_obj.content.includes('ERROR')).reverse()
             return { 
-                last_error_messages: new_messages.filter(message_obj => message_obj.content.includes('ERROR')).reverse(),
+                last_error_messages: newLastErrorMessages,
                 all_status_messages: newAllStatusMessages }
         })
     }
