@@ -640,8 +640,14 @@ GridRow.propTypes = {
     show_only_achieved_performance: PropTypes.bool,
     baseline: PropTypes.object,
     style_realized_performance: PropTypes.bool,
-    total_value: PropTypes.number,
-    total_basis: PropTypes.number,
+    total_value: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
+    total_basis: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
     whatif: PropTypes.object,
     whatif_format: PropTypes.string,
     on_change_whatif_format: PropTypes.func,
