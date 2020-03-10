@@ -193,7 +193,7 @@ export class ComparingStocks extends React.Component {
             balance_target_column: '',
             sell_all_of: [],
             remaining_cash: null,
-            last_status_messages: [],
+            last_error_messages: [],
             all_status_messages: [],
             baseline: {
                 name: 'zero_pct_gain',
@@ -933,7 +933,7 @@ export class ComparingStocks extends React.Component {
             // add status messages
             let newAllStatusMessages = [...prevState.all_status_messages]
             let new_message = ['Ticker ' + delete_ticker + ' has now been deleted.']
-            let newLastStatusMessages = new_message
+            let newLastErrorMessages = (new_message.includes('ERROR')) ? [new_message] : []
             newAllStatusMessages = [...new_message, ...newAllStatusMessages]
 
             // recalculate the aggregate numbers
@@ -954,7 +954,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 all_status_messages: newAllStatusMessages,
-                last_status_messages: newLastStatusMessages,
+                last_error_messages: newLastErrorMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1155,7 +1155,7 @@ export class ComparingStocks extends React.Component {
             // add status message
             let newAllStatusMessages = [...prevState.all_status_messages]
             let new_message = ['Transaction "' + transaction_to_delete.summary + '" has now been deleted.']
-            let newLastStatusMessages = new_message
+            let newLastErrorMessages = (new_message.includes('ERROR')) ? [new_message] : []
             newAllStatusMessages = [...new_message, ...newAllStatusMessages]
 
             // recalculate the position numbers
@@ -1186,7 +1186,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 all_status_messages: newAllStatusMessages,
-                last_status_messages: newLastStatusMessages,
+                last_error_messages: newLastErrorMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1262,7 +1262,7 @@ export class ComparingStocks extends React.Component {
             // add status messages
             let newAllStatusMessages = [...prevState.all_status_messages]
             let new_message = ['Tag "' + delete_tag + '" has now been deleted.']
-            let newLastStatusMessages = new_message
+            let newLastErrorMessages = (new_message.includes('ERROR')) ? [new_message] : []
             newAllStatusMessages = [...new_message, ...newAllStatusMessages]
 
             // recalculate the aggregate numbers
@@ -1281,7 +1281,7 @@ export class ComparingStocks extends React.Component {
             return { 
                 allTags: newAllTags, 
                 all_status_messages: newAllStatusMessages,
-                last_status_messages: newLastStatusMessages,
+                last_error_messages: newLastErrorMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1337,7 +1337,7 @@ export class ComparingStocks extends React.Component {
             let newAllStatusMessages = [...prevState.all_status_messages]
             newAllStatusMessages = [...new_messages.reverse(), ...newAllStatusMessages]
             return { 
-                last_status_messages: new_messages.reverse(),
+                last_error_messages: new_messages.filter(message_obj => message_obj.content.includes('ERROR')).reverse(),
                 all_status_messages: newAllStatusMessages }
         })
     }
@@ -2369,7 +2369,7 @@ export class ComparingStocks extends React.Component {
                             />
                         </div>
                         <div id="last-status-messages">
-                            {this.state.last_status_messages.filter( status_message => status_message.content.includes('ERROR')).map( (status_message,i) => (
+                            {this.state.last_error_messages.map( (status_message,i) => (
                                 <div key={i + status_message.modified_at}>{status_message.content}</div>
                             ))}
                         </div>
