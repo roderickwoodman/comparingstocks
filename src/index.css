@@ -112,7 +112,6 @@ code {
   color: red;
   min-height: 2em;
   max-height: 2em;
-  overflow-y: scroll;
 }
 
 #position-listing,
