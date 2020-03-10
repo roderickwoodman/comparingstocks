@@ -368,8 +368,8 @@ export class ComparingStocks extends React.Component {
 
         let all_stocks = []
         allTransactions.forEach(function(transaction) {
-            if (transaction.symbol !== 'cash' && !all_stocks.includes(transaction.symbol)) {
-                all_stocks.push(transaction.symbol)
+            if (!all_stocks.includes(transaction.ticker)) {
+                all_stocks.push(transaction.ticker)
             }
         })
         Object.keys(indexed_current_quote_data).forEach(function(ticker) {
@@ -383,10 +383,11 @@ export class ComparingStocks extends React.Component {
             }
         })
         Object.keys(indexed_risk_data).forEach(function(ticker) {
-            if (!all_stocks.includes(ticker) && ticker !== 'cash') {
+            if (!all_stocks.includes(ticker)) {
                 all_stocks.push(ticker)
             }
         })
+        all_stocks = all_stocks.filter(ticker => ticker !== 'cash')
 
         let newPositions = {}
         let newCurrentQuotes = {}
@@ -1052,13 +1053,20 @@ export class ComparingStocks extends React.Component {
         Object.keys(imported_risk).forEach( ticker => imported_tickers.push(ticker))
 
         let all_stocks_of_interest = Array.from(new Set(imported_tickers))
-        let self = this
         this.setState(prevState => {
 
             // update the "untagged" tag so that all added tickers belong to a tag
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
+            let already_added = []
+            Object.keys(newAllTags).forEach(function(tag) {
+                newAllTags[tag].forEach(function(ticker) {
+                    if (!already_added.includes(ticker)) {
+                        already_added.push(ticker)
+                    }
+                })
+            })
             all_stocks_of_interest.forEach( function(ticker) {
-                if (!(self.getAdded().includes(ticker))){
+                if (!already_added.includes(ticker) && ticker !== 'cash') {
                     newAllTags['untagged'].push(ticker)
                 }
             })
