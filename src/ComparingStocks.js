@@ -2337,6 +2337,7 @@ export class ComparingStocks extends React.Component {
                                 all_stocks={this.state.allStocks}
                                 all_tags={this.state.allTags}
                                 all_current_quotes={this.state.allCurrentQuotes}
+                                all_monthly_quotes={this.state.allMonthlyQuotes}
                                 all_positions={this.state.allPositions}
                                 all_transactions={this.state.allTransactions}
                                 all_risk={this.state.allRisk}

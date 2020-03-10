@@ -5,6 +5,7 @@ import { AddTag } from './AddTag'
 import { AddTransaction } from './AddTransaction'
 import { TransactionLog } from './TransactionLog'
 import { DeleteTag } from './DeleteTag'
+import { MyPerformance } from './MyPerformance'
 import { StatusMessages } from './StatusMessages'
 import { WhatIf } from './WhatIf'
 
@@ -14,7 +15,7 @@ export class InputForms extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            which_inputs: "tickers" // tickers | tags | transactions | logs | what-ifs
+            which_inputs: "tickers" // tickers | tags | transactions | my-performance | what-ifs | logs
         }
         this.onWhichInputs = this.onWhichInputs.bind(this)
     }
@@ -38,6 +39,7 @@ export class InputForms extends React.Component {
                     <span className={"input-form-selector" + (this.state.which_inputs==="tickers" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tickers')}>Tickers</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="tags" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tags')}>Tags</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="my-performance" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('my-performance')}>Performance</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="what-ifs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('what-ifs')}>What If?</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="logs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('logs')}>Logs</span>
                 </section>
@@ -108,6 +110,15 @@ export class InputForms extends React.Component {
                         />
                         </React.Fragment>
                     )}
+                    {this.state.which_inputs === 'my-performance' && (
+                        <React.Fragment>
+                        <MyPerformance
+                            all_transactions={this.props.all_transactions}
+                            all_positions={this.props.all_positions}
+                            all_monthly_quotes={this.props.all_monthly_quotes}
+                        />
+                        </React.Fragment>
+                    )}
                     {this.state.which_inputs === 'logs' && (
                         <React.Fragment>
                         <StatusMessages
@@ -125,6 +136,7 @@ InputForms.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
     all_current_quotes: PropTypes.object,
+    all_monthly_quotes: PropTypes.object,
     all_positions: PropTypes.object,
     all_transactions: PropTypes.array,
     all_risk: PropTypes.object,
