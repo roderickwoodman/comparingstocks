@@ -191,6 +191,7 @@ export class ComparingStocks extends React.Component {
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
             balance_target_column: '',
+            sell_all_of: [],
             remaining_cash: null,
             last_status_messages: [],
             all_status_messages: [],
@@ -755,7 +756,7 @@ export class ComparingStocks extends React.Component {
                 show_cash)))
 
         if (name === 'show_cash') {
-            this.onWhatifGo(this.state.balance_target_set, this.state.balance_target_column, new_value, this.state.remaining_cash)
+            this.onWhatifGo(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column, new_value, this.state.remaining_cash)
         }
 
         this.setState({ 
