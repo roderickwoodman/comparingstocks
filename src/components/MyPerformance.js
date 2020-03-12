@@ -32,12 +32,15 @@ export class MyPerformance extends React.Component {
         let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
 
         let quarter_data = []
+        let year = first_year
         for (let q = 0; q < quarters_of_performance; q++) {
             let new_quarter = {}
-            let year = first_year + Math.floor((q + 3 - first_quarter) / 4)
-            new_quarter['year'] = year
             let quarter = (q + first_quarter - 1) % 4 + 1
             new_quarter['quarter'] = quarter
+            if (quarter === 1 && q !== 0) {
+                year += 1
+            }
+            new_quarter['year'] = year
 
             let end_shares = {}, end_cash = 0
             if (q !== 0) {
