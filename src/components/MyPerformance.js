@@ -27,15 +27,28 @@ export class MyPerformance extends React.Component {
         let first_quarter = Math.floor((parseInt(sorted_transactions[0].date.split('-')[1])-1) / 3 + 1)
         let last_year = parseInt(sorted_transactions[sorted_transactions.length-1].date.split('-')[0])
         let last_quarter = Math.floor((parseInt(sorted_transactions[sorted_transactions.length-1].date.split('-')[1])-1) / 3 + 1)
-
-        let quarters_difference = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
+        let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
 
         let quarter_data = []
-        for (let q = first_quarter; q <= first_quarter + quarters_difference; q++) {
+        for (let delta_q = 0; delta_q < quarters_of_performance; delta_q++) {
             let new_quarter = {}
-            new_quarter['year'] = first_year + Math.round((q+1) / 4)
-            new_quarter['quarter'] = q % 4 + 1
+            new_quarter['year'] = first_year + Math.floor((delta_q + 3 - first_quarter) / 4)
+            new_quarter['quarter'] = (delta_q + first_quarter - 1) % 4 + 1
+            new_quarter['transactions'] = []
             quarter_data.push(new_quarter)
+        }
+
+        for (let transaction of sorted_transactions) {
+            let this_year = parseInt(transaction.date.split('-')[0])
+            let this_quarter = Math.floor((parseInt(transaction.date.split('-')[1])-1) / 3 + 1)
+            for (let [idx,d] of quarter_data.entries()) {
+                // console.log(idx, d)
+                if (d.year === this_year && d.quarter === this_quarter) {
+                    quarter_data[idx].transactions.push(transaction)
+                }
+            }
+            // console.log(transaction)
+            // console.log(this_year, this_quarter)
         }
 
         this.setState({ quarter_data: quarter_data })
