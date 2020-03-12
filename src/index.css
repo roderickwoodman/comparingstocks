@@ -175,7 +175,8 @@ button,
   font-size: 0.7em;
 }
 
-table {
+table#position-listing,
+table#aggr-position-listing {
   margin-bottom: 30px;
 }
 
@@ -195,9 +196,20 @@ th.whatif {
   border: 1px solid inherit;
 }
 
-table {
+table#position-listing,
+table#aggr-position-listing {
   table-layout: fixed;
   width: 100%;
+}
+
+#my-performance-wrapper {
+  overflow: auto;
+  height: 100%;
+}
+
+table#my-performance th,
+table#my-performance td {
+  text-align: center;
 }
 
 #position-listing tbody tr:nth-last-child(2) td.whatif {
@@ -277,6 +289,10 @@ table {
   cursor: pointer;
   color: red;
   text-decoration: line-through;
+}
+
+#my-performance td{
+
 }
 
 .strikethrough {

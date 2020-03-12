@@ -9,6 +9,8 @@ export class MyPerformance extends React.Component {
         this.state = {
             quarter_data: []
         }
+        this.numberWithCommas = this.numberWithCommas.bind(this)
+        this.formatCurrency = this.formatCurrency.bind(this)
     }
 
     componentDidMount() {
@@ -78,20 +80,46 @@ export class MyPerformance extends React.Component {
             new_quarter['quarter_end_cash'] = end_cash
 
             quarter_data.push(new_quarter)
-
         }
 
         this.setState({ quarter_data: quarter_data })
     }
 
+    numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    formatCurrency(dollars) {
+        let prefix, retval = dollars
+        if (!isNaN(dollars)) {
+            let value = Math.round(dollars)
+            retval = this.numberWithCommas(Math.abs(value))
+            prefix = (value < 0 ) ? '-$' : '$'
+            retval = prefix + retval
+        }
+        return retval
+    }
+
     render() {
         return (
             <div id="my-performance-wrapper">
-                FIXME: 
-                { Object.entries(this.props.all_positions).map( position =>
-                    <span>{position[1].symbol.toLowerCase()}</span>
+                <table id="my-performance">
+                    <thead>
+                        <tr>
+                        { this.state.quarter_data.map( quarter => (
+                            <th>{quarter.year}Q{quarter.quarter}</th>
+                        ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        { this.state.quarter_data.map( quarter => (
+                            <td>{this.formatCurrency(quarter.quarter_end_cash)}</td>
+                        ))}
+                        </tr>
+                    </tbody>
+                </table>
 
-                )}
             </div>
         )
     }
