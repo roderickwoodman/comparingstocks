@@ -30,25 +30,55 @@ export class MyPerformance extends React.Component {
         let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
 
         let quarter_data = []
-        for (let delta_q = 0; delta_q < quarters_of_performance; delta_q++) {
+        for (let q = 0; q < quarters_of_performance; q++) {
             let new_quarter = {}
-            new_quarter['year'] = first_year + Math.floor((delta_q + 3 - first_quarter) / 4)
-            new_quarter['quarter'] = (delta_q + first_quarter - 1) % 4 + 1
-            new_quarter['transactions'] = []
-            quarter_data.push(new_quarter)
-        }
+            let year = first_year + Math.floor((q + 3 - first_quarter) / 4)
+            new_quarter['year'] = year
+            let quarter = (q + first_quarter - 1) % 4 + 1
+            new_quarter['quarter'] = quarter
 
-        for (let transaction of sorted_transactions) {
-            let this_year = parseInt(transaction.date.split('-')[0])
-            let this_quarter = Math.floor((parseInt(transaction.date.split('-')[1])-1) / 3 + 1)
-            for (let [idx,d] of quarter_data.entries()) {
-                // console.log(idx, d)
-                if (d.year === this_year && d.quarter === this_quarter) {
-                    quarter_data[idx].transactions.push(transaction)
+            let end_shares = {}, end_cash = 0
+            if (q !== 0) {
+                end_shares = Object.assign({}, quarter_data[q-1].quarter_end_shares)
+                end_cash = quarter_data[q-1].quarter_end_cash
+            }
+
+            let quarter_transactions = sorted_transactions.filter(function(transaction) {
+                let transaction_year = parseInt(transaction.date.split('-')[0])
+                let transaction_quarter = Math.floor((parseInt(transaction.date.split('-')[1])-1) / 3 + 1)
+                if (transaction_year === year && transaction_quarter === quarter) {
+                    return 1
+                } else {
+                    return 0
+                }
+            })
+            new_quarter['transactions'] = quarter_transactions
+
+            for (let transaction of quarter_transactions) {
+                let action, ticker, shares, total
+                [action, ticker, shares, total] = [transaction.action, transaction.ticker, transaction.shares, transaction.total]
+
+                // cash transactions
+                if (ticker === 'cash') {
+                    let cash_delta = (action === 'add') ? total : -1 * total
+                    end_cash += cash_delta
+                // non-cash transactions
+                } else {
+                    let share_delta = (action === 'buy') ? shares : -1 * shares
+                    let cash_delta = (action === 'buy') ? -1 * total : total
+                    if (end_shares.hasOwnProperty(ticker)) {
+                        end_shares[ticker] += share_delta
+                    } else {
+                        end_shares[ticker] = share_delta
+                    }
+                    end_cash += cash_delta
                 }
             }
-            // console.log(transaction)
-            // console.log(this_year, this_quarter)
+            new_quarter['quarter_end_shares'] = end_shares
+            new_quarter['quarter_end_cash'] = end_cash
+
+            quarter_data.push(new_quarter)
+
         }
 
         this.setState({ quarter_data: quarter_data })
