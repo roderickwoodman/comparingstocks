@@ -986,6 +986,7 @@ export class ComparingStocks extends React.Component {
                 date: date,
                 ticker: ticker,
                 action: action,
+                shares: num_shares,
                 total: total,
                 summary: new_transaction_summary
             }
@@ -1101,6 +1102,7 @@ export class ComparingStocks extends React.Component {
                 date: date,
                 ticker: 'cash',
                 action: action,
+                shares: total,
                 total: total,
                 summary: new_cash_transaction_summary
             }
