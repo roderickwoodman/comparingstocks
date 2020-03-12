@@ -985,6 +985,8 @@ export class ComparingStocks extends React.Component {
                 modified_at: new Date().getTime(),
                 date: date,
                 ticker: ticker,
+                action: action,
+                total: total,
                 summary: new_transaction_summary
             }
             newAllTransactions.push(new_transaction)
@@ -1098,6 +1100,8 @@ export class ComparingStocks extends React.Component {
                 modified_at: new Date().getTime(),
                 date: date,
                 ticker: 'cash',
+                action: action,
+                total: total,
                 summary: new_cash_transaction_summary
             }
             newAllTransactions.push(new_cash_transaction)
