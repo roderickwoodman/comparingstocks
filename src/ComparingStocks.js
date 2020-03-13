@@ -426,7 +426,15 @@ export class ComparingStocks extends React.Component {
                 let newMonthlyQuote = {}
                 let quoteTimeSeries = indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series']
                 newMonthlyQuote['symbol'] = ticker
-                newMonthlyQuote['monthly_prices'] = Object.entries(quoteTimeSeries).map(price => parseFloat(price[1]['5. adjusted close']))
+
+                let monthly_prices = []
+                let monthly_dates = []
+                Object.entries(quoteTimeSeries).forEach(function(price) {
+                    monthly_prices.push(parseFloat(price[1]['5. adjusted close']))
+                    monthly_dates.push(price[0])
+                })
+                newMonthlyQuote['monthly_prices'] = monthly_prices
+                newMonthlyQuote['monthly_dates'] = monthly_dates
                 newMonthlyQuotes[ticker] = newMonthlyQuote
 
                 // calculate performance
