@@ -51,7 +51,7 @@ export class MyPerformance extends React.Component {
                     year += 1
                 }
                 new_quarter['year'] = year
-                let end_shares = {}, end_cash = 0
+                let end_shares = {}, end_cash = 0, transfers_in = 0
                 if (q !== 0) {
                     end_shares = Object.assign({}, quarter_data[q-1].end_shares)
                     end_cash = quarter_data[q-1].end_cash
@@ -68,6 +68,7 @@ export class MyPerformance extends React.Component {
                     [action, ticker, shares, total] = [transaction.action, transaction.ticker, transaction.shares, transaction.total]
                     if (ticker === 'cash') {
                         let cash_delta = (action === 'add') ? total : -1 * total
+                        transfers_in += cash_delta
                         end_cash += cash_delta
                     } else {
                         let share_delta = (action === 'buy') ? shares : -1 * shares
@@ -82,6 +83,7 @@ export class MyPerformance extends React.Component {
                 }
                 new_quarter['end_shares'] = end_shares
                 new_quarter['end_cash'] = end_cash
+                new_quarter['transfers_in'] = transfers_in
 
                 // determine quarter-end ticker value
                 let self = this
@@ -148,6 +150,7 @@ export class MyPerformance extends React.Component {
                             <tr><th>&nbsp;</th></tr>
                             <tr><th>stocks:</th></tr>
                             <tr><th>cash:</th></tr>
+                            <tr><th>transfers in:</th></tr>
                             <tr><th>total:</th></tr>
                         </tbody>
                     </table>
@@ -170,6 +173,11 @@ export class MyPerformance extends React.Component {
                             <tr>
                             { this.state.quarter_data.map( qdata => ( // cash value
                                 <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)}</td>
+                            ))}
+                            </tr>
+                            <tr>
+                            { this.state.quarter_data.map( qdata => ( // transfers in
+                                <td key={'transfersin-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.transfers_in)}</td>
                             ))}
                             </tr>
                             <tr>

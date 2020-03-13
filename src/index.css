@@ -208,7 +208,8 @@ table#aggr-position-listing {
 }
 
 #my-performance-rowlabels {
-  padding: 0 10px 0 20px;
+  padding: 0 5px 0 15px;
+  min-width: 125px;
 }
 
 #my-performance {
