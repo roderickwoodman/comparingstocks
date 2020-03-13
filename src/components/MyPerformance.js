@@ -16,6 +16,7 @@ export class MyPerformance extends React.Component {
         this.getYear = this.getYear.bind(this)
         this.getQuarter = this.getQuarter.bind(this)
         this.getMonth = this.getMonth.bind(this)
+        this.styleCell = this.styleCell.bind(this)
     }
 
     componentDidMount() {
@@ -157,6 +158,16 @@ export class MyPerformance extends React.Component {
         return monthly_prices[quarter_idx]
     }
 
+    styleCell(cell_value) {
+        let classes = 'performance-cell'
+        if (cell_value >= 0) {
+            classes += ' text-green'
+        } else if (cell_value < 0) {
+            classes += ' text-red'
+        }
+        return classes
+    }
+
     render() {
         return (
             <div id="my-performance-wrapper">
@@ -205,7 +216,7 @@ export class MyPerformance extends React.Component {
                             </tr>
                             <tr>
                             { this.state.quarter_data.map( qdata => ( // performance
-                                <td key={'performance'+qdata.year+qdata.quarter}>{this.formatPercentage(qdata.qoq_change_pct)}</td>
+                                <td key={'performance'+qdata.year+qdata.quarter} className={ this.styleCell(qdata.qoq_change_pct) }>{this.formatPercentage(qdata.qoq_change_pct)}</td>
                             ))}
                             </tr>
                         </tbody>
