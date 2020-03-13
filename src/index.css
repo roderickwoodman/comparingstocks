@@ -203,12 +203,24 @@ table#aggr-position-listing {
 }
 
 #my-performance-wrapper {
-  overflow: auto;
+  display: flex;
   height: 100%;
 }
 
-table#my-performance th,
-table#my-performance td {
+#my-performance-rowlabels {
+  padding: 0 10px 0 20px;
+}
+
+#my-performance {
+  overflow: auto;
+}
+
+#my-performance-rowlabels table th {
+  text-align: right;
+}
+
+#my-performance table th,
+#my-performance table td {
   text-align: center;
 }
 

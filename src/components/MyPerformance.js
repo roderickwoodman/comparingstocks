@@ -141,32 +141,45 @@ export class MyPerformance extends React.Component {
     render() {
         return (
             <div id="my-performance-wrapper">
-                <table id="my-performance">
-                    <thead>
-                        <tr>
-                        { this.state.quarter_data.map( qdata => ( // name
-                            <th key={'name-'+qdata.year+qdata.quarter}>{qdata.year}Q{qdata.quarter}</th>
-                        ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                        { this.state.quarter_data.map( qdata => ( // ticker value
-                            <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)}</td>
-                        ))}
-                        </tr>
-                        <tr>
-                        { this.state.quarter_data.map( qdata => ( // cash value
-                            <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)}</td>
-                        ))}
-                        </tr>
-                        <tr>
-                        { this.state.quarter_data.map( qdata => ( // total value
-                            <th key={'totalvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_totalvalue)}</th>
-                        ))}
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="my-performance-rowlabels">
+                    <table>
+                        <thead></thead>
+                        <tbody>
+                            <tr><th>&nbsp;</th></tr>
+                            <tr><th>stocks:</th></tr>
+                            <tr><th>cash:</th></tr>
+                            <tr><th>total:</th></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="my-performance">
+                    <table>
+                        <thead>
+                            <tr>
+                            { this.state.quarter_data.map( qdata => ( // name
+                                <th key={'name-'+qdata.year+qdata.quarter}>{qdata.year}Q{qdata.quarter}</th>
+                            ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            { this.state.quarter_data.map( qdata => ( // ticker value
+                                <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)}</td>
+                            ))}
+                            </tr>
+                            <tr>
+                            { this.state.quarter_data.map( qdata => ( // cash value
+                                <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)}</td>
+                            ))}
+                            </tr>
+                            <tr>
+                            { this.state.quarter_data.map( qdata => ( // total value
+                                <th key={'totalvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_totalvalue)}</th>
+                            ))}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
         )
