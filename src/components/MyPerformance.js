@@ -11,6 +11,7 @@ export class MyPerformance extends React.Component {
         }
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.formatCurrency = this.formatCurrency.bind(this)
+        this.formatPercentage = this.formatPercentage.bind(this)
         this.getMonthEndQuote = this.getMonthEndQuote.bind(this)
         this.getYear = this.getYear.bind(this)
         this.getQuarter = this.getQuarter.bind(this)
@@ -94,7 +95,15 @@ export class MyPerformance extends React.Component {
                 new_quarter['end_tickervalue'] = end_tickervalue
 
                 // determine quarter-end total value
-                new_quarter['end_totalvalue'] = end_tickervalue + end_cash
+                let end_totalvalue = end_tickervalue + end_cash
+                new_quarter['end_totalvalue'] = end_totalvalue
+
+                // determine quarter-over-quarter performance
+                let performance = 'n/a'
+                if (q !== 0 && !isNaN(end_totalvalue)) {
+                    performance = (quarter_data[q-1].end_totalvalue - end_totalvalue) / end_totalvalue
+                }
+                new_quarter['qoq_change_pct'] = performance
 
                 // store the data object
                 quarter_data.push(new_quarter)
@@ -133,6 +142,14 @@ export class MyPerformance extends React.Component {
         return retval
     }
 
+    formatPercentage(number) {
+        let retval = '-'
+        if (!isNaN(number)) {
+            retval = (Math.round(number * 100 * 10) / 10).toFixed(1) + '%'
+        }
+        return retval
+    }
+
     getMonthEndQuote(ticker, year, month) {
         let monthly_dates = this.props.all_monthly_quotes[ticker].monthly_dates
         let monthly_prices = this.props.all_monthly_quotes[ticker].monthly_prices
@@ -152,6 +169,7 @@ export class MyPerformance extends React.Component {
                             <tr><th>cash:</th></tr>
                             <tr><th>transfers in:</th></tr>
                             <tr><th>total:</th></tr>
+                            <tr><th>QOQ perf:</th></tr>
                         </tbody>
                     </table>
                 </div>
@@ -183,6 +201,11 @@ export class MyPerformance extends React.Component {
                             <tr>
                             { this.state.quarter_data.map( qdata => ( // total value
                                 <th key={'totalvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_totalvalue)}</th>
+                            ))}
+                            </tr>
+                            <tr>
+                            { this.state.quarter_data.map( qdata => ( // performance
+                                <td key={'performance'+qdata.year+qdata.quarter}>{this.formatPercentage(qdata.qoq_change_pct)}</td>
                             ))}
                             </tr>
                         </tbody>
