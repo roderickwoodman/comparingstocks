@@ -603,9 +603,9 @@ export class ComparingStocks extends React.Component {
         cash_transactions.forEach(function(cash_transaction) {
             [, action, value] = cash_transaction.summary.split(' ')
             let cash_amount = parseFloat(value.substr(1))
-            if (action === 'add' || action === 'dividend') {
+            if (action === 'transferIN' || action === 'dividend') {
                 total += cash_amount
-            } else if (action === 'remove' || action === 'fee') {
+            } else if (action === 'transferOUT' || action === 'fee') {
                 total -= cash_amount
             }
         })
