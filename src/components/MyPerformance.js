@@ -11,12 +11,13 @@ export class MyPerformance extends React.Component {
         }
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.formatCurrency = this.formatCurrency.bind(this)
-        this.formatPercentage = this.formatPercentage.bind(this)
+        this.getDisplayedPerformance = this.getDisplayedPerformance.bind(this)
         this.getMonthEndQuote = this.getMonthEndQuote.bind(this)
         this.getYear = this.getYear.bind(this)
         this.getQuarter = this.getQuarter.bind(this)
         this.getMonth = this.getMonth.bind(this)
         this.styleCell = this.styleCell.bind(this)
+        this.formatPerformance = this.formatPerformance.bind(this)
     }
 
     componentDidMount() {
@@ -94,10 +95,14 @@ export class MyPerformance extends React.Component {
                     end_tickervalue += position[1] * self.getMonthEndQuote(position[0], target_year, quarter * 3)
                 })
                 new_quarter['end_tickervalue'] = end_tickervalue
-
+                
                 // determine quarter-end total value
                 let end_totalvalue = end_tickervalue + end_cash
                 new_quarter['end_totalvalue'] = end_totalvalue
+
+                // determine quarter-end baseline value
+                let end_baselinevalue = self.getMonthEndQuote('S&P500', target_year, quarter * 3)
+                new_quarter['end_baselinevalue'] = end_baselinevalue
 
                 // determine quarter-over-quarter performance
                 let performance = 'n/a'
@@ -105,6 +110,13 @@ export class MyPerformance extends React.Component {
                     performance = (quarter_data[q-1].end_totalvalue - end_totalvalue) / end_totalvalue
                 }
                 new_quarter['qoq_change_pct'] = performance
+
+                // determine quarter-over-quarter baseline performance
+                performance = 'n/a'
+                if (q !== 0 && !isNaN(end_baselinevalue)) {
+                    performance = (quarter_data[q-1].end_baselinevalue - end_baselinevalue) / end_baselinevalue
+                }
+                new_quarter['qoq_baseline_change_pct'] = performance
 
                 // store the data object
                 quarter_data.push(new_quarter)
@@ -143,10 +155,24 @@ export class MyPerformance extends React.Component {
         return retval
     }
 
-    formatPercentage(number) {
-        let retval = '-'
-        if (!isNaN(number)) {
-            retval = (Math.round(number * 100 * 10) / 10).toFixed(1) + '%'
+    getDisplayedPerformance(quarter_data) {
+        let retval = {}
+        retval['display_value'] = null
+        retval['baseline_value'] = null
+        let my_perf = quarter_data.qoq_change_pct
+        if (!isNaN(my_perf)) {
+            if (this.props.baseline === 'sp500_pct_gain') {
+                let baseline_perf = quarter_data.qoq_baseline_change_pct
+                if (isNaN(baseline_perf)) {
+                    return retval
+                } else {
+                    retval['display_value'] = my_perf - baseline_perf
+                    retval['baseline_value'] = baseline_perf
+                }
+            } else {
+                retval['display_value'] = my_perf
+                retval['baseline_value'] = 0
+            }
         }
         return retval
     }
@@ -158,17 +184,29 @@ export class MyPerformance extends React.Component {
         return monthly_prices[quarter_idx]
     }
 
-    styleCell(cell_value) {
+    styleCell(performance_obj) {
+        let displayed, baseline
+        [displayed, baseline] = [performance_obj.display_value, performance_obj.baseline_value]
         let classes = 'performance-cell'
-        if (cell_value >= 0) {
-            classes += ' text-green'
-        } else if (cell_value < 0) {
+        if ( displayed < 0 || (displayed < baseline && this.props.baseline === 'sp500_pct_gain') ) {
             classes += ' text-red'
+        } else if ( Math.round(displayed) !== 0 && displayed >= baseline && this.props.baseline !== 'sp500_pct_gain') {
+            classes += ' text-green'
         }
         return classes
     }
 
+    formatPerformance(performance_obj) {
+        let performance = performance_obj.display_value
+        if (isNaN(performance)) {
+            return '-'
+        } else {
+            return (Math.round(performance * 100 * 10) / 10).toFixed(1) + '%'
+        }
+    }
+
     render() {
+        let displayed_performance = this.state.quarter_data.map( qdata => this.getDisplayedPerformance(qdata) )
         return (
             <div id="my-performance-wrapper">
                 <div id="my-performance-rowlabels">
@@ -215,8 +253,8 @@ export class MyPerformance extends React.Component {
                             ))}
                             </tr>
                             <tr>
-                            { this.state.quarter_data.map( qdata => ( // performance
-                                <td key={'performance'+qdata.year+qdata.quarter} className={ this.styleCell(qdata.qoq_change_pct) }>{this.formatPercentage(qdata.qoq_change_pct)}</td>
+                            { displayed_performance.map( performance => ( // performance
+                                <td /*key={'performance'+qdata.year+qdata.quarter}*/ className={ this.styleCell(performance) }>{ this.formatPerformance(performance) }</td>
                             ))}
                             </tr>
                         </tbody>
@@ -232,4 +270,5 @@ MyPerformance.propTypes = {
     all_transactions: PropTypes.array.isRequired,
     all_positions: PropTypes.object.isRequired,
     all_monthly_quotes: PropTypes.object.isRequired,
+    baseline: PropTypes.string.isRequired,
 }

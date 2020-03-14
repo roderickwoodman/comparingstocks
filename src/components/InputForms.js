@@ -114,6 +114,7 @@ export class InputForms extends React.Component {
                             all_transactions={this.props.all_transactions}
                             all_positions={this.props.all_positions}
                             all_monthly_quotes={this.props.all_monthly_quotes}
+                            baseline={this.props.baseline}
                         />
                         </React.Fragment>
                     )}
@@ -141,6 +142,7 @@ InputForms.propTypes = {
     show_tagged: PropTypes.bool,
     show_untagged: PropTypes.bool,
     show_cash: PropTypes.bool,
+    baseline: PropTypes.string,
     get_balanceable_value: PropTypes.func,
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,

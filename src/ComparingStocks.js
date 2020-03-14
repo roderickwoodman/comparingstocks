@@ -2372,6 +2372,7 @@ export class ComparingStocks extends React.Component {
                                 show_tagged={this.state.show_tagged}
                                 show_untagged={this.state.show_untagged}
                                 show_cash={this.state.show_cash}
+                                baseline={this.state.baseline.name}
                                 get_balanceable_value={this.getBalanceableValue}
                                 on_new_tickers={this.onNewTickers}
                                 on_new_tags={this.onNewTags}
