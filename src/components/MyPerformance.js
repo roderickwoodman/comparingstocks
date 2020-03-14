@@ -159,6 +159,7 @@ export class MyPerformance extends React.Component {
         let retval = {}
         retval['display_value'] = null
         retval['baseline_value'] = null
+        retval['index_value'] = quarter_data.qoq_baseline_change_pct
         let my_perf = quarter_data.qoq_change_pct
         if (!isNaN(my_perf)) {
             if (this.props.baseline === 'sp500_pct_gain') {
@@ -196,8 +197,7 @@ export class MyPerformance extends React.Component {
         return classes
     }
 
-    formatPerformance(performance_obj) {
-        let performance = performance_obj.display_value
+    formatPerformance(performance) {
         if (isNaN(performance)) {
             return '-'
         } else {
@@ -218,7 +218,8 @@ export class MyPerformance extends React.Component {
                             <tr><th>cash:</th></tr>
                             <tr><th>transfers in:</th></tr>
                             <tr><th>total:</th></tr>
-                            <tr><th>QOQ perf:</th></tr>
+                            <tr><th>Q-o-Q perf:</th></tr>
+                            <tr><th>S&amp;P500 perf:</th></tr>
                         </tbody>
                     </table>
                 </div>
@@ -253,8 +254,13 @@ export class MyPerformance extends React.Component {
                             ))}
                             </tr>
                             <tr>
-                            { displayed_performance.map( performance => ( // performance
-                                <td /*key={'performance'+qdata.year+qdata.quarter}*/ className={ this.styleCell(performance) }>{ this.formatPerformance(performance) }</td>
+                            { displayed_performance.map( performance => ( // my performance
+                                <td /*key={'performance'+qdata.year+qdata.quarter}*/ className={ this.styleCell(performance) }>{ this.formatPerformance(performance.display_value) }</td>
+                            ))}
+                            </tr>
+                            <tr>
+                            { displayed_performance.map( performance => ( // index performance
+                                <td /*key={'indexperf-'+qdata.year+qdata.quarter}*/>{ this.formatPerformance(performance.index_value) }</td>
                             ))}
                             </tr>
                         </tbody>

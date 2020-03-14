@@ -54,7 +54,7 @@ code {
 
 #input-forms {
   display: inline-block;
-  height: 200px;
+  height: 220px;
   width: 825px;
   margin-bottom: 15px;
   padding: 10px 0 0 0;
@@ -76,7 +76,6 @@ code {
 
 #input-form-forms {
   background-color: #f6f0e8;
-  height: 180px;
   padding-top: 5px;
 }
 
@@ -209,7 +208,7 @@ table#aggr-position-listing {
 
 #my-performance-rowlabels {
   padding: 0 5px 0 15px;
-  min-width: 125px;
+  min-width: 135px;
 }
 
 #my-performance {
