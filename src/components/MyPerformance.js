@@ -191,12 +191,12 @@ export class MyPerformance extends React.Component {
     }
 
     styleCell(performance_obj) {
-        let displayed, baseline
-        [displayed, baseline] = [performance_obj.display_value, performance_obj.baseline_value]
+        let displayed, baseline, index
+        [displayed, baseline, index] = [performance_obj.display_value, performance_obj.baseline_value, performance_obj.index_value]
         let classes = 'performance-cell'
-        if ( displayed < 0 || (displayed < baseline && this.props.baseline === 'sp500_pct_gain') ) {
+        if ( displayed < baseline || displayed < 0 ) {
             classes += ' text-red'
-        } else if ( Math.round(displayed) !== 0 && displayed >= baseline && this.props.baseline !== 'sp500_pct_gain') {
+        } else if (displayed > index) {
             classes += ' text-green'
         }
         return classes
