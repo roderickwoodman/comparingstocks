@@ -9,6 +9,7 @@ export class MyPerformance extends React.Component {
         this.state = {
             quarter_data: []
         }
+        this.generateQuarterData = this.generateQuarterData.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.formatCurrency = this.formatCurrency.bind(this)
         this.getDisplayedPerformance = this.getDisplayedPerformance.bind(this)
@@ -21,6 +22,10 @@ export class MyPerformance extends React.Component {
     }
 
     componentDidMount() {
+        this.generateQuarterData()
+    }
+
+    generateQuarterData() {
 
         let sorted_transactions = this.props.all_transactions.sort(function(a, b) {
             if (a.date < b.date) {
@@ -107,7 +112,7 @@ export class MyPerformance extends React.Component {
                 // determine quarter-over-quarter performance
                 let performance = 'n/a'
                 if (q !== 0 && !isNaN(end_totalvalue)) {
-                    performance = (quarter_data[q-1].end_totalvalue - end_totalvalue) / end_totalvalue
+                    performance = (end_totalvalue / quarter_data[q-1].end_totalvalue) - 1
                 }
                 new_quarter['qoq_change_pct'] = performance
 
