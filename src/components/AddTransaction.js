@@ -148,6 +148,8 @@ export class AddTransaction extends React.Component {
                         <select value={this.state.action} onChange={this.handleActionChange}>
                             <option value="add">add</option>
                             <option value="remove">remove</option>
+                            <option value="dividend">dividend</option>
+                            <option value="fee">fee</option>
                         </select>
                         <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="15" placeholder="$1000" required />
                     </label>

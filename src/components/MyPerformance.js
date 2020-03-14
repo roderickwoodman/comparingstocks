@@ -75,8 +75,10 @@ export class MyPerformance extends React.Component {
                     let action, ticker, shares, total
                     [action, ticker, shares, total] = [transaction.action, transaction.ticker, transaction.shares, transaction.total]
                     if (ticker === 'cash') {
-                        let cash_delta = (action === 'add') ? total : -1 * total
-                        transfers_in += cash_delta
+                        let cash_delta = (action === 'add' || action === 'dividend') ? total : -1 * total
+                        if (action === 'add' || action === 'remove') {
+                            transfers_in += cash_delta
+                        }
                         end_cash += cash_delta
                     } else {
                         let share_delta = (action === 'buy') ? shares : -1 * shares
