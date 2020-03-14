@@ -114,7 +114,7 @@ export class MyPerformance extends React.Component {
                 // determine quarter-over-quarter baseline performance
                 performance = 'n/a'
                 if (q !== 0 && !isNaN(end_baselinevalue)) {
-                    performance = (quarter_data[q-1].end_baselinevalue - end_baselinevalue) / end_baselinevalue
+                    performance = (end_baselinevalue / quarter_data[q-1].end_baselinevalue) - 1
                 }
                 new_quarter['qoq_baseline_change_pct'] = performance
 
