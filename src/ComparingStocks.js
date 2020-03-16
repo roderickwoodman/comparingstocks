@@ -1029,6 +1029,17 @@ export class ComparingStocks extends React.Component {
             }
             newAllPositions[ticker] = updatedPosition
 
+            // recalculate the cash position numbers
+            orig_current_shares = (newAllPositions.hasOwnProperty('cash')) ? newAllPositions['cash'].current_shares : 0
+            new_current_shares = (action === 'buy') ? orig_current_shares - total : orig_current_shares + total
+            let updatedCashPosition = {
+                current_shares: new_current_shares,
+                symbol: 'cash',
+                basis: new_current_shares,
+                realized_gains: 0
+            }
+            newAllPositions['cash'] = updatedCashPosition
+
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
                 this.calculateAggrPositionInfo(
