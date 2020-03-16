@@ -77,10 +77,20 @@ code {
 #input-form-forms {
   background-color: #f6f0e8;
   padding-top: 5px;
+  height: 100%;
 }
 
 #input-forms form {
   padding: 5px 15px;
+}
+
+#what-if form #operation {
+  display: flex;
+  align-items: center;
+}
+
+#what-if form #cash-treatment {
+  margin-top: -15px;
 }
 
 #status-messages-wrapper {

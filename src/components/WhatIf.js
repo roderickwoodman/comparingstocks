@@ -126,7 +126,7 @@ export class WhatIf extends React.Component {
         return (
             <section id="what-if">
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
-                    <div>Balance&nbsp;
+                    <div id="operation">Balance&nbsp;
                         <select name="balance_target_set" value={this.state.balance_target_set} onChange={this.handleChange}>
                             <option value="my_holdings">my holdings ({Object.keys(this.props.all_positions).filter(position => position !== 'cash').length})</option>
                             <option value="untagged">untagged tickers ({this.props.all_tags.untagged.length})</option>
@@ -151,9 +151,11 @@ export class WhatIf extends React.Component {
                         </select>
                         &nbsp;...
                     </div>
-                    <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
-                    <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
-                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining} placeholder="$0"></input> cash remaining (max: ${this.numberWithCommas(this.state.balanceable_value)})</label>
+                    <div id="cash-treatment">
+                        <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
+                        <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
+                        <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining} placeholder="$0"></input>cash remaining (max: ${this.numberWithCommas(this.state.balanceable_value)})</label>
+                    </div>
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-primary" type="submit" value="What If?" disabled={this.isDisabled()}/>
                     </section>
