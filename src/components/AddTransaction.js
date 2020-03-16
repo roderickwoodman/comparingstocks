@@ -151,7 +151,7 @@ export class AddTransaction extends React.Component {
                             <option value="transferIN">transfer IN</option>
                             <option value="transferOUT">transfer OUT</option>
                         </select>
-                        <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="15" placeholder="$1000" required />
+                        <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="12" placeholder="$1000" required />
                     </label>
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-primary" type="submit" value="Adjust Cash" disabled={this.state.user_cash_amount==='' || this.state.transaction_date===''}/>

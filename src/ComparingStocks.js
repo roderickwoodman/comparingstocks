@@ -268,18 +268,7 @@ export class ComparingStocks extends React.Component {
 
     componentDidMount() {
 
-        let baseline = {}
-        const stored_baseline = JSON.parse(localStorage.getItem("baseline"))
-        if (stored_baseline !== null) {
-            baseline = Object.assign({}, stored_baseline)
-        } else {
-            baseline = {
-                name: 'zero_pct_gain',
-                short_pct_gain: 0,
-                medium_pct_gain: 0,
-                long_pct_gain: 0,
-            }
-        }
+        // 1. load all locally-stored data
 
         const stored_sort_column = JSON.parse(localStorage.getItem("sort_column"))
         if (stored_sort_column !== null) {
@@ -328,6 +317,30 @@ export class ComparingStocks extends React.Component {
             }
         })
 
+        let init_shown_columns = []
+        const stored_shown_columns = JSON.parse(localStorage.getItem("shown_columns"))
+        if (stored_shown_columns !== null) {
+            init_shown_columns = [...stored_shown_columns]
+        } else {
+            init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
+        }
+
+
+        // 2. calculate historical performance data for each added ticker
+
+        let baseline = {}
+        const stored_baseline = JSON.parse(localStorage.getItem("baseline"))
+        if (stored_baseline !== null) {
+            baseline = Object.assign({}, stored_baseline)
+        } else {
+            baseline = {
+                name: 'zero_pct_gain',
+                short_pct_gain: 0,
+                medium_pct_gain: 0,
+                long_pct_gain: 0,
+            }
+        }
+
         let indexed_risk_data = {}
         if (stored_allRisk !== null) {
             indexed_risk_data = JSON.parse(JSON.stringify(stored_allRisk))
@@ -366,6 +379,9 @@ export class ComparingStocks extends React.Component {
 
         this.setState({ index_performance: index_performance })
 
+
+        // 3. calculate position data (from transactions) for all holdings
+
         let all_stocks = []
         allTransactions.forEach(function(transaction) {
             if (!all_stocks.includes(transaction.ticker)) {
@@ -394,10 +410,11 @@ export class ComparingStocks extends React.Component {
         let newMonthlyQuotes = {}
         let newPerformanceNumbers = {}
         let newRisk = {}
+        let cash_delta_from_stock_transactions = 0
 
         all_stocks.forEach(function(ticker) {
 
-            // create a position if any transactions exist
+            // create a stock position if any transactions exist
             allTransactions.forEach(function(transaction) {
                 if (!newPositions.hasOwnProperty(transaction.ticker) && transaction.ticker !== 'cash') {
                     let newPosition = {}
@@ -405,6 +422,11 @@ export class ComparingStocks extends React.Component {
                     newPosition = self.getPositionFromSingleTickerTransactions(allTransactions.filter(transaction => transaction.ticker === ticker))
                     newPosition['symbol'] = ticker
                     newPositions[ticker] = newPosition
+                    if (transaction.action === 'buy') {
+                        cash_delta_from_stock_transactions -= transaction.total
+                    } else {
+                        cash_delta_from_stock_transactions += transaction.total
+                    }
                 }
             })
 
@@ -484,24 +506,23 @@ export class ComparingStocks extends React.Component {
 
         // position for cash
         let cash_transactions = allTransactions.filter(transaction => transaction.ticker === 'cash')
-        if (cash_transactions.length) {
-
+        if (cash_transactions.length || cash_delta_from_stock_transactions !== 0) {
             let newPosition = {}
             newPosition = this.getPositionFromCashTransactions(cash_transactions)
             newPosition['symbol'] = 'cash'
+            if (cash_delta_from_stock_transactions) {
+                newPosition['basis'] += cash_delta_from_stock_transactions
+                newPosition['current_shares'] += cash_delta_from_stock_transactions
+            }
             newPositions['cash'] = newPosition
         }
 
-        let init_shown_columns = []
-        const stored_shown_columns = JSON.parse(localStorage.getItem("shown_columns"))
-        if (stored_shown_columns !== null) {
-            init_shown_columns = [...stored_shown_columns]
-        } else {
-            init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
-        }
-
+        // 5. handle aggregates
         let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(allTags, newPositions, newCurrentQuotes, stored_controls['show_holdings'], stored_controls['show_cash'])))
         let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(allTags, newPerformanceNumbers)))
+
+
+        // 6. update the app's state with all of the above changes
 
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
