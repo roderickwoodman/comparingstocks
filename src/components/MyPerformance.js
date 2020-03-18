@@ -59,7 +59,7 @@ export class MyPerformance extends React.Component {
                     year += 1
                 }
                 new_quarter['year'] = year
-                let end_shares = {}, end_cash = 0, transfers_in = 0
+                let end_shares = {}, end_cash = 0, end_transfersinvalue = 0
                 if (q !== 0) {
                     end_shares = Object.assign({}, quarter_data[q-1].end_shares)
                     end_cash = quarter_data[q-1].end_cash
@@ -68,7 +68,8 @@ export class MyPerformance extends React.Component {
                 // determine quarter's transactions
                 let target_year = year
                 let quarter_transactions = sorted_transactions.filter( t => this.getYear(t.date) === target_year && this.getQuarter(t.date) === quarter )
-                new_quarter['transactions'] = quarter_transactions
+                new_quarter['transactions_of_stock'] = quarter_transactions.filter( t => t.ticker !== 'cash' )
+                new_quarter['transactions_of_cash'] = quarter_transactions.filter( t => t.ticker === 'cash' )
 
                 // determine quarter-end shares and cash value
                 for (let transaction of quarter_transactions) {
@@ -77,7 +78,7 @@ export class MyPerformance extends React.Component {
                     if (ticker === 'cash') {
                         let cash_delta = (action === 'transferIN' || action === 'dividend') ? total : -1 * total
                         if (action === 'transferIN' || action === 'transferOUT') {
-                            transfers_in += cash_delta
+                            end_transfersinvalue += cash_delta
                         }
                         end_cash += cash_delta
                     } else {
@@ -93,7 +94,7 @@ export class MyPerformance extends React.Component {
                 }
                 new_quarter['end_shares'] = end_shares
                 new_quarter['end_cash'] = end_cash
-                new_quarter['transfers_in'] = transfers_in
+                new_quarter['end_transfersinvalue'] = end_transfersinvalue
 
                 // determine quarter-end ticker value
                 let self = this
@@ -252,7 +253,7 @@ export class MyPerformance extends React.Component {
                             </tr>
                             <tr>
                             { this.state.quarter_data.map( qdata => ( // transfers in
-                                <td key={'transfersin-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.transfers_in)}</td>
+                                <td key={'transfersin-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_transfersinvalue)}</td>
                             ))}
                             </tr>
                             <tr>
