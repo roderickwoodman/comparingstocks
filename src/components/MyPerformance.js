@@ -113,9 +113,30 @@ export class MyPerformance extends React.Component {
                 new_quarter['end_baselinevalue'] = end_baselinevalue
 
                 // determine quarter-over-quarter performance
+                // HPR (holding period return) = end / prev_end - 1
+                // HPR (HPR, adjusted for transfers) = end / (prev_end + transfersIN) - 1
+                // transfersIN, adjusted for middle-of-period transfers... aka Modified Dietz method)
+                //   transfersIN = transferINa * fraction of period duration) + (transferINb * fraction of period duration)
+                let adjusted_transfer_value = 0
+                let zb_start_month = quarter * 3 - 3
+                let period_start_date = new Date(target_year, zb_start_month, 1)
+                let period_end_date = new Date(target_year, zb_start_month+3, 1)
+                let period_days = Math.round((period_end_date - period_start_date) / (1000 * 60 * 60 * 24))
+                new_quarter.transactions_of_cash.forEach(function(transaction) {
+                    let transfer_month, transfer_day, fraction_of_period
+                    [transfer_month, transfer_day] = [parseInt(transaction.date.split('-')[1]), parseInt(transaction.date.split('-')[2])]
+                    let transfer_date = new Date(target_year, transfer_month - 1, transfer_day)
+                    if (transaction.action === 'transferIN') {
+                        fraction_of_period = (period_end_date - transfer_date) / (1000 * 60 * 60 * 24) / period_days
+                        adjusted_transfer_value += transaction.total * fraction_of_period
+                    } else if (transaction.action === 'transferOUT') {
+                        fraction_of_period = (transfer_date - period_start_date) / (1000 * 60 * 60 * 24) / period_days
+                        adjusted_transfer_value -= transaction.total * fraction_of_period
+                    }
+                })
                 let performance = 'n/a'
                 if (q !== 0 && !isNaN(end_totalvalue)) {
-                    performance = (end_totalvalue / quarter_data[q-1].end_totalvalue) - 1
+                    performance = (end_totalvalue / (quarter_data[q-1].end_totalvalue + adjusted_transfer_value)) - 1
                 }
                 new_quarter['qoq_change_pct'] = performance
 
