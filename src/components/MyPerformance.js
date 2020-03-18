@@ -186,6 +186,7 @@ export class MyPerformance extends React.Component {
 
     getDisplayedPerformance(quarter_data) {
         let retval = {}
+        retval['key'] = quarter_data.year + 'Q' + quarter_data.quarter
         retval['display_value'] = null
         retval['baseline_value'] = null
         retval['index_value'] = quarter_data.qoq_baseline_change_pct
@@ -284,12 +285,12 @@ export class MyPerformance extends React.Component {
                             </tr>
                             <tr>
                             { displayed_performance.map( performance => ( // my performance
-                                <td /*key={'performance'+qdata.year+qdata.quarter}*/ className={ this.styleCell(performance) }>{ this.formatPerformance(performance.display_value) }</td>
+                                <td key={performance.key} className={ this.styleCell(performance) }>{ this.formatPerformance(performance.display_value) }</td>
                             ))}
                             </tr>
                             <tr>
                             { displayed_performance.map( performance => ( // index performance
-                                <td /*key={'indexperf-'+qdata.year+qdata.quarter}*/>{ this.formatPerformance(performance.index_value) }</td>
+                                <td key={performance.key}>{ this.formatPerformance(performance.index_value) }</td>
                             ))}
                             </tr>
                         </tbody>
