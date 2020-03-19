@@ -110,7 +110,13 @@ export class MyPerformance extends React.Component {
                 let self = this
                 let end_tickervalue = 0
                 Object.entries(end_shares).forEach(function(position) {
-                    end_tickervalue += position[1] * self.getMonthEndQuote(position[0], target_year, quarter * 3)
+                    let month_end_quote = self.getMonthEndQuote(position[0], target_year, quarter * 3)
+                    if (isNaN(month_end_quote)) {
+                        console.log('ERROR: quote for symbol '+position[0]+' for month '+target_year+'-'+(quarter*3)+' is unavailable')
+                        end_tickervalue = '?'
+                    } else {
+                        end_tickervalue += position[1] * month_end_quote
+                    }
                 })
                 new_quarter['end_tickervalue'] = end_tickervalue
                 
@@ -149,19 +155,23 @@ export class MyPerformance extends React.Component {
                         adjusted_transfer_value -= transaction.total * fraction_of_period
                     }
                 })
-                let performance = 'n/a'
-                if (q === 0 && !isNaN(end_totalvalue)) {
+                let performance
+                if (isNaN(start_totalvalue) || isNaN(end_totalvalue)) {
+                    performance = 'n/a'
+                } else if (q === 0) {
                     performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
-                } else if (!isNaN(end_totalvalue)) {
+                } else {
                     performance = (end_totalvalue / (quarter_data[q-1].end_totalvalue + adjusted_transfer_value)) - 1
                 }
                 new_quarter['qoq_change_pct'] = performance
 
                 // determine quarter-over-quarter baseline performance
                 performance = 'n/a'
-                if (q === 0) {
+                if (isNaN(start_baselinevalue) || isNaN(end_baselinevalue)) {
+                    performance = 'n/a'
+                } else if (q === 0) {
                     performance = (end_baselinevalue / start_baselinevalue) - 1
-                } else if (!isNaN(end_baselinevalue)) {
+                } else {
                     performance = (end_baselinevalue / quarter_data[q-1].end_baselinevalue) - 1
                 }
                 new_quarter['qoq_baseline_change_pct'] = performance
@@ -231,7 +241,11 @@ export class MyPerformance extends React.Component {
         let monthly_dates = this.props.all_monthly_quotes[ticker].monthly_dates
         let monthly_prices = this.props.all_monthly_quotes[ticker].monthly_prices
         let quarter_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
-        return monthly_prices[quarter_idx]
+        if (quarter_idx !== -1) {
+            return monthly_prices[quarter_idx]
+        } else {
+            return null
+        }
     }
 
     styleCell(performance_obj) {
