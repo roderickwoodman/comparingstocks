@@ -43,8 +43,11 @@ export class MyPerformance extends React.Component {
 
             let first_year = parseInt(sorted_transactions[0].date.split('-')[0])
             let first_quarter = Math.floor((parseInt(sorted_transactions[0].date.split('-')[1])-1) / 3 + 1)
-            let last_year = parseInt(sorted_transactions[sorted_transactions.length-1].date.split('-')[0])
-            let last_quarter = Math.floor((parseInt(sorted_transactions[sorted_transactions.length-1].date.split('-')[1])-1) / 3 + 1)
+
+            let today = new Date()
+            let last_year = today.getFullYear()
+            let last_quarter = Math.round(today.getMonth() / 3)
+
             let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
             let start_baselinevalue
             if (first_quarter !== 1) {
@@ -74,6 +77,7 @@ export class MyPerformance extends React.Component {
                     end_shares = Object.assign({}, start_shares)
                     end_cash = start_cash
                 }
+                new_quarter['name'] = (q !== quarters_of_performance - 1) ? year + 'Q' + quarter : 'current'
 
                 // determine quarter's transactions
                 let target_year = year
@@ -299,7 +303,7 @@ export class MyPerformance extends React.Component {
                         <thead>
                             <tr>
                             { this.state.quarter_data.map( qdata => ( // name
-                                <th key={'name-'+qdata.year+qdata.quarter}>{qdata.year}Q{qdata.quarter}</th>
+                                <th key={'name-'+qdata.year+qdata.quarter}>{qdata.name}</th>
                             ))}
                             </tr>
                         </thead>
