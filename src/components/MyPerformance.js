@@ -46,9 +46,16 @@ export class MyPerformance extends React.Component {
             let last_year = parseInt(sorted_transactions[sorted_transactions.length-1].date.split('-')[0])
             let last_quarter = Math.floor((parseInt(sorted_transactions[sorted_transactions.length-1].date.split('-')[1])-1) / 3 + 1)
             let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
+            let start_baselinevalue
+            if (first_quarter !== 1) {
+                start_baselinevalue = this.getMonthEndQuote('S&P500', first_year, (first_quarter - 1) * 3)
+            } else {
+                start_baselinevalue = this.getMonthEndQuote('S&P500', first_year - 1, 9)
+            }
 
             // calculate all quarter data
             let year = first_year
+            let start_shares = {}, start_cash = 0, start_totalvalue = 0
             for (let q = 0; q < quarters_of_performance; q++) {
                 
                 // initialization
@@ -63,6 +70,9 @@ export class MyPerformance extends React.Component {
                 if (q !== 0) {
                     end_shares = Object.assign({}, quarter_data[q-1].end_shares)
                     end_cash = quarter_data[q-1].end_cash
+                } else {
+                    end_shares = Object.assign({}, start_shares)
+                    end_cash = start_cash
                 }
 
                 // determine quarter's transactions
@@ -120,7 +130,12 @@ export class MyPerformance extends React.Component {
                 let adjusted_transfer_value = 0
                 let zb_start_month = quarter * 3 - 3
                 let period_start_date = new Date(target_year, zb_start_month, 1)
-                let period_end_date = new Date(target_year, zb_start_month+3, 1)
+                let period_end_date
+                if (zb_start_month !== 3) {
+                    period_end_date = new Date(target_year, zb_start_month+3, 1)
+                } else {
+                    period_end_date = new Date(target_year+1, 1, 1)
+                }
                 let period_days = Math.round((period_end_date - period_start_date) / (1000 * 60 * 60 * 24))
                 new_quarter.transactions_of_cash.forEach(function(transaction) {
                     let transfer_month, transfer_day, fraction_of_period
@@ -135,14 +150,18 @@ export class MyPerformance extends React.Component {
                     }
                 })
                 let performance = 'n/a'
-                if (q !== 0 && !isNaN(end_totalvalue)) {
+                if (q === 0 && !isNaN(end_totalvalue)) {
+                    performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
+                } else if (!isNaN(end_totalvalue)) {
                     performance = (end_totalvalue / (quarter_data[q-1].end_totalvalue + adjusted_transfer_value)) - 1
                 }
                 new_quarter['qoq_change_pct'] = performance
 
                 // determine quarter-over-quarter baseline performance
                 performance = 'n/a'
-                if (q !== 0 && !isNaN(end_baselinevalue)) {
+                if (q === 0) {
+                    performance = (end_baselinevalue / start_baselinevalue) - 1
+                } else if (!isNaN(end_baselinevalue)) {
                     performance = (end_baselinevalue / quarter_data[q-1].end_baselinevalue) - 1
                 }
                 new_quarter['qoq_baseline_change_pct'] = performance
