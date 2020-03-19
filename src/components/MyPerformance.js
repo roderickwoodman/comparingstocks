@@ -111,7 +111,7 @@ export class MyPerformance extends React.Component {
                 let end_tickervalue = 0
                 Object.entries(end_shares).forEach(function(position) {
                     let month_end_quote = self.getMonthEndQuote(position[0], target_year, quarter * 3)
-                    if (isNaN(month_end_quote)) {
+                    if (typeof(month_end_quote) !== 'number') {
                         console.log('ERROR: quote for symbol '+position[0]+' for month '+target_year+'-'+(quarter*3)+' is unavailable')
                         end_tickervalue = '?'
                     } else {
@@ -156,7 +156,7 @@ export class MyPerformance extends React.Component {
                     }
                 })
                 let performance
-                if (isNaN(start_totalvalue) || isNaN(end_totalvalue)) {
+                if (typeof(start_totalvalue) !== 'number' || typeof(end_totalvalue) !== 'number') {
                     performance = 'n/a'
                 } else if (q === 0) {
                     performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
@@ -167,7 +167,7 @@ export class MyPerformance extends React.Component {
 
                 // determine quarter-over-quarter baseline performance
                 performance = 'n/a'
-                if (isNaN(start_baselinevalue) || isNaN(end_baselinevalue)) {
+                if (typeof(start_baselinevalue) !== 'number' || typeof(end_baselinevalue) !== 'number') {
                     performance = 'n/a'
                 } else if (q === 0) {
                     performance = (end_baselinevalue / start_baselinevalue) - 1
@@ -202,7 +202,7 @@ export class MyPerformance extends React.Component {
 
     formatCurrency(dollars) {
         let prefix, retval = dollars
-        if (!isNaN(dollars)) {
+        if (typeof(dollars) === 'number') {
             let value = Math.round(dollars)
             retval = this.numberWithCommas(Math.abs(value))
             prefix = (value < 0 ) ? '-$' : '$'
@@ -220,10 +220,10 @@ export class MyPerformance extends React.Component {
         retval['baseline_value'] = null
         retval['index_value'] = quarter_data.qoq_baseline_change_pct
         let my_perf = quarter_data.qoq_change_pct
-        if (!isNaN(my_perf)) {
+        if (typeof(my_perf) === 'number') {
             if (this.props.baseline === 'sp500_pct_gain') {
                 let baseline_perf = quarter_data.qoq_baseline_change_pct
-                if (isNaN(baseline_perf)) {
+                if (typeof(baseline_perf) !== 'number') {
                     return retval
                 } else {
                     retval['display_value'] = my_perf - baseline_perf
@@ -261,7 +261,7 @@ export class MyPerformance extends React.Component {
     }
 
     formatPerformance(performance) {
-        if (isNaN(performance)) {
+        if (typeof(performance) !== 'number') {
             return '-'
         } else {
             return (Math.round(performance * 100 * 10) / 10).toFixed(1) + '%'
