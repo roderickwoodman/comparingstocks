@@ -360,8 +360,17 @@ export class ComparingStocks extends React.Component {
             let adjusted_ticker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'].toUpperCase())
             indexed_monthly_quote_data[adjusted_ticker] = raw_quote
             if (adjusted_ticker === 'S&P500') {
-                let quoteTimeSeries = indexed_monthly_quote_data[adjusted_ticker]['Monthly Adjusted Time Series']
-                let monthly_prices = Object.entries(quoteTimeSeries).map(price => parseFloat(price[1]['5. adjusted close']))
+                let quoteTimeSeriesDesc = Object.entries(indexed_monthly_quote_data[adjusted_ticker]['Monthly Adjusted Time Series'])
+                .sort(function(a,b) {
+                    if(a[0] < b[0]) {
+                        return 1
+                    } else if (a[0] > b[0]) {
+                        return -1
+                    } else {
+                        return 0
+                    }
+                })
+                let monthly_prices = Object.entries(quoteTimeSeriesDesc).map(price => parseFloat(price[1]['5. adjusted close']))
                 let now = monthly_prices[0]
                 let prev_short = monthly_prices[5]
                 let prev_medium = monthly_prices[11]
@@ -446,17 +455,26 @@ export class ComparingStocks extends React.Component {
             // get monthly quote
             if (indexed_monthly_quote_data.hasOwnProperty(ticker)) {
                 let newMonthlyQuote = {}
-                let quoteTimeSeries = indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series']
+                let quoteTimeSeriesDesc = Object.entries(indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series'])
+                    .sort(function(a,b) {
+                        if(a[0] < b[0]) {
+                            return 1
+                        } else if (a[0] > b[0]) {
+                            return -1
+                        } else {
+                            return 0
+                        }
+                    })
                 newMonthlyQuote['symbol'] = ticker
 
                 let monthly_prices = []
                 let monthly_dates = []
-                Object.entries(quoteTimeSeries).forEach(function(price) {
+                quoteTimeSeriesDesc.forEach(function(price) {
                     monthly_prices.push(parseFloat(price[1]['5. adjusted close']))
                     monthly_dates.push(price[0])
                 })
                 newMonthlyQuote['monthly_prices'] = monthly_prices
-                newMonthlyQuote['monthly_dates'] = monthly_dates
+                newMonthlyQuote['monthly_dates_desc'] = monthly_dates
                 newMonthlyQuotes[ticker] = newMonthlyQuote
 
                 // calculate performance

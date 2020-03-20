@@ -242,7 +242,7 @@ export class MyPerformance extends React.Component {
     }
 
     getMonthEndQuote(ticker, year, month) {
-        let monthly_dates = this.props.all_monthly_quotes[ticker].monthly_dates
+        let monthly_dates = this.props.all_monthly_quotes[ticker].monthly_dates_desc
         let monthly_prices = this.props.all_monthly_quotes[ticker].monthly_prices
         let quarter_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
         if (quarter_idx !== -1) {
