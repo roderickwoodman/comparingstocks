@@ -49,12 +49,13 @@ export class MyPerformance extends React.Component {
             let last_quarter = Math.round(today.getMonth() / 3)
 
             let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
-            let start_baselinevalue
+            let start_baselinequote, start_baselineprice
             if (first_quarter !== 1) {
-                start_baselinevalue = this.getMonthEndQuote('S&P500', first_year, (first_quarter - 1) * 3)
+                start_baselinequote = this.getMonthEndQuote('S&P500', first_year, (first_quarter - 1) * 3)
             } else {
-                start_baselinevalue = this.getMonthEndQuote('S&P500', first_year - 1, 9)
+                start_baselinequote = this.getMonthEndQuote('S&P500', first_year - 1, 9)
             }
+            start_baselineprice = (start_baselinequote !== null) ? start_baselinequote.price : null
 
             // calculate all quarter data
             let year = first_year
@@ -112,25 +113,34 @@ export class MyPerformance extends React.Component {
 
                 // determine quarter-end ticker value
                 let self = this
-                let end_tickervalue = 0
+                let end_tickervalue = 0, end_tickerdate
                 Object.entries(end_shares).forEach(function(position) {
                     let month_end_quote = self.getMonthEndQuote(position[0], target_year, quarter * 3)
-                    if (typeof(month_end_quote) !== 'number') {
+                    if (month_end_quote === null) {
                         console.log('ERROR: quote for symbol '+position[0]+' for month '+target_year+'-'+(quarter*3)+' is unavailable')
                         end_tickervalue = '?'
+                        end_tickerdate = null
                     } else {
-                        end_tickervalue += position[1] * month_end_quote
+                        end_tickervalue += position[1] * month_end_quote.price
+                        if (typeof(end_tickerdate) !== 'string') {
+                            end_tickerdate = month_end_quote.date
+                        } else if (month_end_quote.date !== end_tickerdate) {
+                            console.log('ERROR: quote dates for month '+target_year+'-'+(quarter*3)+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
+                        }
                     }
                 })
                 new_quarter['end_tickervalue'] = end_tickervalue
+                new_quarter['end_tickerdate'] = end_tickerdate
                 
                 // determine quarter-end total value
                 let end_totalvalue = end_tickervalue + end_cash
                 new_quarter['end_totalvalue'] = end_totalvalue
 
                 // determine quarter-end baseline value
-                let end_baselinevalue = self.getMonthEndQuote('S&P500', target_year, quarter * 3)
-                new_quarter['end_baselinevalue'] = end_baselinevalue
+                let end_baselinequote = self.getMonthEndQuote('S&P500', target_year, quarter * 3)
+                let end_baselineprice = (end_baselinequote !== null) ? end_baselinequote.price : null
+                new_quarter['end_baselineprice'] = end_baselineprice
+                new_quarter['end_baselinedate'] = (end_baselinequote !== null) ? end_baselinequote.date : null
 
                 // determine quarter-over-quarter performance
                 // HPR (holding period return) = end / prev_end - 1
@@ -171,12 +181,12 @@ export class MyPerformance extends React.Component {
 
                 // determine quarter-over-quarter baseline performance
                 performance = 'n/a'
-                if (typeof(start_baselinevalue) !== 'number' || typeof(end_baselinevalue) !== 'number') {
+                if (start_baselineprice === null || end_baselineprice === null) {
                     performance = 'n/a'
                 } else if (q === 0) {
-                    performance = (end_baselinevalue / start_baselinevalue) - 1
+                    performance = (end_baselineprice / start_baselineprice) - 1
                 } else {
-                    performance = (end_baselinevalue / quarter_data[q-1].end_baselinevalue) - 1
+                    performance = (end_baselineprice / quarter_data[q-1].end_baselineprice) - 1
                 }
                 new_quarter['qoq_baseline_change_pct'] = performance
 
@@ -245,11 +255,14 @@ export class MyPerformance extends React.Component {
         let monthly_dates = this.props.all_monthly_quotes[ticker].monthly_dates_desc
         let monthly_prices = this.props.all_monthly_quotes[ticker].monthly_prices
         let quarter_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
+        let retval = {}
         if (quarter_idx !== -1) {
-            return monthly_prices[quarter_idx]
+            retval['date'] = monthly_dates[quarter_idx]
+            retval['price'] = monthly_prices[quarter_idx]
         } else {
-            return null
+            retval = null
         }
+        return retval
     }
 
     styleCell(performance_obj) {
