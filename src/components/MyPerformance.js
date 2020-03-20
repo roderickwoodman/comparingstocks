@@ -45,10 +45,11 @@ export class MyPerformance extends React.Component {
             let first_quarter = Math.floor((parseInt(sorted_transactions[0].date.split('-')[1])-1) / 3 + 1)
 
             let today = new Date()
-            let last_year = today.getFullYear()
-            let last_quarter = Math.round(today.getMonth() / 3)
+            let today_year = today.getFullYear()
+            let today_month = today.getMonth() + 1
+            let today_quarter = Math.round(today.getMonth() / 3)
 
-            let quarters_of_performance = (last_year - first_year) * 4 + (last_quarter - first_quarter) + 1
+            let quarters_of_performance = (today_year - first_year) * 4 + (today_quarter - first_quarter) + 1
             let start_baselinequote, start_baselineprice
             if (first_quarter !== 1) {
                 start_baselinequote = this.getMonthEndQuote('S&P500', first_year, (first_quarter - 1) * 3)
@@ -114,10 +115,33 @@ export class MyPerformance extends React.Component {
                 // determine quarter-end ticker value
                 let self = this
                 let end_tickervalue = 0, end_tickerdate
+                let this_quote_month = quarter * 3
+                let this_quote_year = target_year
+                if (target_year === today_year && quarter === today_quarter) { // for a partial last period, use a previous month's quotes
+                    let quote_dates = []
+                    Object.entries(end_shares).forEach(function(position) {
+                        if (position[1] && self.props.all_monthly_quotes.hasOwnProperty(position[0])) {
+                            quote_dates.push(self.props.all_monthly_quotes[position[0]].monthly_dates_desc[0])
+                        }
+                    })
+                    let lastavailablequote_month_str, lastavailablequote_year_str
+                    [lastavailablequote_year_str, lastavailablequote_month_str] = quote_dates.sort().reverse()[0].split('-')
+                    let lastavailablequote_month = parseInt(lastavailablequote_month_str)
+                    let lastavailablequote_year = parseInt(lastavailablequote_year_str)
+                    if (lastavailablequote_month !== today_month || lastavailablequote_year !== today_year) { // allow the previous month's quotes only
+                        if (today_month === 1 && (lastavailablequote_month !== 12 || lastavailablequote_year !== today_year - 1)) {
+                            this_quote_month = 12
+                            this_quote_year = today_year - 1
+                        } else if (today_month !== 1 && (lastavailablequote_month !== today_month - 1 || lastavailablequote_year !== today_year)) {
+                            this_quote_month = today_month - 1
+                            this_quote_year = today_year
+                        }
+                    }
+                }
                 Object.entries(end_shares).forEach(function(position) {
-                    let month_end_quote = self.getMonthEndQuote(position[0], target_year, quarter * 3)
+                    let month_end_quote = self.getMonthEndQuote(position[0], this_quote_year, this_quote_month)
                     if (month_end_quote === null) {
-                        console.log('ERROR: quote for symbol '+position[0]+' for month '+target_year+'-'+(quarter*3)+' is unavailable')
+                        console.log('ERROR: quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
                         end_tickervalue = '?'
                         end_tickerdate = null
                     } else {
@@ -125,7 +149,7 @@ export class MyPerformance extends React.Component {
                         if (typeof(end_tickerdate) !== 'string') {
                             end_tickerdate = month_end_quote.date
                         } else if (month_end_quote.date !== end_tickerdate) {
-                            console.log('ERROR: quote dates for month '+target_year+'-'+(quarter*3)+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
+                            console.log('ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
                         }
                     }
                 })
