@@ -7,7 +7,8 @@ export class MyPerformance extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            quarter_data: []
+            quarter_data: [],
+            error_message: ''
         }
         this.generateQuarterData = this.generateQuarterData.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
@@ -61,8 +62,10 @@ export class MyPerformance extends React.Component {
             }
             start_baselinequote = this.getMonthEndQuote('S&P500', prev_quote_year, prev_quote_month)
             if (start_baselinequote === null) {
-                console.log('ERROR: quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable')
-                start_baselineprice = '?'
+                let error_message = 'ERROR: quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable'
+                this.setState({ error_message: error_message })
+                console.log(error_message)
+                start_baselineprice = 'err.'
             } else {
                 start_baselineprice = start_baselinequote.price
             }
@@ -148,33 +151,45 @@ export class MyPerformance extends React.Component {
                     }
                 }
                 Object.entries(end_shares).forEach(function(position) {
+                    let error_message = ''
                     let month_end_quote = self.getMonthEndQuote(position[0], this_quote_year, this_quote_month)
                     if (month_end_quote === null) {
-                        console.log('ERROR: quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
-                        end_tickervalue = '?'
+                        error_message = 'ERROR: quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable'
+                        end_tickervalue = 'err.'
                         end_tickerdate = null
                     } else {
                         end_tickervalue += position[1] * month_end_quote.price
                         if (typeof(end_tickerdate) !== 'string') {
                             end_tickerdate = month_end_quote.date
                         } else if (month_end_quote.date !== end_tickerdate) {
-                            console.log('ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
+                            error_message = 'ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')'
                         }
+                    }
+                    self.setState({ error_message: error_message })
+                    if (error_message.length) {
+                        console.log(error_message)
                     }
                 })
                 new_quarter['end_tickervalue'] = end_tickervalue
                 new_quarter['end_tickerdate'] = end_tickerdate
                 
                 // determine quarter-end total value
-                let end_totalvalue = end_tickervalue + end_cash
+                let end_totalvalue
+                if (typeof(end_tickervalue) !== 'number' || typeof(end_cash) !== 'number') {
+                    end_totalvalue = 'err.'
+                } else {
+                    end_totalvalue = end_tickervalue + end_cash
+                }
                 new_quarter['end_totalvalue'] = end_totalvalue
 
                 // determine quarter-end baseline value
                 let end_baselineprice, end_baselinedate
                 let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
                 if (end_baselinequote === null) {
-                    console.log('ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
-                    end_baselineprice = '?'
+                    let error_message = 'ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable'
+                    this.setState({ error_message: error_message })
+                    console.log(error_message)
+                    end_baselineprice = 'err.'
                     end_baselinedate = null
                 } else {
                     end_baselineprice = end_baselinequote.price
@@ -212,7 +227,7 @@ export class MyPerformance extends React.Component {
                 })
                 let performance
                 if (typeof(start_totalvalue) !== 'number' || typeof(end_totalvalue) !== 'number') {
-                    performance = 'n/a'
+                    performance = 'err.'
                 } else if (q === 0) {
                     performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
                 } else {
@@ -222,8 +237,8 @@ export class MyPerformance extends React.Component {
 
                 // determine quarter-over-quarter baseline performance
                 performance = 'n/a'
-                if (start_baselineprice === null || end_baselineprice === null) {
-                    performance = 'n/a'
+                if (typeof(start_baselineprice) !== 'number' || typeof(end_baselineprice) !== 'number') {
+                    performance = 'err.'
                 } else if (q === 0) {
                     performance = (end_baselineprice / start_baselineprice) - 1
                 } else {
@@ -263,7 +278,7 @@ export class MyPerformance extends React.Component {
             prefix = (value < 0 ) ? '-$' : '$'
             retval = prefix + retval
         } else {
-            retval = '?'
+            retval = 'err.'
         }
         return retval
     }
@@ -271,11 +286,13 @@ export class MyPerformance extends React.Component {
     getDisplayedPerformance(quarter_data) {
         let retval = {}
         retval['key'] = quarter_data.year + 'Q' + quarter_data.quarter
-        retval['display_value'] = null
-        retval['baseline_value'] = null
+        retval['display_value'] = 'err.'
+        retval['baseline_value'] = 'err.'
         retval['index_value'] = quarter_data.qoq_baseline_change_pct
         let my_perf = quarter_data.qoq_change_pct
-        if (typeof(my_perf) === 'number') {
+        if (my_perf === 'err.') {
+            retval['display_value'] = 'err.'
+        } else if (typeof(my_perf) === 'number') {
             if (this.props.baseline === 'sp500_pct_gain') {
                 let baseline_perf = quarter_data.qoq_baseline_change_pct
                 if (typeof(baseline_perf) !== 'number') {
@@ -327,7 +344,9 @@ export class MyPerformance extends React.Component {
     }
 
     formatPerformance(performance) {
-        if (typeof(performance) !== 'number') {
+        if (performance === 'err.') {
+            return 'err.'
+        } else if (typeof(performance) !== 'number') {
             return '-'
         } else {
             return (Math.round(performance * 100 * 10) / 10).toFixed(1) + '%'
@@ -338,62 +357,69 @@ export class MyPerformance extends React.Component {
         let displayed_performance = this.state.quarter_data.map( qdata => this.getDisplayedPerformance(qdata) )
         return (
             <div id="my-performance-wrapper">
-                <div id="my-performance-rowlabels">
-                    <table>
-                        <thead></thead>
-                        <tbody>
-                            <tr><th>&nbsp;</th></tr>
-                            <tr><th>stocks:</th></tr>
-                            <tr><th>cash:</th></tr>
-                            <tr><th>transfers in:</th></tr>
-                            <tr><th>total:</th></tr>
-                            <tr><th>Q-o-Q perf:</th></tr>
-                            <tr><th>S&amp;P500 perf:</th></tr>
-                        </tbody>
-                    </table>
+                <div id="my-performance-body">
+                    <div id="my-performance-rowlabels">
+                        <table>
+                            <thead></thead>
+                            <tbody>
+                                <tr><th>&nbsp;</th></tr>
+                                <tr><th>stocks:</th></tr>
+                                <tr><th>cash:</th></tr>
+                                <tr><th>transfers in:</th></tr>
+                                <tr><th>total:</th></tr>
+                                <tr><th>Q-o-Q perf:</th></tr>
+                                <tr><th>S&amp;P500 perf:</th></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="my-performance">
+                        <table>
+                            <thead>
+                                <tr>
+                                { this.state.quarter_data.map( qdata => ( // name
+                                    <th key={'name-'+qdata.year+qdata.quarter}>{qdata.name}</th>
+                                ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                { this.state.quarter_data.map( qdata => ( // ticker value
+                                    <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)}</td>
+                                ))}
+                                </tr>
+                                <tr>
+                                { this.state.quarter_data.map( qdata => ( // cash value
+                                    <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)}</td>
+                                ))}
+                                </tr>
+                                <tr>
+                                { this.state.quarter_data.map( qdata => ( // transfers in
+                                    <td key={'transfersin-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_transfersinvalue)}</td>
+                                ))}
+                                </tr>
+                                <tr>
+                                { this.state.quarter_data.map( qdata => ( // total value
+                                    <th key={'totalvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_totalvalue)}</th>
+                                ))}
+                                </tr>
+                                <tr>
+                                { displayed_performance.map( performance => ( // my performance
+                                    <td key={performance.key} className={ this.styleCell(performance) }>{ this.formatPerformance(performance.display_value) }</td>
+                                ))}
+                                </tr>
+                                <tr>
+                                { displayed_performance.map( performance => ( // index performance
+                                    <td key={performance.key}>{ this.formatPerformance(performance.index_value) }</td>
+                                ))}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div id="my-performance">
-                    <table>
-                        <thead>
-                            <tr>
-                            { this.state.quarter_data.map( qdata => ( // name
-                                <th key={'name-'+qdata.year+qdata.quarter}>{qdata.name}</th>
-                            ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            { this.state.quarter_data.map( qdata => ( // ticker value
-                                <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)}</td>
-                            ))}
-                            </tr>
-                            <tr>
-                            { this.state.quarter_data.map( qdata => ( // cash value
-                                <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)}</td>
-                            ))}
-                            </tr>
-                            <tr>
-                            { this.state.quarter_data.map( qdata => ( // transfers in
-                                <td key={'transfersin-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_transfersinvalue)}</td>
-                            ))}
-                            </tr>
-                            <tr>
-                            { this.state.quarter_data.map( qdata => ( // total value
-                                <th key={'totalvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_totalvalue)}</th>
-                            ))}
-                            </tr>
-                            <tr>
-                            { displayed_performance.map( performance => ( // my performance
-                                <td key={performance.key} className={ this.styleCell(performance) }>{ this.formatPerformance(performance.display_value) }</td>
-                            ))}
-                            </tr>
-                            <tr>
-                            { displayed_performance.map( performance => ( // index performance
-                                <td key={performance.key}>{ this.formatPerformance(performance.index_value) }</td>
-                            ))}
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="my-performance-footer">
+                    <div id="error-message">
+                        {this.state.error_message}
+                    </div>
                 </div>
 
             </div>

@@ -213,7 +213,17 @@ table#aggr-position-listing {
 
 #my-performance-wrapper {
   display: flex;
+  flex-direction: column;
+}
+
+#my-performance-body {
+  display: flex;
+  flex-direction: row;
   height: 100%;
+}
+
+#my-performance-footer {
+  text-align: center;
 }
 
 #my-performance-rowlabels {
