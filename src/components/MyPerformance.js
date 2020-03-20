@@ -51,12 +51,21 @@ export class MyPerformance extends React.Component {
 
             let quarters_of_performance = (today_year - first_year) * 4 + (today_quarter - first_quarter) + 1
             let start_baselinequote, start_baselineprice
+            let prev_quote_month, prev_quote_year
             if (first_quarter !== 1) {
-                start_baselinequote = this.getMonthEndQuote('S&P500', first_year, (first_quarter - 1) * 3)
+                prev_quote_year = first_year
+                prev_quote_month = (first_quarter - 1) * 3
             } else {
-                start_baselinequote = this.getMonthEndQuote('S&P500', first_year - 1, 9)
+                prev_quote_year = first_year - 1
+                prev_quote_month = 9
             }
-            start_baselineprice = (start_baselinequote !== null) ? start_baselinequote.price : null
+            start_baselinequote = this.getMonthEndQuote('S&P500', prev_quote_year, prev_quote_month)
+            if (start_baselinequote === null) {
+                console.log('ERROR: quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable')
+                start_baselineprice = '?'
+            } else {
+                start_baselineprice = start_baselinequote.price
+            }
 
             // calculate all quarter data
             let year = first_year
@@ -161,10 +170,18 @@ export class MyPerformance extends React.Component {
                 new_quarter['end_totalvalue'] = end_totalvalue
 
                 // determine quarter-end baseline value
-                let end_baselinequote = self.getMonthEndQuote('S&P500', target_year, quarter * 3)
-                let end_baselineprice = (end_baselinequote !== null) ? end_baselinequote.price : null
+                let end_baselineprice, end_baselinedate
+                let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
+                if (end_baselinequote === null) {
+                    console.log('ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
+                    end_baselineprice = '?'
+                    end_baselinedate = null
+                } else {
+                    end_baselineprice = end_baselinequote.price
+                    end_baselinedate = end_baselinequote.price
+                }
                 new_quarter['end_baselineprice'] = end_baselineprice
-                new_quarter['end_baselinedate'] = (end_baselinequote !== null) ? end_baselinequote.date : null
+                new_quarter['end_baselinedate'] = end_baselinedate
 
                 // determine quarter-over-quarter performance
                 // HPR (holding period return) = end / prev_end - 1
