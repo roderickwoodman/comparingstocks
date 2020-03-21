@@ -20,6 +20,7 @@ export class MyPerformance extends React.Component {
         this.getMonth = this.getMonth.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.formatPerformance = this.formatPerformance.bind(this)
+        this.formatWholePercentage = this.formatWholePercentage.bind(this)
     }
 
     componentDidMount() {
@@ -183,6 +184,8 @@ export class MyPerformance extends React.Component {
                     end_totalvalue = end_tickervalue + end_cash
                 }
                 new_quarter['end_totalvalue'] = end_totalvalue
+                new_quarter['end_tickervaluefraction'] = end_tickervalue / end_totalvalue
+                new_quarter['end_cashfraction'] = end_cash / end_totalvalue
 
                 // determine quarter-end baseline value
                 let end_baselineprice, end_baselinedate
@@ -355,6 +358,16 @@ export class MyPerformance extends React.Component {
         }
     }
 
+    formatWholePercentage(percentage) {
+        if (percentage === 'err.') {
+            return 'err.'
+        } else if (typeof(percentage) !== 'number' || isNaN(percentage)) {
+            return '?'
+        } else {
+            return (Math.round(percentage * 100)) + '%'
+        }
+    }
+
     render() {
         let displayed_performance = this.state.quarter_data.map( qdata => this.getDisplayedPerformance(qdata) )
         return (
@@ -386,12 +399,12 @@ export class MyPerformance extends React.Component {
                             <tbody>
                                 <tr>
                                 { this.state.quarter_data.map( qdata => ( // ticker value
-                                    <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)}</td>
+                                    <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</td>
                                 ))}
                                 </tr>
                                 <tr>
                                 { this.state.quarter_data.map( qdata => ( // cash value
-                                    <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)}</td>
+                                    <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</td>
                                 ))}
                                 </tr>
                                 <tr>
