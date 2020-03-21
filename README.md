@@ -1,8 +1,8 @@
 ## ComparingStocks
 
-Most financial websites surface only the most superficial data about your portfolio. Most sites present position data that are simple math based on shares, and they present performance data that is only over the "today" and/or "lifetime" timeframes. These numbers are all useless for managing a portfolio. 
+Most financial websites give you only the most superficial data about your stock portfolio as a whole. They give you your current holdings in shares and in dollars of value and they give you your performance for both the current day and since the position was opened. It is all simple math, and it is all useless for managing a portfolio. This is because the funds needed to purchase any new shares or to raise cash must always come from some selling somewhere else. Positions must be comparable to each other if they are to be useful in making operational decisions.
 
-Because deciding the amounts of each stock to own is a zero sum game, opportunity cost is unavoidable. Therefore, *everybody* needs asset allocation tools that can compare wildly different stocks and existing positions. And for truly meaningful comparisons, the following tenets are a good start:
+Unfortunately, positions and their underlying stocks are inherently quite different. But to create more actionalbe, apples-to-apples comparisons, the following tenets are a good start :
 
   * When sizing positions, 
       * **relative numbers matter**. Numbers presented as percentages of the total portfolio communicate comparisons more immediately than numbers in shares or dollars do.
