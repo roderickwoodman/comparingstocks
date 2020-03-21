@@ -72,7 +72,7 @@ export class MyPerformance extends React.Component {
 
             // calculate all quarter data
             let year = first_year
-            let start_shares = {}, start_cash = 0, start_totalvalue = 0
+            let start_shares = {}, start_cash = 0, start_tickervalue = 0, start_totalvalue = 0
             for (let q = 0; q < quarters_of_performance; q++) {
                 
                 // initialization
@@ -85,6 +85,8 @@ export class MyPerformance extends React.Component {
                 new_quarter['year'] = year
                 let end_shares = {}, end_cash = 0, end_transfersinvalue = 0
                 if (q !== 0) {
+                    start_tickervalue = quarter_data[q-1].end_tickervalue
+                    start_totalvalue = quarter_data[q-1].end_totalvalue
                     end_shares = Object.assign({}, quarter_data[q-1].end_shares)
                     end_cash = quarter_data[q-1].end_cash
                 } else {
@@ -228,10 +230,10 @@ export class MyPerformance extends React.Component {
                 let performance
                 if (typeof(start_totalvalue) !== 'number' || typeof(end_totalvalue) !== 'number') {
                     performance = 'err.'
-                } else if (q === 0) {
-                    performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
+                } else if (start_tickervalue === 0 && end_tickervalue === 0) {
+                    performance = 0
                 } else {
-                    performance = (end_totalvalue / (quarter_data[q-1].end_totalvalue + adjusted_transfer_value)) - 1
+                    performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
                 }
                 new_quarter['qoq_change_pct'] = performance
 
