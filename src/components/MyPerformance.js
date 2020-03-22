@@ -371,6 +371,7 @@ export class MyPerformance extends React.Component {
     }
 
     onToggleSortOrder() {
+        document.getElementById('my-performance-periods').scrollLeft = 0
         this.setState(prevState => {
             let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
             return { 
