@@ -22,6 +22,7 @@ export class MyPerformance extends React.Component {
         this.styleCell = this.styleCell.bind(this)
         this.formatPerformance = this.formatPerformance.bind(this)
         this.formatWholePercentage = this.formatWholePercentage.bind(this)
+        this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
     }
 
     componentDidMount() {
@@ -369,6 +370,15 @@ export class MyPerformance extends React.Component {
         }
     }
 
+    onToggleSortOrder() {
+        this.setState(prevState => {
+            let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
+            return { 
+                data_sort_dir: new_sort_dir 
+            }
+        })
+    }
+
     render() {
         let self = this
         let displayed_performance = {}
@@ -388,7 +398,7 @@ export class MyPerformance extends React.Component {
             <div id="my-performance-wrapper">
                 <div id="my-performance-body">
                     <div id="my-performance-rowlabels">
-                        <p>&nbsp;</p>
+                        <p className="strong"><button onClick={ (e)=>this.onToggleSortOrder() }>&#x21c6;</button></p>
                         <p className="strong">stocks:</p>
                         <p className="strong">cash:</p>
                         <p className="strong">transfers in:</p>
