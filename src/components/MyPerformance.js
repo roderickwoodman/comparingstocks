@@ -389,7 +389,7 @@ export class MyPerformance extends React.Component {
                     <div id="my-performance">
                         { this.state.quarter_data.map( qdata => (
                         <div className="quarter-data" key={qdata.name}>
-                            <p>{qdata.name}</p>
+                            <p className="strong">{qdata.name}</p>
                             <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
                             <p>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
                             <p>{this.formatCurrency(qdata.end_transfersinvalue)}</p>
