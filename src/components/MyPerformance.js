@@ -379,12 +379,12 @@ export class MyPerformance extends React.Component {
                 <div id="my-performance-body">
                     <div id="my-performance-rowlabels">
                         <p>&nbsp;</p>
-                        <p>stocks:</p>
-                        <p>cash:</p>
-                        <p>transfers in:</p>
-                        <p>total:</p>
-                        <p>Q-o-Q perf:</p>
-                        <p>S&amp;P500 perf:</p>
+                        <p className="strong">stocks:</p>
+                        <p className="strong">cash:</p>
+                        <p className="strong">transfers in:</p>
+                        <p className="strong">total:</p>
+                        <p className="strong">Q-o-Q perf:</p>
+                        <p className="strong">S&amp;P500 perf:</p>
                     </div>
                     <div id="my-performance">
                         { this.state.quarter_data.map( qdata => (
@@ -393,7 +393,7 @@ export class MyPerformance extends React.Component {
                             <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
                             <p>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
                             <p>{this.formatCurrency(qdata.end_transfersinvalue)}</p>
-                            <p>{this.formatCurrency(qdata.end_totalvalue)}</p>
+                            <p className="strong">{this.formatCurrency(qdata.end_totalvalue)}</p>
                             <p className={ this.styleCell(displayed_performance[qdata.name]) }>{ this.formatPerformance(displayed_performance[qdata.name].display_value) }</p>
                             <p>{ this.formatPerformance(displayed_performance[qdata.name].index_value) }</p>
                         </div>
