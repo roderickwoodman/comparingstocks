@@ -370,8 +370,12 @@ export class MyPerformance extends React.Component {
         }
     }
 
-    onToggleSortOrder() {
-        document.getElementById('my-performance-periods').scrollLeft = 0
+    onToggleSortOrder(num_periods) {
+        let el = document.getElementById('my-performance-periods')
+        let period_width = Math.floor(el.scrollWidth / num_periods)
+        let leftmost_zbperiod_shown = Math.floor(el.scrollLeft / period_width)
+        let new_scroll_left = (num_periods - leftmost_zbperiod_shown - 1) * period_width
+        el.scrollLeft = new_scroll_left
         this.setState(prevState => {
             let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
             return { 
@@ -399,7 +403,7 @@ export class MyPerformance extends React.Component {
             <div id="my-performance-wrapper">
                 <div id="my-performance-body">
                     <div id="my-performance-rowlabels">
-                        <p className="strong"><button onClick={ (e)=>this.onToggleSortOrder() }>&#x21c6;</button></p>
+                        <p className="strong"><button onClick={ (e)=>this.onToggleSortOrder(sorted_data.length) }>&#x21c6;</button></p>
                         <p className="strong">stocks:</p>
                         <p className="strong">cash:</p>
                         <p className="strong">transfers in:</p>
