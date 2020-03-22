@@ -54,7 +54,7 @@ code {
 
 #input-forms {
   display: inline-block;
-  height: 220px;
+  height: 240px;
   width: 825px;
   margin-bottom: 15px;
   padding: 10px 0 0 0;
@@ -333,10 +333,6 @@ table#aggr-position-listing {
   cursor: pointer;
   color: red;
   text-decoration: line-through;
-}
-
-#my-performance td{
-
 }
 
 .strikethrough {
