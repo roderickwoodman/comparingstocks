@@ -369,66 +369,35 @@ export class MyPerformance extends React.Component {
     }
 
     render() {
-        let displayed_performance = this.state.quarter_data.map( qdata => this.getDisplayedPerformance(qdata) )
+        let self = this
+        let displayed_performance = {}
+        this.state.quarter_data.forEach(function(qdata) {
+            displayed_performance[qdata.name] = self.getDisplayedPerformance(qdata)
+        })
         return (
             <div id="my-performance-wrapper">
                 <div id="my-performance-body">
                     <div id="my-performance-rowlabels">
-                        <table>
-                            <thead></thead>
-                            <tbody>
-                                <tr><th>&nbsp;</th></tr>
-                                <tr><th>stocks:</th></tr>
-                                <tr><th>cash:</th></tr>
-                                <tr><th>transfers in:</th></tr>
-                                <tr><th>total:</th></tr>
-                                <tr><th>Q-o-Q perf:</th></tr>
-                                <tr><th>S&amp;P500 perf:</th></tr>
-                            </tbody>
-                        </table>
+                        <p>&nbsp;</p>
+                        <p>stocks:</p>
+                        <p>cash:</p>
+                        <p>transfers in:</p>
+                        <p>total:</p>
+                        <p>Q-o-Q perf:</p>
+                        <p>S&amp;P500 perf:</p>
                     </div>
                     <div id="my-performance">
-                        <table>
-                            <thead>
-                                <tr>
-                                { this.state.quarter_data.map( qdata => ( // name
-                                    <th key={'name-'+qdata.year+qdata.quarter}>{qdata.name}</th>
-                                ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                { this.state.quarter_data.map( qdata => ( // ticker value
-                                    <td key={'tickervalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</td>
-                                ))}
-                                </tr>
-                                <tr>
-                                { this.state.quarter_data.map( qdata => ( // cash value
-                                    <td key={'cashvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</td>
-                                ))}
-                                </tr>
-                                <tr>
-                                { this.state.quarter_data.map( qdata => ( // transfers in
-                                    <td key={'transfersin-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_transfersinvalue)}</td>
-                                ))}
-                                </tr>
-                                <tr>
-                                { this.state.quarter_data.map( qdata => ( // total value
-                                    <th key={'totalvalue-'+qdata.year+qdata.quarter}>{this.formatCurrency(qdata.end_totalvalue)}</th>
-                                ))}
-                                </tr>
-                                <tr>
-                                { displayed_performance.map( performance => ( // my performance
-                                    <td key={performance.key} className={ this.styleCell(performance) }>{ this.formatPerformance(performance.display_value) }</td>
-                                ))}
-                                </tr>
-                                <tr>
-                                { displayed_performance.map( performance => ( // index performance
-                                    <td key={performance.key}>{ this.formatPerformance(performance.index_value) }</td>
-                                ))}
-                                </tr>
-                            </tbody>
-                        </table>
+                        { this.state.quarter_data.map( qdata => (
+                        <div className="quarter-data" key={qdata.name}>
+                            <p>{qdata.name}</p>
+                            <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
+                            <p>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
+                            <p>{this.formatCurrency(qdata.end_transfersinvalue)}</p>
+                            <p>{this.formatCurrency(qdata.end_totalvalue)}</p>
+                            <p className={ this.styleCell(displayed_performance[qdata.name]) }>{ this.formatPerformance(displayed_performance[qdata.name].display_value) }</p>
+                            <p>{ this.formatPerformance(displayed_performance[qdata.name].index_value) }</p>
+                        </div>
+                        ))}
                     </div>
                 </div>
                 <div id="my-performance-footer">

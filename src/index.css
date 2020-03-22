@@ -216,6 +216,11 @@ table#aggr-position-listing {
   flex-direction: column;
 }
 
+#my-performance-wrapper p {
+  margin: 0;
+  padding: 0;
+}
+
 #my-performance-body {
   display: flex;
   flex-direction: row;
@@ -227,20 +232,27 @@ table#aggr-position-listing {
 }
 
 #my-performance-rowlabels {
-  padding: 0 5px 0 15px;
+  padding: 5px 5px 5px 15px;
   min-width: 135px;
 }
 
 #my-performance {
+  display: flex;
+  flex-direction: row;
   overflow: auto;
 }
 
-#my-performance-rowlabels table th {
+#my-performance-rowlabels p {
   text-align: right;
 }
 
-#my-performance table th,
-#my-performance table td {
+#my-performance .quarter-data {
+  flex: 0 0 20%;
+  padding: 5px;
+  width: max-content;
+}
+
+#my-performance .quarter-data p {
   text-align: center;
 }
 
