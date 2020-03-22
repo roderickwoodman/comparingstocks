@@ -236,23 +236,25 @@ table#aggr-position-listing {
   min-width: 135px;
 }
 
-#my-performance {
+#my-performance-periods {
   display: flex;
   flex-direction: row;
   overflow: auto;
+  scroll-snap-type: x mandatory;
 }
 
 #my-performance-rowlabels p {
   text-align: right;
 }
 
-#my-performance .quarter-data {
+#my-performance-periods .period-data {
   flex: 0 0 20%;
   padding: 5px;
   width: max-content;
+  scroll-snap-align: start;
 }
 
-#my-performance .quarter-data p {
+#my-performance-periods .period-data p {
   text-align: center;
 }
 

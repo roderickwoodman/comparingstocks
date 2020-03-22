@@ -396,9 +396,9 @@ export class MyPerformance extends React.Component {
                         <p className="strong">Q-o-Q perf:</p>
                         <p className="strong">S&amp;P500 perf:</p>
                     </div>
-                    <div id="my-performance">
+                    <div id="my-performance-periods">
                         { sorted_data.map( qdata => (
-                        <div className="quarter-data" key={qdata.name}>
+                        <div className="period-data" key={qdata.name}>
                             <p className="strong">{qdata.name}</p>
                             <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
                             <p>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
