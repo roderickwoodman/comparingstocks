@@ -8,6 +8,7 @@ export class MyPerformance extends React.Component {
         super(props)
         this.state = {
             quarter_data: [],
+            data_sort_dir: 'asc',
             error_message: ''
         }
         this.generateQuarterData = this.generateQuarterData.bind(this)
@@ -374,6 +375,15 @@ export class MyPerformance extends React.Component {
         this.state.quarter_data.forEach(function(qdata) {
             displayed_performance[qdata.name] = self.getDisplayedPerformance(qdata)
         })
+        let sorted_data = this.state.quarter_data.sort( function(a,b) {
+            if (a.name < b.name) {
+                return (self.state.data_sort_dir === 'asc') ? -1 : 1
+            } else if (a.name > b.name) {
+                return (self.state.data_sort_dir === 'asc') ? 1 : -1
+            } else {
+                return 0
+            }
+        })
         return (
             <div id="my-performance-wrapper">
                 <div id="my-performance-body">
@@ -387,7 +397,7 @@ export class MyPerformance extends React.Component {
                         <p className="strong">S&amp;P500 perf:</p>
                     </div>
                     <div id="my-performance">
-                        { this.state.quarter_data.map( qdata => (
+                        { sorted_data.map( qdata => (
                         <div className="quarter-data" key={qdata.name}>
                             <p className="strong">{qdata.name}</p>
                             <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
