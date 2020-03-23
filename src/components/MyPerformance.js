@@ -417,8 +417,8 @@ export class MyPerformance extends React.Component {
                         <p className="strong">cash:</p>
                         <p className="strong">transfers in:</p>
                         <p className="strong">total:</p>
-                        <p className="strong">Q-o-Q perf:</p>
-                        <p className="strong">S&amp;P500 perf:</p>
+                        <p className="strong">my perf{ (this.props.baseline === 'sp500_pct_gain') ? ' delta' : '' }:</p>
+                        <p className="strong">S&amp;P500{ (this.props.baseline === 'sp500_pct_gain') ? '(ref.)' : '' }:</p>
                     </div>
                     <div id="my-performance-periods">
                         { sorted_data.map( qdata => (
