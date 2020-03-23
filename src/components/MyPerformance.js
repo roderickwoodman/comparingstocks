@@ -21,6 +21,7 @@ export class MyPerformance extends React.Component {
         this.getMonth = this.getMonth.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.formatPerformance = this.formatPerformance.bind(this)
+        this.formatIndexPerformance = this.formatIndexPerformance.bind(this)
         this.formatWholePercentage = this.formatWholePercentage.bind(this)
         this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
     }
@@ -360,6 +361,14 @@ export class MyPerformance extends React.Component {
         }
     }
 
+    formatIndexPerformance(performance) {
+        if ( this.props.baseline === 'sp500_pct_gain') {
+            return this.formatPerformance(0)
+        } else {
+            return this.formatPerformance(performance)
+        }
+    }
+
     formatWholePercentage(percentage) {
         if (percentage === 'err.') {
             return 'err.'
@@ -420,7 +429,7 @@ export class MyPerformance extends React.Component {
                             <p>{this.formatCurrency(qdata.end_transfersinvalue)}</p>
                             <p className="strong">{this.formatCurrency(qdata.end_totalvalue)}</p>
                             <p className={ this.styleCell(displayed_performance[qdata.name]) }>{ this.formatPerformance(displayed_performance[qdata.name].display_value) }</p>
-                            <p>{ this.formatPerformance(displayed_performance[qdata.name].index_value) }</p>
+                            <p>{ this.formatIndexPerformance(displayed_performance[qdata.name].index_value) }</p>
                         </div>
                         ))}
                     </div>
