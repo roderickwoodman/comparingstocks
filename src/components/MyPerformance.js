@@ -352,8 +352,8 @@ export class MyPerformance extends React.Component {
     }
 
     formatPerformance(performance) {
-        if (performance === 'err.') {
-            return 'err.'
+        if (performance === 'err.' || performance === 'ref.') {
+            return performance
         } else if (typeof(performance) !== 'number') {
             return '-'
         } else {
@@ -363,7 +363,7 @@ export class MyPerformance extends React.Component {
 
     formatIndexPerformance(performance) {
         if ( this.props.baseline === 'sp500_pct_gain') {
-            return this.formatPerformance(0)
+            return this.formatPerformance('ref.')
         } else {
             return this.formatPerformance(performance)
         }
@@ -418,7 +418,7 @@ export class MyPerformance extends React.Component {
                         <p className="strong">transfers in:</p>
                         <p className="strong">total:</p>
                         <p className="strong">my perf{ (this.props.baseline === 'sp500_pct_gain') ? ' delta' : '' }:</p>
-                        <p className="strong">S&amp;P500{ (this.props.baseline === 'sp500_pct_gain') ? '(ref.)' : '' }:</p>
+                        <p className="strong">S&amp;P500:</p>
                     </div>
                     <div id="my-performance-periods">
                         { sorted_data.map( qdata => (

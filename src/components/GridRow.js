@@ -499,7 +499,11 @@ export class GridRow extends React.Component {
                     value *= Math.pow(10, column.scaling_power)
                 }
                 if (performance_value && this.props.baseline.name !== 'zero_pct_gain') {
-                    value = value - baseline_value
+                    if (this.props.row_name === 'S&P500') {
+                        return 'ref.'
+                    } else {
+                        value = value - baseline_value
+                    }
                 }
                 if (value.toString().indexOf('.')) {
                     value = (Math.round(Math.pow(10, num_decimals) * value) / Math.pow(10, num_decimals)).toFixed(num_decimals)
