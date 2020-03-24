@@ -241,6 +241,7 @@ table#aggr-position-listing {
   flex-direction: row;
   overflow: auto;
   scroll-snap-type: x mandatory;
+  width: 100%;
 }
 
 #my-performance-rowlabels p {
@@ -257,6 +258,7 @@ table#aggr-position-listing {
 #my-performance-periods .period-data {
   flex: 0 0 20%;
   padding: 5px;
+  white-space: nowrap;
   width: max-content;
   scroll-snap-align: start;
 }

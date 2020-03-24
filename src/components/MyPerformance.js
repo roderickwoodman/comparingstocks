@@ -7,7 +7,7 @@ export class MyPerformance extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            period_type: 'month',
+            period_type: 'year',
             period_data: [],
             data_sort_dir: 'asc',
             error_message: ''
