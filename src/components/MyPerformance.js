@@ -419,7 +419,7 @@ export class MyPerformance extends React.Component {
         } else {
             if ( displayed < baseline || displayed < 0 ) {
                 classes += ' text-red'
-            } else if (displayed > index) {
+            } else if (displayed > index && displayed > 0) {
                 classes += ' text-green'
             }
         }
