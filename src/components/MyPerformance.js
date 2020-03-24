@@ -47,23 +47,53 @@ export class MyPerformance extends React.Component {
 
         if (sorted_transactions.length) {
 
+            // the performance start period includes the earliest added transaction
             let first_year = parseInt(sorted_transactions[0].date.split('-')[0])
-            let first_period = Math.floor((parseInt(sorted_transactions[0].date.split('-')[1])-1) / 3 + 1)
+            let first_month = parseInt(sorted_transactions[0].date.split('-')[1])
+            let first_period
+            if (this.state.period_type === 'month') {
+                first_period = first_month
+            } else if (this.state.period_type === 'quarter') {
+                first_period = Math.floor((first_month - 1) / 3 + 1)
+            } else if (this.state.period_type === 'year') {
+                first_period = 1
+            }
 
+            // the performance end period includes the current date
             let today = new Date()
             let today_year = today.getFullYear()
             let today_month = today.getMonth() + 1
-            let today_period = Math.round(today.getMonth() / 3)
+            let today_period
+            if (this.state.period_type === 'month') {
+                today_period = today_month
+            } else if (this.state.period_type === 'quarter') {
+                today_period = Math.round(today.getMonth() / 3)
+            } else if (this.state.period_type === 'year') {
+                today_period = 1
+            }
 
-            let periods_of_performance = (today_year - first_year) * 4 + (today_period - first_period) + 1
+            // calculate the number of periods to display
+            let periods_of_performance
+            if (this.state.period_type === 'month') {
+                periods_of_performance = (today_year - first_year) * 12 + (today_period - first_period) + 1
+            } else if (this.state.period_type === 'quarter') {
+                periods_of_performance = (today_year - first_year) * 4 + (today_period - first_period) + 1
+            } else if (this.state.period_type === 'year') {
+                periods_of_performance = (today_year - first_year) + 1
+            }
+
+            // based on MONTHLY quote data, initialize the lookback variables for the previous period
             let start_baselinequote, start_baselineprice
             let prev_quote_month, prev_quote_year
-            if (first_period !== 1) {
-                prev_quote_year = first_year
-                prev_quote_month = (first_period - 1) * 3
-            } else {
+            if (this.state.period_type === 'month') {
+                prev_quote_year = (first_month !== 1) ? first_year : first_year - 1
+                prev_quote_month = (first_month !== 1) ? first_month - 1 : 12
+            } else if (this.state.period_type === 'quarter') {
+                prev_quote_year = (first_period !== 1) ? first_year : first_year - 1 
+                prev_quote_month = (first_period !== 1) ? (first_period - 1) * 3 : 9
+            } else if (this.state.period_type === 'year') {
                 prev_quote_year = first_year - 1
-                prev_quote_month = 9
+                prev_quote_month = 12
             }
             start_baselinequote = this.getMonthEndQuote('S&P500', prev_quote_year, prev_quote_month)
             if (start_baselinequote === null) {
@@ -81,8 +111,14 @@ export class MyPerformance extends React.Component {
             for (let p = 0; p < periods_of_performance; p++) {
                 
                 // initialization
-                let new_period = {}
-                let period = (p + first_period - 1) % 4 + 1
+                let period, new_period = {}
+                if (this.state.period_type === 'month') {
+                    period = (p + first_period - 1) % 12 + 1
+                } else if (this.state.period_type === 'quarter') {
+                    period = (p + first_period - 1) % 4 + 1
+                } else if (this.state.period_type === 'year') {
+                    period =  1
+                }
                 new_period['period'] = period
                 if (period === 1 && p !== 0) {
                     year += 1
@@ -100,11 +136,11 @@ export class MyPerformance extends React.Component {
                 }
                 let period_sort_suffix, period_display_suffix
                 if (this.state.period_type === 'month') {
-                    period_sort_suffix = 'M' + ('0' + p).slice(-2)
-                    period_display_suffix = 'M' + p
+                    period_sort_suffix = 'M' + ('0' + period).slice(-2)
+                    period_display_suffix = 'M' + period
                 } else if (this.state.period_type === 'quarter') {
-                    period_sort_suffix = 'Q' + ('0' + p).slice(-2)
-                    period_display_suffix = 'Q' + p
+                    period_sort_suffix = 'Q' + ('0' + period).slice(-2)
+                    period_display_suffix = 'Q' + period
                 } else if (this.state.period_type === 'year') {
                     period_sort_suffix = ''
                     period_display_suffix = ''
@@ -146,7 +182,14 @@ export class MyPerformance extends React.Component {
                 // determine period-end ticker value
                 let self = this
                 let end_tickervalue = 0, end_tickerdate
-                let this_quote_month = period * 3
+                let this_quote_month
+                if (this.state.period_type === 'month') {
+                    this_quote_month = period
+                } else if (this.state.period_type === 'quarter') {
+                    this_quote_month = period * 3
+                } else if (this.state.period_type === 'year') {
+                    this_quote_month = 12
+                }
                 let this_quote_year = target_year
                 if (target_year === today_year && period === today_period) { // for a partial last period, use a previous month's quotes
                     let quote_dates = []
@@ -225,14 +268,22 @@ export class MyPerformance extends React.Component {
                 // transfersIN, adjusted for middle-of-period transfers... aka Modified Dietz method)
                 //   transfersIN = transferINa * fraction of period duration) + (transferINb * fraction of period duration)
                 let adjusted_transfer_value = 0
-                let zb_start_month = period * 3 - 3
-                let period_start_date = new Date(target_year, zb_start_month, 1)
-                let period_end_date
-                if (zb_start_month !== 3) {
-                    period_end_date = new Date(target_year, zb_start_month+3, 1)
-                } else {
-                    period_end_date = new Date(target_year+1, 1, 1)
+                let zb_start_month, zb_end_month, end_year
+                if (this.state.period_type === 'month') {
+                    zb_start_month = period - 1
+                    zb_end_month = (zb_start_month !== 11) ? zb_start_month + 1 : 1
+                    end_year = (zb_start_month !== 11) ? target_year : target_year + 1
+                } else if (this.state.period_type === 'quarter') {
+                    zb_start_month = period * 3 - 3
+                    zb_end_month = (period !== 4) ? zb_start_month + 3 : 1
+                    end_year = (period !== 4) ? target_year : target_year + 1
+                } else if (this.state.period_type === 'year') {
+                    zb_start_month = 0
+                    zb_end_month = 0
+                    end_year = target_year + 1
                 }
+                let period_start_date = new Date(target_year, zb_start_month, 1)
+                let period_end_date = new Date(end_year, zb_end_month, 1)
                 let period_days = Math.round((period_end_date - period_start_date) / (1000 * 60 * 60 * 24))
                 new_period.transactions_of_cash.forEach(function(transaction) {
                     let transfer_month, transfer_day, fraction_of_period
@@ -280,7 +331,17 @@ export class MyPerformance extends React.Component {
     }
 
     getPeriod(date) {
-        return Math.floor((parseInt(date.split('-')[1])-1) / 3 + 1)
+        let zb_month = parseInt(date.split('-')[1])-1
+
+        if (this.state.period_type === 'month') {
+            return zb_month + 1
+        } else if (this.state.period_type === 'quarter') {
+            return Math.floor(zb_month / 3) + 1
+        } else if (this.state.period_type === 'year') {
+            return 1
+        } else {
+            return 'n/a'
+        }
     }
 
     getMonth(date) {
