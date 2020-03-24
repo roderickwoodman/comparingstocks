@@ -7,7 +7,7 @@ export class MyPerformance extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            period_type: 'quarter',
+            period_type: 'month',
             period_data: [],
             data_sort_dir: 'asc',
             error_message: ''
@@ -136,8 +136,9 @@ export class MyPerformance extends React.Component {
                 }
                 let period_sort_suffix, period_display_suffix
                 if (this.state.period_type === 'month') {
+                    let d = new Date(1980, period - 1, 1)
                     period_sort_suffix = 'M' + ('0' + period).slice(-2)
-                    period_display_suffix = 'M' + period
+                    period_display_suffix = ' ' + d.toLocaleString('default', { month: 'short' })
                 } else if (this.state.period_type === 'quarter') {
                     period_sort_suffix = 'Q' + ('0' + period).slice(-2)
                     period_display_suffix = 'Q' + period
