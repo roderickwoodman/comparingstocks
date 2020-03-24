@@ -12,13 +12,13 @@ export class MyPerformance extends React.Component {
             data_sort_dir: 'asc',
             error_message: ''
         }
-        this.generateQuarterData = this.generateQuarterData.bind(this)
+        this.generatePeriodData = this.generatePeriodData.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.formatCurrency = this.formatCurrency.bind(this)
         this.getDisplayedPerformance = this.getDisplayedPerformance.bind(this)
         this.getMonthEndQuote = this.getMonthEndQuote.bind(this)
         this.getYear = this.getYear.bind(this)
-        this.getQuarter = this.getQuarter.bind(this)
+        this.getPeriod = this.getPeriod.bind(this)
         this.getMonth = this.getMonth.bind(this)
         this.styleCell = this.styleCell.bind(this)
         this.formatPerformance = this.formatPerformance.bind(this)
@@ -28,10 +28,10 @@ export class MyPerformance extends React.Component {
     }
 
     componentDidMount() {
-        this.generateQuarterData()
+        this.generatePeriodData()
     }
 
-    generateQuarterData() {
+    generatePeriodData() {
 
         let sorted_transactions = this.props.all_transactions.sort(function(a, b) {
             if (a.date < b.date) {
@@ -78,33 +78,43 @@ export class MyPerformance extends React.Component {
             // calculate all period data
             let year = first_year
             let start_shares = {}, start_cash = 0, start_tickervalue = 0, start_totalvalue = 0
-            for (let q = 0; q < periods_of_performance; q++) {
+            for (let p = 0; p < periods_of_performance; p++) {
                 
                 // initialization
                 let new_period = {}
-                let period = (q + first_period - 1) % 4 + 1
+                let period = (p + first_period - 1) % 4 + 1
                 new_period['period'] = period
-                if (period === 1 && q !== 0) {
+                if (period === 1 && p !== 0) {
                     year += 1
                 }
                 new_period['year'] = year
                 let end_shares = {}, end_cash = 0, end_transfersinvalue = 0
-                if (q !== 0) {
-                    start_tickervalue = period_data[q-1].end_tickervalue
-                    start_totalvalue = period_data[q-1].end_totalvalue
-                    end_shares = Object.assign({}, period_data[q-1].end_shares)
-                    end_cash = period_data[q-1].end_cash
+                if (p !== 0) {
+                    start_tickervalue = period_data[p-1].end_tickervalue
+                    start_totalvalue = period_data[p-1].end_totalvalue
+                    end_shares = Object.assign({}, period_data[p-1].end_shares)
+                    end_cash = period_data[p-1].end_cash
                 } else {
                     end_shares = Object.assign({}, start_shares)
                     end_cash = start_cash
                 }
-                let period_letter = (this.state.period_type === 'quarter') ? 'Q' : 'M'
-                new_period['display_name'] = (q !== periods_of_performance - 1) ? year + period_letter + period : 'current' + ' ' + period_letter
-                new_period['sort_name'] = year + period_letter + period
+                let period_sort_suffix, period_display_suffix
+                if (this.state.period_type === 'month') {
+                    period_sort_suffix = 'M' + ('0' + p).slice(-2)
+                    period_display_suffix = 'M' + p
+                } else if (this.state.period_type === 'quarter') {
+                    period_sort_suffix = 'Q' + ('0' + p).slice(-2)
+                    period_display_suffix = 'Q' + p
+                } else if (this.state.period_type === 'year') {
+                    period_sort_suffix = ''
+                    period_display_suffix = ''
+                }
+                new_period['display_name'] = (p !== periods_of_performance - 1) ? year + period_display_suffix : 'current'
+                new_period['sort_name'] = year + period_sort_suffix
 
                 // determine period's transactions
                 let target_year = year
-                let period_transactions = sorted_transactions.filter( t => this.getYear(t.date) === target_year && this.getQuarter(t.date) === period )
+                let period_transactions = sorted_transactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(t.date) === period )
                 new_period['transactions_of_stock'] = period_transactions.filter( t => t.ticker !== 'cash' )
                 new_period['transactions_of_cash'] = period_transactions.filter( t => t.ticker === 'cash' )
 
@@ -250,10 +260,10 @@ export class MyPerformance extends React.Component {
                 performance = 'n/a'
                 if (typeof(start_baselineprice) !== 'number' || typeof(end_baselineprice) !== 'number') {
                     performance = 'err.'
-                } else if (q === 0) {
+                } else if (p === 0) {
                     performance = (end_baselineprice / start_baselineprice) - 1
                 } else {
-                    performance = (end_baselineprice / period_data[q-1].end_baselineprice) - 1
+                    performance = (end_baselineprice / period_data[p-1].end_baselineprice) - 1
                 }
                 new_period['period_baseline_change_pct'] = performance
 
@@ -269,7 +279,7 @@ export class MyPerformance extends React.Component {
         return parseInt(date.split('-')[0])
     }
 
-    getQuarter(date) {
+    getPeriod(date) {
         return Math.floor((parseInt(date.split('-')[1])-1) / 3 + 1)
     }
 
@@ -296,7 +306,7 @@ export class MyPerformance extends React.Component {
 
     getDisplayedPerformance(period_data) {
         let retval = {}
-        retval['key'] = period_data.year + 'Q' + period_data.period
+        retval['key'] = period_data.sort_name
         retval['display_value'] = 'err.'
         retval['baseline_value'] = 'err.'
         retval['index_value'] = period_data.period_baseline_change_pct
