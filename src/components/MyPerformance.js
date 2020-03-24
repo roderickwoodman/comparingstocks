@@ -7,7 +7,7 @@ export class MyPerformance extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            period_type: 'year',
+            period_size: 'year',
             period_data: [],
             data_sort_dir: 'asc',
             error_message: ''
@@ -25,13 +25,14 @@ export class MyPerformance extends React.Component {
         this.formatIndexPerformance = this.formatIndexPerformance.bind(this)
         this.formatWholePercentage = this.formatWholePercentage.bind(this)
         this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
+        this.handlePeriodChange = this.handlePeriodChange.bind(this)
     }
 
     componentDidMount() {
-        this.generatePeriodData()
+        this.generatePeriodData(this.state.period_size)
     }
 
-    generatePeriodData() {
+    generatePeriodData(period_size) {
 
         let sorted_transactions = this.props.all_transactions.sort(function(a, b) {
             if (a.date < b.date) {
@@ -51,11 +52,11 @@ export class MyPerformance extends React.Component {
             let first_year = parseInt(sorted_transactions[0].date.split('-')[0])
             let first_month = parseInt(sorted_transactions[0].date.split('-')[1])
             let first_period
-            if (this.state.period_type === 'month') {
+            if (period_size === 'month') {
                 first_period = first_month
-            } else if (this.state.period_type === 'quarter') {
+            } else if (period_size === 'quarter') {
                 first_period = Math.floor((first_month - 1) / 3 + 1)
-            } else if (this.state.period_type === 'year') {
+            } else if (period_size === 'year') {
                 first_period = 1
             }
 
@@ -64,34 +65,34 @@ export class MyPerformance extends React.Component {
             let today_year = today.getFullYear()
             let today_month = today.getMonth() + 1
             let today_period
-            if (this.state.period_type === 'month') {
+            if (period_size === 'month') {
                 today_period = today_month
-            } else if (this.state.period_type === 'quarter') {
+            } else if (period_size === 'quarter') {
                 today_period = Math.round(today.getMonth() / 3)
-            } else if (this.state.period_type === 'year') {
+            } else if (period_size === 'year') {
                 today_period = 1
             }
 
             // calculate the number of periods to display
             let periods_of_performance
-            if (this.state.period_type === 'month') {
+            if (period_size === 'month') {
                 periods_of_performance = (today_year - first_year) * 12 + (today_period - first_period) + 1
-            } else if (this.state.period_type === 'quarter') {
+            } else if (period_size === 'quarter') {
                 periods_of_performance = (today_year - first_year) * 4 + (today_period - first_period) + 1
-            } else if (this.state.period_type === 'year') {
+            } else if (period_size === 'year') {
                 periods_of_performance = (today_year - first_year) + 1
             }
 
             // based on MONTHLY quote data, initialize the lookback variables for the previous period
             let start_baselinequote, start_baselineprice
             let prev_quote_month, prev_quote_year
-            if (this.state.period_type === 'month') {
+            if (period_size === 'month') {
                 prev_quote_year = (first_month !== 1) ? first_year : first_year - 1
                 prev_quote_month = (first_month !== 1) ? first_month - 1 : 12
-            } else if (this.state.period_type === 'quarter') {
+            } else if (period_size === 'quarter') {
                 prev_quote_year = (first_period !== 1) ? first_year : first_year - 1 
                 prev_quote_month = (first_period !== 1) ? (first_period - 1) * 3 : 9
-            } else if (this.state.period_type === 'year') {
+            } else if (period_size === 'year') {
                 prev_quote_year = first_year - 1
                 prev_quote_month = 12
             }
@@ -112,11 +113,11 @@ export class MyPerformance extends React.Component {
                 
                 // initialization
                 let period, new_period = {}
-                if (this.state.period_type === 'month') {
+                if (period_size === 'month') {
                     period = (p + first_period - 1) % 12 + 1
-                } else if (this.state.period_type === 'quarter') {
+                } else if (period_size === 'quarter') {
                     period = (p + first_period - 1) % 4 + 1
-                } else if (this.state.period_type === 'year') {
+                } else if (period_size === 'year') {
                     period =  1
                 }
                 new_period['period'] = period
@@ -135,14 +136,14 @@ export class MyPerformance extends React.Component {
                     end_cash = start_cash
                 }
                 let period_sort_suffix, period_display_suffix
-                if (this.state.period_type === 'month') {
+                if (period_size === 'month') {
                     let d = new Date(1980, period - 1, 1)
                     period_sort_suffix = 'M' + ('0' + period).slice(-2)
                     period_display_suffix = ' ' + d.toLocaleString('default', { month: 'short' })
-                } else if (this.state.period_type === 'quarter') {
+                } else if (period_size === 'quarter') {
                     period_sort_suffix = 'Q' + ('0' + period).slice(-2)
                     period_display_suffix = 'Q' + period
-                } else if (this.state.period_type === 'year') {
+                } else if (period_size === 'year') {
                     period_sort_suffix = ''
                     period_display_suffix = ''
                 }
@@ -151,7 +152,7 @@ export class MyPerformance extends React.Component {
 
                 // determine period's transactions
                 let target_year = year
-                let period_transactions = sorted_transactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(t.date) === period )
+                let period_transactions = sorted_transactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(period_size, t.date) === period )
                 new_period['transactions_of_stock'] = period_transactions.filter( t => t.ticker !== 'cash' )
                 new_period['transactions_of_cash'] = period_transactions.filter( t => t.ticker === 'cash' )
 
@@ -184,11 +185,11 @@ export class MyPerformance extends React.Component {
                 let self = this
                 let end_tickervalue = 0, end_tickerdate
                 let this_quote_month
-                if (this.state.period_type === 'month') {
+                if (period_size === 'month') {
                     this_quote_month = period
-                } else if (this.state.period_type === 'quarter') {
+                } else if (period_size === 'quarter') {
                     this_quote_month = period * 3
-                } else if (this.state.period_type === 'year') {
+                } else if (period_size === 'year') {
                     this_quote_month = 12
                 }
                 let this_quote_year = target_year
@@ -270,15 +271,15 @@ export class MyPerformance extends React.Component {
                 //   transfersIN = transferINa * fraction of period duration) + (transferINb * fraction of period duration)
                 let adjusted_transfer_value = 0
                 let zb_start_month, zb_end_month, end_year
-                if (this.state.period_type === 'month') {
+                if (period_size === 'month') {
                     zb_start_month = period - 1
                     zb_end_month = (zb_start_month !== 11) ? zb_start_month + 1 : 1
                     end_year = (zb_start_month !== 11) ? target_year : target_year + 1
-                } else if (this.state.period_type === 'quarter') {
+                } else if (period_size === 'quarter') {
                     zb_start_month = period * 3 - 3
                     zb_end_month = (period !== 4) ? zb_start_month + 3 : 1
                     end_year = (period !== 4) ? target_year : target_year + 1
-                } else if (this.state.period_type === 'year') {
+                } else if (period_size === 'year') {
                     zb_start_month = 0
                     zb_end_month = 0
                     end_year = target_year + 1
@@ -331,14 +332,14 @@ export class MyPerformance extends React.Component {
         return parseInt(date.split('-')[0])
     }
 
-    getPeriod(date) {
+    getPeriod(period_size, date) {
         let zb_month = parseInt(date.split('-')[1])-1
 
-        if (this.state.period_type === 'month') {
+        if (period_size === 'month') {
             return zb_month + 1
-        } else if (this.state.period_type === 'quarter') {
+        } else if (period_size === 'quarter') {
             return Math.floor(zb_month / 3) + 1
-        } else if (this.state.period_type === 'year') {
+        } else if (period_size === 'year') {
             return 1
         } else {
             return 'n/a'
@@ -468,6 +469,12 @@ export class MyPerformance extends React.Component {
         })
     }
 
+    handlePeriodChange(event) {
+        let newPeriod = event.target.id.replace(/select-/g, '')
+        this.setState({ period_size: newPeriod })
+        this.generatePeriodData(newPeriod)
+    }
+
     render() {
         let self = this
         let displayed_performance = {}
@@ -487,7 +494,14 @@ export class MyPerformance extends React.Component {
             <div id="my-performance-wrapper">
                 <div id="my-performance-body">
                     <div id="my-performance-rowlabels">
-                        <p className="strong"><button onClick={ (e)=>this.onToggleSortOrder(sorted_data.length) }>&#x21c6;</button></p>
+                        <div>
+                            <ul id="periodsize-selector">
+                                <li id="select-year" className={"strong selector" + (this.state.period_size === "year" ? " selected" : "")} onClick={this.handlePeriodChange}>Y</li>
+                                <li id="select-quarter" className={"strong selector" + (this.state.period_size === "quarter" ? " selected" : "")} onClick={this.handlePeriodChange}>Q</li>
+                                <li id="select-month" className={"strong selector" + (this.state.period_size === "month" ? " selected" : "")} onClick={this.handlePeriodChange}>M</li>
+                            </ul>
+                            <button onClick={ (e)=>this.onToggleSortOrder(sorted_data.length) } className="strong">&#x21c6;</button>
+                        </div>
                         <p className="strong">stocks:</p>
                         <p className="strong">cash:</p>
                         <p className="strong">transfers in:</p>
