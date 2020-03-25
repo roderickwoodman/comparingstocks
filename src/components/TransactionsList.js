@@ -71,8 +71,8 @@ export class TransactionsList extends React.Component {
                 }
             })
         return (
-            <section id="transaction-log">
-                <section id="transaction-log-controls">
+            <section id="transaction-list">
+                <section id="transaction-list-controls">
                     <form>
                         <label>Filter:</label>
                         <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />

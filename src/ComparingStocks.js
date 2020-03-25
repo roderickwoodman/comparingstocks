@@ -220,7 +220,7 @@ export class ComparingStocks extends React.Component {
             sell_all_of: [],
             remaining_cash: null,
             last_error_messages: [],
-            all_status_messages: [],
+            all_console_messages: [],
             baseline: {
                 name: 'zero_pct_gain',
                 short_change_pct: 0,
@@ -1004,12 +1004,12 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.ticker !== delete_ticker)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
-            // add status messages
-            let newAllStatusMessages = [...prevState.all_status_messages]
+            // add console messages
+            let newAllConsoleMessages = [...prevState.all_console_messages]
             let new_messages = []
             new_messages.push(this.createMessage('Ticker "' + delete_ticker + '" has now been deleted.'))
             let newLastErrorMessages = new_messages.filter( message_obj => message_obj.content.includes('ERROR'))
-            newAllStatusMessages = [...new_messages, ...newAllStatusMessages]
+            newAllConsoleMessages = [...new_messages, ...newAllConsoleMessages]
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1028,7 +1028,7 @@ export class ComparingStocks extends React.Component {
                 allTags: newAllTags, 
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
-                all_status_messages: newAllStatusMessages,
+                all_console_messages: newAllConsoleMessages,
                 last_error_messages: newLastErrorMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
@@ -1244,12 +1244,12 @@ export class ComparingStocks extends React.Component {
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modified_at !== delete_transaction_id)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
-            // add status messages
-            let newAllStatusMessages = [...prevState.all_status_messages]
+            // add console messages
+            let newAllConsoleMessages = [...prevState.all_console_messages]
             let new_messages = []
             new_messages.push(this.createMessage('Transaction "' + transaction_to_delete.summary + '" has now been deleted.'))
             let newLastErrorMessages = new_messages.filter( message_obj => message_obj.content.includes('ERROR'))
-            newAllStatusMessages = [...new_messages, ...newAllStatusMessages]
+            newAllConsoleMessages = [...new_messages, ...newAllConsoleMessages]
 
             // recalculate the position numbers
             let remainingTransactionsForTicker = newAllTransactions.filter(transaction => transaction.ticker === ticker)
@@ -1278,7 +1278,7 @@ export class ComparingStocks extends React.Component {
             return { 
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
-                all_status_messages: newAllStatusMessages,
+                all_console_messages: newAllConsoleMessages,
                 last_error_messages: newLastErrorMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
@@ -1352,12 +1352,12 @@ export class ComparingStocks extends React.Component {
             })
             localStorage.setItem('allTags', JSON.stringify(newAllTags))
 
-            // add status messages
-            let newAllStatusMessages = [...prevState.all_status_messages]
+            // add console messages
+            let newAllConsoleMessages = [...prevState.all_console_messages]
             let new_messages = []
             new_messages.push(this.createMessage('Tag "' + delete_tag + '" has now been deleted.'))
             let newLastErrorMessages = new_messages.filter( message_obj => message_obj.content.includes('ERROR'))
-            newAllStatusMessages = [...new_messages, ...newAllStatusMessages]
+            newAllConsoleMessages = [...new_messages, ...newAllConsoleMessages]
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1374,7 +1374,7 @@ export class ComparingStocks extends React.Component {
 
             return { 
                 allTags: newAllTags, 
-                all_status_messages: newAllStatusMessages,
+                all_console_messages: newAllConsoleMessages,
                 last_error_messages: newLastErrorMessages,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
@@ -1428,12 +1428,12 @@ export class ComparingStocks extends React.Component {
 
     onNewMessages(new_messages) {
         this.setState(prevState => {
-            let newAllStatusMessages = [...prevState.all_status_messages]
-            newAllStatusMessages = [...new_messages.reverse(), ...newAllStatusMessages]
+            let newAllConsoleMessages = [...prevState.all_console_messages]
+            newAllConsoleMessages = [...new_messages.reverse(), ...newAllConsoleMessages]
             let newLastErrorMessages = new_messages.filter(message_obj => message_obj.content.includes('ERROR')).reverse()
             return { 
                 last_error_messages: newLastErrorMessages,
-                all_status_messages: newAllStatusMessages }
+                all_console_messages: newAllConsoleMessages }
         })
     }
 
@@ -2477,13 +2477,13 @@ export class ComparingStocks extends React.Component {
                                 on_import_transactions={this.onImportTransactions}
                                 on_new_cash={this.onNewCash}
                                 create_message={this.createMessage}
-                                all_status_messages={this.state.all_status_messages}
+                                all_console_messages={this.state.all_console_messages}
                                 on_new_messages={this.onNewMessages}
                                 on_whatif_submit={this.onWhatifSubmit}
                                 clear_last_message={this.clearLastMessage}
                             />
                         </div>
-                        <div id="last-status-message">
+                        <div id="last-console-message">
                             {this.state.last_error_messages.length && (
                             <div>{this.state.last_error_messages[0].content}</div>
                             )}

@@ -42,20 +42,20 @@ export class TransactionAdd extends React.Component {
 
     handleCashSubmit(event) {
         event.preventDefault()
-        let new_status_messages = []
+        let new_console_messages = []
         let user_cash_action = this.state.user_cash_action
         let user_date = this.state.transaction_date
         let user_cash_amount = parseFloat(this.state.user_cash_amount.trim().replace(/\$/g, ""))
         if (isNaN(user_cash_amount)) {
-            new_status_messages.push(this.props.create_message('ERROR: Cash amount "' + this.state.user_cash_amount + '" is not in currency format.'))
+            new_console_messages.push(this.props.create_message('ERROR: Cash amount "' + this.state.user_cash_amount + '" is not in currency format.'))
         } else {
             let total = parseFloat((Math.round(user_cash_amount * 100) / 100).toFixed(2));
             let valid_transaction_summary = user_date + ': ' + user_cash_action + ' $' + total.toFixed(2) + ' cash'
-            new_status_messages.push(this.props.create_message('Transaction "' + valid_transaction_summary + '" has now been recorded.'))
+            new_console_messages.push(this.props.create_message('Transaction "' + valid_transaction_summary + '" has now been recorded.'))
             this.props.on_new_cash(valid_transaction_summary)
             this.handleCashReset()
         }
-        this.props.on_new_messages(new_status_messages)
+        this.props.on_new_messages(new_console_messages)
     }
 
     handleSubmit(event) {
@@ -68,39 +68,39 @@ export class TransactionAdd extends React.Component {
     }
 
     validateTransaction(transaction) {
-        let new_status_messages = []
+        let new_console_messages = []
         const create_message = this.props.create_message
 
         if (transaction.length < 4) {
 
-            new_status_messages.push(create_message('ERROR: Transaction "' + transaction + '" must be 4 terms.'))
+            new_console_messages.push(create_message('ERROR: Transaction "' + transaction + '" must be 4 terms.'))
 
         } else {
 
             let action = transaction[0].toLowerCase()
             if (action !== 'buy' && action !== 'sell') {
-                new_status_messages.push(create_message('ERROR: Action "' + transaction[0] + '" must be either "buy" or "sell".'))
+                new_console_messages.push(create_message('ERROR: Action "' + transaction[0] + '" must be either "buy" or "sell".'))
             }
 
             let num_shares = parseInt(transaction[1])
             if (isNaN(num_shares) || num_shares < 1) {
-                new_status_messages.push(create_message('ERROR: Share count "' + transaction[1] + '" must be a positive integer.'))
+                new_console_messages.push(create_message('ERROR: Share count "' + transaction[1] + '" must be a positive integer.'))
             }
 
             let ticker = transaction[2].toUpperCase().replace(/[^A-Z]/g, "")
             if (ticker !== transaction[2].toUpperCase() || !this.props.all_stocks.includes(ticker.toUpperCase())) {
-                new_status_messages.push(create_message('ERROR: Ticker "' + transaction[2] + '" does not exist.'))
+                new_console_messages.push(create_message('ERROR: Ticker "' + transaction[2] + '" does not exist.'))
             }
 
             let total = parseFloat(transaction[3].replace(/[^0-9.]/g, ""))
             if (isNaN(total) || total < 0) {
-                new_status_messages.push(create_message('ERROR: Total amount "' + transaction[3] + '" must be a non-negative number.'))
+                new_console_messages.push(create_message('ERROR: Total amount "' + transaction[3] + '" must be a non-negative number.'))
             } else {
                 total = parseFloat((Math.round(total * 100) / 100).toFixed(2));
             }
 
             // this transaction is valid
-            if (!new_status_messages.length) {
+            if (!new_console_messages.length) {
 
                 // also print the "ticker has now been added" message, if needed
                 let tagged_tickers = []
@@ -113,18 +113,18 @@ export class TransactionAdd extends React.Component {
                     })
                 })
                 if (tagged_tickers.includes(transaction[2].toUpperCase())) {
-                    new_status_messages.push(create_message('Ticker ' + transaction[2].toUpperCase() + ' has now been added.'))
+                    new_console_messages.push(create_message('Ticker ' + transaction[2].toUpperCase() + ' has now been added.'))
                 }
 
                 let valid_transaction_summary = this.state.transaction_date + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
-                new_status_messages.push(create_message('Transaction "' + valid_transaction_summary + '" has now been recorded.'))
+                new_console_messages.push(create_message('Transaction "' + valid_transaction_summary + '" has now been recorded.'))
                 this.props.on_new_transaction(valid_transaction_summary)
             }
 
         }
 
         // send all of the messages to print
-        this.props.on_new_messages(new_status_messages)
+        this.props.on_new_messages(new_console_messages)
     }
 
     render() {

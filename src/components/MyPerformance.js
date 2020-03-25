@@ -44,7 +44,7 @@ export class MyPerformance extends React.Component {
             }
         })
         
-        let period_data = [], new_status_messages = []
+        let period_data = [], new_console_messages = []
 
         if (sorted_transactions.length) {
 
@@ -99,8 +99,8 @@ export class MyPerformance extends React.Component {
             start_baselinequote = this.getMonthEndQuote('S&P500', prev_quote_year, prev_quote_month)
             if (start_baselinequote === null) {
                 let error_message = 'ERROR: quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable'
-                this.setState({ error_message: 'ERROR: quote(s) unavailable, see logs' })
-                new_status_messages.push(this.props.create_message(error_message))
+                this.setState({ error_message: 'ERROR: quote(s) unavailable, see console' })
+                new_console_messages.push(this.props.create_message(error_message))
                 start_baselineprice = 'err.'
             } else {
                 start_baselineprice = start_baselinequote.price
@@ -229,8 +229,8 @@ export class MyPerformance extends React.Component {
                             error_message = 'ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')'
                         }
                     }
-                    new_status_messages.push(self.props.create_message(error_message))
-                    self.setState({ error_message: 'ERROR: quote(s) unavailable, see logs' })
+                    new_console_messages.push(self.props.create_message(error_message))
+                    self.setState({ error_message: 'ERROR: quote(s) unavailable, see console' })
                 })
                 new_period['end_tickervalue'] = end_tickervalue
                 new_period['end_tickerdate'] = end_tickerdate
@@ -251,8 +251,8 @@ export class MyPerformance extends React.Component {
                 let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
                 if (end_baselinequote === null) {
                     let error_message = 'ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable'
-                    new_status_messages.push(self.props.create_message(error_message))
-                    self.setState({ error_message: 'ERROR: quote(s) unavailable, see logs' })
+                    new_console_messages.push(self.props.create_message(error_message))
+                    self.setState({ error_message: 'ERROR: quote(s) unavailable, see console' })
                     end_baselineprice = 'err.'
                     end_baselinedate = null
                 } else {
@@ -322,7 +322,7 @@ export class MyPerformance extends React.Component {
                 period_data.push(new_period)
             }
         }
-        this.props.on_new_messages(new_status_messages)
+        this.props.on_new_messages(new_console_messages)
         this.setState({ period_data: period_data })
     }
 

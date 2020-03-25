@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class StatusMessages extends React.Component {
+export class Console extends React.Component {
 
     render() {
         return (
-            <div id="status-messages-wrapper">
-                { this.props.all_status_messages.length ? 'History:' : '' }
-                <div id="status-messages">
-                { this.props.all_status_messages
+            <div id="console-messages-wrapper">
+                { this.props.all_console_messages.length ? 'History:' : '' }
+                <div id="console-messages">
+                { this.props.all_console_messages
                     .map(
                         (message, i) => {
                             return (message.content.toLowerCase().startsWith("error"))
@@ -24,6 +24,6 @@ export class StatusMessages extends React.Component {
     }
 }
 
-StatusMessages.propTypes = {
-    all_status_messages: PropTypes.array.isRequired,
+Console.propTypes = {
+    all_console_messages: PropTypes.array.isRequired,
 }

@@ -35,18 +35,18 @@ export class TagAdd extends React.Component {
 
     validateTags(tags) {
         let tags_to_add = []
-        let new_status_messages = []
+        let new_console_messages = []
         let self = this
         tags.forEach(function(tag) {
             if (self.props.all_tags.hasOwnProperty(tag)) {
-                new_status_messages.push(self.props.create_message('ERROR: Tag "' + tag + '" has already been created.'))
+                new_console_messages.push(self.props.create_message('ERROR: Tag "' + tag + '" has already been created.'))
             } else {
-                new_status_messages.push(self.props.create_message('Tag "' + tag + '" has now been created.'))
+                new_console_messages.push(self.props.create_message('Tag "' + tag + '" has now been created.'))
                 tags_to_add.push(tag)
             }
         })
         this.props.on_new_tags(tags_to_add)
-        this.props.on_new_messages(new_status_messages)
+        this.props.on_new_messages(new_console_messages)
         this.handleReset()
     }
 

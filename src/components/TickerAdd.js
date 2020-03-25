@@ -42,20 +42,20 @@ export class TickerAdd extends React.Component {
 
     validateTickers(tag, tickers) {
         let tickers_to_add = []
-        let new_status_messages = []
+        let new_console_messages = []
         let self = this
         const create_message = this.props.create_message
         tickers.forEach(function(ticker) {
             // ticker does not exist
             if (!self.props.all_stocks.includes(ticker)) {
-                new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' does not exist.'))
+                new_console_messages.push(create_message('ERROR: Ticker ' + ticker + ' does not exist.'))
 
             // ticker is already in the target tag
             } else if (self.props.all_tags[tag].includes(ticker)) {
                 if (tag === 'untagged') {
-                    new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added.'))
+                    new_console_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added.'))
                 } else {
-                    new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added to tag "'+ tag +'".'))
+                    new_console_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added to tag "'+ tag +'".'))
                 }
 
             // ticker is being added to a tag that it is not already in
@@ -67,19 +67,19 @@ export class TickerAdd extends React.Component {
                     }
                 })
                 if (tag === 'untagged' && tagged_tickers.includes(ticker)) {
-                    new_status_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added to another named tag.'))
+                    new_console_messages.push(create_message('ERROR: Ticker ' + ticker + ' has already been added to another named tag.'))
                 } else {
                     if (tag === 'untagged') {
-                        new_status_messages.push(create_message('Ticker ' + ticker + ' has now been added.'))
+                        new_console_messages.push(create_message('Ticker ' + ticker + ' has now been added.'))
                     } else {
-                        new_status_messages.push(create_message('Ticker ' + ticker + ' has now been added to tag "' + tag + '".'))
+                        new_console_messages.push(create_message('Ticker ' + ticker + ' has now been added to tag "' + tag + '".'))
                     }
                     tickers_to_add.push(ticker)
                 }
             }
         })
         this.props.on_new_tickers(tag, tickers_to_add)
-        this.props.on_new_messages(new_status_messages)
+        this.props.on_new_messages(new_console_messages)
         this.handleReset()
     }
 

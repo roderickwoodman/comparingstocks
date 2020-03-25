@@ -93,7 +93,7 @@ code {
   margin-top: -15px;
 }
 
-#status-messages-wrapper {
+#console-messages-wrapper {
   display: inline-block;
   padding: 0 5px;
   vertical-align: top;
@@ -101,13 +101,13 @@ code {
   font-weight: 800;
 }
 
-#status-messages {
+#console-messages {
   font-weight: 400;
   max-height: 125px;
   overflow-y: scroll;
 }
 
-#status-messages p {
+#console-messages p {
   margin-bottom: 0;
 }
 
@@ -116,7 +116,7 @@ code {
   flex-direction: column;
 }
 
-#last-status-message {
+#last-console-message {
   margin-top: 10px;
   padding: 5px;
   color: red;
@@ -351,15 +351,15 @@ table#aggr-position-listing {
   text-align: center;
 }
 
-#transaction-log {
+#transaction-list {
   display:flex;
   flex-direction: column;
 }
 
-#transaction-log-controls label,
-#transaction-log-controls input,
-#transaction-log-controls button,
-#transaction-log-controls div {
+#transaction-list-controls label,
+#transaction-list-controls input,
+#transaction-list-controls button,
+#transaction-list-controls div {
   display: inline;
   margin-right: 5px;
 }

@@ -6,7 +6,7 @@ import { TransactionAdd } from './TransactionAdd'
 import { TransactionsList } from './TransactionsList'
 import { TagDelete } from './TagDelete'
 import { MyPerformance } from './MyPerformance'
-import { StatusMessages } from './StatusMessages'
+import { Console } from './Console'
 import { WhatIf } from './WhatIf'
 
 
@@ -15,7 +15,7 @@ export class InputForms extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            which_inputs: "tickers" // tickers | tags | transactions | my-performance | what-ifs | logs
+            which_inputs: "tickers" // tickers | tags | transactions | my-performance | what-ifs | console
         }
         this.onWhichInputs = this.onWhichInputs.bind(this)
     }
@@ -44,7 +44,7 @@ export class InputForms extends React.Component {
                     <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="my-performance" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('my-performance')}>Performance</span>
                     <span className={"input-form-selector" + (this.state.which_inputs==="what-ifs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('what-ifs')}>What If?</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="logs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('logs')}>Logs</span>
+                    <span className={"input-form-selector" + (this.state.which_inputs==="console" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('console')}>Logs</span>
                 </section>
                 <section id="input-form-forms">
                     {this.state.which_inputs === 'tickers' && (
@@ -123,10 +123,10 @@ export class InputForms extends React.Component {
                         />
                         </React.Fragment>
                     )}
-                    {this.state.which_inputs === 'logs' && (
+                    {this.state.which_inputs === 'console' && (
                         <React.Fragment>
-                        <StatusMessages
-                            all_status_messages={this.props.all_status_messages}
+                        <Console
+                            all_console_messages={this.props.all_console_messages}
                         />
                         </React.Fragment>
                     )}
@@ -157,7 +157,7 @@ InputForms.propTypes = {
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,
     create_message: PropTypes.func.isRequired,
-    all_status_messages: PropTypes.array.isRequired,
+    all_console_messages: PropTypes.array.isRequired,
     on_new_messages: PropTypes.func.isRequired,
     on_whatif_submit: PropTypes.func,
     clear_last_message: PropTypes.func
