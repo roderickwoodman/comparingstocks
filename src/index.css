@@ -153,28 +153,25 @@ code {
 
 #column-control {
   display: flex;
-  /* margin: 10px 0; */
-  /* max-width: 400px; */
 }
 
 #column-category {
   flex: 1 1 33%;
   white-space: nowrap;
 }
-#column-control span {
-  /* display: inline-block;
+#column-control li {
   padding: 0 9px;
   font-size: 0.85em;
   cursor: pointer;
-  border: 1px solid white; */
+  border: 1px solid white;
 }
 
-#column-control span:hover {
-  /* border: 1px solid silver; */
+#column-control li:hover {
+  border: 1px solid silver;
 }
 
-#column-control span.strikethrough {
-  /* text-decoration: line-through; */
+#column-control li.strikethrough {
+  text-decoration: line-through;
 }
 
 form input {

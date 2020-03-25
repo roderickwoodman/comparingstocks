@@ -2306,10 +2306,10 @@ export class ComparingStocks extends React.Component {
                 <div id="column-control">
                     {Object.keys(all_columns_by_category).filter(key => key !== 'always').map(key => (
                         <div id="column-category">
-                            <div key={key}>{key}</div>
+                            <div key={key} className="strong">{key}</div>
                             <ul>
                                 {all_columns_by_category[key].map(column => (
-                                    <li key={ column.name }>{ column.display_name }</li>
+                                    <li key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name)} className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</li>
                                 ))}
                             </ul>
                         </div>
