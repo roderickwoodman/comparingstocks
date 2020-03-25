@@ -12,157 +12,183 @@ const all_columns = [
     {
         name: 'symbol',
         display_name: 'Symbol',
-        type: 'string'
+        type: 'string',
+        category: 'always'
     },
     {
         name: 'current_shares',
         display_name: 'Shares',
         type: 'number',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'whatif_current_shares',
         display_name: 'What-If Shares',
         type: 'number',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'current_price',
         display_name: 'Price',
         type: 'currency',
-        num_decimals: 2
+        num_decimals: 2,
+        category: 'stock-specific'
     },
     // this column is too short-term ;-P
     // {
     //     name: 'change_pct',
     //     display_name: 'Change',
     //     type: 'percentage',
-    //     num_decimals: 2
+    //     num_decimals: 2,
+    //     category: 'performance'
     // },
     {
         name: 'quote_date',
         display_name: 'Price Date',
-        type: 'string'
+        type: 'string',
+        category: 'stock-specific'
     },
     {
         name: 'current_value',
         display_name: 'Value',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'whatif_current_value',
         display_name: 'What-If Value',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'percent_value',
         display_name: 'Pct of Total Value',
         type: 'percentage',
-        num_decimals: 1
+        num_decimals: 1,
+        category: 'holdings'
     },
     {
         name: 'basis',
         display_name: 'Basis',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'whatif_basis',
         display_name: 'What-If Basis',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'percent_basis',
         display_name: 'Pct of Total Basis',
         type: 'percentage',
-        num_decimals: 1
+        num_decimals: 1,
+        category: 'holdings'
     },
     {
         name: 'percent_profit',
         display_name: 'Pct Profit',
         type: 'percentage',
         passthrough_strings: true,
-        num_decimals: 1
+        num_decimals: 1,
+        category: 'holdings'
     },
     {
         name: 'realized_gains',
         display_name: 'Realized',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'risk_factor_modified',
         display_name: 'Risk Factor Edited Date',
         type: 'string',
+        category: 'stock-specific'
     },
     {
         name: 'risk_factor',
         display_name: 'Risk Factor (default=0.20)',
         type: 'number',
-        num_decimals: 2
+        num_decimals: 2,
+        category: 'stock-specific'
     },
     {
         name: 'value_at_risk',
         display_name: 'Value At Risk',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'whatif_value_at_risk',
         display_name: 'What-If Value At Risk',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'basis_risked',
         display_name: 'Basis Risked',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'whatif_basis_risked',
         display_name: 'What-If Basis Risked',
         type: 'currency',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'holdings'
     },
     {
         name: 'volume',
         display_name: 'Volume',
         type: 'number',
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'stock-specific'
     },
     {
         name: 'dollar_volume',
         display_name: 'Dollar Vol (M)',
         type: 'currency',
         scaling_power: -6,
-        num_decimals: 0
+        num_decimals: 0,
+        category: 'stock-specific'
     },
     {
         name: 'start_date',
         display_name: 'Holding Started Date',
-        type: 'string'
+        type: 'string',
+        category: 'holdings'
     },
     {
         name: 'short_change_pct',
         display_name: '6-month',
         type: 'percentage',
-        num_decimals: 1
+        num_decimals: 1,
+        category: 'performance'
     },
     {
         name: 'medium_change_pct',
         display_name: '1-year',
         type: 'percentage',
-        num_decimals: 1
+        num_decimals: 1,
+        category: 'performance'
     },
     {
         name: 'long_change_pct',
         display_name: '2-year',
         type: 'percentage',
-        num_decimals: 1
+        num_decimals: 1,
+        category: 'performance'
     }
 ]
 
@@ -2198,6 +2224,13 @@ export class ComparingStocks extends React.Component {
                 return 0
             }
         })
+        let all_categories = ['always', 'stock-specific', 'holdings', 'performance']
+        let all_columns_by_category = {}
+        all_categories.forEach(function(category_name) {
+            let this_category_columns = JSON.parse(JSON.stringify(all_columns_namesorted)).filter(column => column.category === category_name)
+            all_columns_by_category[category_name] = this_category_columns
+        })
+        console.log(all_columns_by_category)
 
         const row_popover = (
             <Popover id="popover-basic">
@@ -2271,8 +2304,15 @@ export class ComparingStocks extends React.Component {
                 <Popover.Title as="h3">included columns:</Popover.Title>
                 <Popover.Content>
                 <div id="column-control">
-                    {all_columns_namesorted.map(column => (
-                        <span key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name) } className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</span>
+                    {Object.keys(all_columns_by_category).filter(key => key !== 'always').map(key => (
+                        <div id="column-category">
+                            <div key={key}>{key}</div>
+                            <ul>
+                                {all_columns_by_category[key].map(column => (
+                                    <li key={ column.name }>{ column.display_name }</li>
+                                ))}
+                            </ul>
+                        </div>
                     ))}
                 </div>
                 </Popover.Content>
