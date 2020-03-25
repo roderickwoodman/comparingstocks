@@ -322,7 +322,7 @@ export class MyPerformance extends React.Component {
                 period_data.push(new_period)
             }
         }
-        this.props.on_new_messages(new_console_messages)
+        this.props.on_new_console_messages(new_console_messages)
         this.setState({ period_data: period_data })
     }
 
@@ -540,5 +540,5 @@ MyPerformance.propTypes = {
     all_monthly_quotes: PropTypes.object.isRequired,
     baseline: PropTypes.string.isRequired,
     create_message: PropTypes.func.isRequired,
-    on_new_messages: PropTypes.func.isRequired
+    on_new_console_messages: PropTypes.func.isRequired
 }

@@ -79,7 +79,7 @@ export class TickerAdd extends React.Component {
             }
         })
         this.props.on_new_tickers(tag, tickers_to_add)
-        this.props.on_new_messages(new_console_messages)
+        this.props.on_new_console_messages(new_console_messages)
         this.handleReset()
     }
 
@@ -112,5 +112,5 @@ TickerAdd.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_new_tickers: PropTypes.func.isRequired,
     create_message: PropTypes.func.isRequired,
-    on_new_messages: PropTypes.func.isRequired
+    on_new_console_messages: PropTypes.func.isRequired
 }

@@ -55,7 +55,7 @@ export class TransactionAdd extends React.Component {
             this.props.on_new_cash(valid_transaction_summary)
             this.handleCashReset()
         }
-        this.props.on_new_messages(new_console_messages)
+        this.props.on_new_console_messages(new_console_messages)
     }
 
     handleSubmit(event) {
@@ -124,7 +124,7 @@ export class TransactionAdd extends React.Component {
         }
 
         // send all of the messages to print
-        this.props.on_new_messages(new_console_messages)
+        this.props.on_new_console_messages(new_console_messages)
     }
 
     render() {
@@ -167,5 +167,5 @@ TransactionAdd.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,
-    on_new_messages: PropTypes.func.isRequired
+    on_new_console_messages: PropTypes.func.isRequired
 }
