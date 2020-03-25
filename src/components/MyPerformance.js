@@ -494,13 +494,15 @@ export class MyPerformance extends React.Component {
             <div id="my-performance-wrapper">
                 <div id="my-performance-body">
                     <div id="my-performance-rowlabels">
-                        <div>
+                        <div id="my-performance-controls">
                             <ul id="periodsize-selector">
                                 <li id="select-year" className={"strong selector" + (this.state.period_size === "year" ? " selected" : "")} onClick={this.handlePeriodChange}>Y</li>
                                 <li id="select-quarter" className={"strong selector" + (this.state.period_size === "quarter" ? " selected" : "")} onClick={this.handlePeriodChange}>Q</li>
                                 <li id="select-month" className={"strong selector" + (this.state.period_size === "month" ? " selected" : "")} onClick={this.handlePeriodChange}>M</li>
                             </ul>
-                            <button onClick={ (e)=>this.onToggleSortOrder(sorted_data.length) } className="strong">&#x21c6;</button>
+                            <div id="sortorder-button">
+                                <button onClick={ (e)=>this.onToggleSortOrder(sorted_data.length) } className="strong">&#x21c6;</button>
+                            </div>
                         </div>
                         <p className="strong">stocks:</p>
                         <p className="strong">cash:</p>
