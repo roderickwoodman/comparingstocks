@@ -276,6 +276,7 @@ export class ComparingStocks extends React.Component {
         this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
         this.onEscapeKey = this.onEscapeKey.bind(this)
         this.onNewMessages = this.onNewMessages.bind(this)
+        this.clearLastMessage = this.clearLastMessage.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
         this.getCurrentShares = this.getCurrentShares.bind(this)
         this.getBasis = this.getBasis.bind(this)
@@ -1436,6 +1437,11 @@ export class ComparingStocks extends React.Component {
         })
     }
 
+    clearLastMessage() {
+        let new_messages = []
+        this.setState({ last_error_messages: new_messages })
+    }
+
     getCurrentValue(ticker) {
         if (this.state.allPositions.hasOwnProperty(ticker)) {
             return this.state.allCurrentQuotes[ticker].current_price * this.state.allPositions[ticker].current_shares
@@ -2474,12 +2480,13 @@ export class ComparingStocks extends React.Component {
                                 all_status_messages={this.state.all_status_messages}
                                 on_new_messages={this.onNewMessages}
                                 on_whatif_submit={this.onWhatifSubmit}
+                                clear_last_message={this.clearLastMessage}
                             />
                         </div>
-                        <div id="last-status-messages">
-                            {this.state.last_error_messages.map( (status_message,i) => (
-                                <div key={i + status_message.modified_at}>{status_message.content}</div>
-                            ))}
+                        <div id="last-status-message">
+                            {this.state.last_error_messages.length && (
+                            <div>{this.state.last_error_messages[0].content}</div>
+                            )}
                         </div>
                     </div>
                     <div id="view-controls">

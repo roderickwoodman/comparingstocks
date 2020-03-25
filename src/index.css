@@ -116,7 +116,8 @@ code {
   flex-direction: column;
 }
 
-#last-status-messages {
+#last-status-message {
+  margin-top: 10px;
   padding: 5px;
   color: red;
   min-height: 2em;

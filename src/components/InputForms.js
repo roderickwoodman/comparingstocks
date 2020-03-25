@@ -29,6 +29,9 @@ export class InputForms extends React.Component {
 
     onWhichInputs(new_which_inputs) {
         localStorage.setItem('which_inputs', JSON.stringify(new_which_inputs))
+        if (this.state.which_inputs !== new_which_inputs) {
+            this.props.clear_last_message()
+        }
         this.setState({ which_inputs: new_which_inputs })
     }
 
@@ -156,5 +159,6 @@ InputForms.propTypes = {
     create_message: PropTypes.func.isRequired,
     all_status_messages: PropTypes.array.isRequired,
     on_new_messages: PropTypes.func.isRequired,
-    on_whatif_submit: PropTypes.func
+    on_whatif_submit: PropTypes.func,
+    clear_last_message: PropTypes.func
 }
