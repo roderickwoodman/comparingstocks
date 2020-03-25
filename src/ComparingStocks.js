@@ -2230,7 +2230,6 @@ export class ComparingStocks extends React.Component {
             let this_category_columns = JSON.parse(JSON.stringify(all_columns_namesorted)).filter(column => column.category === category_name)
             all_columns_by_category[category_name] = this_category_columns
         })
-        console.log(all_columns_by_category)
 
         const row_popover = (
             <Popover id="popover-basic">

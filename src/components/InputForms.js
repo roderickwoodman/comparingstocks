@@ -115,6 +115,8 @@ export class InputForms extends React.Component {
                             all_positions={this.props.all_positions}
                             all_monthly_quotes={this.props.all_monthly_quotes}
                             baseline={this.props.baseline}
+                            create_message={this.props.create_message}
+                            on_new_messages={this.props.on_new_messages}
                         />
                         </React.Fragment>
                     )}
