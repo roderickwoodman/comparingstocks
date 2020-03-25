@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class AddTransaction extends React.Component {
+export class TransactionAdd extends React.Component {
 
     constructor(props) {
         super(props)
@@ -162,7 +162,7 @@ export class AddTransaction extends React.Component {
     }
 }
 
-AddTransaction.propTypes = {
+TransactionAdd.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
     on_new_transaction: PropTypes.func.isRequired,

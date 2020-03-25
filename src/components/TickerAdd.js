@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class AddTicker extends React.Component {
+export class TickerAdd extends React.Component {
 
     constructor(props) {
         super(props)
@@ -107,7 +107,7 @@ export class AddTicker extends React.Component {
     }
 }
 
-AddTicker.propTypes = {
+TickerAdd.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
     on_new_tickers: PropTypes.func.isRequired,

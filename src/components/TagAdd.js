@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class AddTag extends React.Component {
+export class TagAdd extends React.Component {
 
     constructor(props) {
         super(props)
@@ -65,7 +65,7 @@ export class AddTag extends React.Component {
     }
 }
 
-AddTag.propTypes = {
+TagAdd.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_new_tags: PropTypes.func.isRequired,
     create_message: PropTypes.func.isRequired,

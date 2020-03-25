@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class TransactionLog extends React.Component {
+export class TransactionsList extends React.Component {
 
     constructor(props) {
         super(props)
@@ -96,7 +96,7 @@ export class TransactionLog extends React.Component {
     }
 }
 
-TransactionLog.propTypes = {
+TransactionsList.propTypes = {
     all_transactions: PropTypes.array.isRequired,
     all_risk: PropTypes.object.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,

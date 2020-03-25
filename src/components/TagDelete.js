@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-export class DeleteTag extends React.Component {
+export class TagDelete extends React.Component {
 
     constructor(props) {
         super(props)
@@ -48,7 +48,7 @@ export class DeleteTag extends React.Component {
     }
 }
 
-DeleteTag.propTypes = {
+TagDelete.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_delete_tag: PropTypes.func.isRequired,
 }

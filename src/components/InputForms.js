@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { AddTicker } from './AddTicker'
-import { AddTag } from './AddTag'
-import { AddTransaction } from './AddTransaction'
-import { TransactionLog } from './TransactionLog'
-import { DeleteTag } from './DeleteTag'
+import { TickerAdd } from './TickerAdd'
+import { TagAdd } from './TagAdd'
+import { TransactionAdd } from './TransactionAdd'
+import { TransactionsList } from './TransactionsList'
+import { TagDelete } from './TagDelete'
 import { MyPerformance } from './MyPerformance'
 import { StatusMessages } from './StatusMessages'
 import { WhatIf } from './WhatIf'
@@ -49,7 +49,7 @@ export class InputForms extends React.Component {
                 <section id="input-form-forms">
                     {this.state.which_inputs === 'tickers' && (
                         <React.Fragment>
-                        <AddTicker
+                        <TickerAdd
                             all_stocks={this.props.all_stocks}
                             all_tags={this.props.all_tags}
                             on_new_tickers={this.props.on_new_tickers}
@@ -60,13 +60,13 @@ export class InputForms extends React.Component {
                     )}
                     {this.state.which_inputs === 'tags' && (
                         <React.Fragment>
-                        <AddTag
+                        <TagAdd
                             all_tags={this.props.all_tags}
                             on_new_tags={this.props.on_new_tags}
                             create_message={this.props.create_message}
                             on_new_messages={this.props.on_new_messages}
                         />
-                        <DeleteTag
+                        <TagDelete
                             all_tags={this.props.all_tags}
                             on_delete_tag={this.props.on_delete_tag}
                         />
@@ -76,7 +76,7 @@ export class InputForms extends React.Component {
                     <React.Fragment>
                         <div className="content-wrapper">
                             <div className="content-half">
-                                <AddTransaction
+                                <TransactionAdd
                                     all_stocks={this.props.all_stocks}
                                     all_tags={this.props.all_tags}
                                     on_new_transaction={this.props.on_new_transaction}
@@ -86,7 +86,7 @@ export class InputForms extends React.Component {
                                 />
                             </div>
                             <div className="content-half">
-                                <TransactionLog
+                                <TransactionsList
                                     all_transactions={this.props.all_transactions}
                                     all_risk={this.props.all_risk}
                                     on_delete_transaction={this.props.on_delete_transaction}
