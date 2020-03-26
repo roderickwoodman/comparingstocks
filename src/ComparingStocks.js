@@ -214,12 +214,12 @@ export class ComparingStocks extends React.Component {
             allRisk: {},
             allWhatifs: {},
             allConsoleMessages: [],
+            last_console_message: '',
             whatif_format: 'deltas', // deltas | new_values
             balance_target_set: 'my_holdings',
             balance_target_column: '',
             sell_all_of: [],
             remaining_cash: null,
-            last_error_messages: [],
             baseline: {
                 name: 'zero_pct_gain',
                 short_change_pct: 0,
@@ -260,7 +260,7 @@ export class ComparingStocks extends React.Component {
         this.onChangeWhatifFormat = this.onChangeWhatifFormat.bind(this)
         this.onChangeSort = this.onChangeSort.bind(this)
         this.showColumns = this.showColumns.bind(this)
-        this.createMessage = this.createMessage.bind(this)
+        this.createConsoleMessageSet = this.createConsoleMessageSet.bind(this)
         this.onToggleShowColumn = this.onToggleShowColumn.bind(this)
         this.onNewTransaction = this.onNewTransaction.bind(this)
         this.onImportTransactions = this.onImportTransactions.bind(this)
@@ -275,7 +275,7 @@ export class ComparingStocks extends React.Component {
         this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
         this.onEscapeKey = this.onEscapeKey.bind(this)
         this.onNewConsoleMessages = this.onNewConsoleMessages.bind(this)
-        this.clearLastMessage = this.clearLastMessage.bind(this)
+        this.clearLastConsoleMessage = this.clearLastConsoleMessage.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
         this.getCurrentShares = this.getCurrentShares.bind(this)
         this.getBasis = this.getBasis.bind(this)
@@ -899,12 +899,13 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    createMessage(message_content) {
-        let new_message = {
+    createConsoleMessageSet(new_message) {
+        let new_console_message_set = {
             modified_at: new Date().getTime(),
-            content: message_content
+            summary: new_message,
+            messages: [new_message]
         }
-        return new_message
+        return new_console_message_set
     }
 
     onNewTags(new_tags) {
@@ -1005,10 +1006,8 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let new_console_messages = []
-            new_console_messages.push(this.createMessage('Ticker "' + delete_ticker + '" has now been deleted.'))
-            let newLastErrorMessages = new_console_messages.filter( message_obj => message_obj.content.includes('ERROR'))
-            newAllConsoleMessages = [...new_console_messages, ...newAllConsoleMessages]
+            let new_console_message_set = this.createConsoleMessageSet('Ticker "' + delete_ticker + '" has now been deleted.')
+            newAllConsoleMessages.push(new_console_message_set)
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1028,7 +1027,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_error_messages: newLastErrorMessages,
+                last_console_message: new_console_message_set.summary,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1245,10 +1244,8 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let new_console_messages = []
-            new_console_messages.push(this.createMessage('Transaction "' + transaction_to_delete.summary + '" has now been deleted.'))
-            let newLastErrorMessages = new_console_messages.filter( message_obj => message_obj.content.includes('ERROR'))
-            newAllConsoleMessages = [...new_console_messages, ...newAllConsoleMessages]
+            let new_console_message_set = this.createConsoleMessageSet('Transaction "' + transaction_to_delete.summary + '" has now been deleted.')
+            newAllConsoleMessages.push(new_console_message_set)
 
             // recalculate the position numbers
             let remainingTransactionsForTicker = newAllTransactions.filter(transaction => transaction.ticker === ticker)
@@ -1278,7 +1275,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_error_messages: newLastErrorMessages,
+                last_console_message: new_console_message_set.summary,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1353,10 +1350,8 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let new_console_messages = []
-            new_console_messages.push(this.createMessage('Tag "' + delete_tag + '" has now been deleted.'))
-            let newLastErrorMessages = new_console_messages.filter( message_obj => message_obj.content.includes('ERROR'))
-            newAllConsoleMessages = [...new_console_messages, ...newAllConsoleMessages]
+            let new_console_message_set = this.createConsoleMessageSet('Tag "' + delete_tag + '" has now been deleted.')
+            newAllConsoleMessages.push(new_console_message_set)
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1374,7 +1369,7 @@ export class ComparingStocks extends React.Component {
             return { 
                 allTags: newAllTags, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_error_messages: newLastErrorMessages,
+                last_console_message: new_console_message_set.summary,
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1425,20 +1420,18 @@ export class ComparingStocks extends React.Component {
         this.setState({ editing_row: null })
     }
 
-    onNewConsoleMessages(new_console_messages) {
+    onNewConsoleMessages(new_console_message_set) {
         this.setState(prevState => {
-            let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            newAllConsoleMessages = [...new_console_messages.reverse(), ...newAllConsoleMessages]
-            let newLastErrorMessages = new_console_messages.filter(message_obj => message_obj.content.includes('ERROR')).reverse()
+            let newAllConsoleMessages = JSON.parse(JSON.stringify(prevState.allConsoleMessages))
+            newAllConsoleMessages.push(new_console_message_set)
             return { 
-                last_error_messages: newLastErrorMessages,
+                last_console_message: new_console_message_set.summary,
                 allConsoleMessages: newAllConsoleMessages }
         })
     }
 
-    clearLastMessage() {
-        let new_console_messages = []
-        this.setState({ last_error_messages: new_console_messages })
+    clearLastConsoleMessage() {
+        this.setState({ last_console_message: ' ' })
     }
 
     getCurrentValue(ticker) {
@@ -2309,8 +2302,8 @@ export class ComparingStocks extends React.Component {
                 <Popover.Content>
                 <div id="column-control">
                     {Object.keys(all_columns_by_category).filter(key => key !== 'always').map(key => (
-                        <div id="column-category">
-                            <div key={key} className="strong">{key}</div>
+                        <div key={key} id="column-category">
+                            <div className="strong">{key}</div>
                             <ul>
                                 {all_columns_by_category[key].map(column => (
                                     <li key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name)} className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</li>
@@ -2475,16 +2468,16 @@ export class ComparingStocks extends React.Component {
                                 on_new_transaction={this.onNewTransaction}
                                 on_import_transactions={this.onImportTransactions}
                                 on_new_cash={this.onNewCash}
-                                create_message={this.createMessage}
+                                create_console_message_set={this.createConsoleMessageSet}
+                                clear_last_console_message={this.clearLastConsoleMessage}
                                 all_console_messages={this.state.allConsoleMessages}
                                 on_new_console_messages={this.onNewConsoleMessages}
                                 on_whatif_submit={this.onWhatifSubmit}
-                                clear_last_message={this.clearLastMessage}
                             />
                         </div>
                         <div id="last-console-message">
-                            {this.state.last_error_messages.length && (
-                            <div>{this.state.last_error_messages[0].content}</div>
+                            {this.state.last_console_message.length && (
+                            <div>{this.state.last_console_message}</div>
                             )}
                         </div>
                     </div>

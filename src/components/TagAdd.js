@@ -34,19 +34,29 @@ export class TagAdd extends React.Component {
     }
 
     validateTags(tags) {
-        let tags_to_add = []
-        let new_console_messages = []
+        let tags_to_add = [], new_messages = []
         let self = this
         tags.forEach(function(tag) {
             if (self.props.all_tags.hasOwnProperty(tag)) {
-                new_console_messages.push(self.props.create_message('ERROR: Tag "' + tag + '" has already been created.'))
+                new_messages.push('ERROR: Tag "' + tag + '" has already been created.')
             } else {
-                new_console_messages.push(self.props.create_message('Tag "' + tag + '" has now been created.'))
+                new_messages.push('Tag "' + tag + '" has now been created.')
                 tags_to_add.push(tag)
             }
         })
+        let num_errors = new_messages.filter(message => message.includes('ERROR')).length
+        if (num_errors === 0) {
+            num_errors = 'no'
+        }
+        let new_console_message_set
+        if (new_messages.length > 1) {
+            new_console_message_set = this.props.create_console_message_set('Created ' + tags_to_add.length + ' tags with ' + num_errors + ' errors.')
+            new_console_message_set.messages = [...new_messages]
+        } else {
+            new_console_message_set = this.props.create_console_message_set(new_messages[0])
+        }
         this.props.on_new_tags(tags_to_add)
-        this.props.on_new_console_messages(new_console_messages)
+        this.props.on_new_console_messages(new_console_message_set)
         this.handleReset()
     }
 
@@ -68,6 +78,6 @@ export class TagAdd extends React.Component {
 TagAdd.propTypes = {
     all_tags: PropTypes.object.isRequired,
     on_new_tags: PropTypes.func.isRequired,
-    create_message: PropTypes.func.isRequired,
+    create_console_message_set: PropTypes.func.isRequired,
     on_new_console_messages: PropTypes.func.isRequired
 }

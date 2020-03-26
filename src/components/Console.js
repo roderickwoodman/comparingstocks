@@ -11,10 +11,10 @@ export class Console extends React.Component {
                 <div id="console-messages">
                 { this.props.all_console_messages
                     .map(
-                        (message, i) => {
-                            return (message.content.toLowerCase().startsWith("error"))
-                            ? <p key={i + message.modified_at} className="message error">{message.content}</p>
-                            : <p key={i + message.modified_at} className="message">{message.content}</p>
+                        (message_set, i) => {
+                            return (message_set.summary.toLowerCase().startsWith("error"))
+                            ? <p key={i + message_set.modified_at} className="message error">{message_set.summary}</p>
+                            : <p key={i + message_set.modified_at} className="message">{message_set.summary}</p>
                         }
                     )
                 }

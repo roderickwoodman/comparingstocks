@@ -30,7 +30,7 @@ export class InputForms extends React.Component {
     onWhichInputs(new_which_inputs) {
         localStorage.setItem('which_inputs', JSON.stringify(new_which_inputs))
         if (this.state.which_inputs !== new_which_inputs) {
-            this.props.clear_last_message()
+            this.props.clear_last_console_message()
         }
         this.setState({ which_inputs: new_which_inputs })
     }
@@ -53,7 +53,7 @@ export class InputForms extends React.Component {
                             all_stocks={this.props.all_stocks}
                             all_tags={this.props.all_tags}
                             on_new_tickers={this.props.on_new_tickers}
-                            create_message={this.props.create_message}
+                            create_console_message_set={this.props.create_console_message_set}
                             on_new_console_messages={this.props.on_new_console_messages}
                         />
                         </React.Fragment>
@@ -63,7 +63,7 @@ export class InputForms extends React.Component {
                         <TagAdd
                             all_tags={this.props.all_tags}
                             on_new_tags={this.props.on_new_tags}
-                            create_message={this.props.create_message}
+                            create_console_message_set={this.props.create_console_message_set}
                             on_new_console_messages={this.props.on_new_console_messages}
                         />
                         <TagDelete
@@ -81,7 +81,7 @@ export class InputForms extends React.Component {
                                     all_tags={this.props.all_tags}
                                     on_new_transaction={this.props.on_new_transaction}
                                     on_new_cash={this.props.on_new_cash}
-                                    create_message={this.props.create_message}
+                                    create_console_message_set={this.props.create_console_message_set}
                                     on_new_console_messages={this.props.on_new_console_messages}
                                 />
                             </div>
@@ -118,7 +118,7 @@ export class InputForms extends React.Component {
                             all_positions={this.props.all_positions}
                             all_monthly_quotes={this.props.all_monthly_quotes}
                             baseline={this.props.baseline}
-                            create_message={this.props.create_message}
+                            create_console_message_set={this.props.create_console_message_set}
                             on_new_console_messages={this.props.on_new_console_messages}
                         />
                         </React.Fragment>
@@ -156,9 +156,9 @@ InputForms.propTypes = {
     on_new_transaction: PropTypes.func.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,
-    create_message: PropTypes.func.isRequired,
+    create_console_message_set: PropTypes.func.isRequired,
     all_console_messages: PropTypes.array.isRequired,
     on_new_console_messages: PropTypes.func.isRequired,
     on_whatif_submit: PropTypes.func,
-    clear_last_message: PropTypes.func
+    clear_last_console_message: PropTypes.func
 }
