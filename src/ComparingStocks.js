@@ -2477,7 +2477,7 @@ export class ComparingStocks extends React.Component {
                         </div>
                         <div id="last-console-message">
                             {this.state.last_console_message.length && (
-                            <div>{this.state.last_console_message}</div>
+                            <div className={ (this.state.last_console_message.includes('ERROR')) ? 'warning' : ''}>{this.state.last_console_message}</div>
                             )}
                         </div>
                     </div>
