@@ -4,20 +4,32 @@ import PropTypes from 'prop-types'
 
 export class Console extends React.Component {
 
+    constructor(props) {
+        super(props)
+        this.getClasses = this.getClasses.bind(this)
+    }
+
+    getClasses(message) {
+        let classes = 'message'
+        if (message.toLowerCase().includes('error')) {
+            classes += ' warning'
+        }
+        return classes
+    }
+
     render() {
+        let message_sets = this.props.all_console_messages
         return (
             <div id="console-messages-wrapper">
-                { this.props.all_console_messages.length ? 'History:' : '' }
+                { message_sets.length ? 'History:' : '' }
                 <div id="console-messages">
-                { this.props.all_console_messages
-                    .map(
-                        (message_set, i) => {
-                            return (message_set.summary.toLowerCase().startsWith("error"))
-                            ? <p key={i + message_set.modified_at} className="message error">{message_set.summary}</p>
-                            : <p key={i + message_set.modified_at} className="message">{message_set.summary}</p>
-                        }
-                    )
-                }
+                { message_sets.map( message_set => (
+
+                    message_set.messages.map( (message, j) => (
+                            <p key={j} className={this.getClasses(message)}>{message}</p>
+                    ))
+
+                ))}
                 </div>
             </div>
         )
