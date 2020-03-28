@@ -1,22 +1,25 @@
 ## ComparingStocks
 
-Most financial websites give you only the most superficial data about your stock portfolio as a whole. They typically give you your current holdings in shares and in dollars and they typically give you your last-day and lifetime performance. It is all simple math, and it is all useless for managing a portfolio. This is because the funds needed to purchase any new shares or to raise cash must always come from doing some selling somewhere else. Therefore, individual investors must always have some way to compare positions to each other if they are to make informed allocation decisions.
+Most financial websites give you only the most superficial data about your stock portfolio as a whole. They typically give you your current holdings in dollars and shares and then for performance they tell you the lifetime gain. It is all simple math, and it is all useless for managing a portfolio. This is because the funds that are needed to increase a position must always come from trimming back other positions. Comparisons are unavoidable. And so, fundamentally, all individual investors need tools to compare their positions to each other.
 
-Unfortunately, stock positions are inherently quite different. And there is no single magic formula that can guide an investor on what to buy and what to sell based on how he or she is currently invested. But by framing the portfolio holdings data in the following ways, many more actionable, apples-to-apples comparisons can be made:
+Unfortunately, stock positions are inherently quite different. Investments are made in different amounts on different dates and the underlying securities have a wide range of performance and volatility to them. There are many more facets to each position than are normally shown to an investor, and by framing the portfolio holdings data in the following ways, many more actionable, apples-to-apples comparisons can be made:
 
-  * Useful position size data includes:
-      * ("the past") **your cost basis** instead of just the current value
-      * ("the present") **relative fraction of portfolio value** instead of absolute share or dollar counts
-      * ("the future") **capital at risk**, adjusted by a stock-specific volatility number, instead of assuming equally-volatile stocks
+  * For useful position size data:
+      * **your cost basis** reveals the size of what you have "bet" in a way that a current value metric alone cannot
+      * **relative fractions of portfolio value** is immediately comparable because it communicates the context of the whole, unlike absolute share and dollar counts
+      * **capital at risk**, quantifies your downside in dollars by adjusting by a stock-specific volatility number, because no two positions are equally volatile
 
-  * Useful performance data includes:
-      * **gains in percentages** instead of in dollars
-      * **gains relative to the broad index** instead of absolute gain
-      * **multiple timeframes** like short, medium, and long, instead of just daily gain or position lifetime gain
+  * For useful performance data:
+      * **gains in percentages** are more immediately comparable than gains in dollars are
+      * **gains relative to the broad index** is an investor's ultimate scorecard; absolute gain is a distraction
+      * **multiple timeframes** like short, medium, and long help track the evolution of a position's growth over time, in a way that daily gain and position lifetime gain cannot
 
 This big-picture portfolio perspective helps an investor level a diverse collection of stocks and purchase histories so that he or she is aware of all outsized bets and risks at all times.
 
-In all, **ComparingStocks** attempts to be a long-term portfolio management tool. Stock selection is easy because their returns are quoted in multiple timeframes and against the index. And once stocks have been selected, the app's flexible tagging feature combined with its many balancing options will tell you exactly how many shares of each stock to buy or sell based on your balancing objective.
+In all, **ComparingStocks** attempts to be a long-term portfolio management tool. Quick portfolio decisions can be made because every position's data is framed by the metrics above. And in addition, the following features save the investor from doing even more back-of-the-enveope math before buying and selling stocks.
+
+  * **aggregate positions -** A flexible position-tagging interface allows these same metrics to be calculated on aggregate for any combination of positions.
+  * **many balancing objectives -** Any aggregate group of positions can be balanced either by basis or by current value, adjusting for cash, for risk, and for liquidated positions if desired. The output of the balancing engine is the exact number of shares of each stock needed to be bought or sold.
 
 ### Development
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
