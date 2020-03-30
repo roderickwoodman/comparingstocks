@@ -2514,12 +2514,14 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
                             <PopulateRow key={row_data.row_name} row_data={row_data} />
                         ))}
+                        {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).length ? (
                         <GridRowTotals
                             columns={this.state.shown_columns}
                             total_value={this.state.aggrTotalValue['_everything_']}
                             total_basis={this.state.aggrBasis['_everything_']}
                             total_performance={this.state.aggrPerformance['_everything_']}
                         />
+                        ) : null }
                     </tbody>
                 </table>
                 {this.state.done && this.state.show_aggregates && (
