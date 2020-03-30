@@ -123,7 +123,7 @@ export class TransactionAdd extends React.Component {
                 this.props.on_new_transaction(valid_transaction_summary)
 
             } else {
-                summary_message = 'ERROR: Transaction "' + transaction + '" could not be recorded, see "Messages"'
+                summary_message = 'ERROR: Transaction "' + transaction + '" could not be recorded, see the "Messages" tab'
             }
         }
 

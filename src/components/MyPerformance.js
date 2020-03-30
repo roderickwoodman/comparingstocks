@@ -317,7 +317,7 @@ export class MyPerformance extends React.Component {
         }
 
         if (new_console_messages.length) {
-            let message_summary = 'ERROR: quote(s) unavailable, see "Messages"'
+            let message_summary = 'ERROR: quote(s) unavailable, see the "Messages" tab'
             let new_console_message_set = this.props.create_console_message_set(message_summary)
             new_console_message_set.messages = [...new_console_messages]
             this.props.on_new_console_messages(new_console_message_set)
