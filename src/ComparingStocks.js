@@ -2441,6 +2441,8 @@ export class ComparingStocks extends React.Component {
         }
 
         let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
+        let all_ticker_rows = all_row_data.filter(row_data => !row_data.is_aggregate)
+        let all_aggregate_rows = all_row_data.filter(row_data => row_data.is_aggregate)
 
         return (
             <div id="page-wrapper">
@@ -2514,14 +2516,18 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
                             <PopulateRow key={row_data.row_name} row_data={row_data} />
                         ))}
-                        {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).length ? (
+                        {this.state.done && all_ticker_rows.length ? (
                         <GridRowTotals
                             columns={this.state.shown_columns}
                             total_value={this.state.aggrTotalValue['_everything_']}
                             total_basis={this.state.aggrBasis['_everything_']}
                             total_performance={this.state.aggrPerformance['_everything_']}
                         />
-                        ) : null }
+                        ) : (
+                            <tr>
+                                <td className="no_table_data" colSpan={this.state.shown_columns.length+1}>No stocks have been added yet. Please add them using the form on the "Tickers" tab.</td>
+                            </tr>
+                        ) }
                     </tbody>
                 </table>
                 {this.state.done && this.state.show_aggregates && (
@@ -2530,9 +2536,13 @@ export class ComparingStocks extends React.Component {
                             <PopulateHeaderRow is_aggregate={true} highlight_column={null} />
                         </thead>
                         <tbody>
-                            {this.state.done && all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
+                            {this.state.done && all_aggregate_rows.filter(row => row.name !== 'untagged').length ? all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
                                 <PopulateRow key={row_data.row_name} row_data={row_data} />
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td className="no_table_data" colSpan={this.state.shown_columns.length+1}>No tags exist yet. Please create them using the form on the "Tags" tab.</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}
