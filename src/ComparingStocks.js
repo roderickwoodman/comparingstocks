@@ -2230,7 +2230,7 @@ export class ComparingStocks extends React.Component {
         })
 
         const row_popover = (
-            <Popover id="popover-basic">
+            <Popover id="row-popover">
                 <Popover.Title as="h3">included rows:</Popover.Title>
                 <Popover.Content>
                 <div id="row-control">
@@ -2297,7 +2297,7 @@ export class ComparingStocks extends React.Component {
             </OverlayTrigger>
         )
         const column_popover = (
-            <Popover id="popover-basic">
+            <Popover id="column-popover">
                 <Popover.Title as="h3">included columns:</Popover.Title>
                 <Popover.Content>
                 <div id="column-control">
@@ -2318,6 +2318,38 @@ export class ComparingStocks extends React.Component {
         const ColumnSettings = () => (
             <OverlayTrigger trigger="click" placement="left" overlay={column_popover}>
                 <button className="btn btn-sm btn-secondary" variant="success">&#x2699; Columns</button>
+            </OverlayTrigger>
+        )
+
+        const general_settings_popover = (
+            <Popover id="general-settings-popover">
+                <Popover.Title as="h3">general settings:</Popover.Title>
+                <Popover.Content>
+                <div id="general-settings-control">
+                    <div id="baseline-control">
+                            <label htmlFor="baseline">Performance Baseline:</label>
+                            <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
+                                <option value="zero_pct_gain">0% gain</option>
+                                <option value="sp500_pct_gain">SP&amp;500 Index</option>
+                            </select>
+                        </div>
+                        <div id="performance_controls">
+                            <div className="switch_control">
+                                <div className="switch_label">show performance only if achieved:</div>
+                                <div className="switch_wrapper">
+                                    <input id="show_only_achieved_performance" name="show_only_achieved_performance" type="checkbox" checked={this.state.show_only_achieved_performance} onChange={this.onShowInputChange} />
+                                    <label htmlFor="show_only_achieved_performance" className="switch"></label>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                </Popover.Content>
+            </Popover>
+        )
+        const GeneralSettings = () => (
+            <OverlayTrigger trigger="click" placement="left" overlay={general_settings_popover}>
+                <button className="btn btn-sm btn-secondary" variant="success">&#x2699; General</button>
             </OverlayTrigger>
         )
         
@@ -2484,25 +2516,10 @@ export class ComparingStocks extends React.Component {
                         </div>
                     </div>
                     <div id="view-controls">
-                        <div id="baseline-control">
-                            <label htmlFor="baseline">Performance Baseline:</label>
-                            <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
-                                <option value="zero_pct_gain">0% gain</option>
-                                <option value="sp500_pct_gain">SP&amp;500 Index</option>
-                            </select>
-                        </div>
-                        <div id="performance_controls">
-                            <div className="switch_control">
-                                <div className="switch_label">show performance only if achieved:</div>
-                                <div className="switch_wrapper">
-                                    <input id="show_only_achieved_performance" name="show_only_achieved_performance" type="checkbox" checked={this.state.show_only_achieved_performance} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_only_achieved_performance" className="switch"></label>
-                                </div>
-                            </div>
-                        </div>
                         <div id="page-settings">
                             <RowSettings />
                             <ColumnSettings />
+                            <GeneralSettings />
                         </div>
 
                     </div>

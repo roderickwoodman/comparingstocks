@@ -147,7 +147,9 @@ code {
   display: block;
 }
 
-#popover-basic {
+#row-popover,
+#column-popover,
+#general-settings-popover {
   max-width: none;
 }
 
