@@ -2327,22 +2327,21 @@ export class ComparingStocks extends React.Component {
                 <Popover.Content>
                 <div id="general-settings-control">
                     <div id="baseline-control">
-                            <label htmlFor="baseline">Performance Baseline:</label>
-                            <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
-                                <option value="zero_pct_gain">0% gain</option>
-                                <option value="sp500_pct_gain">SP&amp;500 Index</option>
-                            </select>
-                        </div>
-                        <div id="performance_controls">
-                            <div className="switch_control">
-                                <div className="switch_label">show performance only if achieved:</div>
-                                <div className="switch_wrapper">
-                                    <input id="show_only_achieved_performance" name="show_only_achieved_performance" type="checkbox" checked={this.state.show_only_achieved_performance} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_only_achieved_performance" className="switch"></label>
-                                </div>
+                        <label htmlFor="baseline">performance baseline:</label>
+                        <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
+                            <option value="zero_pct_gain">0% gain</option>
+                            <option value="sp500_pct_gain">SP&amp;500 Index</option>
+                        </select>
+                    </div>
+                    <div id="performance_controls">
+                        <div className="switch_control">
+                            <div className="switch_label">show performance only if achieved:</div>
+                            <div className="switch_wrapper">
+                                <input id="show_only_achieved_performance" name="show_only_achieved_performance" type="checkbox" checked={this.state.show_only_achieved_performance} onChange={this.onShowInputChange} />
+                                <label htmlFor="show_only_achieved_performance" className="switch"></label>
                             </div>
                         </div>
-                    ))}
+                    </div>
                 </div>
                 </Popover.Content>
             </Popover>
