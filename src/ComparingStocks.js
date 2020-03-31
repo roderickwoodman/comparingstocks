@@ -2231,7 +2231,7 @@ export class ComparingStocks extends React.Component {
 
         const row_popover = (
             <Popover id="row-popover">
-                <Popover.Title as="h3">included rows:</Popover.Title>
+                <Popover.Title as="h3">Included Rows:</Popover.Title>
                 <Popover.Content>
                 <div id="row-control">
                     <form>
@@ -2298,7 +2298,7 @@ export class ComparingStocks extends React.Component {
         )
         const column_popover = (
             <Popover id="column-popover">
-                <Popover.Title as="h3">included columns:</Popover.Title>
+                <Popover.Title as="h3">Included Columns:</Popover.Title>
                 <Popover.Content>
                 <div id="column-control">
                     {Object.keys(all_columns_by_category).filter(key => key !== 'always').map(key => (
@@ -2323,7 +2323,7 @@ export class ComparingStocks extends React.Component {
 
         const general_settings_popover = (
             <Popover id="general-settings-popover">
-                <Popover.Title as="h3">general settings:</Popover.Title>
+                <Popover.Title as="h3">General Settings:</Popover.Title>
                 <Popover.Content>
                 <div id="general-settings-control">
                     <div id="baseline-control">
@@ -2516,9 +2516,9 @@ export class ComparingStocks extends React.Component {
                     </div>
                     <div id="view-controls">
                         <div id="page-settings">
+                            <GeneralSettings />
                             <RowSettings />
                             <ColumnSettings />
-                            <GeneralSettings />
                         </div>
 
                     </div>

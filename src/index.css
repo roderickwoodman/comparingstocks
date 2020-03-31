@@ -32,6 +32,11 @@ code {
   padding: 10px;
 }
 
+#page-controls button {
+  width: 100px;
+  margin-left: 10px;
+}
+
 .content-wrapper {
   display: flex;
   flex-direction: row;
