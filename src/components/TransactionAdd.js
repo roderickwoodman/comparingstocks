@@ -55,7 +55,7 @@ export class TransactionAdd extends React.Component {
             this.props.on_new_cash(valid_transaction_summary)
             this.handleCashReset()
         }
-        let new_console_message_set = this.props.new_console_message_set(new_message)
+        let new_console_message_set = new_message
         this.props.on_new_console_messages(new_console_message_set)
     }
 

@@ -23,12 +23,10 @@ export class Console extends React.Component {
             <div id="console-messages-wrapper">
                 { message_sets.length ? 'History:' : '' }
                 <div id="console-messages">
-                { message_sets.map( message_set => (
-
+                { message_sets && message_sets.map( message_set => (
                     message_set.messages.map( (message, j) => (
                             <p key={j} className={this.getClasses(message)}>{message}</p>
                     ))
-
                 ))}
                 </div>
             </div>
