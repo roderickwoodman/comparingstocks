@@ -1508,6 +1508,7 @@ export class ComparingStocks extends React.Component {
     }
 
     onWhatifSubmit(balance_target_set, sell_all_of, balance_target_column, remaining_cash) {
+        console.log('remaining_cash:', remaining_cash)
         this.setState({ 
             remaining_cash: remaining_cash, 
             balance_target_set: balance_target_set, 
@@ -1574,25 +1575,16 @@ export class ComparingStocks extends React.Component {
 
             if (sell_all_set.includes(ticker)) {
                 new_whatif.values[ticker]['current_shares'] = 0
-                new_whatif.values[ticker]['basis'] = 'n/a'
-                new_whatif.values[ticker]['basis_risked'] = 'n/a'
+                new_whatif.values[ticker]['basis'] = 0
+                new_whatif.values[ticker]['basis_risked'] = 0
                 new_whatif.values[ticker]['current_value'] = 0
-                new_whatif.values[ticker]['value_at_risk'] = 'n/a'
+                new_whatif.values[ticker]['value_at_risk'] = 0
                 return
             }
 
             let value_delta = 0
             let original_currentvalue = self.getCurrentValue(ticker)
             let original_basis = self.getBasis(ticker)
-
-            if (sell_all_set.includes(ticker)) {
-                new_whatif.values[ticker]['current_shares'] = 0
-                new_whatif.values[ticker]['current_value'] = 0
-                new_whatif.values[ticker]['basis'] = 0
-                new_whatif.values[ticker]['basis_risked'] = 0
-                new_whatif.values[ticker]['value_at_risk'] = 0
-                return
-            }
 
             // balancing by value is a simple average of current values
             if (balance_target_column === 'current_value') {
