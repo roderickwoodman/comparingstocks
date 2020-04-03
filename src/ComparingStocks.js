@@ -58,17 +58,17 @@ const all_columns = [
         category: 'holdings'
     },
     {
-        name: 'whatif_current_value',
-        display_name: 'What-If Value',
-        type: 'currency',
-        num_decimals: 0,
-        category: 'holdings'
-    },
-    {
         name: 'percent_value',
         display_name: 'Pct of Total Value',
         type: 'percentage',
         num_decimals: 1,
+        category: 'holdings'
+    },
+    {
+        name: 'whatif_current_value',
+        display_name: 'What-If Value',
+        type: 'currency',
+        num_decimals: 0,
         category: 'holdings'
     },
     {
@@ -79,17 +79,17 @@ const all_columns = [
         category: 'holdings'
     },
     {
-        name: 'whatif_basis',
-        display_name: 'What-If Basis',
-        type: 'currency',
-        num_decimals: 0,
-        category: 'holdings'
-    },
-    {
         name: 'percent_basis',
         display_name: 'Pct of Total Basis',
         type: 'percentage',
         num_decimals: 1,
+        category: 'holdings'
+    },
+    {
+        name: 'whatif_basis',
+        display_name: 'What-If Basis',
+        type: 'currency',
+        num_decimals: 0,
         category: 'holdings'
     },
     {
