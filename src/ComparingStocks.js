@@ -1508,7 +1508,6 @@ export class ComparingStocks extends React.Component {
     }
 
     onWhatifSubmit(balance_target_set, sell_all_of, balance_target_column, remaining_cash) {
-        console.log('remaining_cash:', remaining_cash)
         this.setState({ 
             remaining_cash: remaining_cash, 
             balance_target_set: balance_target_set, 
