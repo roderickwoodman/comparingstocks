@@ -1539,11 +1539,11 @@ export class ComparingStocks extends React.Component {
                 risk_factors[ticker] = 0.20
             }
         })
+        let target = total_amount_to_balance / target_tickers.filter(ticker => !sell_all_set.includes(ticker)).length
         target_tickers.forEach(function(ticker) {
 
             let whatif_currentshares, whatif_balancedvalue
             
-            let target = total_amount_to_balance / target_tickers.length
             new_whatif.values[ticker] = {}
 
             if (sell_all_set.includes(ticker)) {
