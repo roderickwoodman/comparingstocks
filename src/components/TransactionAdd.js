@@ -123,12 +123,15 @@ export class TransactionAdd extends React.Component {
                 this.props.on_new_transaction(valid_transaction_summary)
 
             } else {
-                summary_message = 'ERROR: Transaction "' + transaction + '" could not be recorded, see the "Messages" tab'
+                transaction[2] = transaction[2].toUpperCase()
+                transaction[3] = '$' + transaction[3]
+                summary_message = 'ERROR: Transaction "' + transaction.join(' ') + '" could not be recorded, see the "Messages" tab'
             }
         }
 
         // send all of the messages to print
         let new_console_message_set = this.props.create_console_message_set(summary_message)
+        new_console_message_set.messages = [...new_messages]
         this.props.on_new_console_messages(new_console_message_set)
     }
 
