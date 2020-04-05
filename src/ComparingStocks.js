@@ -280,6 +280,7 @@ export class ComparingStocks extends React.Component {
         this.getCurrentShares = this.getCurrentShares.bind(this)
         this.getBasis = this.getBasis.bind(this)
         this.getBalanceableValue = this.getBalanceableValue.bind(this)
+        this.getMaxBalanceableValue = this.getMaxBalanceableValue.bind(this)
         this.onWhatifSubmit = this.onWhatifSubmit.bind(this)
         this.onWhatifGo = this.onWhatifGo.bind(this)
         this.getIndicies = this.getIndicies.bind(this)
@@ -1459,50 +1460,34 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    getBalanceableValue(target_set, target_column) {
+    getMaxBalanceableValue(target_set, target_column) {
+        let include_cash = true
+        return this.getBalanceableValue(target_set, target_column, include_cash)
+    }
+
+    getBalanceableValue(target_set, target_column, include_cash) {
 
         let self = this
         let balanceable_value = 0
 
-        let current_cash_position = 0
-        if (this.state.show_cash && this.state.allPositions.hasOwnProperty('cash')) {
-            current_cash_position = self.state.allPositions['cash'].current_shares * self.state.allCurrentQuotes['cash'].current_price
+        let current_cash_value = 0
+        if (include_cash && this.state.show_cash && this.state.allPositions.hasOwnProperty('cash')) {
+            current_cash_value = self.state.allPositions['cash'].current_shares * self.state.allCurrentQuotes['cash'].current_price
         }
-        balanceable_value += current_cash_position
+        balanceable_value += current_cash_value
 
-        if (target_set === 'my_holdings') {
-            if (this.state.show_holdings) {
-                Object.keys(this.state.allPositions).filter( ticker => ticker !== 'cash' ).forEach( function(ticker) {
+        let target_tickers = this.getTickersFromSet(target_set)
+        if ( (target_set === 'my_holdings' && this.state.show_holdings)
+            || (target_set === 'untagged' && this.state.show_untagged) 
+            || (target_set !== 'my_holdings' && target_set !== 'untagged') ) {
+            target_tickers.forEach( function(ticker) {
+                if (target_column === 'current_value' || target_column === 'value_at_risk' || target_column === 'only_profits') {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
-                        balanceable_value += current_value
-                    } else if (target_column === 'basis' || 'basis_risked') {
-                        balanceable_value += self.state.allPositions[ticker].basis
-                    }
-                })
-            }
-        } else if (target_set === 'untagged') {
-            if (this.state.show_untagged && this.state.allTags.hasOwnProperty('untagged')) {
-                this.state.allTags['untagged'].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
-                    let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
-                        balanceable_value += current_value
-                    } else if (target_column === 'basis' || 'basis_risked') {
-                        balanceable_value += self.state.allPositions[ticker].basis
-                    }
-                })
-            }
-        } else { // target_set is a tag name
-            if (this.state.show_tagged) {
-                this.state.allTags[target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
-                    let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
-                        balanceable_value += current_value
-                    } else if (target_column === 'basis' || 'basis_risked') {
-                        balanceable_value += self.state.allPositions[ticker].basis
-                    }
-                })
-            }
+                    balanceable_value += current_value
+                } else if (target_column === 'basis' || target_column === 'basis_risked') {
+                    balanceable_value += self.state.allPositions[ticker].basis
+                }
+            })
         }
 
         return balanceable_value
@@ -1534,12 +1519,7 @@ export class ComparingStocks extends React.Component {
         let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
-        let total_amount_to_balance = this.getBalanceableValue(target_set, target_column) // includes cash if show_cash is enabled
-        if (remaining_cash === null) {
-            total_amount_to_balance -= original_cash_position
-        } else {
-            total_amount_to_balance -= remaining_cash
-        }
+        let total_amount_to_balance = this.getBalanceableValue(target_set, target_column, adjusting_cash)
 
         // determine the tickers to balance across
         let target_tickers = this.getTickersFromSet(target_set)
@@ -2490,7 +2470,7 @@ export class ComparingStocks extends React.Component {
                                 show_untagged={this.state.show_untagged}
                                 show_cash={this.state.show_cash}
                                 baseline={this.state.baseline.name}
-                                get_balanceable_value={this.getBalanceableValue}
+                                get_balanceable_value={this.getMaxBalanceableValue}
                                 on_new_tickers={this.onNewTickers}
                                 on_new_tags={this.onNewTags}
                                 on_delete_tag={this.onDeleteTag}
