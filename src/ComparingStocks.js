@@ -287,6 +287,7 @@ export class ComparingStocks extends React.Component {
         this.getAdded = this.getAdded.bind(this)
         this.getTagged = this.getTagged.bind(this)
         this.getUntagged = this.getUntagged.bind(this)
+        this.getTickersFromSet = this.getTickersFromSet.bind(this)
         this.nameIsAnAggregate = this.nameIsAnAggregate.bind(this)
         this.nameIsSpecial = this.nameIsSpecial.bind(this)
         this.sortTickers = this.sortTickers.bind(this)
@@ -1458,7 +1459,7 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    getBalanceableValue(balance_target_set, balance_target_column) {
+    getBalanceableValue(target_set, target_column) {
 
         let self = this
         let balanceable_value = 0
@@ -1469,35 +1470,35 @@ export class ComparingStocks extends React.Component {
         }
         balanceable_value += current_cash_position
 
-        if (balance_target_set === 'my_holdings') {
+        if (target_set === 'my_holdings') {
             if (this.state.show_holdings) {
                 Object.keys(this.state.allPositions).filter( ticker => ticker !== 'cash' ).forEach( function(ticker) {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (balance_target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
+                    if (target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'basis' || 'basis_risked') {
+                    } else if (target_column === 'basis' || 'basis_risked') {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
                 })
             }
-        } else if (balance_target_set === 'untagged') {
+        } else if (target_set === 'untagged') {
             if (this.state.show_untagged && this.state.allTags.hasOwnProperty('untagged')) {
                 this.state.allTags['untagged'].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (balance_target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
+                    if (target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'basis' || 'basis_risked') {
+                    } else if (target_column === 'basis' || 'basis_risked') {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
                 })
             }
-        } else { // balance_target_set is a tag name
+        } else { // target_set is a tag name
             if (this.state.show_tagged) {
-                this.state.allTags[balance_target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
+                this.state.allTags[target_set].filter( ticker => self.state.allPositions.hasOwnProperty(ticker) ).forEach( function(ticker) {
                     let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (balance_target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
+                    if (target_column === 'current_value' || 'value_at_risk' || 'only_profits') {
                         balanceable_value += current_value
-                    } else if (balance_target_column === 'basis' || 'basis_risked') {
+                    } else if (target_column === 'basis' || 'basis_risked') {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
                 })
@@ -1507,69 +1508,62 @@ export class ComparingStocks extends React.Component {
         return balanceable_value
     }
 
-    onWhatifSubmit(balance_target_set, sell_all_of, balance_target_column, remaining_cash) {
+    onWhatifSubmit(target_set, sell_all_of, target_column, remaining_cash) {
         this.setState({ 
             remaining_cash: remaining_cash, 
-            balance_target_set: balance_target_set, 
+            balance_target_set: target_set, 
             sell_all_of: sell_all_of,
-            balance_target_column: balance_target_column 
+            balance_target_column: target_column 
             })
-        let column = balance_target_column
-        if (balance_target_column === 'only_profits') {
+        let column = target_column
+        if (target_column === 'only_profits') {
             column = 'basis'
         }
         let show_whatif_columns = ['current_shares', 'whatif_current_shares', column, 'whatif_'+column]
-        if (balance_target_column.includes('risk')) {
+        if (target_column.includes('risk')) {
             show_whatif_columns.push('risk_factor')
         }
         this.showColumns(show_whatif_columns)
-        this.onWhatifGo(balance_target_set, sell_all_of, balance_target_column, this.state.show_cash, remaining_cash)
+        this.onWhatifGo(target_set, sell_all_of, target_column, this.state.show_cash, remaining_cash)
     }
 
-    onWhatifGo(balance_target_set, sell_all_set, balance_target_column, show_cash, remaining_cash) {
+    onWhatifGo(target_set, sell_all_set, target_column, show_cash, remaining_cash) {
 
         let self = this
         let adjusting_cash = show_cash && remaining_cash !== null
         let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
-        let total_balance_value = this.getBalanceableValue(balance_target_set, balance_target_column) // includes cash if show_cash is enabled
+        let total_amount_to_balance = this.getBalanceableValue(target_set, target_column) // includes cash if show_cash is enabled
         if (remaining_cash === null) {
-            total_balance_value -= original_cash_position
+            total_amount_to_balance -= original_cash_position
         } else {
-            total_balance_value -= remaining_cash
+            total_amount_to_balance -= remaining_cash
         }
 
         // determine the tickers to balance across
-        let ticker_set = []
-        if (balance_target_set === 'my_holdings') {
-            ticker_set = [...this.getHoldings().filter( ticker => ticker !== 'cash' )]
-        } else if (balance_target_set === 'untagged') {
-            ticker_set = [...this.getUntagged()]
-        } else {
-            ticker_set = this.state.allTags[balance_target_set]
-        }
+        let target_tickers = this.getTickersFromSet(target_set)
 
         // determine these tickers' what-if values for each relevant column
         let new_whatif = {
-            balance_target_column: balance_target_column,
+            balance_target_column: target_column,
             values: {}
         }
 
         let actual_remaining_cash = original_cash_position
         let risk_factors = {}
-        ticker_set.forEach(function(ticker) {
+        target_tickers.forEach(function(ticker) {
             if (self.state.allRisk.hasOwnProperty(ticker)){
                 risk_factors[ticker] = self.state.allRisk[ticker].factor
             } else {
                 risk_factors[ticker] = 0.20
             }
         })
-        ticker_set.forEach(function(ticker) {
+        target_tickers.forEach(function(ticker) {
 
             let whatif_currentshares, whatif_balancedvalue
             
-            let target = total_balance_value / ticker_set.length
+            let target = total_amount_to_balance / target_tickers.length
             new_whatif.values[ticker] = {}
 
             if (sell_all_set.includes(ticker)) {
@@ -1586,7 +1580,7 @@ export class ComparingStocks extends React.Component {
             let original_basis = self.getBasis(ticker)
 
             // balancing by value is a simple average of current values
-            if (balance_target_column === 'current_value') {
+            if (target_column === 'current_value') {
 
                 whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
                 new_whatif.values[ticker]['current_shares'] = whatif_currentshares
@@ -1605,7 +1599,7 @@ export class ComparingStocks extends React.Component {
                 new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * risk_factors[ticker]
 
             // balancing by basis must account for sunk costs too; current value is not enough
-            } else if (balance_target_column === 'basis') {
+            } else if (target_column === 'basis') {
 
                 let original_currentshares = self.getCurrentShares(ticker)
                 let target_delta = target - original_basis
@@ -1630,7 +1624,7 @@ export class ComparingStocks extends React.Component {
 
                 new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
 
-            } else if (balance_target_column === 'only_profits') {
+            } else if (target_column === 'only_profits') {
 
                 let original_currentshares = self.getCurrentShares(ticker)
                 let original_currentvalue = original_currentshares * self.state.allCurrentQuotes[ticker].current_price
@@ -1703,20 +1697,20 @@ export class ComparingStocks extends React.Component {
         // it is unaffected by each position's current stock price.
 
         // balancing by risk requires a complicated algorithm (shown above)
-        if (balance_target_column === 'value_at_risk' || balance_target_column === 'basis_risked') {
+        if (target_column === 'value_at_risk' || target_column === 'basis_risked') {
             
             // determine the numerator
             let numerator_product = 1
-            ticker_set.forEach(function(ticker, idx) {
+            target_tickers.forEach(function(ticker, idx) {
                 if (idx !== 0) {
                     numerator_product *= risk_factors[ticker]
                 }
             })
-            let numerator = total_balance_value * numerator_product
+            let numerator = total_amount_to_balance * numerator_product
 
             // determine the denominator
-            let denominator_terms = Array(ticker_set.length).fill(1)
-            ticker_set.forEach(function(ticker, ticker_idx) {
+            let denominator_terms = Array(target_tickers.length).fill(1)
+            target_tickers.forEach(function(ticker, ticker_idx) {
                 denominator_terms.forEach(function(term, term_idx) {
                     if (ticker_idx !== term_idx) {
                         denominator_terms[term_idx] = term * risk_factors[ticker]
@@ -1726,16 +1720,16 @@ export class ComparingStocks extends React.Component {
             let denominator = denominator_terms.reduce( (accumulator, currentValue) => accumulator + currentValue, 0 )
 
             // determine the target value for each ticker; each will be different if their risk factors are different
-            let targets = Array(ticker_set.length).fill(0)
+            let targets = Array(target_tickers.length).fill(0)
             targets[0] = numerator / denominator
-            ticker_set.forEach(function(ticker, idx) {
+            target_tickers.forEach(function(ticker, idx) {
                 if (idx !== 0) {
-                    targets[idx] = Math.round(targets[0] * risk_factors[ticker_set[0]] / risk_factors[ticker])
+                    targets[idx] = Math.round(targets[0] * risk_factors[target_tickers[0]] / risk_factors[ticker])
                 }
             })
 
             // for each ticker, use its target to derive the other metrics
-            ticker_set.forEach(function(ticker, idx) {
+            target_tickers.forEach(function(ticker, idx) {
                 if (!new_whatif.values.hasOwnProperty(ticker)) {
                     new_whatif.values[ticker] = {}
                 }
@@ -1744,7 +1738,7 @@ export class ComparingStocks extends React.Component {
                 let value_delta, target = targets[idx]
 
                 // for values, "target" is the target market value for this position
-                if (balance_target_column === 'value_at_risk') {
+                if (target_column === 'value_at_risk') {
 
                     let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
                     new_whatif.values[ticker]['current_shares'] = whatif_currentshares
@@ -1763,7 +1757,7 @@ export class ComparingStocks extends React.Component {
                     new_whatif.values[ticker]['value_at_risk'] = whatif_balancedvalue * risk_factors[ticker]
 
                 // for bases, "target" is the target basis for this position
-                } else if (balance_target_column === 'basis_risked') {
+                } else if (target_column === 'basis_risked') {
 
                     let original_currentshares = self.getCurrentShares(ticker)
                     let target_delta = target - original_basis
@@ -1835,6 +1829,18 @@ export class ComparingStocks extends React.Component {
 
     getUntagged() {
         return Array.from(this.state.allTags['untagged'])
+    }
+
+    getTickersFromSet(set) {
+        let tickers = []
+        if (set === 'my_holdings') {
+            tickers = [...this.getHoldings().filter( ticker => ticker !== 'cash' )]
+        } else if (set === 'untagged') {
+            tickers = [...this.getUntagged()]
+        } else {
+            tickers = this.state.allTags[set]
+        }
+        return tickers
     }
 
     populateSymbolCount(grid_rows) {
