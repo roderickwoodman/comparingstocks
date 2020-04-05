@@ -1520,6 +1520,9 @@ export class ComparingStocks extends React.Component {
 
         // determine the total value to be balanced
         let total_amount_to_balance = this.getBalanceableValue(target_set, target_column, adjusting_cash)
+        if (adjusting_cash) {
+            total_amount_to_balance -= remaining_cash
+        }
 
         // determine the tickers to balance across
         let target_tickers = this.getTickersFromSet(target_set)
