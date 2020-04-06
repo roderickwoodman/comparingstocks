@@ -1681,10 +1681,12 @@ export class ComparingStocks extends React.Component {
 
         // balancing by risk requires a complicated algorithm (shown above)
         if (target_column === 'value_at_risk' || target_column === 'basis_risked') {
+
+            let target_nonzero_tickers = target_tickers.filter(ticker => !sell_all_set.includes(ticker))
             
             // determine the numerator
             let numerator_product = 1
-            target_tickers.forEach(function(ticker, idx) {
+            target_nonzero_tickers.forEach(function(ticker, idx) {
                 if (idx !== 0) {
                     numerator_product *= risk_factors[ticker]
                 }
@@ -1692,8 +1694,8 @@ export class ComparingStocks extends React.Component {
             let numerator = total_amount_to_balance * numerator_product
 
             // determine the denominator
-            let denominator_terms = Array(target_tickers.length).fill(1)
-            target_tickers.forEach(function(ticker, ticker_idx) {
+            let denominator_terms = Array(target_nonzero_tickers.length).fill(1)
+            target_nonzero_tickers.forEach(function(ticker, ticker_idx) {
                 denominator_terms.forEach(function(term, term_idx) {
                     if (ticker_idx !== term_idx) {
                         denominator_terms[term_idx] = term * risk_factors[ticker]
@@ -1703,12 +1705,17 @@ export class ComparingStocks extends React.Component {
             let denominator = denominator_terms.reduce( (accumulator, currentValue) => accumulator + currentValue, 0 )
 
             // determine the target value for each ticker; each will be different if their risk factors are different
-            let targets = Array(target_tickers.length).fill(0)
-            targets[0] = numerator / denominator
-            target_tickers.forEach(function(ticker, idx) {
+            let nonzero_targets = Array(target_nonzero_tickers.length).fill(0)
+            nonzero_targets[0] = numerator / denominator
+            target_nonzero_tickers.forEach(function(ticker, idx) {
                 if (idx !== 0) {
-                    targets[idx] = Math.round(targets[0] * risk_factors[target_tickers[0]] / risk_factors[ticker])
+                    nonzero_targets[idx] = Math.round(nonzero_targets[0] * risk_factors[target_nonzero_tickers[0]] / risk_factors[ticker])
                 }
+            })
+            let targets = Array(target_tickers.length).fill(0)
+            target_nonzero_tickers.forEach(function (nonzero_ticker, nonzero_i) {
+                let i = target_tickers.indexOf(nonzero_ticker)
+                targets[i] = nonzero_targets[nonzero_i]
             })
 
             // for each ticker, use its target to derive the other metrics
@@ -1745,25 +1752,33 @@ export class ComparingStocks extends React.Component {
                     let original_currentshares = self.getCurrentShares(ticker)
                     let target_delta = target - original_basis
                     let target_delta_shares
-                    if (target_delta >= 0) {
-                        target_delta_shares = Math.floor(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                    if (target === 0) {
+                        new_whatif.values[ticker]['current_shares'] = 0
+                        new_whatif.values[ticker]['basis'] = 0
+                        new_whatif.values[ticker]['basis_risked'] = 0
+                        new_whatif.values[ticker]['current_value'] = 0
+                        new_whatif.values[ticker]['value_at_risk'] = 0
                     } else {
-                        target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
-                    }
-                    let whatif_currentshares = original_currentshares + target_delta_shares
-                    new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                        if (target_delta >= 0) {
+                            target_delta_shares = Math.floor(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                        } else {
+                            target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
+                        }
+                        let whatif_currentshares = original_currentshares + target_delta_shares
+                        new_whatif.values[ticker]['current_shares'] = whatif_currentshares
 
-                    let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
-                    if (whatif_balancedbasis < 0) {
-                        whatif_balancedbasis = 0
+                        let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
+                        if (whatif_balancedbasis < 0) {
+                            whatif_balancedbasis = 0
+                        }
+                        new_whatif.values[ticker]['basis'] = whatif_balancedbasis
+                        new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * risk_factors[ticker]
+        
+                        value_delta = whatif_balancedbasis - original_basis
+                        new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+        
+                        new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
                     }
-                    new_whatif.values[ticker]['basis'] = whatif_balancedbasis
-                    new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * risk_factors[ticker]
-    
-                    value_delta = whatif_balancedbasis - original_basis
-                    new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
-    
-                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
                 }
 
                 if (adjusting_cash) {
