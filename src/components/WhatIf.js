@@ -35,11 +35,6 @@ export class WhatIf extends React.Component {
             this.setState({ balance_target_column: stored_balance_target_column })
         }
 
-        const stored_cash_treatment = JSON.parse(localStorage.getItem("cash_treatment"))
-        if (stored_cash_treatment !== null) {
-            this.setState({ cash_treatment: stored_cash_treatment })
-        }
-
         const stored_cash_remaining = JSON.parse(localStorage.getItem("cash_remaining"))
         if (stored_cash_remaining !== null) {
             this.setState({ cash_remaining: stored_cash_remaining })
@@ -99,7 +94,7 @@ export class WhatIf extends React.Component {
     handleSubmit(event) {
         event.preventDefault()
         let user_remaining_cash = this.state.cash_remaining.split('.')[0].replace(/[^0-9]/g, "")
-        let remaining_cash = (this.state.cash_treatment === 'ignore') ? null : parseInt(user_remaining_cash)
+        let remaining_cash = (this.state.cash_treatment === 'include') ? parseInt(user_remaining_cash) : null
         this.props.on_whatif_submit(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column, remaining_cash)
     }
 
