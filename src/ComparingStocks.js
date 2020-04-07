@@ -1512,10 +1512,15 @@ export class ComparingStocks extends React.Component {
             balance_target_column: target_column 
             })
         let column = target_column
+        let show_whatif_columns = ['current_shares', 'whatif_current_shares']
         if (target_column === 'only_profits') {
             column = 'basis'
         }
-        let show_whatif_columns = ['current_shares', 'whatif_current_shares', column, 'whatif_'+column]
+        show_whatif_columns.push(column)
+        show_whatif_columns.push('whatif_'+column)
+        if (target_column === 'only_profits') {
+            show_whatif_columns.push('profit')
+        }
         if (target_column.includes('risk')) {
             show_whatif_columns.push('risk_factor')
         }
