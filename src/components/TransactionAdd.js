@@ -9,7 +9,7 @@ export class TransactionAdd extends React.Component {
         this.state = {
             transaction_date: '',
             transaction: '',
-            user_cash_action: 'add',
+            user_cash_action: 'dividend',
             user_cash_amount: '',
         }
         this.handleChange = this.handleChange.bind(this)
@@ -42,20 +42,40 @@ export class TransactionAdd extends React.Component {
 
     handleCashSubmit(event) {
         event.preventDefault()
-        let new_message
+        let new_message = null
         let user_cash_action = this.state.user_cash_action
         let user_date = this.state.transaction_date
-        let user_cash_amount = parseFloat(this.state.user_cash_amount.trim().replace(/\$/g, ""))
-        if (isNaN(user_cash_amount)) {
-            new_message = 'ERROR: Cash amount "' + this.state.user_cash_amount + '" is not in currency format.'
+
+        let user_cash_operation = this.state.user_cash_amount
+        let terms = user_cash_operation.split(' ')
+        let user_cash_amount
+
+        if (this.state.user_cash_action === 'dividend') {
+            if (terms.length === 3 && terms[1].toLowerCase() === 'on' && terms[2].replace(/\W/g,'').length) {
+                user_cash_amount = terms[0]
+            } else {
+                new_message = 'ERROR: Dividend syntax must be in the form: "$200 on MSFT"'
+            }
         } else {
-            let total = parseFloat((Math.round(user_cash_amount * 100) / 100).toFixed(2));
-            let valid_transaction_summary = user_date + ': ' + user_cash_action + ' $' + total.toFixed(2) + ' cash'
-            new_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
-            this.props.on_new_cash(valid_transaction_summary)
-            this.handleCashReset()
+            user_cash_amount = user_cash_operation
         }
-        let new_console_message_set = new_message
+
+        if (new_message === null) {
+            let cash_amount = parseFloat(user_cash_amount.trim().replace(/\$/g, ""))
+            if (isNaN(cash_amount)) {
+                new_message = 'ERROR: Cash amount "' + cash_amount + '" is not in currency format.'
+            } else {
+                let total = parseFloat((Math.round(cash_amount * 100) / 100).toFixed(2));
+                let valid_transaction_summary = user_date + ': ' + user_cash_action + ' $' + total.toFixed(2) + ' cash'
+                if (this.state.user_cash_action === 'dividend') {
+                    valid_transaction_summary += ' on ' + terms[2].toUpperCase()
+                }
+                new_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
+                this.props.on_new_cash(valid_transaction_summary)
+                this.handleCashReset()
+            }
+        }
+        let new_console_message_set = this.props.create_console_message_set(new_message)
         this.props.on_new_console_messages(new_console_message_set)
     }
 

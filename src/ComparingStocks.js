@@ -1207,7 +1207,7 @@ export class ComparingStocks extends React.Component {
             if (newAllPositions.hasOwnProperty('cash')) {
                 orig_current_shares = newAllPositions['cash']['current_shares']
             }
-            let new_cash = (action === 'add' || action === 'transferIN') ? orig_current_shares + total : orig_current_shares - total
+            let new_cash = (action === 'dividend' || action === 'transferIN') ? orig_current_shares + total : orig_current_shares - total
             let updatedPosition = {
                 symbol: 'cash',
                 basis: (new_cash >= 0) ? new_cash : 0,
