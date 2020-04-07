@@ -1635,31 +1635,29 @@ export class ComparingStocks extends React.Component {
                 let target_delta_shares
                 let losing = (original_basis > original_currentvalue) ? true : false
                 if (losing) {
-                    new_whatif.values[ticker]['current_shares'] = 0
+                    whatif_currentshares = 0
                 } else {
                     let target_delta = original_basis
                     target_delta_shares = -1 * Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
                     whatif_currentshares = original_currentshares + target_delta_shares
-                    new_whatif.values[ticker]['current_shares'] = whatif_currentshares
                 }
+                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
 
-                let whatif_basis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
-                if (whatif_basis < 0) {
-                    whatif_basis = 0
-                }
                 if (losing || sell_all_set.includes(ticker)) {
                     new_whatif.values[ticker]['basis'] = 'n/a'
                     new_whatif.values[ticker]['basis_risked'] = 'n/a'
                     new_whatif.values[ticker]['current_value'] = 0
                     new_whatif.values[ticker]['value_at_risk'] = 'n/a'
+                    value_delta = original_currentvalue
                 } else {
+                    let whatif_basis = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     new_whatif.values[ticker]['basis'] = whatif_basis
                     new_whatif.values[ticker]['basis_risked'] = whatif_basis * risk_factors[ticker]
 
-                    value_delta = whatif_basis - original_basis
-                    new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
-
-                    new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
+                    let whatif_currentvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
+                    value_delta = whatif_currentvalue - original_currentvalue
+                    new_whatif.values[ticker]['current_value'] = whatif_currentvalue
+                    new_whatif.values[ticker]['value_at_risk'] = whatif_currentvalue * risk_factors[ticker]
                 }
             }
 
