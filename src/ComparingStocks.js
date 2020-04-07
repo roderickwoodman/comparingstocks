@@ -1553,18 +1553,23 @@ export class ComparingStocks extends React.Component {
             
             new_whatif.values[ticker] = {}
 
-            if (sell_all_set.includes(ticker)) {
-                new_whatif.values[ticker]['current_shares'] = 0
-                new_whatif.values[ticker]['basis'] = 0
-                new_whatif.values[ticker]['basis_risked'] = 0
-                new_whatif.values[ticker]['current_value'] = 0
-                new_whatif.values[ticker]['value_at_risk'] = 0
-                return
-            }
-
             let value_delta = 0
             let original_currentvalue = self.getCurrentValue(ticker)
             let original_basis = self.getBasis(ticker)
+
+            if (target_column === 'current_value' || target_column === 'basis' || target_column === 'only_profits') {
+                if (sell_all_set.includes(ticker)) {
+                    new_whatif.values[ticker]['current_shares'] = 0
+                    new_whatif.values[ticker]['basis'] = 0
+                    new_whatif.values[ticker]['basis_risked'] = 0
+                    new_whatif.values[ticker]['current_value'] = 0
+                    new_whatif.values[ticker]['value_at_risk'] = 0
+                    if (adjusting_cash) {
+                        actual_remaining_cash += original_currentvalue 
+                    }
+                    return
+                }
+            }
 
             // balancing by value is a simple average of current values
             if (target_column === 'current_value') {
@@ -1762,6 +1767,7 @@ export class ComparingStocks extends React.Component {
                         new_whatif.values[ticker]['basis_risked'] = 0
                         new_whatif.values[ticker]['current_value'] = 0
                         new_whatif.values[ticker]['value_at_risk'] = 0
+                        value_delta = -1 * original_currentvalue
                     } else {
                         if (target_delta >= 0) {
                             target_delta_shares = Math.floor(target_delta / self.state.allCurrentQuotes[ticker].current_price)
