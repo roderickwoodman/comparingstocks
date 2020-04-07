@@ -1460,12 +1460,12 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    getMaxBalanceableValue(target_set, target_column) {
+    getMaxBalanceableValue(target_set, sell_all_set, target_column) {
         let include_cash = true
-        return this.getBalanceableValue(target_set, target_column, include_cash)
+        return this.getBalanceableValue(target_set, sell_all_set, target_column, include_cash)
     }
 
-    getBalanceableValue(target_set, target_column, include_cash) {
+    getBalanceableValue(target_set, sell_all_set, target_column, include_cash) {
 
         let self = this
         let balanceable_value = 0
@@ -1481,11 +1481,15 @@ export class ComparingStocks extends React.Component {
             || (target_set === 'untagged' && this.state.show_untagged) 
             || (target_set !== 'my_holdings' && target_set !== 'untagged') ) {
             target_tickers.forEach( function(ticker) {
+                let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                 if (target_column === 'current_value' || target_column === 'value_at_risk' || target_column === 'only_profits') {
-                    let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                     balanceable_value += current_value
                 } else if (target_column === 'basis' || target_column === 'basis_risked') {
-                    balanceable_value += self.state.allPositions[ticker].basis
+                    if (sell_all_set.includes(ticker)) {
+                        balanceable_value += current_value
+                    } else {
+                        balanceable_value += self.state.allPositions[ticker].basis
+                    }
                 }
             })
         }
@@ -1519,7 +1523,7 @@ export class ComparingStocks extends React.Component {
         let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
-        let total_amount_to_balance = this.getBalanceableValue(target_set, target_column, adjusting_cash)
+        let total_amount_to_balance = this.getBalanceableValue(target_set, sell_all_set, target_column, adjusting_cash)
         if (adjusting_cash) {
             total_amount_to_balance -= remaining_cash
         }

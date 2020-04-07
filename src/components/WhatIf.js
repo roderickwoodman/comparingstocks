@@ -22,7 +22,7 @@ export class WhatIf extends React.Component {
     }
 
     componentDidMount() {
-        let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, this.state.balance_target_column))
+        let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column))
         this.setState({ balanceable_value: new_balanceable_value })
 
         const stored_balance_target_set = JSON.parse(localStorage.getItem("balance_target_set"))
@@ -52,13 +52,13 @@ export class WhatIf extends React.Component {
 
         // when the balance target set input changes, update the maximum value
         if (name === 'balance_target_set') {
-            let new_balanceable_value = Math.round(this.props.get_balanceable_value(value, this.state.balance_target_column))
+            let new_balanceable_value = Math.round(this.props.get_balanceable_value(value, this.state.sell_all_of, this.state.balance_target_column))
             this.setState({ balanceable_value: new_balanceable_value })
         }
 
         // when the balance target column input changes, update the maximum value
         if (name === 'balance_target_column') {
-            let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, value))
+            let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, this.state.sell_all_of, value))
             this.setState({ balanceable_value: new_balanceable_value })
         }
 
@@ -88,7 +88,11 @@ export class WhatIf extends React.Component {
             if (multiple_tickers.includes('sell_none')) {
                 multiple_tickers = ['sell_none']
             }
-            this.setState({ sell_all_of: multiple_tickers })
+            let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, value, this.state.balance_target_column))
+            this.setState({ 
+                sell_all_of: multiple_tickers,
+                balanceable_value: new_balanceable_value
+            })
         }
     }
 
