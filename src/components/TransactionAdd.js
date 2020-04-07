@@ -19,6 +19,7 @@ export class TransactionAdd extends React.Component {
         this.handleCashReset = this.handleCashReset.bind(this)
         this.handleActionChange = this.handleActionChange.bind(this)
         this.handleCashSubmit = this.handleCashSubmit.bind(this)
+        this.getCashOperationPlaceholder = this.getCashOperationPlaceholder.bind(this)
     }
 
     handleChange(event) {
@@ -155,6 +156,16 @@ export class TransactionAdd extends React.Component {
         this.props.on_new_console_messages(new_console_message_set)
     }
 
+    getCashOperationPlaceholder() {
+        if (this.state.user_cash_action === 'dividend') {
+            return "$85.00 on MSFT"
+        } else if (this.state.user_cash_action === 'fee') {
+            return "$15"
+        } else {
+            return "$1000"
+        }
+    }
+
     render() {
         return (
             <section id="add-transaction">
@@ -172,14 +183,14 @@ export class TransactionAdd extends React.Component {
                     </section>
                 </form>
                 <form onSubmit={this.handleCashSubmit}>
-                    <label>Add/Remove Cash:
+                    <label>Cash&nbsp;
                         <select value={this.state.action} onChange={this.handleActionChange}>
                             <option value="dividend">dividend</option>
                             <option value="fee">fee</option>
                             <option value="transferIN">transfer IN</option>
                             <option value="transferOUT">transfer OUT</option>
-                        </select>
-                        <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="12" placeholder="$1000" required />
+                        </select>:
+                        <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="20" placeholder={this.getCashOperationPlaceholder()} required />
                     </label>
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-primary" type="submit" value="Adjust Cash" disabled={this.state.user_cash_amount==='' || this.state.transaction_date===''}/>
