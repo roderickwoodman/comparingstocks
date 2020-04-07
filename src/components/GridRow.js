@@ -293,7 +293,7 @@ export class GridRow extends React.Component {
         let realized_gains = this.props.realized_gains
         const whatif = this.props.whatif
 
-        let percent_value, percent_basis, percent_profit
+        let percent_value, percent_basis, profit, percent_profit
 
         // calculate percent_value
         if (isNaN(current_value)) {
@@ -317,17 +317,22 @@ export class GridRow extends React.Component {
             }
         }
 
-        // calculate percent_profit
+        // calculate profit and percent_profit
         if (isNaN(current_value) || isNaN(basis)) {
+            profit = 'n/a'
             percent_profit = 'n/a'
         } else {
             if (current_shares === 0) {
+                profit = 'n/a'
                 percent_profit = 'n/a'
             } else if (basis > current_value) {
+                profit = current_value - basis
                 percent_profit = 'losing'
             } else if (basis < current_value) {
+                profit = current_value - basis
                 percent_profit = (1 - basis / current_value) * 100
             } else {
+                profit = 0
                 percent_profit = 0
             }
         }
@@ -418,6 +423,9 @@ export class GridRow extends React.Component {
             case 'percent_basis':
                 value = percent_basis
                 break
+            case 'profit':
+                value = profit
+                break
             case 'percent_profit':
                 value = percent_profit
                 break
@@ -476,6 +484,7 @@ export class GridRow extends React.Component {
         if ( this.props.row_name === 'cash' || (this.props.is_aggregate && !this.props.membership_set.length) ) {
             switch (column.name) {
                 case 'realized_gains': 
+                case 'profit': 
                 case 'percent_profit': 
                 case 'volume': 
                 case 'dollar_volume': 

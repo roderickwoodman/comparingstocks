@@ -93,6 +93,13 @@ const all_columns = [
         category: 'holdings'
     },
     {
+        name: 'profit',
+        display_name: 'Profit',
+        type: 'currency',
+        num_decimals: 0,
+        category: 'holdings'
+    },
+    {
         name: 'percent_profit',
         display_name: 'Pct Profit',
         type: 'percentage',
@@ -1883,7 +1890,7 @@ export class ComparingStocks extends React.Component {
 
         let sort_column = this.state.sort_column
         let quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
-        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'percent_profit']
+        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'profit', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
         let sorted_names_list = [...names_list]
@@ -1966,6 +1973,7 @@ export class ComparingStocks extends React.Component {
                         case 'realized_gains':
                             value_a = self.state.aggrRealized[a]
                             break;
+                        case 'profit':
                         case 'percent_profit':
                             positionvalue_a = self.state.aggrTotalValue[a]
                             basis_a = self.state.aggrBasis[a]
@@ -1981,10 +1989,10 @@ export class ComparingStocks extends React.Component {
                             value_a = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(a)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'profit' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
-                            if (sort_column === 'percent_profit' && positionvalue_a !== 0) {
+                            if ( (sort_column === 'profit' || sort_column === 'percent_profit') && positionvalue_a !== 0) {
                                 basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
                             } else if (sort_column === 'value_at_risk' && positionvalue_a !== 0 && self.state.allRisk.hasOwnProperty(a)) {
@@ -2025,6 +2033,7 @@ export class ComparingStocks extends React.Component {
                         case 'realized_gains':
                             value_b = self.state.aggrRealized[b]
                             break;
+                        case 'profit':
                         case 'percent_profit':
                             positionvalue_b = self.state.aggrTotalValue[b]
                             basis_b = self.state.aggrBasis[b]
@@ -2040,10 +2049,10 @@ export class ComparingStocks extends React.Component {
                             value_b = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(b)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
+                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'profit' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
-                            if (sort_column === 'percent_profit' && positionvalue_b !== 0) {
+                            if ( (sort_column === 'profit' || sort_column === 'percent_profit') && positionvalue_b !== 0) {
                                 basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
                             } else if (sort_column === 'value_at_risk' && positionvalue_b !== 0 && self.state.allRisk.hasOwnProperty(b)) {
