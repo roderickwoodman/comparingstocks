@@ -103,7 +103,7 @@ export class WhatIf extends React.Component {
         if (this.state.cash_treatment === 'include' && !this.state.cash_valid) {
             return true
         } else if (this.state.balance_target_set === 'my_holdings') {
-            return (this.props.show_holdings) ? false : true
+            return (this.props.show_current_holdings) ? false : true
         } else if (this.state.balance_target_set === 'untagged') {
             return (this.props.show_untagged) ? false : true
         } else {
@@ -169,7 +169,7 @@ WhatIf.propTypes = {
     all_tags: PropTypes.object,
     all_positions: PropTypes.object,
     get_balanceable_value: PropTypes.func,
-    show_holdings: PropTypes.bool,
+    show_current_holdings: PropTypes.bool,
     show_tagged: PropTypes.bool,
     show_untagged: PropTypes.bool,
     show_cash: PropTypes.bool,

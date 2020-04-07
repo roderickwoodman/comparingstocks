@@ -103,7 +103,8 @@ export class InputForms extends React.Component {
                             all_positions={this.props.all_positions}
                             all_tags={this.props.all_tags}
                             get_balanceable_value={this.props.get_balanceable_value}
-                            show_holdings={this.props.show_holdings}
+                            show_current_holdings={this.props.show_current_holdings}
+                            show_previous_holdings={this.props.show_previous_holdings}
                             show_tagged={this.props.show_tagged}
                             show_untagged={this.props.show_untagged}
                             show_cash={this.props.show_cash}
