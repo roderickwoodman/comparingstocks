@@ -1531,7 +1531,7 @@ export class ComparingStocks extends React.Component {
     onWhatifGo(target_set, sell_all_set, target_column, show_cash, remaining_cash) {
 
         let self = this
-        let adjusting_cash = show_cash && remaining_cash !== null
+        let adjusting_cash = show_cash && (remaining_cash !== null || target_column === 'only_profits')
         let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
@@ -1648,7 +1648,7 @@ export class ComparingStocks extends React.Component {
                     new_whatif.values[ticker]['basis_risked'] = 'n/a'
                     new_whatif.values[ticker]['current_value'] = 0
                     new_whatif.values[ticker]['value_at_risk'] = 'n/a'
-                    value_delta = original_currentvalue
+                    value_delta = -1 * original_currentvalue
                 } else {
                     let whatif_basis = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     new_whatif.values[ticker]['basis'] = whatif_basis
