@@ -211,6 +211,7 @@ export class ComparingStocks extends React.Component {
             allIndiciesAliases: [ 'S&P500' ],
             allStocks: [],
             allCurrentQuotes: {},
+            allMonthEndDates: [],
             allMonthlyQuotes: {},
             allPositions: {},
             allTransactions: [],
@@ -453,6 +454,7 @@ export class ComparingStocks extends React.Component {
 
         let newPositions = {}
         let newCurrentQuotes = {}
+        let newMonthEndDates = []
         let newMonthlyQuotes = {}
         let newPerformanceNumbers = {}
         let newRisk = {}
@@ -504,6 +506,20 @@ export class ComparingStocks extends React.Component {
                     })
                 newMonthlyQuote['symbol'] = ticker
 
+                // build the month-end dates (YYYY-MM-DD)
+                Object.entries(indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series']).forEach(function(entry) {
+                    let full_date = entry[0]
+                    let target_month = full_date.substr(0,7)
+                    if (!newMonthEndDates.includes(full_date)) {
+                        let found_idx = newMonthEndDates.findIndex(element => element.substr(0,7) === target_month)
+                        if (found_idx === -1) {
+                            newMonthEndDates.push(full_date)
+                        } else if (newMonthEndDates[found_idx] < full_date) {
+                            newMonthEndDates[found_idx] = full_date
+                        }
+                    }
+                })
+
                 let monthly_prices = []
                 let monthly_dates = []
                 quoteTimeSeriesDesc.forEach(function(price) {
@@ -540,6 +556,7 @@ export class ComparingStocks extends React.Component {
                 newRisk[ticker] = JSON.parse(JSON.stringify(indexed_risk_data[ticker]))
             }
         })
+        newMonthEndDates = newMonthEndDates.sort().reverse()
 
         // quote for cash
         let cashCurrentQuote = {
@@ -582,6 +599,7 @@ export class ComparingStocks extends React.Component {
         this.setState({ allStocks: all_stocks,
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
+                        allMonthEndDates: newMonthEndDates,
                         allMonthlyQuotes: newMonthlyQuotes,
                         allPerformanceNumbers: newPerformanceNumbers,
                         allRisk: newRisk,
