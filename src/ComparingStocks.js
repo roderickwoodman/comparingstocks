@@ -213,6 +213,7 @@ export class ComparingStocks extends React.Component {
             allCurrentQuotes: {},
             allMonthEndDates: [],
             allMonthlyQuotes: {},
+            allMonthlyQuotesOld: {},
             allPositions: {},
             allTransactions: [],
             allTags: {
@@ -456,6 +457,7 @@ export class ComparingStocks extends React.Component {
         let newCurrentQuotes = {}
         let newMonthEndDates = []
         let newMonthlyQuotes = {}
+        let newMonthlyQuotesOld = {}
         let newPerformanceNumbers = {}
         let newRisk = {}
         let cash_delta_from_stock_transactions = 0
@@ -493,7 +495,7 @@ export class ComparingStocks extends React.Component {
 
             // get monthly quote
             if (indexed_monthly_quote_data.hasOwnProperty(ticker)) {
-                let newMonthlyQuote = {}
+                let newMonthlyQuoteOld = {}
                 let quoteTimeSeriesDesc = Object.entries(indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series'])
                     .sort(function(a,b) {
                         if(a[0] < b[0]) {
@@ -504,11 +506,20 @@ export class ComparingStocks extends React.Component {
                             return 0
                         }
                     })
-                newMonthlyQuote['symbol'] = ticker
+                newMonthlyQuoteOld['symbol'] = ticker
 
-                // build the month-end dates (YYYY-MM-DD)
+                let newTickerQuotes = {}
+
                 Object.entries(indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series']).forEach(function(entry) {
+
                     let full_date = entry[0]
+
+                    // collect all quotes for this ticker
+                    let newQuote = {}
+                    newQuote['adjusted_close'] = parseFloat(entry[1]['5. adjusted close'])
+                    newTickerQuotes[full_date] = newQuote
+
+                    // build the month-end dates (YYYY-MM-DD)
                     let target_month = full_date.substr(0,7)
                     if (!newMonthEndDates.includes(full_date)) {
                         let found_idx = newMonthEndDates.findIndex(element => element.substr(0,7) === target_month)
@@ -519,6 +530,7 @@ export class ComparingStocks extends React.Component {
                         }
                     }
                 })
+                newMonthlyQuotes[ticker] = newTickerQuotes
 
                 let monthly_prices = []
                 let monthly_dates = []
@@ -526,16 +538,16 @@ export class ComparingStocks extends React.Component {
                     monthly_prices.push(parseFloat(price[1]['5. adjusted close']))
                     monthly_dates.push(price[0])
                 })
-                newMonthlyQuote['monthly_prices'] = monthly_prices
-                newMonthlyQuote['monthly_dates_desc'] = monthly_dates
-                newMonthlyQuotes[ticker] = newMonthlyQuote
+                newMonthlyQuoteOld['monthly_prices'] = monthly_prices
+                newMonthlyQuoteOld['monthly_dates_desc'] = monthly_dates
+                newMonthlyQuotesOld[ticker] = newMonthlyQuoteOld
 
                 // calculate performance
                 let newPerformance = {}
-                let ticker_now = newMonthlyQuote['monthly_prices'][0]
-                let ticker_prev_short = newMonthlyQuote['monthly_prices'][5]
-                let ticker_prev_medium = newMonthlyQuote['monthly_prices'][11]
-                let ticker_prev_long = newMonthlyQuote['monthly_prices'][23]
+                let ticker_now = newMonthlyQuoteOld['monthly_prices'][0]
+                let ticker_prev_short = newMonthlyQuoteOld['monthly_prices'][5]
+                let ticker_prev_medium = newMonthlyQuoteOld['monthly_prices'][11]
+                let ticker_prev_long = newMonthlyQuoteOld['monthly_prices'][23]
                 let ticker_perf_short = (ticker_now - ticker_prev_short) / ticker_now * 100
                 let ticker_perf_medium = (ticker_now - ticker_prev_medium) / ticker_now * 100
                 let ticker_perf_long = (ticker_now - ticker_prev_long) / ticker_now * 100
@@ -601,6 +613,7 @@ export class ComparingStocks extends React.Component {
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthEndDates: newMonthEndDates,
                         allMonthlyQuotes: newMonthlyQuotes,
+                        allMonthlyQuotesOld: newMonthlyQuotesOld,
                         allPerformanceNumbers: newPerformanceNumbers,
                         allRisk: newRisk,
                         aggrBasis: aggr_position_info[0],
@@ -2551,7 +2564,7 @@ export class ComparingStocks extends React.Component {
                                 all_stocks={this.state.allStocks}
                                 all_tags={this.state.allTags}
                                 all_current_quotes={this.state.allCurrentQuotes}
-                                all_monthly_quotes={this.state.allMonthlyQuotes}
+                                all_monthly_quotes={this.state.allMonthlyQuotesOld}
                                 all_positions={this.state.allPositions}
                                 all_transactions={this.state.allTransactions}
                                 all_risk={this.state.allRisk}
