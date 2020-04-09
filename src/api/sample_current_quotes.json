@@ -699,6 +699,34 @@
                 "09. change": "37.2400",
                 "10. change percent": "14.8954%"
             }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "TTWO",
+                "02. open": "120.6500",
+                "03. high": "122.4800",
+                "04. low": "119.0100",
+                "05. price": "121.2900",
+                "06. volume": "1614350",
+                "07. latest trading day": "2020-04-06",
+                "08. previous close": "118.4900",
+                "09. change": "2.8000",
+                "10. change percent": "2.3631%"
+            }
+        },
+        {
+            "Global Quote": {
+                "01. symbol": "CTRL",
+                "02. open": "23.8900",
+                "03. high": "23.9100",
+                "04. low": "23.8800",
+                "05. price": "23.9100",
+                "06. volume": "829000",
+                "07. latest trading day": "2019-08-01",
+                "08. previous close": "23.9100",
+                "09. change": "0.0000",
+                "10. change percent": "0.0000%"
+            }
         }
     ]
 }
