@@ -8,7 +8,7 @@ export class WhatIf extends React.Component {
         super(props)
         this.state = {
             balanceable_value: 0,
-            balance_target_set: 'my_holdings',
+            balance_target_set: 'my_current_holdings',
             balance_target_column: 'current_value',
             sell_all_of: ['sell_none'],
             cash_treatment: 'ignore',
@@ -102,7 +102,7 @@ export class WhatIf extends React.Component {
 
         if (this.state.cash_treatment === 'include' && !this.state.cash_valid) {
             return true
-        } else if (this.state.balance_target_set === 'my_holdings') {
+        } else if (this.state.balance_target_set === 'my_current_holdings') {
             return (this.props.show_current_holdings) ? false : true
         } else if (this.state.balance_target_set === 'untagged') {
             return (this.props.show_untagged) ? false : true
@@ -117,7 +117,7 @@ export class WhatIf extends React.Component {
 
     render() {
         let excludable_tickers = []
-        if (this.state.balance_target_set === "my_holdings") {
+        if (this.state.balance_target_set === "my_current_holdings") {
             excludable_tickers = Object.keys(this.props.all_positions).filter( ticker => ticker !== 'cash' && this.props.all_positions[ticker].current_shares)
         } else if (this.props.all_tags.hasOwnProperty(this.state.balance_target_set)) {
             excludable_tickers = this.props.all_tags[this.state.balance_target_set].filter( ticker => this.props.all_positions[ticker] && this.props.all_positions[ticker].current_shares)
@@ -127,7 +127,7 @@ export class WhatIf extends React.Component {
                 <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
                     <div id="operation">Balance&nbsp;
                         <select name="balance_target_set" value={this.state.balance_target_set} onChange={this.handleChange}>
-                            <option value="my_holdings">my holdings ({Object.keys(this.props.all_positions).filter(position => position !== 'cash').length})</option>
+                            <option value="my_current_holdings">current holdings ({Object.entries(this.props.all_positions).filter(position => position[0] !== 'cash' && position[1].current_shares !== 0).length})</option>
                             <option value="untagged">untagged tickers ({this.props.all_tags.untagged.length})</option>
                             {Object.entries(this.props.all_tags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
                                 <option key={tag} value={tag}>tag: {tag} ({this.props.all_tags[tag].length})</option>

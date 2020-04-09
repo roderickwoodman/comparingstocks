@@ -223,7 +223,7 @@ export class ComparingStocks extends React.Component {
             allConsoleMessages: [],
             last_console_message: '',
             whatif_format: 'deltas', // deltas | new_values
-            balance_target_set: 'my_holdings',
+            balance_target_set: 'my_current_holdings',
             balance_target_column: '',
             sell_all_of: [],
             remaining_cash: null,
@@ -1486,9 +1486,9 @@ export class ComparingStocks extends React.Component {
         balanceable_value += current_cash_value
 
         let target_tickers = this.getTickersFromSet(target_set)
-        if ( (target_set === 'my_holdings' && this.state.show_current_holdings)
+        if ( (target_set === 'my_current_holdings' && this.state.show_current_holdings)
             || (target_set === 'untagged' && this.state.show_untagged) 
-            || (target_set !== 'my_holdings' && target_set !== 'untagged') ) {
+            || (target_set !== 'my_current_holdings' && target_set !== 'untagged') ) {
             target_tickers.forEach( function(ticker) {
                 let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
                 if (target_column === 'current_value' || target_column === 'value_at_risk' || target_column === 'only_profits') {
@@ -1857,7 +1857,7 @@ export class ComparingStocks extends React.Component {
 
     getTickersFromSet(set) {
         let tickers = []
-        if (set === 'my_holdings') {
+        if (set === 'my_current_holdings') {
             tickers = [...this.getCurrentHoldings().filter( ticker => ticker !== 'cash' )]
         } else if (set === 'untagged') {
             tickers = [...this.getUntagged()]
