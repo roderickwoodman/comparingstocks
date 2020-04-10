@@ -97,11 +97,11 @@ export class MyPerformance extends React.Component {
                 prev_quote_month = 12
             }
             start_baselinequote = this.getMonthEndQuote('S&P500', prev_quote_year, prev_quote_month)
-            if (start_baselinequote === null) {
+            if (start_baselinequote === undefined || start_baselinequote.price === undefined) {
                 new_console_messages.push('ERROR: quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable')
                 start_baselineprice = 'err.'
             } else {
-                start_baselineprice = start_baselinequote.price
+                start_baselineprice = start_baselinequote.price.adjusted_close
             }
 
             // calculate all period data
@@ -240,13 +240,13 @@ export class MyPerformance extends React.Component {
                 // determine period-end baseline value
                 let end_baselineprice, end_baselinedate
                 let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
-                if (end_baselinequote === undefined) {
+                if (end_baselinequote === undefined || end_baselinequote.price === undefined) {
                     new_console_messages.push('ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
                     end_baselineprice = 'err.'
                     end_baselinedate = null
                 } else {
-                    end_baselineprice = end_baselinequote.price
-                    end_baselinedate = end_baselinequote.price
+                    end_baselineprice = end_baselinequote.price.adjusted_close
+                    end_baselinedate = end_baselinequote.date
                 }
                 new_period['end_baselineprice'] = end_baselineprice
                 new_period['end_baselinedate'] = end_baselinedate
