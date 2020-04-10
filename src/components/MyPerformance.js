@@ -28,7 +28,16 @@ export class MyPerformance extends React.Component {
     }
 
     componentDidMount() {
-        this.generatePeriodData(this.state.period_size)
+
+        let period_size = 'month'
+        const stored_period_size = JSON.parse(localStorage.getItem("period_size"))
+        if (stored_period_size !== null) {
+            this.setState({ period_size: stored_period_size })
+            period_size = stored_period_size
+        }
+
+        this.generatePeriodData(period_size)
+
     }
 
     generatePeriodData(period_size) {
@@ -467,6 +476,7 @@ export class MyPerformance extends React.Component {
 
     handlePeriodChange(event) {
         let newPeriod = event.target.id.replace(/select-/g, '')
+        localStorage.setItem('period_size', JSON.stringify(newPeriod))
         this.setState({ period_size: newPeriod })
         this.generatePeriodData(newPeriod)
     }
