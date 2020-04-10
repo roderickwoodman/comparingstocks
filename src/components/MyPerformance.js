@@ -287,7 +287,7 @@ export class MyPerformance extends React.Component {
                     }
                 })
                 let performance
-                if (typeof(start_totalvalue) !== 'number' || typeof(end_totalvalue) !== 'number') {
+                if (typeof start_totalvalue !== 'number' || typeof end_totalvalue !== 'number') {
                     performance = 'err.'
                 } else if (start_tickervalue === 0 && end_tickervalue === 0) {
                     performance = 0
@@ -298,7 +298,7 @@ export class MyPerformance extends React.Component {
 
                 // determine period-over-period baseline performance
                 performance = 'n/a'
-                if (typeof(start_baselineprice) !== 'number' || typeof(end_baselineprice) !== 'number') {
+                if (typeof start_baselineprice !== 'number' || typeof end_baselineprice !== 'number') {
                     performance = 'err.'
                 } else if (p === 0) {
                     performance = (end_baselineprice / start_baselineprice) - 1
@@ -351,7 +351,7 @@ export class MyPerformance extends React.Component {
 
     formatCurrency(dollars) {
         let prefix, retval = dollars
-        if (typeof(dollars) === 'number') {
+        if (typeof dollars === 'number') {
             let value = Math.round(dollars)
             retval = this.numberWithCommas(Math.abs(value))
             prefix = (value < 0 ) ? '-$' : '$'
@@ -371,10 +371,10 @@ export class MyPerformance extends React.Component {
         let my_perf = period_data.period_change_pct
         if (my_perf === 'err.') {
             retval['display_value'] = 'err.'
-        } else if (typeof(my_perf) === 'number') {
+        } else if (typeof my_perf === 'number') {
             if (this.props.baseline === 'sp500_pct_gain') {
                 let baseline_perf = period_data.period_baseline_change_pct
-                if (typeof(baseline_perf) !== 'number') {
+                if (typeof baseline_perf !== 'number') {
                     return retval
                 } else {
                     retval['display_value'] = my_perf - baseline_perf
@@ -426,7 +426,7 @@ export class MyPerformance extends React.Component {
     formatPerformance(performance) {
         if (performance === 'err.' || performance === 'ref.') {
             return performance
-        } else if (typeof(performance) !== 'number') {
+        } else if (typeof performance !== 'number') {
             return '-'
         } else {
             return (Math.round(performance * 100 * 10) / 10).toFixed(1) + '%'
@@ -444,7 +444,7 @@ export class MyPerformance extends React.Component {
     formatWholePercentage(percentage) {
         if (percentage === 'err.') {
             return 'err.'
-        } else if (typeof(percentage) !== 'number' || isNaN(percentage)) {
+        } else if (typeof percentage !== 'number' || isNaN(percentage)) {
             return '?'
         } else {
             return (Math.round(percentage * 100)) + '%'
