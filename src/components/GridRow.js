@@ -621,7 +621,7 @@ export class GridRow extends React.Component {
 
     // certain columns' cells can print an error if the quote is out of date
     flagQuoteError() {
-        if (this.props.show_only_today_quotes && !this.isQuoteFromToday(this.props.quote_date)) {
+        if (this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
             return true
         } else {
             return false
@@ -630,7 +630,7 @@ export class GridRow extends React.Component {
 
     // certain POSITION columns' cells may print share-count-based "n/a" values before a quote out-of-date error applies
     flagQuoteErrorOnPositionCell() {
-        if (typeof this.props.current_shares === 'number' && this.props.current_shares !== 0 && this.props.show_only_today_quotes && !this.isQuoteFromToday(this.props.quote_date)) {
+        if (typeof this.props.current_shares === 'number' && this.props.current_shares !== 0 && this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
             return true
         } else {
             return false
@@ -739,7 +739,7 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     performance_numbers: PropTypes.object,
-    show_only_today_quotes: PropTypes.bool,
+    error_if_not_todays_quote: PropTypes.bool,
     show_only_achieved_performance: PropTypes.bool,
     baseline: PropTypes.object,
     style_realized_performance: PropTypes.bool,

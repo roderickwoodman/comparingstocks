@@ -248,7 +248,7 @@ export class ComparingStocks extends React.Component {
             show_index: false,
             show_cash: false,
             show_aggregates: true,
-            show_only_today_quotes: true,
+            error_if_not_todays_quote: true,
             show_only_achieved_performance: false,
             sort_column: 'symbol',
             sort_dir_asc: true,
@@ -287,6 +287,7 @@ export class ComparingStocks extends React.Component {
         this.onNewConsoleMessages = this.onNewConsoleMessages.bind(this)
         this.clearLastConsoleMessage = this.clearLastConsoleMessage.bind(this)
         this.getQuote = this.getQuote.bind(this)
+        this.getMostRecentQuote = this.getMostRecentQuote.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
         this.getCurrentShares = this.getCurrentShares.bind(this)
         this.getBasis = this.getBasis.bind(this)
@@ -346,7 +347,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_current_holdings', 'show_previous_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_only_achieved_performance', 'show_only_today_quotes']
+        const view_controls = ['show_current_holdings', 'show_previous_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_only_achieved_performance', 'error_if_not_todays_quote']
         let stored_controls = {}
         view_controls.forEach(function(control) {
             stored_controls[control] = null
@@ -523,6 +524,9 @@ export class ComparingStocks extends React.Component {
                 let newPerformance = {}
 
                 let ticker_now = self.getQuote(ticker, newMonthEndDates[0], newMonthlyQuotes)
+                if (typeof ticker_now !== 'number') {
+                    ticker_now = self.getMostRecentQuote(ticker, newCurrentQuotes)
+                }
                 let ticker_short_ago = self.getQuote(ticker, newMonthEndDates[5], newMonthlyQuotes)
                 let ticker_medium_ago = self.getQuote(ticker, newMonthEndDates[11], newMonthlyQuotes)
                 let ticker_long_ago = self.getQuote(ticker, newMonthEndDates[23], newMonthlyQuotes)
@@ -1471,6 +1475,13 @@ export class ComparingStocks extends React.Component {
         return undefined
     }
 
+    getMostRecentQuote(ticker, data) {
+        if (data.hasOwnProperty(ticker)) {
+            return data[ticker].current_price
+        }
+        return undefined
+    }
+
     getCurrentValue(ticker) {
         if (this.state.allPositions.hasOwnProperty(ticker)) {
             return this.state.allCurrentQuotes[ticker].current_price * this.state.allPositions[ticker].current_shares
@@ -2406,8 +2417,8 @@ export class ComparingStocks extends React.Component {
                         <div className="switch_control">
                             <div className="switch_label">show error if quote is not from today:</div>
                             <div className="switch_wrapper">
-                                <input id="show_only_today_quotes" name="show_only_today_quotes" type="checkbox" checked={this.state.show_only_today_quotes} onChange={this.onShowInputChange} />
-                                <label htmlFor="show_only_today_quotes" className="switch"></label>
+                                <input id="error_if_not_todays_quote" name="error_if_not_todays_quote" type="checkbox" checked={this.state.error_if_not_todays_quote} onChange={this.onShowInputChange} />
+                                <label htmlFor="error_if_not_todays_quote" className="switch"></label>
                             </div>
                         </div>
                     </div>
@@ -2467,7 +2478,7 @@ export class ComparingStocks extends React.Component {
                 risk_factor={row_data.risk_factor}
                 risk_factor_modified={row_data.risk_factor_modified}
                 performance_numbers={row_data.performance_numbers}
-                show_only_today_quotes={this.state.show_only_today_quotes}
+                error_if_not_todays_quote={this.state.error_if_not_todays_quote}
                 show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
                 style_realized_performance={row_data.style_realized_performance}
