@@ -7,7 +7,7 @@ export class MyPerformance extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            period_size: 'year',
+            period_size: 'month',
             period_data: [],
             data_sort_dir: 'asc',
         }
@@ -181,7 +181,7 @@ export class MyPerformance extends React.Component {
 
                 // determine period-end ticker value
                 let self = this
-                let end_tickervalue = 0, end_tickerdate
+                let end_tickervalue = 0, end_tickerdate = null
                 let this_quote_month
                 if (period_size === 'month') {
                     this_quote_month = period
@@ -192,14 +192,8 @@ export class MyPerformance extends React.Component {
                 }
                 let this_quote_year = target_year
                 if (target_year === today_year && period === today_period) { // for a partial last period, use a previous month's quotes
-                    let quote_dates = []
-                    Object.entries(end_shares).forEach(function(position) {
-                        if (position[1] && self.props.all_monthly_quotes.hasOwnProperty(position[0])) {
-                            quote_dates.push(self.props.all_monthly_quotes[position[0]].monthly_dates_desc[0])
-                        }
-                    })
                     let lastavailablequote_month_str, lastavailablequote_year_str
-                    [lastavailablequote_year_str, lastavailablequote_month_str] = quote_dates.sort().reverse()[0].split('-')
+                    [lastavailablequote_year_str, lastavailablequote_month_str] = this.props.all_month_end_dates[0].split('-')
                     let lastavailablequote_month = parseInt(lastavailablequote_month_str)
                     let lastavailablequote_year = parseInt(lastavailablequote_year_str)
                     if (lastavailablequote_month !== today_month || lastavailablequote_year !== today_year) { // allow the previous month's quotes only
@@ -213,17 +207,19 @@ export class MyPerformance extends React.Component {
                     }
                 }
                 Object.entries(end_shares).forEach(function(position) {
-                    let month_end_quote = self.getMonthEndQuote(position[0], this_quote_year, this_quote_month)
-                    if (month_end_quote === null) {
-                        new_console_messages.push('ERROR: quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
-                        end_tickervalue = 'err.'
-                        end_tickerdate = null
-                    } else {
-                        end_tickervalue += position[1] * month_end_quote.price
-                        if (typeof(end_tickerdate) !== 'string') {
-                            end_tickerdate = month_end_quote.date
-                        } else if (month_end_quote.date !== end_tickerdate) {
-                            new_console_messages.push('ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
+                    if (position[1] !== 0) {
+                        let month_end_quote = self.getMonthEndQuote(position[0], this_quote_year, this_quote_month)
+                        if (month_end_quote === undefined || month_end_quote.price === undefined) {
+                            new_console_messages.push('ERROR: quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
+                            end_tickervalue = 'err.'
+                            end_tickerdate = null
+                        } else if (end_tickervalue !== 'err.') {
+                            end_tickervalue += position[1] * month_end_quote.price.adjusted_close
+                            if (end_tickerdate === null) {
+                                end_tickerdate = month_end_quote.date
+                            } else if (end_tickerdate !== month_end_quote.date) {
+                                new_console_messages.push('ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
+                            }
                         }
                     }
                 })
@@ -232,7 +228,7 @@ export class MyPerformance extends React.Component {
                 
                 // determine period-end total value
                 let end_totalvalue
-                if (typeof(end_tickervalue) !== 'number' || typeof(end_cash) !== 'number') {
+                if (typeof end_tickervalue !== 'number' || typeof end_cash !== 'number') {
                     end_totalvalue = 'err.'
                 } else {
                     end_totalvalue = end_tickervalue + end_cash
@@ -244,7 +240,7 @@ export class MyPerformance extends React.Component {
                 // determine period-end baseline value
                 let end_baselineprice, end_baselinedate
                 let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
-                if (end_baselinequote === null) {
+                if (end_baselinequote === undefined) {
                     new_console_messages.push('ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
                     end_baselineprice = 'err.'
                     end_baselinedate = null
@@ -393,15 +389,16 @@ export class MyPerformance extends React.Component {
     }
 
     getMonthEndQuote(ticker, year, month) {
-        let monthly_dates = this.props.all_monthly_quotes[ticker].monthly_dates_desc
-        let monthly_prices = this.props.all_monthly_quotes[ticker].monthly_prices
+        let monthly_quotes = this.props.all_monthly_quotes
+        let monthly_dates = this.props.all_month_end_dates
         let period_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
         let retval = {}
         if (period_idx !== -1) {
-            retval['date'] = monthly_dates[period_idx]
-            retval['price'] = monthly_prices[period_idx]
+            let quote_date = monthly_dates[period_idx]
+            retval['date'] = quote_date
+            retval['price'] = (monthly_quotes[ticker].hasOwnProperty(quote_date)) ? monthly_quotes[ticker][quote_date] : undefined
         } else {
-            retval = null
+            retval = undefined
         }
         return retval
     }
@@ -536,6 +533,7 @@ MyPerformance.propTypes = {
     all_transactions: PropTypes.array.isRequired,
     all_positions: PropTypes.object.isRequired,
     all_monthly_quotes: PropTypes.object.isRequired,
+    all_month_end_dates: PropTypes.array.isRequired,
     baseline: PropTypes.string.isRequired,
     create_console_message_set: PropTypes.func.isRequired,
     on_new_console_messages: PropTypes.func.isRequired

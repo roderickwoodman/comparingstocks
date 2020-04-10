@@ -118,6 +118,7 @@ export class InputForms extends React.Component {
                             all_transactions={this.props.all_transactions}
                             all_positions={this.props.all_positions}
                             all_monthly_quotes={this.props.all_monthly_quotes}
+                            all_month_end_dates={this.props.all_month_end_dates}
                             baseline={this.props.baseline}
                             create_console_message_set={this.props.create_console_message_set}
                             on_new_console_messages={this.props.on_new_console_messages}
@@ -140,8 +141,9 @@ export class InputForms extends React.Component {
 InputForms.propTypes = {
     all_stocks: PropTypes.array.isRequired,
     all_tags: PropTypes.object.isRequired,
-    all_current_quotes: PropTypes.object,
-    all_monthly_quotes: PropTypes.object,
+    all_current_quotes: PropTypes.object.isRequired,
+    all_monthly_quotes: PropTypes.object.isRequired,
+    all_month_end_dates: PropTypes.array.isRequired,
     all_positions: PropTypes.object,
     all_transactions: PropTypes.array,
     all_risk: PropTypes.object,
