@@ -31,6 +31,7 @@ export class GridRow extends React.Component {
         this.daysAgo = this.daysAgo.bind(this)
         this.isQuoteFromToday = this.isQuoteFromToday.bind(this)
         this.flagQuoteError = this.flagQuoteError.bind(this)
+        this.flagQuoteErrorOnPositionCell = this.flagQuoteErrorOnPositionCell.bind(this)
     }
 
     formatDate(epoch) {
@@ -391,14 +392,14 @@ export class GridRow extends React.Component {
                 value = quote_date
                 break
             case 'current_value':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     value = current_value
                 } else {
                     value = 'err.'
                 }
                 break
             case 'whatif_current_value':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     if (whatif === null) {
                         value = 'n/a'
                     } else if (this.props.whatif_format === 'deltas') {
@@ -411,7 +412,7 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'percent_value':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     value = percent_value
                 } else {
                     value = 'err.'
@@ -445,14 +446,14 @@ export class GridRow extends React.Component {
                 value = percent_basis
                 break
             case 'profit':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     value = profit
                 } else {
                     value = 'err.'
                 }
                 break
             case 'percent_profit':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     value = percent_profit
                 } else {
                     value = 'err.'
@@ -475,14 +476,14 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'value_at_risk':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     value = value_at_risk
                 } else {
                     value = 'err.'
                 }
                 break
             case 'whatif_value_at_risk':
-                if (!this.flagQuoteError()) {
+                if (!this.flagQuoteErrorOnPositionCell()) {
                     if (whatif === null) {
                         value = 'n/a'
                     } else if (this.props.whatif_format === 'deltas') {
@@ -618,8 +619,18 @@ export class GridRow extends React.Component {
         }
     }
 
+    // certain columns' cells can print an error if the quote is out of date
     flagQuoteError() {
-        if (typeof this.props.current_shares === 'number' && this.props.show_only_today_quotes && !this.isQuoteFromToday(this.props.quote_date)) {
+        if (this.props.show_only_today_quotes && !this.isQuoteFromToday(this.props.quote_date)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    // certain POSITION columns' cells may print share-count-based "n/a" values before a quote out-of-date error applies
+    flagQuoteErrorOnPositionCell() {
+        if (typeof this.props.current_shares === 'number' && this.props.current_shares !== 0 && this.props.show_only_today_quotes && !this.isQuoteFromToday(this.props.quote_date)) {
             return true
         } else {
             return false
