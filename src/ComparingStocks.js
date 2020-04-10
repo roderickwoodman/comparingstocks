@@ -2447,7 +2447,10 @@ export class ComparingStocks extends React.Component {
                 change_pct={row_data.change_pct}
                 quote_date={row_data.quote_date}
                 volume={row_data.volume}
-                basis={row_data.basis}
+                basis={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
+                         || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
+                         ? row_data.basis 
+                         : 'n/a'}
                 start_date={row_data.start_date}
                 current_shares={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
                                   || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
