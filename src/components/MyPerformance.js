@@ -29,14 +29,22 @@ export class MyPerformance extends React.Component {
 
     componentDidMount() {
 
-        let period_size = 'month'
+        let data_sort_dir = 'asc', period_size ='month'
+
+        const stored_data_sort_dir = JSON.parse(localStorage.getItem("data_sort_dir"))
+        if (stored_data_sort_dir !== null) {
+            data_sort_dir = stored_data_sort_dir
+        }
+
         const stored_period_size = JSON.parse(localStorage.getItem("period_size"))
         if (stored_period_size !== null) {
-            this.setState({ period_size: stored_period_size })
             period_size = stored_period_size
         }
 
         this.generatePeriodData(period_size)
+
+        this.setState({ data_sort_dir: data_sort_dir,
+                        period_size: period_size })
 
     }
 
@@ -468,6 +476,7 @@ export class MyPerformance extends React.Component {
         el.scrollLeft = new_scroll_left
         this.setState(prevState => {
             let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
+            localStorage.setItem('data_sort_dir', JSON.stringify(new_sort_dir))
             return { 
                 data_sort_dir: new_sort_dir 
             }
