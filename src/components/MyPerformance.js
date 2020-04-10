@@ -213,13 +213,20 @@ export class MyPerformance extends React.Component {
                     [lastavailablequote_year_str, lastavailablequote_month_str] = this.props.all_month_end_dates[0].split('-')
                     let lastavailablequote_month = parseInt(lastavailablequote_month_str)
                     let lastavailablequote_year = parseInt(lastavailablequote_year_str)
-                    if (lastavailablequote_month !== today_month || lastavailablequote_year !== today_year) { // allow the previous month's quotes only
-                        if (today_month === 1 && (lastavailablequote_month !== 12 || lastavailablequote_year !== today_year - 1)) {
-                            this_quote_month = 12
-                            this_quote_year = today_year - 1
-                        } else if (today_month !== 1 && (lastavailablequote_month !== today_month - 1 || lastavailablequote_year !== today_year)) {
-                            this_quote_month = today_month - 1
-                            this_quote_year = today_year
+                    if (period_size === 'year') {
+                        if (lastavailablequote_year === today_year) {
+                            this_quote_month = lastavailablequote_month
+                            this_quote_year = lastavailablequote_year
+                        }
+                    } else {
+                        if (lastavailablequote_month !== today_month || lastavailablequote_year !== today_year) { // allow the previous month's quotes only
+                            if (today_month === 1 && (lastavailablequote_month !== 12 || lastavailablequote_year !== today_year - 1)) {
+                                this_quote_month = 12
+                                this_quote_year = today_year - 1
+                            } else if (today_month !== 1 && (lastavailablequote_month !== today_month - 1 || lastavailablequote_year !== today_year)) {
+                                this_quote_month = today_month - 1
+                                this_quote_year = today_year
+                            }
                         }
                     }
                 }
