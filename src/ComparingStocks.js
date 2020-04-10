@@ -248,6 +248,7 @@ export class ComparingStocks extends React.Component {
             show_index: false,
             show_cash: false,
             show_aggregates: true,
+            show_only_today_quotes: true,
             show_only_achieved_performance: false,
             sort_column: 'symbol',
             sort_dir_asc: true,
@@ -345,7 +346,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_current_holdings', 'show_previous_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_only_achieved_performance']
+        const view_controls = ['show_current_holdings', 'show_previous_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_only_achieved_performance', 'show_only_today_quotes']
         let stored_controls = {}
         view_controls.forEach(function(control) {
             stored_controls[control] = null
@@ -2392,12 +2393,21 @@ export class ComparingStocks extends React.Component {
                             <option value="sp500_pct_gain">SP&amp;500 Index</option>
                         </select>
                     </div>
-                    <div id="performance_controls">
+                    <div id="performance-control">
                         <div className="switch_control">
                             <div className="switch_label">show performance only if achieved:</div>
                             <div className="switch_wrapper">
                                 <input id="show_only_achieved_performance" name="show_only_achieved_performance" type="checkbox" checked={this.state.show_only_achieved_performance} onChange={this.onShowInputChange} />
                                 <label htmlFor="show_only_achieved_performance" className="switch"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="recency-control">
+                        <div className="switch_control">
+                            <div className="switch_label">show error if quote is not from today:</div>
+                            <div className="switch_wrapper">
+                                <input id="show_only_today_quotes" name="show_only_today_quotes" type="checkbox" checked={this.state.show_only_today_quotes} onChange={this.onShowInputChange} />
+                                <label htmlFor="show_only_today_quotes" className="switch"></label>
                             </div>
                         </div>
                     </div>
@@ -2454,6 +2464,7 @@ export class ComparingStocks extends React.Component {
                 risk_factor={row_data.risk_factor}
                 risk_factor_modified={row_data.risk_factor_modified}
                 performance_numbers={row_data.performance_numbers}
+                show_only_today_quotes={this.state.show_only_today_quotes}
                 show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
                 style_realized_performance={row_data.style_realized_performance}

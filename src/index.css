@@ -539,7 +539,8 @@ button.tag-removal:hover:not(:disabled) {
   height: 20px;
 }
 
-#performance_controls .switch_control .switch_label {
+#performance-control .switch_control .switch_label,
+#recency-control .switch_control .switch_label {
   width: auto;
   margin: 0 25px 0;
 }

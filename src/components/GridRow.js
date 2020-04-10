@@ -29,6 +29,8 @@ export class GridRow extends React.Component {
         this.styleCell = this.styleCell.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.daysAgo = this.daysAgo.bind(this)
+        this.isQuoteFromToday = this.isQuoteFromToday.bind(this)
+        this.flagQuoteError = this.flagQuoteError.bind(this)
     }
 
     formatDate(epoch) {
@@ -188,60 +190,66 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'short_change_pct':
-                if (performance.short_change_pct > 0 && performance.short_change_pct > baseline.short_change_pct) {
-                    classes += ' text-green'
-                } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
-                    classes += ' text-red'
-                }
-                if (this.props.style_realized_performance
-                    && row_name !== 'cash' 
-                    && !special_classes.includes('index')) {
-                        if (isNaN(current_shares) 
-                            || !current_shares 
-                            || this.daysAgo(this.props.start_date) < 180
-                            ){
-                            classes += (this.props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
-                        } else {
-                            classes += ' strong'
-                        }
+                if (!this.flagQuoteError()) {
+                    if (performance.short_change_pct > 0 && performance.short_change_pct > baseline.short_change_pct) {
+                        classes += ' text-green'
+                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
+                        classes += ' text-red'
+                    }
+                    if (this.props.style_realized_performance
+                        && row_name !== 'cash' 
+                        && !special_classes.includes('index')) {
+                            if (isNaN(current_shares) 
+                                || !current_shares 
+                                || this.daysAgo(this.props.start_date) < 180
+                                ){
+                                classes += (this.props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
+                            } else {
+                                classes += ' strong'
+                            }
+                    }
                 }
                 break
             case 'medium_change_pct':
-                if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
-                    classes += ' text-green'
-                } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
-                    classes += ' text-red'
-                }
-                if (this.props.style_realized_performance
-                    && row_name !== 'cash' 
-                    && !special_classes.includes('index')) {
-                        if (isNaN(current_shares) 
-                            || !current_shares 
-                            || this.daysAgo(this.props.start_date) < 365
-                            ){
-                            classes += (this.props.show_only_achieved_performance) ? ' hide' :  ' strikethrough'
-                        } else {
-                            classes += ' strong'
-                        }
+                if (!this.flagQuoteError()) {
+                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
+                        classes += ' text-green'
+                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
+                        classes += ' text-red'
+                    }
+                    if (this.props.style_realized_performance
+                        && row_name !== 'cash' 
+                        && !special_classes.includes('index')) {
+                            if (isNaN(current_shares) 
+                                || !current_shares 
+                                || this.daysAgo(this.props.start_date) < 365
+                                ){
+                                classes += (this.props.show_only_achieved_performance) ? ' hide' :  ' strikethrough'
+                            } else {
+                                classes += ' strong'
+                            }
+                    }
                 }
                 break
             case 'long_change_pct':
-                if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
-                    classes += ' text-green'
-                } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
-                    classes += ' text-red'
-                }
-                if (this.props.style_realized_performance
-                    && row_name !== 'cash' 
-                    && !special_classes.includes('index')) {
-                        if (isNaN(current_shares) 
-                            || !current_shares 
-                            || this.daysAgo(this.props.start_date) < 730
-                            ){
-                            classes += (this.props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
-                        } else {
-                            classes += ' strong'
-                        }
+                if (!this.flagQuoteError()) {
+                    if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
+                        classes += ' text-green'
+                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
+                        classes += ' text-red'
+                    }
+                    if (this.props.style_realized_performance
+                        && row_name !== 'cash' 
+                        && !special_classes.includes('index')) {
+                            if (isNaN(current_shares) 
+                                || !current_shares 
+                                || this.daysAgo(this.props.start_date) < 730
+                                ){
+                                classes += (this.props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
+                            } else {
+                                classes += ' strong'
+                            }
+                    }
                 }
                 break
             default:
@@ -276,6 +284,7 @@ export class GridRow extends React.Component {
         let value, baseline_value
         let performance_value = false
 
+        const quote_date = this.props.quote_date
         const total_value = this.props.total_value
         const total_basis = this.props.total_basis
         const current_price = this.props.current_price
@@ -379,22 +388,34 @@ export class GridRow extends React.Component {
                 value = current_price
                 break
             case 'quote_date':
-                value = this.props.quote_date
+                value = quote_date
                 break
             case 'current_value':
-                value = current_value
+                if (!this.flagQuoteError()) {
+                    value = current_value
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'whatif_current_value':
-                if (whatif === null) {
-                    value = 'n/a'
-                } else if (this.props.whatif_format === 'deltas') {
-                    value = whatif.current_value - ((current_value === 'n/a') ? 0 : current_value)
+                if (!this.flagQuoteError()) {
+                    if (whatif === null) {
+                        value = 'n/a'
+                    } else if (this.props.whatif_format === 'deltas') {
+                        value = whatif.current_value - ((current_value === 'n/a') ? 0 : current_value)
+                    } else {
+                        value = whatif.current_value
+                    }
                 } else {
-                    value = whatif.current_value
+                    value = 'err.'
                 }
                 break
             case 'percent_value':
-                value = percent_value
+                if (!this.flagQuoteError()) {
+                    value = percent_value
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'basis':
                 value = basis
@@ -424,10 +445,18 @@ export class GridRow extends React.Component {
                 value = percent_basis
                 break
             case 'profit':
-                value = profit
+                if (!this.flagQuoteError()) {
+                    value = profit
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'percent_profit':
-                value = percent_profit
+                if (!this.flagQuoteError()) {
+                    value = percent_profit
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'realized_gains':
                 value = realized_gains
@@ -446,37 +475,65 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'value_at_risk':
-                value = value_at_risk
+                if (!this.flagQuoteError()) {
+                    value = value_at_risk
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'whatif_value_at_risk':
-                if (whatif === null) {
-                    value = 'n/a'
-                } else if (this.props.whatif_format === 'deltas') {
-                    value = whatif.value_at_risk - ((value_at_risk === 'n/a') ? 0 : value_at_risk)
+                if (!this.flagQuoteError()) {
+                    if (whatif === null) {
+                        value = 'n/a'
+                    } else if (this.props.whatif_format === 'deltas') {
+                        value = whatif.value_at_risk - ((value_at_risk === 'n/a') ? 0 : value_at_risk)
+                    } else {
+                        value = whatif.value_at_risk
+                    }
                 } else {
-                    value = whatif.value_at_risk
+                    value = 'err.'
                 }
                 break
             case 'volume':
-                value = this.props.volume
+                if (!this.flagQuoteError()) {
+                    value = this.props.volume
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'dollar_volume':
-                value = this.props.current_price * this.props.volume
+                if (!this.flagQuoteError()) {
+                    value = this.props.current_price * this.props.volume
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'short_change_pct':
-                value = this.props.performance_numbers.short_change_pct
-                performance_value = true
-                baseline_value = this.props.baseline.short_change_pct
+                if (!this.flagQuoteError()) {
+                    value = this.props.performance_numbers.short_change_pct
+                    performance_value = true
+                    baseline_value = this.props.baseline.short_change_pct
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'medium_change_pct':
-                value = this.props.performance_numbers.medium_change_pct
-                performance_value = true
-                baseline_value = this.props.baseline.medium_change_pct
+                if (!this.flagQuoteError()) {
+                    value = this.props.performance_numbers.medium_change_pct
+                    performance_value = true
+                    baseline_value = this.props.baseline.medium_change_pct
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'long_change_pct':
-                value = this.props.performance_numbers.long_change_pct
-                performance_value = true
-                baseline_value = this.props.baseline.long_change_pct
+                if (!this.flagQuoteError()) {
+                    value = this.props.performance_numbers.long_change_pct
+                    performance_value = true
+                    baseline_value = this.props.baseline.long_change_pct
+                } else {
+                    value = 'err.'
+                }
                 break
             default:
                 break
@@ -498,7 +555,9 @@ export class GridRow extends React.Component {
             }
         }
 
-        if (value === null || value === 'n/a') {
+        if (value === 'err.') {
+            return 'err.'
+        } else if (value === null || value === 'n/a') {
             return '-'
         } else if (column.type === 'string') {
             return value
@@ -540,11 +599,30 @@ export class GridRow extends React.Component {
     daysAgo(date_str) { // yyyy-mm-dd
         let now = new Date()
         let then = new Date(date_str)
-        let diff = Math.round((now - then) / 1000 / 60 / 60 / 24)
+        let days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
         if (date_str === 'n/a') {
             return -1
         } else {
-            return diff
+            return days_ago
+        }
+    }
+
+    isQuoteFromToday(quote_date_str) { // yyyy-mm-dd
+        let now = new Date()
+        let quote_date = new Date(quote_date_str)
+        let days_ago = (now - quote_date) / 1000 / 60 / 60 / 24
+        if (-1 <= days_ago && days_ago <= 0) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    flagQuoteError() {
+        if (typeof this.props.current_shares === 'number' && this.props.show_only_today_quotes && !this.isQuoteFromToday(this.props.quote_date)) {
+            return true
+        } else {
+            return false
         }
     }
 
@@ -650,6 +728,7 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     performance_numbers: PropTypes.object,
+    show_only_today_quotes: PropTypes.bool,
     show_only_achieved_performance: PropTypes.bool,
     baseline: PropTypes.object,
     style_realized_performance: PropTypes.bool,
