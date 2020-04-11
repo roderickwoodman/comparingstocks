@@ -18,16 +18,16 @@ export class GridRowTotals extends React.Component {
             let value
             switch (column.name) {
                 case 'current_value':
-                    value = '$' + numberWithCommas(Math.round(total_value))
+                    value = (total_value !== 'err.') ? '$' + numberWithCommas(Math.round(total_value)) : 'err.'
                     break
                 case 'percent_value':
-                    value = (total_value) ? '100%' : 'n/a'
+                    value = (total_value !== 'err.') ? '100%' : 'err.'
                     break
                 case 'basis':
                     value = '$' + numberWithCommas(Math.round(total_basis))
                     break
                 case 'percent_basis':
-                    value = (total_basis) ? '100%' : 'n/a'
+                    value = (total_basis) ? '100%' : 'err.'
                     break
                 case 'short_change_pct':
                     value = (Math.round(10 * total_performance.short_change_pct) / 10).toFixed(1) + '%'
@@ -81,7 +81,11 @@ export class GridRowTotals extends React.Component {
 
 GridRowTotals.propTypes = {
     columns: PropTypes.array,
-    total_value: PropTypes.number,
+    total_value: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]),
     total_basis: PropTypes.number,
     total_performance: PropTypes.object,
+
 }

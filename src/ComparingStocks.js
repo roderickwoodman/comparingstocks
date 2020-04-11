@@ -286,6 +286,7 @@ export class ComparingStocks extends React.Component {
         this.onEscapeKey = this.onEscapeKey.bind(this)
         this.onNewConsoleMessages = this.onNewConsoleMessages.bind(this)
         this.clearLastConsoleMessage = this.clearLastConsoleMessage.bind(this)
+        this.daysAgo = this.daysAgo.bind(this)
         this.getQuote = this.getQuote.bind(this)
         this.getMostRecentQuote = this.getMostRecentQuote.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
@@ -744,7 +745,7 @@ export class ComparingStocks extends React.Component {
             let ticker_shares = position_info[1]['current_shares']
             let ticker_price = all_quotes[ticker]['current_price'] || 1
             if ((ticker !== 'cash' && holdings) || (ticker === 'cash' && cash)) {
-                aggr_totalbasis_by_tag['_everything_'] += ticker_basis - ticker_realized_gains
+                aggr_totalbasis_by_tag['_everything_'] += ticker_basis
                 aggr_totalrealized_by_tag['_everything_'] += ticker_realized_gains
                 aggr_totalvalue_by_tag['_everything_'] += ticker_price * ticker_shares
                 Object.keys(all_tags).forEach(function(tag) {
@@ -1464,6 +1465,17 @@ export class ComparingStocks extends React.Component {
 
     clearLastConsoleMessage() {
         this.setState({ last_console_message: ' ' })
+    }
+
+    daysAgo(date_str) { // yyyy-mm-dd
+        let now = new Date()
+        let then = new Date(date_str)
+        let days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
+        if (date_str === 'n/a') {
+            return -1
+        } else {
+            return days_ago
+        }
     }
 
     getQuote(ticker, date, data) {
@@ -2504,6 +2516,23 @@ export class ComparingStocks extends React.Component {
             />
         )
 
+        let quote_error = false, aggr_total_value, aggr_basis 
+        sorted_tickers.forEach(function(ticker) {
+            if (quote_error === false 
+                && ticker !== 'cash' 
+                && !self.getIndicies().includes(ticker) 
+                && self.daysAgo(self.state.allCurrentQuotes[ticker].quote_date) >= 1) {
+                    quote_error = true
+            }
+        })
+        if (!quote_error || !self.state.error_if_not_todays_quote) {
+            aggr_total_value = self.state.aggrTotalValue['_everything_']
+            aggr_basis = self.state.aggrBasis['_everything_']
+        } else {
+            aggr_total_value = 'err.'
+            aggr_basis = self.state.aggrBasis['_everything_']
+        }
+
         let all_row_data = []
         sorted_tickers.forEach(function(ticker) {
             let new_row = {}
@@ -2526,8 +2555,8 @@ export class ComparingStocks extends React.Component {
             new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
             new_row['baseline'] = self.state.baseline
             new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].current_shares).length) ? true : false
-            new_row['total_value'] = self.state.aggrTotalValue['_everything_']
-            new_row['total_basis'] = self.state.aggrBasis['_everything_']
+            new_row['total_value'] = aggr_total_value
+            new_row['total_basis'] = aggr_basis
             new_row['whatif'] = row_data[ticker]['whatif']
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
@@ -2558,8 +2587,8 @@ export class ComparingStocks extends React.Component {
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
                 new_row['style_realized_performance'] = false
-                new_row['total_value'] = self.state.aggrTotalValue['_everything_']
-                new_row['total_basis'] = self.state.aggrBasis['_everything_']
+                new_row['total_value'] = aggr_total_value
+                new_row['total_basis'] = aggr_basis
                 new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
@@ -2636,8 +2665,8 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && all_ticker_rows.length ? (
                         <GridRowTotals
                             columns={this.state.shown_columns}
-                            total_value={this.state.aggrTotalValue['_everything_']}
-                            total_basis={this.state.aggrBasis['_everything_']}
+                            total_value={aggr_total_value}
+                            total_basis={aggr_basis}
                             total_performance={this.state.aggrPerformance['_everything_']}
                         />
                         ) : (
