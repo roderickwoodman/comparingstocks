@@ -435,7 +435,11 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'basis_risked':
-                value = basis_risked
+                if (this.props.current_value === 0) {
+                    value = 'n/a'
+                } else {
+                    value = basis_risked
+                }
                 break
             case 'whatif_basis_risked':
                 if (whatif === null) {
@@ -450,14 +454,18 @@ export class GridRow extends React.Component {
                 value = percent_basis
                 break
             case 'profit':
-                if (!this.flagQuoteErrorOnPositionCell()) {
+                if (this.props.current_value === 0) {
+                    value = 'n/a'
+                } else if (!this.flagQuoteErrorOnPositionCell()) {
                     value = profit
                 } else {
                     value = 'err.'
                 }
                 break
             case 'percent_profit':
-                if (!this.flagQuoteErrorOnPositionCell()) {
+                if (this.props.current_value === 0) {
+                    value = 'n/a'
+                } else if (!this.flagQuoteErrorOnPositionCell()) {
                     value = percent_profit
                 } else {
                     value = 'err.'
@@ -480,7 +488,9 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'value_at_risk':
-                if (!this.flagQuoteErrorOnPositionCell()) {
+                if (this.props.current_value === 0) {
+                    value = 'n/a'
+                } else if (!this.flagQuoteErrorOnPositionCell()) {
                     value = value_at_risk
                 } else {
                     value = 'err.'
