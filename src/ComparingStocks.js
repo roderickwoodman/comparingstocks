@@ -2516,16 +2516,17 @@ export class ComparingStocks extends React.Component {
             />
         )
 
-        let quote_error = false, aggr_total_value, aggr_basis 
+        // if an old quote exists and if this is an error, the grand total becomes an error too
+        let a_quote_is_old = false, aggr_total_value, aggr_basis 
         sorted_tickers.forEach(function(ticker) {
-            if (quote_error === false 
+            if (a_quote_is_old === false 
                 && ticker !== 'cash' 
                 && !self.getIndicies().includes(ticker) 
                 && self.daysAgo(self.state.allCurrentQuotes[ticker].quote_date) >= 1) {
-                    quote_error = true
+                    a_quote_is_old = true
             }
         })
-        if (!quote_error || !self.state.error_if_not_todays_quote) {
+        if (!a_quote_is_old || !self.state.error_if_not_todays_quote) {
             aggr_total_value = self.state.aggrTotalValue['_everything_']
             aggr_basis = self.state.aggrBasis['_everything_']
         } else {
@@ -2566,7 +2567,28 @@ export class ComparingStocks extends React.Component {
             all_row_data.push(new_row)
         })
         if (this.state.show_aggregates) {
+
             sorted_aggr_tickers.forEach(function(aggr_ticker) {
+            })
+            if (!a_quote_is_old || !self.state.error_if_not_todays_quote) {
+                aggr_total_value = self.state.aggrTotalValue['_everything_']
+                aggr_basis = self.state.aggrBasis['_everything_']
+            } else {
+                aggr_total_value = 'err.'
+                aggr_basis = self.state.aggrBasis['_everything_']
+            }
+
+            sorted_aggr_tickers.forEach(function(aggr_ticker) {
+
+                // if an old quote exists within this aggregate and if this is an error, the aggregate total becomes an error too
+                let quote_date
+                for (let ticker of self.state.allTags[aggr_ticker]) {
+                    quote_date = self.state.allCurrentQuotes[ticker].quote_date
+                    if (self.daysAgo(quote_date) >= 1) {
+                        break
+                    }
+                }
+
                 let new_row = {}
                 new_row['is_aggregate'] = true
                 new_row['row_name'] = aggr_ticker
@@ -2575,7 +2597,7 @@ export class ComparingStocks extends React.Component {
                 new_row['special_classes'] = aggr_row_data[aggr_ticker]['special_classes']
                 new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
                 new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
-                new_row['quote_date'] = 'n/a'
+                new_row['quote_date'] = quote_date
                 new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
                 new_row['basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['start_date'] = aggr_row_data[aggr_ticker]['start_date']
@@ -2587,8 +2609,8 @@ export class ComparingStocks extends React.Component {
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
                 new_row['style_realized_performance'] = false
-                new_row['total_value'] = aggr_total_value
-                new_row['total_basis'] = aggr_basis
+                new_row['total_value'] = self.state.aggrTotalValue[aggr_ticker]
+                new_row['total_basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker

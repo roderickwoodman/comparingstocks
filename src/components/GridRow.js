@@ -389,7 +389,11 @@ export class GridRow extends React.Component {
                 value = current_price
                 break
             case 'quote_date':
-                value = quote_date
+                if (!this.props.is_aggregate) {
+                    value = quote_date
+                } else {
+                    value = 'n/a'
+                }
                 break
             case 'current_value':
                 if (!this.flagQuoteErrorOnPositionCell()) {
@@ -630,11 +634,16 @@ export class GridRow extends React.Component {
 
     // certain POSITION columns' cells may print share-count-based "n/a" values before a quote out-of-date error applies
     flagQuoteErrorOnPositionCell() {
-        if (typeof this.props.current_shares === 'number' && this.props.current_shares !== 0 && this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
-            return true
+        if (this.props.is_aggregate) {
+            if (this.props.current_value !== 0 && this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
+                return true
+            }
         } else {
-            return false
+            if (typeof this.props.current_shares === 'number' && this.props.current_shares !== 0 && this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
+                return true
+            }
         }
+        return false
     }
 
     render() {
