@@ -396,8 +396,12 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'current_value':
-                if (!this.flagQuoteErrorOnPositionCell()) {
-                    value = current_value
+                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                    if (!this.flagQuoteErrorOnPositionCell()) {
+                        value = current_value
+                    } else {
+                        value = 'err.'
+                    }
                 } else {
                     value = 'err.'
                 }
@@ -416,14 +420,22 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'percent_value':
-                if (!this.flagQuoteErrorOnPositionCell()) {
-                    value = percent_value
+                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                    if (!this.flagQuoteErrorOnPositionCell()) {
+                        value = percent_value
+                    } else {
+                        value = 'err.'
+                    }
                 } else {
                     value = 'err.'
                 }
                 break
             case 'basis':
-                value = basis
+                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                    value = basis
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'whatif_basis':
                 if (whatif === null) {
@@ -435,10 +447,14 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'basis_risked':
-                if (this.props.current_value === 0) {
-                    value = 'n/a'
+                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                    if (this.props.current_value === 0) {
+                        value = 'n/a'
+                    } else {
+                        value = basis_risked
+                    }
                 } else {
-                    value = basis_risked
+                    value = 'err.'
                 }
                 break
             case 'whatif_basis_risked':
@@ -451,7 +467,11 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'percent_basis':
-                value = percent_basis
+                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                    value = percent_basis
+                } else {
+                    value = 'err.'
+                }
                 break
             case 'profit':
                 if (this.props.current_value === 0) {
@@ -488,10 +508,14 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'value_at_risk':
-                if (this.props.current_value === 0) {
-                    value = 'n/a'
-                } else if (!this.flagQuoteErrorOnPositionCell()) {
-                    value = value_at_risk
+                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                    if (this.props.current_value === 0) {
+                        value = 'n/a'
+                    } else if (!this.flagQuoteErrorOnPositionCell()) {
+                        value = value_at_risk
+                    } else {
+                        value = 'err.'
+                    }
                 } else {
                     value = 'err.'
                 }
