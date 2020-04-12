@@ -544,7 +544,11 @@ export class GridRow extends React.Component {
                 break
             case 'dollar_volume':
                 if (!this.flagQuoteError()) {
-                    value = this.props.current_price * this.props.volume
+                    if (this.props.volume === 'err.') {
+                        value = 'err.'
+                    } else {
+                        value = this.props.current_price * this.props.volume
+                    }
                 } else {
                     value = 'err.'
                 }
