@@ -741,13 +741,20 @@ export class ComparingStocks extends React.Component {
         Object.entries(all_positions).forEach(function(position_info) {
             let ticker = position_info[0]
             let ticker_basis = position_info[1]['basis']
+            if (ticker_basis < 0) {
+                ticker_basis = 0
+            }
             let ticker_realized_gains = position_info[1]['realized_gains']
             let ticker_shares = position_info[1]['current_shares']
             let ticker_price = all_quotes[ticker]['current_price'] || 1
+            let ticker_total_value = ticker_price * ticker_shares
+            if (ticker_total_value < 0) {
+                ticker_total_value = 0
+            }
             if ((ticker !== 'cash' && holdings) || (ticker === 'cash' && cash)) {
                 aggr_totalbasis_by_tag['_everything_'] += ticker_basis
                 aggr_totalrealized_by_tag['_everything_'] += ticker_realized_gains
-                aggr_totalvalue_by_tag['_everything_'] += ticker_price * ticker_shares
+                aggr_totalvalue_by_tag['_everything_'] += ticker_total_value
                 Object.keys(all_tags).forEach(function(tag) {
                     if (all_tags[tag].includes(ticker)) {
                         aggr_totalbasis_by_tag[tag] += ticker_basis - ticker_realized_gains
@@ -755,7 +762,7 @@ export class ComparingStocks extends React.Component {
                         if (aggr_totalbasis_by_tag[tag] < 0) {
                             aggr_totalbasis_by_tag[tag] = 0
                         }
-                        aggr_totalvalue_by_tag[tag] += ticker_price * ticker_shares
+                        aggr_totalvalue_by_tag[tag] += ticker_total_value
                     }
                 })
             }
