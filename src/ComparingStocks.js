@@ -2569,16 +2569,6 @@ export class ComparingStocks extends React.Component {
         if (this.state.show_aggregates) {
 
             sorted_aggr_tickers.forEach(function(aggr_ticker) {
-            })
-            if (!a_quote_is_old || !self.state.error_if_not_todays_quote) {
-                aggr_total_value = self.state.aggrTotalValue['_everything_']
-                aggr_basis = self.state.aggrBasis['_everything_']
-            } else {
-                aggr_total_value = 'err.'
-                aggr_basis = self.state.aggrBasis['_everything_']
-            }
-
-            sorted_aggr_tickers.forEach(function(aggr_ticker) {
 
                 // if an old quote exists within this aggregate and if this is an error, the aggregate total becomes an error too
                 let quote_date
