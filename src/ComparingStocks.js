@@ -287,8 +287,9 @@ export class ComparingStocks extends React.Component {
         this.onNewConsoleMessages = this.onNewConsoleMessages.bind(this)
         this.clearLastConsoleMessage = this.clearLastConsoleMessage.bind(this)
         this.daysAgo = this.daysAgo.bind(this)
-        this.getQuote = this.getQuote.bind(this)
-        this.getMostRecentQuote = this.getMostRecentQuote.bind(this)
+        this.quoteExists = this.quoteExists.bind(this)
+        this.getClosingPrice = this.getClosingPrice.bind(this)
+        this.getMostRecentClosingPrice = this.getMostRecentClosingPrice.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
         this.getCurrentShares = this.getCurrentShares.bind(this)
         this.getBasis = this.getBasis.bind(this)
@@ -524,13 +525,13 @@ export class ComparingStocks extends React.Component {
                 // calculate performance
                 let newPerformance = {}
 
-                let ticker_now = self.getQuote(ticker, newMonthEndDates[0], newMonthlyQuotes)
+                let ticker_now = self.getClosingPrice(ticker, newMonthEndDates[0], newMonthlyQuotes)
                 if (typeof ticker_now !== 'number') {
-                    ticker_now = self.getMostRecentQuote(ticker, newCurrentQuotes)
+                    ticker_now = self.getMostRecentClosingPrice(ticker, newCurrentQuotes)
                 }
-                let ticker_short_ago = self.getQuote(ticker, newMonthEndDates[5], newMonthlyQuotes)
-                let ticker_medium_ago = self.getQuote(ticker, newMonthEndDates[11], newMonthlyQuotes)
-                let ticker_long_ago = self.getQuote(ticker, newMonthEndDates[23], newMonthlyQuotes)
+                let ticker_short_ago = self.getClosingPrice(ticker, newMonthEndDates[5], newMonthlyQuotes)
+                let ticker_medium_ago = self.getClosingPrice(ticker, newMonthEndDates[11], newMonthlyQuotes)
+                let ticker_long_ago = self.getClosingPrice(ticker, newMonthEndDates[23], newMonthlyQuotes)
                 let ticker_perf_short, ticker_perf_medium, ticker_perf_long
                 if (typeof ticker_now === 'number') {
                     if (typeof ticker_short_ago === 'number') {
@@ -746,15 +747,32 @@ export class ComparingStocks extends React.Component {
             }
             let ticker_realized_gains = position_info[1]['realized_gains']
             let ticker_shares = position_info[1]['current_shares']
-            let ticker_price = all_quotes[ticker]['current_price'] || 1
-            let ticker_total_value = ticker_price * ticker_shares
-            if (ticker_total_value < 0) {
+            let quote_exists = all_quotes.hasOwnProperty(ticker)
+            let ticker_price, ticker_total_value
+            if (ticker === 'cash') {
+                ticker_price = 1
+                ticker_total_value = ticker_price * ticker_shares
+            } else if (ticker_shares === 0) {
                 ticker_total_value = 0
+            } else if (quote_exists) {
+                ticker_price = all_quotes[ticker]['current_price']
+                ticker_total_value = ticker_price * ticker_shares
+                if (ticker_total_value < 0) {
+                    ticker_total_value = 0
+                }
+            } else {
+                ticker_total_value = 'err.'
             }
             if ((ticker !== 'cash' && holdings) || (ticker === 'cash' && cash)) {
                 aggr_totalbasis_by_tag['_everything_'] += ticker_basis
                 aggr_totalrealized_by_tag['_everything_'] += ticker_realized_gains
-                aggr_totalvalue_by_tag['_everything_'] += ticker_total_value
+                if (aggr_totalvalue_by_tag['_everything_'] === 'err.') {
+                    aggr_totalvalue_by_tag['_everything_'] = 'err.'
+                } else if (ticker_total_value === 'err.') {
+                    aggr_totalvalue_by_tag['_everything_'] = 'err.'
+                } else {
+                    aggr_totalvalue_by_tag['_everything_'] += ticker_total_value
+                }
                 Object.keys(all_tags).forEach(function(tag) {
                     if (all_tags[tag].includes(ticker)) {
                         aggr_totalbasis_by_tag[tag] += ticker_basis - ticker_realized_gains
@@ -762,7 +780,13 @@ export class ComparingStocks extends React.Component {
                         if (aggr_totalbasis_by_tag[tag] < 0) {
                             aggr_totalbasis_by_tag[tag] = 0
                         }
-                        aggr_totalvalue_by_tag[tag] += ticker_total_value
+                        if (aggr_totalvalue_by_tag === 'err.') {
+                            aggr_totalvalue_by_tag[tag] = 'err.'
+                        } else if (ticker_total_value === 'err.') {
+                            aggr_totalvalue_by_tag[tag] = 'err.'
+                        } else {
+                            aggr_totalvalue_by_tag[tag] += ticker_total_value
+                        }
                     }
                 })
             }
@@ -1485,7 +1509,15 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    getQuote(ticker, date, data) {
+    quoteExists(ticker) {
+        if (this.state.allCurrentQuotes.hasOwnProperty(ticker)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    getClosingPrice(ticker, date, data) {
         if (data.hasOwnProperty(ticker)) {
             if (data[ticker].hasOwnProperty(date)) {
                 return data[ticker][date].adjusted_close
@@ -1494,7 +1526,7 @@ export class ComparingStocks extends React.Component {
         return undefined
     }
 
-    getMostRecentQuote(ticker, data) {
+    getMostRecentClosingPrice(ticker, data) {
         if (data.hasOwnProperty(ticker)) {
             return data[ticker].current_price
         }
@@ -2543,16 +2575,17 @@ export class ComparingStocks extends React.Component {
 
         let all_row_data = []
         sorted_tickers.forEach(function(ticker) {
+            let quote_exists = (self.quoteExists(ticker)) ? true : false
             let new_row = {}
             new_row['is_aggregate'] = false
             new_row['row_name'] = ticker
             new_row['membership_set'] = row_data[ticker]['tags']
             new_row['columns'] = self.state.shown_columns
             new_row['special_classes'] = row_data[ticker]['special_classes']
-            new_row['current_price'] = self.state.allCurrentQuotes[ticker].current_price
-            new_row['change_pct'] = self.state.allCurrentQuotes[ticker].change_pct
-            new_row['quote_date'] = (ticker !== 'cash' && !self.getIndicies().includes(ticker)) ? self.state.allCurrentQuotes[ticker].quote_date : 'n/a'
-            new_row['volume'] = self.state.allCurrentQuotes[ticker].volume
+            new_row['current_price'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].current_price : 'err.'
+            new_row['change_pct'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].change_pct : 'err.'
+            new_row['quote_date'] = (!quote_exists) ? 'err.' : (ticker !== 'cash' && !self.getIndicies().includes(ticker)) ? self.state.allCurrentQuotes[ticker].quote_date : 'n/a'
+            new_row['volume'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].volume : 'err.'
             new_row['basis'] = row_data[ticker]['basis']
             new_row['start_date'] = row_data[ticker]['start_date']
             new_row['current_shares'] = row_data[ticker]['current_shares']
@@ -2580,7 +2613,8 @@ export class ComparingStocks extends React.Component {
                 // if an old quote exists within this aggregate and if this is an error, the aggregate total becomes an error too
                 let quote_date
                 for (let ticker of self.state.allTags[aggr_ticker]) {
-                    quote_date = self.state.allCurrentQuotes[ticker].quote_date
+                    let quote_exists = (self.quoteExists(ticker)) ? true : false
+                    quote_date = (quote_exists) ? self.state.allCurrentQuotes[ticker].quote_date : 'err.'
                     if (self.daysAgo(quote_date) >= 1) {
                         break
                     }

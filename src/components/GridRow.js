@@ -420,7 +420,9 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'percent_value':
-                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                if (current_value === 'err.') {
+                    value = 'err.'
+                } else if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
                     if (!this.flagQuoteErrorOnPositionCell()) {
                         value = percent_value
                     } else {
