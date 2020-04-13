@@ -830,9 +830,9 @@ export class ComparingStocks extends React.Component {
                 prev_short = aggr_performance_by_tag['_everything_'].short_change_pct
                 prev_medium = aggr_performance_by_tag['_everything_'].medium_change_pct
                 prev_long = aggr_performance_by_tag['_everything_'].long_change_pct
-                aggr_performance_by_tag['_everything_'].short_change_pct = (prev_short === 'err.') ? 'err.' : prev_short + short
-                aggr_performance_by_tag['_everything_'].medium_change_pct = (prev_medium === 'err.') ? 'err.' : prev_medium + medium
-                aggr_performance_by_tag['_everything_'].long_change_pct = (prev_long === 'err.') ? 'err.' : prev_long + long
+                aggr_performance_by_tag['_everything_'].short_change_pct = (prev_short === 'err.' || short === 'err.') ? 'err.' : prev_short + short
+                aggr_performance_by_tag['_everything_'].medium_change_pct = (prev_medium === 'err.' || medium === 'err.') ? 'err.' : prev_medium + medium
+                aggr_performance_by_tag['_everything_'].long_change_pct = (prev_long === 'err.' || long === 'err.') ? 'err.' : prev_long + long
             } else {
                 short = 'err.'
                 medium = 'err.'
