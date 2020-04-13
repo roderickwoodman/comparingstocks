@@ -8,7 +8,9 @@ export class GridRowTotals extends React.Component {
 
         const total_value = this.props.total_value
         const total_basis = this.props.total_basis
-        const total_performance = this.props.total_performance
+        const short_perf = this.props.total_performance.short_change_pct
+        const medium_perf = this.props.total_performance.medium_change_pct
+        const long_perf = this.props.total_performance.long_change_pct
 
         function numberWithCommas(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -30,13 +32,25 @@ export class GridRowTotals extends React.Component {
                     value = (total_basis) ? '100%' : 'err.'
                     break
                 case 'short_change_pct':
-                    value = (Math.round(10 * total_performance.short_change_pct) / 10).toFixed(1) + '%'
+                    if (short_perf !== 'err.') {
+                        value = (Math.round(10 * short_perf) / 10).toFixed(1) + '%'
+                    } else {
+                        value = 'err.'
+                    }
                     break
                 case 'medium_change_pct':
-                    value = (Math.round(10 * total_performance.medium_change_pct) / 10).toFixed(1) + '%'
+                    if (medium_perf !== 'err.') {
+                        value = (Math.round(10 * medium_perf) / 10).toFixed(1) + '%'
+                    } else {
+                        value = 'err.'
+                    }
                     break
                 case 'long_change_pct':
-                    value = (Math.round(10 * total_performance.long_change_pct) / 10).toFixed(1) + '%'
+                    if (long_perf !== 'err.') {
+                        value = (Math.round(10 * long_perf) / 10).toFixed(1) + '%'
+                    } else {
+                        value = 'err.'
+                    }
                     break
                 default:
                     break

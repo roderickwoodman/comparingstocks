@@ -287,7 +287,7 @@ export class ComparingStocks extends React.Component {
         this.onNewConsoleMessages = this.onNewConsoleMessages.bind(this)
         this.clearLastConsoleMessage = this.clearLastConsoleMessage.bind(this)
         this.daysAgo = this.daysAgo.bind(this)
-        this.quoteExists = this.quoteExists.bind(this)
+        this.currentQuoteExists = this.currentQuoteExists.bind(this)
         this.getClosingPrice = this.getClosingPrice.bind(this)
         this.getMostRecentClosingPrice = this.getMostRecentClosingPrice.bind(this)
         this.getCurrentValue = this.getCurrentValue.bind(this)
@@ -539,18 +539,24 @@ export class ComparingStocks extends React.Component {
                         newPerformance['short_change_pct'] = (baseline.name === 'sp500_pct_gain') 
                             ? ticker_perf_short - index_performance.short_change_pct 
                             : ticker_perf_short
+                    } else {
+                        newPerformance['short_change_pct'] = 'err.'
                     }
                     if (typeof ticker_medium_ago === 'number') {
                         ticker_perf_medium = (ticker_now - ticker_medium_ago) / ticker_now * 100
                         newPerformance['medium_change_pct'] = (baseline.name === 'sp500_pct_gain') 
                             ? ticker_perf_medium - index_performance.medium_change_pct 
                             : ticker_perf_medium
+                    } else {
+                        newPerformance['medium_change_pct'] = 'err.'
                     }
                     if (typeof ticker_long_ago === 'number') {
                         ticker_perf_long = (ticker_now - ticker_long_ago) / ticker_now * 100
                         newPerformance['long_change_pct'] = (baseline.name === 'sp500_pct_gain') 
                             ? ticker_perf_long - index_performance.long_change_pct 
                             : ticker_perf_long
+                    } else {
+                        newPerformance['long_change_pct'] = 'err.'
                     }
                 }
                 newPerformanceNumbers[ticker] = newPerformance
@@ -816,20 +822,35 @@ export class ComparingStocks extends React.Component {
 
         all_stocks_of_interest.forEach(function(ticker) {
 
-            let short = all_performance_numbers[ticker]['short_change_pct']
-            let medium = all_performance_numbers[ticker]['medium_change_pct']
-            let long = all_performance_numbers[ticker]['long_change_pct']
-
-            aggr_performance_by_tag['_everything_'].short_change_pct += short
-            aggr_performance_by_tag['_everything_'].medium_change_pct += medium
-            aggr_performance_by_tag['_everything_'].long_change_pct += long
+            let short, medium, long, prev_short, prev_medium, prev_long
+            if (all_performance_numbers.hasOwnProperty(ticker)) {
+                short = all_performance_numbers[ticker]['short_change_pct']
+                medium = all_performance_numbers[ticker]['medium_change_pct']
+                long = all_performance_numbers[ticker]['long_change_pct']
+                prev_short = aggr_performance_by_tag['_everything_'].short_change_pct
+                prev_medium = aggr_performance_by_tag['_everything_'].medium_change_pct
+                prev_long = aggr_performance_by_tag['_everything_'].long_change_pct
+                aggr_performance_by_tag['_everything_'].short_change_pct = (prev_short === 'err.') ? 'err.' : prev_short + short
+                aggr_performance_by_tag['_everything_'].medium_change_pct = (prev_medium === 'err.') ? 'err.' : prev_medium + medium
+                aggr_performance_by_tag['_everything_'].long_change_pct = (prev_long === 'err.') ? 'err.' : prev_long + long
+            } else {
+                short = 'err.'
+                medium = 'err.'
+                long = 'err.'
+                aggr_performance_by_tag['_everything_'].short_change_pct = 'err.'
+                aggr_performance_by_tag['_everything_'].medium_change_pct = 'err.'
+                aggr_performance_by_tag['_everything_'].long_change_pct = 'err.'
+            }
             aggr_performance_by_tag['_everything_'].num_tickers += 1
 
             Object.keys(all_tags).forEach(function(tag) {
                 if (aggr_performance_by_tag.hasOwnProperty(tag) && all_tags[tag].includes(ticker)) {
-                    aggr_performance_by_tag[tag].short_change_pct += short
-                    aggr_performance_by_tag[tag].medium_change_pct += medium
-                    aggr_performance_by_tag[tag].long_change_pct += long
+                    prev_short = aggr_performance_by_tag[tag].short_change_pct
+                    prev_medium = aggr_performance_by_tag[tag].medium_change_pct
+                    prev_long = aggr_performance_by_tag[tag].long_change_pct
+                    aggr_performance_by_tag[tag].short_change_pct = (prev_short === 'err.') ? 'err.' : short
+                    aggr_performance_by_tag[tag].medium_change_pct = (prev_medium === 'err.') ? 'err.' : medium
+                    aggr_performance_by_tag[tag].long_change_pct = (prev_long === 'err.') ? 'err.' : long
                     aggr_performance_by_tag[tag].num_tickers += 1
                 } else if (all_tags[tag].includes(ticker)) {
                     let new_aggr_performance = {}
@@ -846,8 +867,10 @@ export class ComparingStocks extends React.Component {
             let tag = tag_performance[0]
             let performance = tag_performance[1]
             Object.keys(performance).filter(time_range => time_range !== 'num_tickers').forEach(function(time_range) {
-                let value = (performance['num_tickers']) ? performance[time_range] / performance.num_tickers : 'n/a'
-                aggr_performance_by_tag[tag][time_range] = value
+                if (performance[time_range] !== 'err.') {
+                    let value = (performance['num_tickers']) ? performance[time_range] / performance.num_tickers : 'n/a'
+                    aggr_performance_by_tag[tag][time_range] = value
+                }
             })
         })
 
@@ -1509,7 +1532,7 @@ export class ComparingStocks extends React.Component {
         }
     }
 
-    quoteExists(ticker) {
+    currentQuoteExists(ticker) {
         if (this.state.allCurrentQuotes.hasOwnProperty(ticker)) {
             return true
         } else {
@@ -2573,9 +2596,15 @@ export class ComparingStocks extends React.Component {
             aggr_basis = self.state.aggrBasis['_everything_']
         }
 
+        let error_performance_numbers = {
+            short_change_pct: 'err.',
+            medium_change_pct: 'err.',
+            long_change_pct: 'err.'
+        }
         let all_row_data = []
         sorted_tickers.forEach(function(ticker) {
-            let quote_exists = (self.quoteExists(ticker)) ? true : false
+            let quote_exists = self.currentQuoteExists(ticker)
+            let performance_numbers_exist = self.state.allPerformanceNumbers.hasOwnProperty(ticker)
             let new_row = {}
             new_row['is_aggregate'] = false
             new_row['row_name'] = ticker
@@ -2593,7 +2622,7 @@ export class ComparingStocks extends React.Component {
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : null
             new_row['risk_factor_modified'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].modified_at : null
-            new_row['performance_numbers'] = self.state.allPerformanceNumbers[ticker]
+            new_row['performance_numbers'] = (performance_numbers_exist) ? self.state.allPerformanceNumbers[ticker] : error_performance_numbers
             new_row['baseline'] = self.state.baseline
             new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].current_shares).length) ? true : false
             new_row['total_value'] = aggr_total_value
@@ -2613,7 +2642,7 @@ export class ComparingStocks extends React.Component {
                 // if an old quote exists within this aggregate and if this is an error, the aggregate total becomes an error too
                 let quote_date
                 for (let ticker of self.state.allTags[aggr_ticker]) {
-                    let quote_exists = (self.quoteExists(ticker)) ? true : false
+                    let quote_exists = (self.currentQuoteExists(ticker)) ? true : false
                     quote_date = (quote_exists) ? self.state.allCurrentQuotes[ticker].quote_date : 'err.'
                     if (self.daysAgo(quote_date) >= 1) {
                         break
