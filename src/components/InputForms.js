@@ -119,7 +119,7 @@ export class InputForms extends React.Component {
                             all_positions={this.props.all_positions}
                             all_monthly_quotes={this.props.all_monthly_quotes}
                             all_month_end_dates={this.props.all_month_end_dates}
-                            baseline={this.props.baseline}
+                            baseline_name={this.props.baseline_name}
                             create_console_message_set={this.props.create_console_message_set}
                             on_new_console_messages={this.props.on_new_console_messages}
                         />
@@ -150,7 +150,7 @@ InputForms.propTypes = {
     show_tagged: PropTypes.bool,
     show_untagged: PropTypes.bool,
     show_cash: PropTypes.bool,
-    baseline: PropTypes.string,
+    baseline_name: PropTypes.string,
     get_balanceable_value: PropTypes.func,
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,

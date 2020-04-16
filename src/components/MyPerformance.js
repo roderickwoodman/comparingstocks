@@ -396,7 +396,7 @@ export class MyPerformance extends React.Component {
         if (my_perf === 'err.') {
             retval['display_value'] = 'err.'
         } else if (typeof my_perf === 'number') {
-            if (this.props.baseline === 'sp500_pct_gain') {
+            if (this.props.baseline_name === 'sp500_pct_gain') {
                 let baseline_perf = period_data.period_baseline_change_pct
                 if (typeof baseline_perf !== 'number') {
                     return retval
@@ -431,7 +431,7 @@ export class MyPerformance extends React.Component {
         let displayed, baseline, index
         [displayed, baseline, index] = [performance_obj.display_value, performance_obj.baseline_value, performance_obj.index_value]
         let classes = 'performance-cell'
-        if ( this.props.baseline === 'sp500_pct_gain') {
+        if ( this.props.baseline_name === 'sp500_pct_gain') {
             if (displayed > 0) {
                 classes += ' text-green'
             } else if (displayed < 0) {
@@ -458,7 +458,7 @@ export class MyPerformance extends React.Component {
     }
 
     formatIndexPerformance(performance) {
-        if ( this.props.baseline === 'sp500_pct_gain') {
+        if ( this.props.baseline_name === 'sp500_pct_gain') {
             return this.formatPerformance('ref.')
         } else {
             return this.formatPerformance(performance)
@@ -530,7 +530,7 @@ export class MyPerformance extends React.Component {
                         <p className="strong">cash:</p>
                         <p className="strong">transfers in:</p>
                         <p className="strong">total:</p>
-                        <p className="strong">my perf{ (this.props.baseline === 'sp500_pct_gain') ? ' delta' : '' }:</p>
+                        <p className="strong">my perf{ (this.props.baseline_name === 'sp500_pct_gain') ? ' delta' : '' }:</p>
                         <p className="strong">S&amp;P500:</p>
                     </div>
                     <div id="my-performance-periods">
@@ -560,7 +560,7 @@ MyPerformance.propTypes = {
     all_positions: PropTypes.object.isRequired,
     all_monthly_quotes: PropTypes.object.isRequired,
     all_month_end_dates: PropTypes.array.isRequired,
-    baseline: PropTypes.string.isRequired,
+    baseline_name: PropTypes.string.isRequired,
     create_console_message_set: PropTypes.func.isRequired,
     on_new_console_messages: PropTypes.func.isRequired
 }
