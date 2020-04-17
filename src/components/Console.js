@@ -25,7 +25,7 @@ export class Console extends React.Component {
                 <div id="console-messages">
                 { message_sets && message_sets.map( message_set => (
                     message_set.messages.map( (message, j) => (
-                            <p key={j} className={this.getClasses(message)}>{message}</p>
+                            <p key={j} className={this.getClasses(message)}>[{Date(message_set.modified_at)}]{message}</p>
                     ))
                 ))}
                 </div>
