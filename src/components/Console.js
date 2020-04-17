@@ -18,6 +18,13 @@ export class Console extends React.Component {
     }
 
     render() {
+
+        const PopulateMessage = ({key, message, timestamp}) => {
+            return (
+                <p key={key} className={this.getClasses(message)}>[{timestamp}] {message}</p>
+            )
+        }
+
         let message_sets = this.props.all_console_messages
         return (
             <div id="console-messages-wrapper">
@@ -25,7 +32,7 @@ export class Console extends React.Component {
                 <div id="console-messages">
                 { message_sets && message_sets.map( message_set => (
                     message_set.messages.map( (message, j) => (
-                            <p key={j} className={this.getClasses(message)}>[{Date(message_set.modified_at)}]{message}</p>
+                        <PopulateMessage key={j} message={message} timestamp={message_set.modified_at} />
                     ))
                 ))}
                 </div>
