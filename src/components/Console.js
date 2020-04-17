@@ -7,6 +7,7 @@ export class Console extends React.Component {
     constructor(props) {
         super(props)
         this.getClasses = this.getClasses.bind(this)
+        this.formatTimestamp = this.formatTimestamp.bind(this)
     }
 
     getClasses(message) {
@@ -17,11 +18,17 @@ export class Console extends React.Component {
         return classes
     }
 
+    formatTimestamp(epoch) {
+        let date = new Date(epoch);
+        let iso = date.toISOString().match(/(\d{4}\-\d{2}\-\d{2})T(\d{2}:\d{2}:\d{2})/)
+        return iso[1] + ' ' + iso[2]
+    }
+
     render() {
 
         const PopulateMessage = ({key, message, timestamp}) => {
             return (
-                <p key={key} className={this.getClasses(message)}>[{timestamp}] {message}</p>
+                <p key={key} className={this.getClasses(message)}>[{this.formatTimestamp(timestamp)}] {message}</p>
             )
         }
 
