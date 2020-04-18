@@ -28,7 +28,7 @@ export class Console extends React.Component {
 
         const PopulateMessage = ({key, message, timestamp}) => {
             return (
-                <p key={key} className={this.getClasses(message)}>[{this.formatTimestamp(timestamp)}] {message}</p>
+                <p key={key}>[{this.formatTimestamp(timestamp)}] <span className={this.getClasses(message)}>{message}</span></p>
             )
         }
 
