@@ -37,6 +37,10 @@ code {
   margin-left: 10px;
 }
 
+#page-controls #console-messages-wrapper button {
+  width: 27px;
+}
+
 .content-wrapper {
   display: flex;
   flex-direction: row;

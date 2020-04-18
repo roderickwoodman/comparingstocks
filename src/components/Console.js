@@ -6,8 +6,12 @@ export class Console extends React.Component {
 
     constructor(props) {
         super(props)
+        this.state = {
+            data_sort_dir: 'asc'
+        }
         this.getClasses = this.getClasses.bind(this)
         this.formatTimestamp = this.formatTimestamp.bind(this)
+        this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
     }
 
     getClasses(message) {
@@ -24,6 +28,15 @@ export class Console extends React.Component {
         return iso[1] + ' ' + iso[2]
     }
 
+    onToggleSortOrder() {
+        this.setState(prevState => {
+            let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
+            return { 
+                data_sort_dir: new_sort_dir 
+            }
+        })
+    }
+
     render() {
 
         const PopulateMessage = ({key, message, timestamp}) => {
@@ -33,11 +46,23 @@ export class Console extends React.Component {
         }
 
         let message_sets = this.props.all_console_messages
+        let ordered_message_sets
+        let self = this
+        ordered_message_sets = message_sets.sort(function(a,b) {
+            if (a.modified_at < b.modified_at) {
+                return (self.state.data_sort_dir === 'asc') ? -1 : 1
+            } else if (a.modified_at > b.modified_at) {
+                return (self.state.data_sort_dir === 'asc') ? 1 : -1
+            } else {
+                return 0
+            }
+
+        })
         return (
             <div id="console-messages-wrapper">
-                { message_sets.length ? 'History:' : '' }
+                <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button> History:
                 <div id="console-messages">
-                { message_sets && message_sets.map( message_set => (
+                { ordered_message_sets && ordered_message_sets.map( message_set => (
                     message_set.messages.map( (message, j) => (
                         <PopulateMessage key={j} message={message} timestamp={message_set.modified_at} />
                     ))
