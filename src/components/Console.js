@@ -7,7 +7,7 @@ export class Console extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            data_sort_dir: 'asc'
+            data_sort_dir: 'desc'
         }
         this.getClasses = this.getClasses.bind(this)
         this.formatTimestamp = this.formatTimestamp.bind(this)
@@ -23,8 +23,9 @@ export class Console extends React.Component {
     }
 
     formatTimestamp(epoch) {
-        let date = new Date(epoch);
-        let iso = date.toISOString().match(/(\d{4}\-\d{2}\-\d{2})T(\d{2}:\d{2}:\d{2})/)
+        let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+        let localISOTime = (new Date(new Date(epoch) - tzoffset)).toISOString()
+        let iso = localISOTime.match(/(\d{4}\-\d{2}\-\d{2})T(\d{2}:\d{2}:\d{2})/)
         return iso[1] + ' ' + iso[2]
     }
 
