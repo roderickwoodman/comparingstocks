@@ -1114,7 +1114,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary,
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ', see the "Messages" tab' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1362,7 +1362,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary,
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ', see the "Messages" tab' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1456,7 +1456,7 @@ export class ComparingStocks extends React.Component {
             return { 
                 allTags: newAllTags, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary,
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ', see the "Messages" tab' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1512,7 +1512,7 @@ export class ComparingStocks extends React.Component {
             let newAllConsoleMessages = JSON.parse(JSON.stringify(prevState.allConsoleMessages))
             newAllConsoleMessages.push(new_console_message_set)
             return { 
-                last_console_message: new_console_message_set.summary,
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ', see the "Messages" tab' : ''),
                 allConsoleMessages: newAllConsoleMessages }
         })
     }
@@ -2722,7 +2722,7 @@ export class ComparingStocks extends React.Component {
                         </div>
                         <div id="last-console-message">
                             {this.state.last_console_message && this.state.last_console_message.length ? (
-                            <div className={ (this.state.last_console_message.includes('ERROR')) ? 'warning' : ''}>{this.state.last_console_message}</div>
+                            <div className={ (this.state.last_console_message.startsWith('ERROR')) ? 'warning' : ''}>{this.state.last_console_message}</div>
                             ) : null }
                         </div>
                     </div>

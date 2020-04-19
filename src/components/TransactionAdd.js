@@ -146,7 +146,7 @@ export class TransactionAdd extends React.Component {
             } else {
                 transaction[2] = transaction[2].toUpperCase()
                 transaction[3] = '$' + transaction[3]
-                summary_message = 'ERROR: Transaction "' + transaction.join(' ') + '" could not be recorded, see the "Messages" tab'
+                summary_message = 'ERROR: Transaction "' + transaction.join(' ') + '" could not be recorded'
             }
         }
 
