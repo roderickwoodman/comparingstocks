@@ -16,7 +16,7 @@ export class Console extends React.Component {
 
     getClasses(message) {
         let classes = 'message'
-        if (message.toLowerCase().includes('error')) {
+        if (message.toUpperCase().startsWith('ERROR')) {
             classes += ' warning'
         }
         return classes
@@ -45,8 +45,8 @@ export class Console extends React.Component {
             return (
                 <div class="message_set">
                     <p class="summary">[{timestamp}] <span className={this.getClasses(message_set.summary)}>{message_set.summary}</span></p>
-                    { message_set.messages.map (message => (
-                        <p key={key}><span className={this.getClasses(message)}>{message}</span></p>
+                    { message_set.messages.length > 1 && message_set.messages.map (message => (
+                        <p key={key}><span className={this.getClasses(message_set.summary)}>{message}</span></p>
                     ))}
                 </div>
             )
