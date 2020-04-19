@@ -44,9 +44,9 @@ export class Console extends React.Component {
             let timestamp = this.formatTimestamp(message_set.modified_at)
             return (
                 <div class="message_set">
-                    <p>{message_set.summary}</p>
+                    <p class="summary">[{timestamp}] <span className={this.getClasses(message_set.summary)}>{message_set.summary}</span></p>
                     { message_set.messages.map (message => (
-                        <p key={key}>[{timestamp}] <span className={this.getClasses(message)}>{message}</span></p>
+                        <p key={key}><span className={this.getClasses(message)}>{message}</span></p>
                     ))}
                 </div>
             )
