@@ -7,10 +7,12 @@ export class Console extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            data_sort_dir: 'desc'
+            data_sort_dir: 'desc',
+            expanded_message_sets: []
         }
         this.getClasses = this.getClasses.bind(this)
         this.formatTimestamp = this.formatTimestamp.bind(this)
+        this.onToggleExpandMessageSet = this.onToggleExpandMessageSet.bind(this)
         this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
     }
 
@@ -38,15 +40,27 @@ export class Console extends React.Component {
         })
     }
 
+    onToggleExpandMessageSet(identifier) {
+        this.setState(prevState => {
+            let new_expanded_message_sets = JSON.parse(JSON.stringify(prevState.expanded_message_sets))
+            if (!new_expanded_message_sets.includes(identifier)) {
+                new_expanded_message_sets = [identifier]
+            } else {
+                new_expanded_message_sets = []
+            }
+            return { expanded_message_sets: new_expanded_message_sets }
+        })
+    }
+
     render() {
 
-        const PopulateMessageSet = ({key, message_set}) => {
+        const PopulateMessageSet = ({message_set}) => {
             let timestamp = this.formatTimestamp(message_set.modified_at)
             return (
-                <div class="message_set">
-                    <p class="summary">[{timestamp}] <span className={this.getClasses(message_set.summary)}>{message_set.summary}</span></p>
-                    { message_set.messages.length > 1 && message_set.messages.map (message => (
-                        <p key={key}><span className={this.getClasses(message_set.summary)}>{message}</span></p>
+                <div className="message_set">
+                    <p className="summary" onClick={ (e) => this.onToggleExpandMessageSet(timestamp)}>[{timestamp}] <span className={this.getClasses(message_set.summary)}>{message_set.summary}</span></p>
+                    { message_set.messages.length > 1 && this.state.expanded_message_sets.includes(timestamp) && message_set.messages.map ( (message, i) => (
+                        <p key={i} onClick={ (e) => this.onToggleExpandMessageSet(timestamp)}><span className={this.getClasses(message_set.summary)}>{message}</span></p>
                     ))}
                 </div>
             )
@@ -69,8 +83,8 @@ export class Console extends React.Component {
             <div id="console-messages-wrapper">
                 <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button> History:
                 <div id="console-messages">
-                { ordered_message_sets && ordered_message_sets.map( message_set => (
-                    <PopulateMessageSet key={message_set.modified_at} message_set={message_set} />
+                { ordered_message_sets && ordered_message_sets.map( (message_set, i) => (
+                    <PopulateMessageSet key={i} message_set={message_set} />
                 ))}
                 </div>
             </div>
