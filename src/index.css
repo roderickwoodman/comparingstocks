@@ -616,3 +616,12 @@ input[type='checkbox'] {
 .message_set p:not(.summary) {
   padding-left: 30px;
 }
+
+.message_set {
+  border: 1px solid transparent;
+}
+
+.message_set.multiline:hover {
+  cursor: pointer;
+  border: 1px solid silver;
+}
