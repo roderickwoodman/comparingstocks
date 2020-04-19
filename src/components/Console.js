@@ -40,9 +40,15 @@ export class Console extends React.Component {
 
     render() {
 
-        const PopulateMessage = ({key, message, timestamp}) => {
+        const PopulateMessageSet = ({key, message_set}) => {
+            let timestamp = this.formatTimestamp(message_set.modified_at)
             return (
-                <p key={key}>[{this.formatTimestamp(timestamp)}] <span className={this.getClasses(message)}>{message}</span></p>
+                <div class="message_set">
+                    <p>{message_set.summary}</p>
+                    { message_set.messages.map (message => (
+                        <p key={key}>[{timestamp}] <span className={this.getClasses(message)}>{message}</span></p>
+                    ))}
+                </div>
             )
         }
 
@@ -64,9 +70,7 @@ export class Console extends React.Component {
                 <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button> History:
                 <div id="console-messages">
                 { ordered_message_sets && ordered_message_sets.map( message_set => (
-                    message_set.messages.map( (message, j) => (
-                        <PopulateMessage key={j} message={message} timestamp={message_set.modified_at} />
-                    ))
+                    <PopulateMessageSet key={message_set.modified_at} message_set={message_set} />
                 ))}
                 </div>
             </div>
