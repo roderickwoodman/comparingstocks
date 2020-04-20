@@ -85,8 +85,9 @@ export class TransactionsList extends React.Component {
         return (
             <section id="transaction-list">
                 <section id="transaction-list-controls">
-                    <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button>
                     <form>
+                        <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button>
+
                         <label>Filter:</label>
                         <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />
 

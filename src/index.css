@@ -37,7 +37,8 @@ code {
   margin-left: 10px;
 }
 
-#page-controls #console-messages-wrapper button {
+#transaction-list-controls button,
+#console-messages-wrapper button {
   width: 27px;
 }
 
@@ -91,6 +92,10 @@ code {
 
 #input-forms form {
   padding: 5px 15px;
+}
+
+#input-forms #transaction-list form {
+  padding: 5px 0;
 }
 
 #what-if form #operation {
