@@ -9,10 +9,12 @@ export class TransactionsList extends React.Component {
         this.exportRef = React.createRef()
         this.importRef = React.createRef()
         this.state = {
+            data_sort_dir: 'desc',
             filter_str: '',
             file: ''
         }
         this.handleChange = this.handleChange.bind(this)
+        this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
         this.onExportButton = this.onExportButton.bind(this)
         this.onHiddenImportChange = this.onHiddenImportChange.bind(this)
     }
@@ -22,6 +24,15 @@ export class TransactionsList extends React.Component {
         const new_value = target.value
         const name = target.name
         this.setState({ [name]: new_value })
+    }
+
+    onToggleSortOrder() {
+        this.setState(prevState => {
+            let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
+            return { 
+                data_sort_dir: new_sort_dir 
+            }
+        })
     }
         
     onExportButton() {
@@ -59,13 +70,14 @@ export class TransactionsList extends React.Component {
     }
 
     render() {
+        let self = this
         let sorted_filtered_transactions = this.props.all_transactions
             .filter( transaction => transaction.summary.toLowerCase().includes(this.state.filter_str.toLowerCase()) )
             .sort( function(a,b) {
-                if (a.summary < b.summary){
-                    return -1
+                if (a.summary < b.summary) {
+                    return (self.state.data_sort_dir === 'asc') ? -1 : 1
                 } else if (a.summary > b.summary) {
-                    return 1
+                    return (self.state.data_sort_dir === 'asc') ? 1 : -1
                 } else {
                     return 0
                 }
@@ -73,6 +85,7 @@ export class TransactionsList extends React.Component {
         return (
             <section id="transaction-list">
                 <section id="transaction-list-controls">
+                    <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button>
                     <form>
                         <label>Filter:</label>
                         <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />
