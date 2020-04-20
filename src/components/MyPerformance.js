@@ -60,8 +60,7 @@ export class MyPerformance extends React.Component {
             }
         })
         
-        let period_data = []
-        let new_console_messages = []
+        let period_data = [], new_console_messages = [], quote_errors = 0, quote_date_errors = 0
 
         if (sorted_transactions.length) {
 
@@ -117,6 +116,7 @@ export class MyPerformance extends React.Component {
             if (start_baselinequote === undefined || start_baselinequote.price === undefined) {
                 new_console_messages.push('ERROR: quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable')
                 start_baselineprice = 'err.'
+                quote_errors += 1
             } else {
                 start_baselineprice = start_baselinequote.price.adjusted_close
             }
@@ -237,12 +237,14 @@ export class MyPerformance extends React.Component {
                             new_console_messages.push('ERROR: quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
                             end_tickervalue = 'err.'
                             end_tickerdate = null
+                            quote_errors += 1
                         } else if (end_tickervalue !== 'err.') {
                             end_tickervalue += position[1] * month_end_quote.price.adjusted_close
                             if (end_tickerdate === null) {
                                 end_tickerdate = month_end_quote.date
                             } else if (end_tickerdate !== month_end_quote.date) {
                                 new_console_messages.push('ERROR: quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+')')
+                                quote_date_errors += 1
                             }
                         }
                     }
@@ -268,6 +270,7 @@ export class MyPerformance extends React.Component {
                     new_console_messages.push('ERROR: quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable')
                     end_baselineprice = 'err.'
                     end_baselinedate = null
+                    quote_errors += 1
                 } else {
                     end_baselineprice = end_baselinequote.price.adjusted_close
                     end_baselinedate = end_baselinequote.date
@@ -337,7 +340,16 @@ export class MyPerformance extends React.Component {
         }
 
         if (new_console_messages.length) {
-            let message_summary = 'ERROR: quote(s) unavailable'
+            let message_summary
+            if (new_console_messages.length === 1) {
+                message_summary = new_console_messages[0]
+            } else if (quote_errors === 1) {
+                message_summary = 'ERROR: 1 quote was unavailable'
+            } else if (quote_errors > 1) {
+                message_summary = 'ERROR: ' + quote_errors + ' quotes were unavailable'
+            } else {
+                message_summary = 'ERROR: period performance calculations encountered error(s)'
+            }
             let new_console_message_set = this.props.create_console_message_set(message_summary)
             new_console_message_set.messages = [...new_console_messages]
             this.props.on_new_console_messages(new_console_message_set)
