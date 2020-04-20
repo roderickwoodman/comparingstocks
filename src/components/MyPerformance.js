@@ -344,10 +344,11 @@ export class MyPerformance extends React.Component {
                 message_summary = new_console_messages[0]
             } else {
                 let quote_error_count = quote_errors.length
+                let quote_tickers_count = Array.from(new Set(quote_errors)).length
                 if (quote_error_count === 1) {
                     message_summary = 'ERROR: 1 quote was unavailable'
                 } else if (quote_error_count > 1) {
-                    message_summary = 'ERROR: ' + quote_error_count + ' quotes were unavailable'
+                    message_summary = 'ERROR: ' + quote_error_count + ' quotes from ' + quote_tickers_count + ' different stocks were unavailable'
                 } else {
                     message_summary = 'ERROR: period performance calculations encountered error(s)'
                 }
