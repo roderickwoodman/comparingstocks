@@ -45,15 +45,17 @@ export class TagAdd extends React.Component {
             }
         })
         let num_errors = new_messages.filter(message => message.includes('ERROR')).length
-        if (num_errors === 0) {
-            num_errors = 'no'
-        }
-        let new_console_message_set
-        if (new_messages.length > 1) {
-            new_console_message_set = this.props.create_console_message_set('Created ' + tags_to_add.length + ' tags with ' + num_errors + ' errors.')
-            new_console_message_set.messages = [...new_messages]
+        let summary
+        if (new_messages.length === 1) {
+            summary = new_messages[0]
+        } else if (num_errors === 0) {
+            summary = 'Created ' + tags.length + ' tags.'
         } else {
-            new_console_message_set = this.props.create_console_message_set(new_messages[0])
+            summary = 'ERROR: ' + num_errors + ' of ' + tags.length + ' tags could not be created.'
+        }
+        let new_console_message_set = this.props.create_console_message_set(summary)
+        if (new_messages.length > 1) {
+            new_console_message_set.messages = [...new_messages]
         }
         this.props.on_new_tags(tags_to_add)
         this.props.on_new_console_messages(new_console_message_set)
