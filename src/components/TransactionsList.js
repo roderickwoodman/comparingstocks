@@ -70,8 +70,10 @@ export class TransactionsList extends React.Component {
     }
 
     render() {
+
+        let all_transactions = this.props.all_transactions
         let self = this
-        let sorted_filtered_transactions = this.props.all_transactions
+        let ordered_filtered_transactions = all_transactions
             .filter( transaction => transaction.summary.toLowerCase().includes(this.state.filter_str.toLowerCase()) )
             .sort( function(a,b) {
                 if (a.summary < b.summary) {
@@ -101,7 +103,7 @@ export class TransactionsList extends React.Component {
                     </form>
                 </section>
                 <section id="transactions">
-                    {sorted_filtered_transactions.map( transaction => (
+                    {ordered_filtered_transactions.map( transaction => (
                         <p key={transaction.modified_at} className="transaction" onClick={ (e)=>this.props.on_delete_transaction(transaction.modified_at)}>{transaction.summary}</p>
                     ))}
                 </section>
