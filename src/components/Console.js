@@ -13,7 +13,6 @@ export class Console extends React.Component {
         this.getClasses = this.getClasses.bind(this)
         this.getMessageSetClasses = this.getMessageSetClasses.bind(this)
         this.formatTimestamp = this.formatTimestamp.bind(this)
-        this.trimErrorText = this.trimErrorText.bind(this)
         this.onToggleExpandMessageSet = this.onToggleExpandMessageSet.bind(this)
         this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
     }
@@ -39,14 +38,6 @@ export class Console extends React.Component {
         let localISOTime = (new Date(new Date(epoch) - tzoffset)).toISOString()
         let iso = localISOTime.match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/)
         return iso[1] + ' ' + iso[2]
-    }
-
-    trimErrorText(message) {
-        if (message.toUpperCase().startsWith('ERROR:')) {
-            message = message.slice(6)
-        }
-        message.charAt(0).toUpperCase()
-        return message
     }
 
     onToggleSortOrder() {
@@ -79,7 +70,7 @@ export class Console extends React.Component {
                 <div className={this.getMessageSetClasses(count)}>
                     <p className="summary" onClick={ (e) => this.onToggleExpandMessageSet(timestamp)}>[{timestamp}] <span className={this.getClasses(message_set.summary)}>{message_set.summary}</span></p>
                     { message_set.messages.length > 1 && this.state.expanded_message_sets.includes(timestamp) && message_set.messages.map ( (message, i) => (
-                        <p key={i} onClick={ (e) => this.onToggleExpandMessageSet(timestamp)}><span className={this.getClasses(message_set.summary)}>{this.trimErrorText(message)}</span></p>
+                        <p key={i} onClick={ (e) => this.onToggleExpandMessageSet(timestamp)}><span className={this.getClasses(message)}>{message}</span></p>
                     ))}
                 </div>
             )
