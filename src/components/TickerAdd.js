@@ -79,13 +79,13 @@ export class TickerAdd extends React.Component {
         })
         let num_errors = new_messages.filter(message => message.includes('ERROR')).length
         let summary
+        let tag_status_str = (tag !== 'untagged') ? ' to tag "' + tag + '"' : ''
         if (new_messages.length === 1) {
             summary = new_messages[0]
         } else if (num_errors === 0) {
-            let tag_status_str = (tag !== 'untagged') ? ' to tag "' + tag + '"' : ''
             summary = 'Added ' + tickers.length + ' tickers' + tag_status_str + '.'
         } else {
-            summary = 'ERROR: ' + num_errors + ' of ' + tickers.length + ' tickers could not be added.'
+            summary = 'ERROR: ' + num_errors + ' of ' + tickers.length + ' tickers could not be added' + tag_status_str + '.'
         }
         let new_console_message_set = this.props.create_console_message_set(summary)
         if (new_messages.length > 1) {
