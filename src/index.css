@@ -98,6 +98,7 @@ code {
   padding: 5px 0;
 }
 
+#delete-tag form #operation,
 #what-if form #operation {
   display: flex;
   align-items: center;

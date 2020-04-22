@@ -34,7 +34,7 @@ export class TagDelete extends React.Component {
         return (
             <section id="delete-tag">
                 <form onSubmit={this.handleSubmit}>
-                    <label>
+                    <div id="operation">
                         Delete Tag:
                         <select value={this.state.delete_tag_list} multiple={true} onChange={this.handleTagChange}>
                             <option key="untagged" value="untagged">(none)</option>
@@ -42,7 +42,7 @@ export class TagDelete extends React.Component {
                             <option key={tag_name} value={tag_name}>{tag_name}</option>
                             ))}
                         </select>
-                    </label>
+                    </div>
                     <section className="buttonrow">
                         <input className="btn btn-sm btn-primary" type="submit" value="Delete Tag(s)" disabled={this.state.delete_tag==='untagged'} />
                     </section>
