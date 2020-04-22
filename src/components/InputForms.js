@@ -68,7 +68,7 @@ export class InputForms extends React.Component {
                         />
                         <TagDelete
                             all_tags={this.props.all_tags}
-                            on_delete_tag={this.props.on_delete_tag}
+                            on_delete_tags={this.props.on_delete_tags}
                         />
                         </React.Fragment>
                     )}
@@ -155,7 +155,7 @@ InputForms.propTypes = {
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,
     on_new_tags: PropTypes.func.isRequired,
-    on_delete_tag: PropTypes.func.isRequired,
+    on_delete_tags: PropTypes.func.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,

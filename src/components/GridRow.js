@@ -100,7 +100,7 @@ export class GridRow extends React.Component {
         if (is_aggregate) {
             if (column_name === 'symbol' && this.props.row_name !== 'untagged') {
                 return (
-                    <button className={classes} onClick={ (e) => {this.props.on_delete_tag(this.props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {this.props.on_delete_tags(this.props.row_name)}}>x</button>
                 )
             } else {
                 return
@@ -805,7 +805,7 @@ GridRow.propTypes = {
     on_change_whatif_format: PropTypes.func,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
-    on_delete_tag: PropTypes.func,
+    on_delete_tags: PropTypes.func,
     editing_row: PropTypes.string,
     current_edit_value: PropTypes.oneOfType([
         PropTypes.number,

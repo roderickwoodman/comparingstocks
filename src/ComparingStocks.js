@@ -279,7 +279,7 @@ export class ComparingStocks extends React.Component {
         this.onNewTickers = this.onNewTickers.bind(this)
         this.onRemoveFromTag = this.onRemoveFromTag.bind(this)
         this.onDeleteTicker = this.onDeleteTicker.bind(this)
-        this.onDeleteTag = this.onDeleteTag.bind(this)
+        this.onDeleteTags = this.onDeleteTags.bind(this)
         this.onDeleteTransaction = this.onDeleteTransaction.bind(this)
         this.onEditCell = this.onEditCell.bind(this)
         this.onModifyRiskFactor = this.onModifyRiskFactor.bind(this)
@@ -1412,12 +1412,15 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onDeleteTag(delete_tag) {
+    onDeleteTags(delete_tags) {
         this.setState(prevState => {
 
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
-            let tickers_losing_a_tag = newAllTags[delete_tag]
-            delete newAllTags[delete_tag]
+            let tickers_losing_a_tag = []
+            delete_tags.forEach(function(tag) {
+                tickers_losing_a_tag = tickers_losing_a_tag.concat(newAllTags[tag])
+                delete newAllTags[tag]
+            })
 
             // assign tickers to "untagged" if they are losing their last (user) tag
             let all_other_tagged_tickers = []
@@ -1428,7 +1431,7 @@ export class ComparingStocks extends React.Component {
             })
             tickers_losing_a_tag.forEach(function(ticker) {
                 let newUntagged = newAllTags['untagged']
-                if (!all_other_tagged_tickers.includes(ticker)) {
+                if (!all_other_tagged_tickers.includes(ticker) && !newUntagged.includes(ticker)) {
                     newUntagged.push(ticker)
                     newAllTags['untagged'] = newUntagged
                 }
@@ -1437,7 +1440,16 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let new_console_message_set = this.createConsoleMessageSet('Tag "' + delete_tag + '" has now been deleted.')
+            let summary, new_messages = []
+            delete_tags.forEach(function(tag) {
+                new_messages.push('Tag "' + tag + '" has now been deleted.')
+            })
+            if (new_messages.length === 1) {
+                summary = this.createConsoleMessageSet('Tag "' + delete_tags[0] + '" has now been deleted.')
+            } else {
+                summary = 'Deleted ' + delete_tags.length + ' tags.'
+            }
+            let new_console_message_set = this.createConsoleMessageSet(summary)
             newAllConsoleMessages.push(new_console_message_set)
 
             // recalculate the aggregate numbers
@@ -2569,7 +2581,7 @@ export class ComparingStocks extends React.Component {
                 on_change_whatif_format={this.onChangeWhatifFormat}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
-                on_delete_tag={row_data.on_delete_tag}
+                on_delete_tags={row_data.on_delete_tags}
                 editing_row={this.state.editing_row}
                 current_edit_value={(typeof this.state.editing_row === 'string' && this.state.allRisk.hasOwnProperty(this.state.editing_row)) ? this.state.allRisk[this.state.editing_row].factor : ''}
                 on_edit_cell={row_data.on_edit_cell}
@@ -2630,7 +2642,7 @@ export class ComparingStocks extends React.Component {
             new_row['whatif'] = row_data[ticker]['whatif']
             new_row['on_remove_from_tag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
-            new_row['on_delete_tag'] = self.onDeleteTag
+            new_row['on_delete_tags'] = self.onDeleteTags
             new_row['on_edit_cell'] = self.onEditCell
             new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
             all_row_data.push(new_row)
@@ -2674,7 +2686,7 @@ export class ComparingStocks extends React.Component {
                 new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
                 new_row['on_remove_from_tag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
-                new_row['on_delete_tag'] = self.onDeleteTag
+                new_row['on_delete_tags'] = self.onDeleteTags
                 new_row['on_edit_cell'] = self.onEditCell
                 new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
                 all_row_data.push(new_row)
@@ -2708,7 +2720,7 @@ export class ComparingStocks extends React.Component {
                                 get_balanceable_value={this.getMaxBalanceableValue}
                                 on_new_tickers={this.onNewTickers}
                                 on_new_tags={this.onNewTags}
-                                on_delete_tag={this.onDeleteTag}
+                                on_delete_tags={this.onDeleteTags}
                                 on_delete_transaction={this.onDeleteTransaction}
                                 on_new_transaction={this.onNewTransaction}
                                 on_import_transactions={this.onImportTransactions}
