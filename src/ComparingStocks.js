@@ -1445,11 +1445,14 @@ export class ComparingStocks extends React.Component {
                 new_messages.push('Tag "' + tag + '" has now been deleted.')
             })
             if (new_messages.length === 1) {
-                summary = this.createConsoleMessageSet('Tag "' + delete_tags[0] + '" has now been deleted.')
+                summary = 'Tag "' + delete_tags[0] + '" has now been deleted.'
             } else {
                 summary = 'Deleted ' + delete_tags.length + ' tags.'
             }
             let new_console_message_set = this.createConsoleMessageSet(summary)
+            if (new_messages.length > 1) {
+                new_console_message_set.messages = [...new_messages]
+            }
             newAllConsoleMessages.push(new_console_message_set)
 
             // recalculate the aggregate numbers
