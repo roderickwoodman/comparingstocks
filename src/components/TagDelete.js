@@ -11,6 +11,7 @@ export class TagDelete extends React.Component {
         }
         this.handleTagChange = this.handleTagChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.isDisabled = this.isDisabled.bind(this)
     }
 
     handleTagChange(event) {
@@ -30,7 +31,15 @@ export class TagDelete extends React.Component {
         let user_tag_list = this.state.delete_tag_list
         this.props.on_delete_tags(user_tag_list)
 
-        this.setState({ delete_tag_list: 'untagged' })
+        this.setState({ delete_tag_list: ['untagged'] })
+    }
+
+    isDisabled() {
+        if (this.state.delete_tag_list.length === 1 && this.state.delete_tag_list.includes('untagged')) {
+            return true
+        } else {
+            return false
+        }
     }
 
     render() {
@@ -47,7 +56,7 @@ export class TagDelete extends React.Component {
                         </select>
                     </div>
                     <section className="buttonrow">
-                        <input className="btn btn-sm btn-primary" type="submit" value="Delete Tag(s)" disabled={this.state.delete_tag==='untagged'} />
+                        <input className="btn btn-sm btn-primary" type="submit" value="Delete Tag(s)" disabled={this.isDisabled()} />
                     </section>
                 </form>
             </section>
