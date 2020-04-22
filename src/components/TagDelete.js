@@ -17,6 +17,9 @@ export class TagDelete extends React.Component {
         let {selectedOptions } = event.target
 
         let multiple_tags = Array.from(selectedOptions, (item) => item.value)
+        if (multiple_tags.includes('untagged')) {
+            multiple_tags = ['untagged']
+        }
 
         this.setState({ delete_tag_list: multiple_tags })
     }
