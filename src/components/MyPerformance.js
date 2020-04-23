@@ -140,16 +140,22 @@ export class MyPerformance extends React.Component {
                     year += 1
                 }
                 new_period['year'] = year
-                let end_shares = {}, end_cash = 0, end_transfersinvalue = 0
+
+                // initialize this period's end values with the previous period's end values
+                let prev_shares = {}, prev_cash = 0, end_transfersinvalue = 0
                 if (p !== 0) {
                     start_tickervalue = period_data[p-1].end_tickervalue
                     start_totalvalue = period_data[p-1].end_totalvalue
-                    end_shares = Object.assign({}, period_data[p-1].end_shares)
-                    end_cash = period_data[p-1].end_cash
+                    prev_shares = Object.assign({}, period_data[p-1].end_shares)
+                    prev_cash = period_data[p-1].end_cash
                 } else {
-                    end_shares = Object.assign({}, start_shares)
-                    end_cash = start_cash
+                    prev_shares = Object.assign({}, start_shares)
+                    prev_cash = start_cash
                 }
+                let end_shares = Object.assign({}, prev_shares)
+                let end_cash = prev_cash
+
+                // generate the title for this period
                 let period_sort_suffix, period_display_suffix
                 if (period_size === 'month') {
                     let d = new Date(1980, period - 1, 1)
