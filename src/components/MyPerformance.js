@@ -345,10 +345,14 @@ export class MyPerformance extends React.Component {
             } else {
                 let quote_error_count = quote_errors.length
                 let quote_tickers_count = Array.from(new Set(quote_errors)).length
+                let plural_quoteerrors = (quote_error_count === 1) ? '' : 's'
+                let plural_verb = (quote_error_count === 1) ? ' was' : ' were'
+                let plural_differentstocks = (quote_tickers_count === 1) ? ' stock' : ' different stocks'
                 if (quote_error_count === 1) {
                     message_summary = 'ERROR: 1 quote was unavailable.'
                 } else if (quote_error_count > 1) {
-                    message_summary = 'ERROR: ' + quote_error_count + ' quotes from ' + quote_tickers_count + ' different stocks were unavailable.'
+                    message_summary = 'ERROR: ' + quote_error_count + ' quote' + plural_quoteerrors 
+                        + ' from ' + quote_tickers_count + plural_differentstocks + plural_verb + ' unavailable.'
                 } else {
                     message_summary = 'ERROR: period performance calculations encountered error(s)'
                 }
