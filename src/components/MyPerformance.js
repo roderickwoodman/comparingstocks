@@ -346,10 +346,10 @@ export class MyPerformance extends React.Component {
 
         if (new_console_messages.length) {
             let message_summary
+            let quote_error_count = quote_errors.length
             if (new_console_messages.length === 1) {
                 message_summary = new_console_messages[0]
             } else {
-                let quote_error_count = quote_errors.length
                 let quote_tickers_count = Array.from(new Set(quote_errors)).length
                 let plural_quoteerrors = (quote_error_count === 1) ? '' : 's'
                 let plural_verb = (quote_error_count === 1) ? ' was' : ' were'
@@ -365,6 +365,9 @@ export class MyPerformance extends React.Component {
             }
             let new_console_message_set = this.props.create_console_message_set(message_summary)
             new_console_message_set.messages = [...new_console_messages]
+            if (quote_error_count > 0) {
+                new_console_message_set.has_errors = true
+            }
             this.props.on_new_console_messages(new_console_message_set)
         }
 

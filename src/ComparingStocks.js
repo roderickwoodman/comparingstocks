@@ -990,7 +990,8 @@ export class ComparingStocks extends React.Component {
         let new_console_message_set = {
             modified_at: new Date().getTime(),
             summary: new_message,
-            messages: [new_message]
+            messages: [new_message],
+            has_errors: (new_message.toUpperCase().startsWith('ERROR:')) ? true : false
         }
         return new_console_message_set
     }

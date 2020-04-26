@@ -77,6 +77,9 @@ export class TransactionAdd extends React.Component {
             }
         }
         let new_console_message_set = this.props.create_console_message_set(new_message)
+        if (new_message.toUpperCase().startsWith('ERROR:')) {
+            new_console_message_set.has_errors = true
+        }
         this.props.on_new_console_messages(new_console_message_set)
     }
 
@@ -152,6 +155,9 @@ export class TransactionAdd extends React.Component {
 
         // send all of the messages to print
         let new_console_message_set = this.props.create_console_message_set(summary_message)
+        if (summary_message.toUpperCase().startsWith('ERRROR:')) {
+            new_console_message_set.has_errors = true
+        }
         new_console_message_set.messages = [...new_messages]
         this.props.on_new_console_messages(new_console_message_set)
     }

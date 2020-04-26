@@ -91,6 +91,9 @@ export class TickerAdd extends React.Component {
         if (new_messages.length > 1) {
             new_console_message_set.messages = [...new_messages]
         }
+        if (num_errors > 0) {
+            new_console_message_set.has_errors = true
+        }
         this.props.on_new_tickers(tag, tickers_to_add)
         this.props.on_new_console_messages(new_console_message_set)
         this.handleReset()
