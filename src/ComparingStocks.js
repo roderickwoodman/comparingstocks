@@ -1115,7 +1115,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ' See the "Messages" tab.' : ''),
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1363,7 +1363,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ' See the "Messages" tab.' : ''),
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1472,7 +1472,7 @@ export class ComparingStocks extends React.Component {
             return { 
                 allTags: newAllTags, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ' See the "Messages" tab.' : ''),
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1528,7 +1528,7 @@ export class ComparingStocks extends React.Component {
             let newAllConsoleMessages = JSON.parse(JSON.stringify(prevState.allConsoleMessages))
             newAllConsoleMessages.push(new_console_message_set)
             return { 
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.length > 1) ? ' See the "Messages" tab.' : ''),
+                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
                 allConsoleMessages: newAllConsoleMessages }
         })
     }
