@@ -5,6 +5,8 @@
 
 Most financial websites give you only the most superficial data about your stock portfolio as a whole. They typically give you your current holdings in dollars and shares and then for performance they tell you the lifetime gain. It is all simple math, and it is all useless for managing a portfolio. This is because the funds that are needed to increase a position must always come from trimming back on other positions. Yes, comparisons are unavoidable. And so, fundamentally, all individual investors need tools that will compare their positions to each other.
 
+### Useful Data Formats
+
 Unfortunately, stock positions are inherently quite different. Investments are made in different amounts on different dates and the underlying securities themselves have a wide range of performance and volatility to them. However, by framing an investor's portfolio holdings data in the following ways, many more actionable, apples-to-apples comparisons can be made:
 
   * For useful position size data, each of your holdings should be shown to you with:
@@ -19,6 +21,8 @@ Unfortunately, stock positions are inherently quite different. Investments are m
 
 This big-picture portfolio perspective helps an investor to level a diverse collection of stocks and purchase histories so that he or she is aware of all outsized bets and risks at all times.
 
+### Useful Portfolio Tools
+
 In addition this app has the following two features that save the investor from doing even more back-of-the-envelope math before buying and selling stocks:
 
   * **aggregate positions -** A flexible position tagging interface allows these same metrics to be calculated on aggregate for any arbitrary combination of individual stock positions.
@@ -26,15 +30,23 @@ In addition this app has the following two features that save the investor from 
 
 In all, **ComparingStocks** attempts to be a long-term portfolio management tool for the individual investor.
 
-### Development Mode
+### DISCLAIMER
 
-For most people, [the link above](https://roderickwoodman.github.io/comparingstocks/) will take you to the live, production version of the app on the Internet. But for developers who would like to run this app in development mode...
+This app has been designed for the author's needs only, in the author's spare time. By using this app, you are accepting it as-is.
+
+For most people, [the link above](https://roderickwoodman.github.io/comparingstocks/) will take you to the live, production version of the app on the Internet. At the moment however, because of technical and financial reasons, the stocks are limited to the DOW30 and quotes are not current so you will see price errors.
+
+For developers, be aware that there is no backend server for this app. So although that means there are no security issues for users and passwords and their financial data, it also means that each user's machine must submit its own API key to the Alpha Vantage quotes service. But this development mode feature has been disabled until throttling logic is put in place (on the front end) to intelligently meter the outgoing requests to the Alpha Vantage servers so that the app degrades gracefully for users who exceed their daily quota while using this app.
+
+This app has numerous features that are downstream of the quote data that are being developed on a daily basis using stale quote data. But eventually, current quotes will indeed be turned on.
+
+### Running Locally
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).  You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 As with other Create React App projects, from the project directory you can run:
 
-### `npm start`
+#### `npm start`
 
 This runs the app in the development mode.<br> 
  Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
