@@ -378,9 +378,9 @@ export class ComparingStocks extends React.Component {
         } else {
             baseline = {
                 name: 'zero_pct_gain',
-                short_pct_gain: 0,
-                medium_pct_gain: 0,
-                long_pct_gain: 0,
+                short_change_pct: 0,
+                medium_change_pct: 0,
+                long_change_pct: 0,
             }
         }
 
