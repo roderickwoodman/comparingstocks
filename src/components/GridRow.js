@@ -27,6 +27,7 @@ export class GridRow extends React.Component {
         this.onNewValue = this.onNewValue.bind(this)
         this.populateCellValue = this.populateCellValue.bind(this)
         this.styleCell = this.styleCell.bind(this)
+        this.performanceBeatTheBaseline = this.performanceBeatTheBaseline.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
         this.daysAgo = this.daysAgo.bind(this)
         this.isQuoteFromToday = this.isQuoteFromToday.bind(this)
@@ -141,6 +142,22 @@ export class GridRow extends React.Component {
         this.props.on_edit_cell(row_name)
     }
 
+    performanceBeatTheBaseline(perf, baseline_perf) {
+        if (this.props.baseline.name === 'zero_pct_gain') {
+            if (perf > 0) {
+                return true
+            } else if (perf < 0) {
+                return false
+            }
+        } else {
+            if (perf > 0 && perf > baseline_perf) {
+                return true
+            } else if (perf < 0 && perf < baseline_perf) {
+                return false
+            }
+        }
+    }
+
     styleCell(column_name) {
         let classes = 'position-cell'
         const row_name = this.props.row_name
@@ -192,10 +209,10 @@ export class GridRow extends React.Component {
                 break
             case 'short_change_pct':
                 if (!this.flagQuoteError()) {
-                    if (performance.short_change_pct > 0 && performance.short_change_pct > baseline.short_change_pct) {
+                    if (this.performanceBeatTheBaseline(performance.short_change_pct, baseline.short_change_pct)) {
                         classes += ' text-green'
-                    } else if (performance.short_change_pct < 0 && performance.short_change_pct < baseline.short_change_pct) {
-                        classes += ' text-red'
+                    } else  {
+                        classes += ' text-green'
                     }
                     if (this.props.style_realized_performance
                         && row_name !== 'cash' 
@@ -213,10 +230,10 @@ export class GridRow extends React.Component {
                 break
             case 'medium_change_pct':
                 if (!this.flagQuoteError()) {
-                    if (performance.medium_change_pct > 0 && performance.medium_change_pct > baseline.medium_change_pct) {
+                    if (this.performanceBeatTheBaseline(performance.medium_change_pct, baseline.medium_change_pct)) {
                         classes += ' text-green'
-                    } else if (performance.medium_change_pct < 0 && performance.medium_change_pct < baseline.medium_change_pct) {
-                        classes += ' text-red'
+                    } else  {
+                        classes += ' text-green'
                     }
                     if (this.props.style_realized_performance
                         && row_name !== 'cash' 
@@ -234,10 +251,10 @@ export class GridRow extends React.Component {
                 break
             case 'long_change_pct':
                 if (!this.flagQuoteError()) {
-                    if (performance.long_change_pct > 0 && performance.long_change_pct > baseline.long_change_pct) {
+                    if (this.performanceBeatTheBaseline(performance.long_change_pct, baseline.long_change_pct)) {
                         classes += ' text-green'
-                    } else if (performance.long_change_pct < 0 && performance.long_change_pct < baseline.long_change_pct) {
-                        classes += ' text-red'
+                    } else  {
+                        classes += ' text-green'
                     }
                     if (this.props.style_realized_performance
                         && row_name !== 'cash' 
