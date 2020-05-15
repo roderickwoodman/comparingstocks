@@ -40,17 +40,20 @@ For developers, be aware that there is no backend server for this app. So althou
 
 This app has numerous features that are downstream of the quote data that are being developed on a daily basis using stale quote data. But eventually, current quotes will indeed be turned on.
 
-### Running Locally
+### Running This App Locally (aka: Development Mode)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).  You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+As a one-time setup, copy the code for this app to your local machine. 
+```
+git clone https://github.com/roderickwoodman/comparingstocks.git
+cd comparingstocks
+npm install
+```
 
-As with other Create React App projects, from the project directory you can run:
+Now, every time you want to run the app, just run a script that starts up a development server with the code. This will run the app in development mode.
+```
+npm start
+```
 
-#### `npm start`
+Doing this will open a browser tab for viewing the app at [http://localhost:3000](http://localhost:3000). The page will reload if you make edits to your local code copies. You will also see any lint errors in the browser console. 
 
-This runs the app in the development mode.<br> 
- Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
+FYI, this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).  You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
