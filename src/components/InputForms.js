@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { TickerAdd } from './TickerAdd'
 import { TagAdd } from './TagAdd'
@@ -10,132 +10,125 @@ import { Console } from './Console'
 import { WhatIf } from './WhatIf'
 
 
-export class InputForms extends React.Component {
+export const InputForms = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            which_inputs: "tickers" // tickers | tags | transactions | my-performance | what-ifs | console
-        }
-        this.onWhichInputs = this.onWhichInputs.bind(this)
-    }
+    // tickers | tags | transactions | my-performance | what-ifs | console
+    const [whichInputs, setWhichInputs] = useState('tickers') 
 
-    componentDidMount() {
+    useEffect ( () => {
         const stored_which_inputs = JSON.parse(localStorage.getItem("which_inputs"))
         if (stored_which_inputs !== null) {
-            this.setState({ which_inputs: stored_which_inputs })
+            setWhichInputs(stored_which_inputs)
         }
-    }
+    }, [])
 
-    onWhichInputs(new_which_inputs) {
+    const onWhichInputs = (new_which_inputs) => {
         localStorage.setItem('which_inputs', JSON.stringify(new_which_inputs))
-        if (this.state.which_inputs !== new_which_inputs) {
-            this.props.clear_last_console_message()
+        if (whichInputs !== new_which_inputs) {
+            props.clear_last_console_message()
         }
-        this.setState({ which_inputs: new_which_inputs })
+        setWhichInputs(new_which_inputs)
     }
 
-    render() {
-        return (
-            <div id="input-forms">
-                <section id="input-form-selectors">
-                    <span className={"input-form-selector" + (this.state.which_inputs==="tickers" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tickers')}>Tickers</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="tags" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('tags')}>Tags</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="transactions" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('transactions')}>Transactions</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="my-performance" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('my-performance')}>Performance</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="what-ifs" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('what-ifs')}>What If?</span>
-                    <span className={"input-form-selector" + (this.state.which_inputs==="console" ? " selected" : "") } onClick={ (e)=>this.onWhichInputs('console')}>Messages</span>
-                </section>
-                <section id="input-form-forms">
-                    {this.state.which_inputs === 'tickers' && (
-                        <React.Fragment>
-                        <TickerAdd
-                            all_stocks={this.props.all_stocks}
-                            all_tags={this.props.all_tags}
-                            on_new_tickers={this.props.on_new_tickers}
-                            create_console_message_set={this.props.create_console_message_set}
-                            on_new_console_messages={this.props.on_new_console_messages}
-                        />
-                        </React.Fragment>
-                    )}
-                    {this.state.which_inputs === 'tags' && (
-                        <React.Fragment>
-                        <TagAdd
-                            all_tags={this.props.all_tags}
-                            on_new_tags={this.props.on_new_tags}
-                            create_console_message_set={this.props.create_console_message_set}
-                            on_new_console_messages={this.props.on_new_console_messages}
-                        />
-                        <TagDelete
-                            all_tags={this.props.all_tags}
-                            on_delete_tags={this.props.on_delete_tags}
-                        />
-                        </React.Fragment>
-                    )}
-                    {this.state.which_inputs === 'transactions' && (
+    return (
+        <div id="input-forms">
+            <section id="input-form-selectors">
+                <span className={"input-form-selector" + (whichInputs==="tickers" ? " selected" : "") } onClick={ (e)=>onWhichInputs('tickers')}>Tickers</span>
+                <span className={"input-form-selector" + (whichInputs==="tags" ? " selected" : "") } onClick={ (e)=>onWhichInputs('tags')}>Tags</span>
+                <span className={"input-form-selector" + (whichInputs==="transactions" ? " selected" : "") } onClick={ (e)=>onWhichInputs('transactions')}>Transactions</span>
+                <span className={"input-form-selector" + (whichInputs==="my-performance" ? " selected" : "") } onClick={ (e)=>onWhichInputs('my-performance')}>Performance</span>
+                <span className={"input-form-selector" + (whichInputs==="what-ifs" ? " selected" : "") } onClick={ (e)=>onWhichInputs('what-ifs')}>What If?</span>
+                <span className={"input-form-selector" + (whichInputs==="console" ? " selected" : "") } onClick={ (e)=>onWhichInputs('console')}>Messages</span>
+            </section>
+            <section id="input-form-forms">
+                {whichInputs === 'tickers' && (
                     <React.Fragment>
-                        <div className="content-wrapper">
-                            <div className="content-half">
-                                <TransactionAdd
-                                    all_stocks={this.props.all_stocks}
-                                    all_tags={this.props.all_tags}
-                                    on_new_transaction={this.props.on_new_transaction}
-                                    on_new_cash={this.props.on_new_cash}
-                                    create_console_message_set={this.props.create_console_message_set}
-                                    on_new_console_messages={this.props.on_new_console_messages}
-                                />
-                            </div>
-                            <div className="content-half">
-                                <TransactionsList
-                                    all_transactions={this.props.all_transactions}
-                                    all_risk={this.props.all_risk}
-                                    on_delete_transaction={this.props.on_delete_transaction}
-                                    on_import_transactions={this.props.on_import_transactions}
-                                />
-                            </div>
-                        </div>
+                    <TickerAdd
+                        all_stocks={props.all_stocks}
+                        all_tags={props.all_tags}
+                        on_new_tickers={props.on_new_tickers}
+                        create_console_message_set={props.create_console_message_set}
+                        on_new_console_messages={props.on_new_console_messages}
+                    />
                     </React.Fragment>
-                    )}
-                    {this.state.which_inputs === 'what-ifs' && (
-                        <React.Fragment>
-                        <WhatIf
-                            all_current_quotes={this.props.all_current_quotes}
-                            all_positions={this.props.all_positions}
-                            all_tags={this.props.all_tags}
-                            get_balanceable_value={this.props.get_balanceable_value}
-                            show_current_holdings={this.props.show_current_holdings}
-                            show_previous_holdings={this.props.show_previous_holdings}
-                            show_tagged={this.props.show_tagged}
-                            show_untagged={this.props.show_untagged}
-                            show_cash={this.props.show_cash}
-                            on_whatif_submit={this.props.on_whatif_submit}
-                        />
-                        </React.Fragment>
-                    )}
-                    {this.state.which_inputs === 'my-performance' && (
-                        <React.Fragment>
-                        <MyPerformance
-                            all_transactions={this.props.all_transactions}
-                            all_positions={this.props.all_positions}
-                            all_monthly_quotes={this.props.all_monthly_quotes}
-                            all_month_end_dates={this.props.all_month_end_dates}
-                            baseline_name={this.props.baseline_name}
-                            create_console_message_set={this.props.create_console_message_set}
-                            on_new_console_messages={this.props.on_new_console_messages}
-                        />
-                        </React.Fragment>
-                    )}
-                    {this.state.which_inputs === 'console' && (
-                        <React.Fragment>
-                        <Console
-                            all_console_messages={this.props.all_console_messages}
-                        />
-                        </React.Fragment>
-                    )}
-                </section>
-            </div>
-        )
-    }
+                )}
+                {whichInputs === 'tags' && (
+                    <React.Fragment>
+                    <TagAdd
+                        all_tags={props.all_tags}
+                        on_new_tags={props.on_new_tags}
+                        create_console_message_set={props.create_console_message_set}
+                        on_new_console_messages={props.on_new_console_messages}
+                    />
+                    <TagDelete
+                        all_tags={props.all_tags}
+                        on_delete_tags={props.on_delete_tags}
+                    />
+                    </React.Fragment>
+                )}
+                {whichInputs === 'transactions' && (
+                <React.Fragment>
+                    <div className="content-wrapper">
+                        <div className="content-half">
+                            <TransactionAdd
+                                all_stocks={props.all_stocks}
+                                all_tags={props.all_tags}
+                                on_new_transaction={props.on_new_transaction}
+                                on_new_cash={props.on_new_cash}
+                                create_console_message_set={props.create_console_message_set}
+                                on_new_console_messages={props.on_new_console_messages}
+                            />
+                        </div>
+                        <div className="content-half">
+                            <TransactionsList
+                                all_transactions={props.all_transactions}
+                                all_risk={props.all_risk}
+                                on_delete_transaction={props.on_delete_transaction}
+                                on_import_transactions={props.on_import_transactions}
+                            />
+                        </div>
+                    </div>
+                </React.Fragment>
+                )}
+                {whichInputs === 'what-ifs' && (
+                    <React.Fragment>
+                    <WhatIf
+                        all_current_quotes={props.all_current_quotes}
+                        all_positions={props.all_positions}
+                        all_tags={props.all_tags}
+                        get_balanceable_value={props.get_balanceable_value}
+                        show_current_holdings={props.show_current_holdings}
+                        show_previous_holdings={props.show_previous_holdings}
+                        show_tagged={props.show_tagged}
+                        show_untagged={props.show_untagged}
+                        show_cash={props.show_cash}
+                        on_whatif_submit={props.on_whatif_submit}
+                    />
+                    </React.Fragment>
+                )}
+                {whichInputs === 'my-performance' && (
+                    <React.Fragment>
+                    <MyPerformance
+                        all_transactions={props.all_transactions}
+                        all_positions={props.all_positions}
+                        all_monthly_quotes={props.all_monthly_quotes}
+                        all_month_end_dates={props.all_month_end_dates}
+                        baseline_name={props.baseline_name}
+                        create_console_message_set={props.create_console_message_set}
+                        on_new_console_messages={props.on_new_console_messages}
+                    />
+                    </React.Fragment>
+                )}
+                {whichInputs === 'console' && (
+                    <React.Fragment>
+                    <Console
+                        all_console_messages={props.all_console_messages}
+                    />
+                    </React.Fragment>
+                )}
+            </section>
+        </div>
+    )
 }
 
 InputForms.propTypes = {
