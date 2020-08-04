@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { EditNumericCell } from './EditNumericCell'
 
@@ -6,36 +6,12 @@ import { EditNumericCell } from './EditNumericCell'
 // This component displays table data for either tickers (is_aggregate === 0) or tags (is_aggregate === 1).
 // For tickers, the membership_set prop is all of the tags that it belongs to.
 // For tags, the membership_set prop is all of the tags that belong to it.
-export class GridRow extends React.Component {
+export const GridRow = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            hovering_symbol: false,
-            hovering_risk_factor: false,
-            user_risk_factor: '',
-            user_risk_factor_valid: false
-        }
-        this.formatDate = this.formatDate.bind(this)
-        this.onWhatifCellClick = this.onWhatifCellClick.bind(this)
-        this.toggleHoverSymbol = this.toggleHoverSymbol.bind(this)
-        this.toggleHoverRiskFactor = this.toggleHoverRiskFactor.bind(this)
-        this.populateMemberButton = this.populateMemberButton.bind(this)
-        this.populateDeleteButton = this.populateDeleteButton.bind(this)
-        this.populateEditButton = this.populateEditButton.bind(this)
-        this.editRiskFactor = this.editRiskFactor.bind(this)
-        this.onNewValue = this.onNewValue.bind(this)
-        this.populateCellValue = this.populateCellValue.bind(this)
-        this.styleCell = this.styleCell.bind(this)
-        this.performanceBeatTheBaseline = this.performanceBeatTheBaseline.bind(this)
-        this.numberWithCommas = this.numberWithCommas.bind(this)
-        this.daysAgo = this.daysAgo.bind(this)
-        this.isQuoteFromToday = this.isQuoteFromToday.bind(this)
-        this.flagQuoteError = this.flagQuoteError.bind(this)
-        this.flagQuoteErrorOnPositionCell = this.flagQuoteErrorOnPositionCell.bind(this)
-    }
+    const [hoveringSymbol, setHoveringSymbol] = useState(false)
+    const [hoveringRiskFactor, setHoveringRiskFactor] = useState(false)
 
-    formatDate(epoch) {
+    const formatDate = (epoch) => {
         var d = new Date(epoch),
             month = '' + (d.getMonth() + 1),
             day = '' + d.getDate(),
@@ -49,28 +25,28 @@ export class GridRow extends React.Component {
         return [year, month, day].join('-');
     }
 
-    onWhatifCellClick() {
-        this.props.on_change_whatif_format()
+    const onWhatifCellClick = () => {
+        props.on_change_whatif_format()
     }
 
-    toggleHoverSymbol() {
-        this.setState({ hovering_symbol: !this.state.hovering_symbol })
+    const toggleHoverSymbol = () => {
+        setHoveringSymbol(!hoveringSymbol)
     }
 
-    toggleHoverRiskFactor() {
-        this.setState({ hovering_risk_factor: !this.state.hovering_risk_factor })
+    const toggleHoverRiskFactor = () => {
+        setHoveringRiskFactor(!hoveringRiskFactor)
     }
 
     // this button removes a ticker from a tag
-    populateMemberButton(symbol) {
-        let is_aggr = this.props.is_aggregate
-        let row_name = this.props.row_name
+    const populateMemberButton = (symbol) => {
+        let is_aggr = props.is_aggregate
+        let row_name = props.row_name
         if (is_aggr) {
             // row_name is a TAG
             // symbol is a TICKER 
             if (row_name !== 'untagged') {
                 return (
-                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { this.props.on_remove_from_tag(row_name, symbol)} }>{ symbol }</button>
+                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { props.on_remove_from_tag(row_name, symbol)} }>{ symbol }</button>
                 )
             } else {
                 return (
@@ -80,9 +56,9 @@ export class GridRow extends React.Component {
         } else {
             // row_name is a TICKER
             // symbol is a TAG 
-            if (!this.props.special_classes.includes('index') && !this.props.special_classes.includes('cash') && !this.props.membership_set.includes('untagged')) {
+            if (!props.special_classes.includes('index') && !props.special_classes.includes('cash') && !props.membership_set.includes('untagged')) {
                 return (
-                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { this.props.on_remove_from_tag(symbol, row_name)} }>{ symbol }</button>
+                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { props.on_remove_from_tag(symbol, row_name)} }>{ symbol }</button>
                 )
             } else {
                 return (
@@ -93,25 +69,25 @@ export class GridRow extends React.Component {
     }
 
     // this button deletes the ticker or tag completely
-    populateDeleteButton(column_name, is_aggregate) {
+    const populateDeleteButton = (column_name, is_aggregate) => {
         let classes = 'delete'
-        if (this.state.hovering_symbol) {
+        if (hoveringSymbol) {
             classes += ' hovering'
         }
         if (is_aggregate) {
-            if (column_name === 'symbol' && this.props.row_name !== 'untagged') {
+            if (column_name === 'symbol' && props.row_name !== 'untagged') {
                 return (
-                    <button className={classes} onClick={ (e) => {this.props.on_delete_tags(this.props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {props.on_delete_tags(props.row_name)}}>x</button>
                 )
             } else {
                 return
             }
         } else {
             if (column_name === 'symbol' 
-                && !this.props.special_classes.includes('index')
-                && !(this.props.row_name === 'cash' && isNaN(this.props.current_shares)) ) {
+                && !props.special_classes.includes('index')
+                && !(props.row_name === 'cash' && isNaN(props.current_shares)) ) {
                 return (
-                    <button className={classes} onClick={ (e) => {this.props.on_delete_ticker(this.props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {props.on_delete_ticker(props.row_name)}}>x</button>
                 )
             } else {
                 return
@@ -120,16 +96,16 @@ export class GridRow extends React.Component {
     }
 
     // the edit button is an extra affordance; clicking anywhere in the cell enters edit mode on this cell's value
-    populateEditButton(column_name, row_name) {
+    const populateEditButton = (column_name, row_name) => {
         let classes = 'edit'
-        if (this.state.hovering_risk_factor) {
+        if (hoveringRiskFactor) {
             classes += ' hovering'
         }
         if ( column_name === 'risk_factor'
-            && row_name !== this.props.editing_row
+            && row_name !== props.editing_row
             && row_name !== 'cash'
-            && !this.props.is_aggregate 
-            && !this.props.special_classes.includes('index') ) {
+            && !props.is_aggregate 
+            && !props.special_classes.includes('index') ) {
                 return (
                     <button className={classes}>{String.fromCharCode(0x270e)}</button>
                 )
@@ -138,12 +114,12 @@ export class GridRow extends React.Component {
         }
     }
 
-    editRiskFactor(row_name) {
-        this.props.on_edit_cell(row_name)
+    const editRiskFactor = (row_name) => {
+        props.on_edit_cell(row_name)
     }
 
-    performanceBeatTheBaseline(perf, baseline_perf) {
-        if (this.props.baseline.name === 'zero_pct_gain') {
+    const performanceBeatTheBaseline = (perf, baseline_perf) => {
+        if (props.baseline.name === 'zero_pct_gain') {
             if (perf > 0) {
                 return true
             } else if (perf < 0) {
@@ -158,27 +134,27 @@ export class GridRow extends React.Component {
         }
     }
 
-    styleCell(column_name) {
+    const styleCell = (column_name) => {
         let classes = 'position-cell'
-        const row_name = this.props.row_name
-        const change_pct = this.props.change_pct
-        const current_shares = this.props.current_shares
-        const special_classes = this.props.special_classes
-        const performance = this.props.performance_numbers
-        const baseline = this.props.baseline
+        const row_name = props.row_name
+        const change_pct = props.change_pct
+        const current_shares = props.current_shares
+        const special_classes = props.special_classes
+        const performance = props.performance_numbers
+        const baseline = props.baseline
 
         // hovering
-        if ( this.state.hovering_symbol
+        if ( hoveringSymbol
             && column_name === 'symbol' 
             && !special_classes.includes('index') 
             && row_name !== 'untagged'
             && !(row_name === 'cash' && isNaN(current_shares)) ) {
             classes += ' hovering'
         }
-        if ( this.state.hovering_risk_factor
+        if ( hoveringRiskFactor
             && column_name === 'risk_factor' 
             && !special_classes.includes('index') 
-            && !this.props.is_aggregate
+            && !props.is_aggregate
             && row_name !== 'cash' ) {
             classes += ' hovering'
         }
@@ -208,20 +184,20 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'short_change_pct':
-                if (!this.flagQuoteError()) {
-                    if (this.performanceBeatTheBaseline(performance.short_change_pct, baseline.short_change_pct)) {
+                if (!flagQuoteError()) {
+                    if (performanceBeatTheBaseline(performance.short_change_pct, baseline.short_change_pct)) {
                         classes += ' text-green'
                     } else  {
                         classes += ' text-green'
                     }
-                    if (this.props.style_realized_performance
+                    if (props.style_realized_performance
                         && row_name !== 'cash' 
                         && !special_classes.includes('index')) {
                             if (isNaN(current_shares) 
                                 || !current_shares 
-                                || this.daysAgo(this.props.start_date) < 180
+                                || daysAgo(props.start_date) < 180
                                 ){
-                                classes += (this.props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
+                                classes += (props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
                             } else {
                                 classes += ' strong'
                             }
@@ -229,20 +205,20 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'medium_change_pct':
-                if (!this.flagQuoteError()) {
-                    if (this.performanceBeatTheBaseline(performance.medium_change_pct, baseline.medium_change_pct)) {
+                if (!flagQuoteError()) {
+                    if (performanceBeatTheBaseline(performance.medium_change_pct, baseline.medium_change_pct)) {
                         classes += ' text-green'
                     } else  {
                         classes += ' text-green'
                     }
-                    if (this.props.style_realized_performance
+                    if (props.style_realized_performance
                         && row_name !== 'cash' 
                         && !special_classes.includes('index')) {
                             if (isNaN(current_shares) 
                                 || !current_shares 
-                                || this.daysAgo(this.props.start_date) < 365
+                                || daysAgo(props.start_date) < 365
                                 ){
-                                classes += (this.props.show_only_achieved_performance) ? ' hide' :  ' strikethrough'
+                                classes += (props.show_only_achieved_performance) ? ' hide' :  ' strikethrough'
                             } else {
                                 classes += ' strong'
                             }
@@ -250,20 +226,20 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'long_change_pct':
-                if (!this.flagQuoteError()) {
-                    if (this.performanceBeatTheBaseline(performance.long_change_pct, baseline.long_change_pct)) {
+                if (!flagQuoteError()) {
+                    if (performanceBeatTheBaseline(performance.long_change_pct, baseline.long_change_pct)) {
                         classes += ' text-green'
                     } else  {
                         classes += ' text-green'
                     }
-                    if (this.props.style_realized_performance
+                    if (props.style_realized_performance
                         && row_name !== 'cash' 
                         && !special_classes.includes('index')) {
                             if (isNaN(current_shares) 
                                 || !current_shares 
-                                || this.daysAgo(this.props.start_date) < 730
+                                || daysAgo(props.start_date) < 730
                                 ){
-                                classes += (this.props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
+                                classes += (props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
                             } else {
                                 classes += ' strong'
                             }
@@ -276,21 +252,21 @@ export class GridRow extends React.Component {
         return classes
     }
 
-    onNewValue(new_value) {
-        this.props.on_modify_risk_factor(this.props.row_name, new_value)
+    const onNewValue = (new_value) => {
+        props.on_modify_risk_factor(props.row_name, new_value)
     }
 
     // prints the value that is (usually) explicitly passed in via props
     // AND is responsible for calculating "percent_value", "percent_basis", and "percent_profit"
-    populateCellValue(column) {
+    const populateCellValue = (column) => {
 
         if ( column.name === 'risk_factor'
-            && this.props.row_name === this.props.editing_row ) {
+            && props.row_name === props.editing_row ) {
             return (
                 <EditNumericCell 
-                    original_value={this.props.current_edit_value} 
-                    on_new_value={this.onNewValue} 
-                    on_escape_key={this.props.on_escape_key}
+                    original_value={props.current_edit_value} 
+                    on_new_value={onNewValue} 
+                    on_escape_key={props.on_escape_key}
                 />
             )
         }
@@ -302,23 +278,23 @@ export class GridRow extends React.Component {
         let value, baseline_value
         let performance_value = false
 
-        const quote_date = this.props.quote_date
-        const total_value = this.props.total_value
-        const total_basis = this.props.total_basis
-        const current_price = this.props.current_price
-        let current_shares = this.props.current_shares
-        const current_value = this.props.current_value
-        let risk_factor = (this.props.risk_factor !== null) ? this.props.risk_factor : 0.20
-        let visible_risk_factor = (this.props.risk_factor !== null) ? this.props.risk_factor : 'n/a'
-        if (this.props.row_name === 'cash') {
+        const quote_date = props.quote_date
+        const total_value = props.total_value
+        const total_basis = props.total_basis
+        const current_price = props.current_price
+        let current_shares = props.current_shares
+        const current_value = props.current_value
+        let risk_factor = (props.risk_factor !== null) ? props.risk_factor : 0.20
+        let visible_risk_factor = (props.risk_factor !== null) ? props.risk_factor : 'n/a'
+        if (props.row_name === 'cash') {
             risk_factor = 0
             visible_risk_factor = 0
         }
         let value_at_risk = current_value * risk_factor
-        let basis = this.props.basis
+        let basis = props.basis
         let basis_risked = basis * risk_factor
-        let realized_gains = this.props.realized_gains
-        const whatif = this.props.whatif
+        let realized_gains = props.realized_gains
+        const whatif = props.whatif
 
         let percent_value, percent_basis, profit, percent_profit
 
@@ -385,10 +361,10 @@ export class GridRow extends React.Component {
 
         switch (column.name) {
             case 'symbol':
-                value = this.props.row_name
+                value = props.row_name
                 break
             case 'start_date':
-                value = this.props.start_date
+                value = props.start_date
                 break
             case 'current_shares':
                 value = current_shares
@@ -396,7 +372,7 @@ export class GridRow extends React.Component {
             case 'whatif_current_shares':
                 if (whatif === null) {
                     value = 'n/a'
-                } else if (this.props.whatif_format === 'deltas') {
+                } else if (props.whatif_format === 'deltas') {
                     value = whatif.current_shares - ((current_shares === 'n/a') ? 0 : current_shares)
                 } else {
                     value = whatif.current_shares
@@ -406,7 +382,7 @@ export class GridRow extends React.Component {
                 value = current_price
                 break
             case 'quote_date':
-                if (!this.props.is_aggregate) {
+                if (!props.is_aggregate) {
                     value = quote_date
                 } else {
                     value = 'n/a'
@@ -414,7 +390,7 @@ export class GridRow extends React.Component {
                 break
             case 'current_value':
                 if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
-                    if (!this.flagQuoteErrorOnPositionCell()) {
+                    if (!flagQuoteErrorOnPositionCell()) {
                         value = current_value
                     } else {
                         value = 'err.'
@@ -424,10 +400,10 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'whatif_current_value':
-                if (!this.flagQuoteErrorOnPositionCell()) {
+                if (!flagQuoteErrorOnPositionCell()) {
                     if (whatif === null) {
                         value = 'n/a'
-                    } else if (this.props.whatif_format === 'deltas') {
+                    } else if (props.whatif_format === 'deltas') {
                         value = whatif.current_value - ((current_value === 'n/a') ? 0 : current_value)
                     } else {
                         value = whatif.current_value
@@ -440,7 +416,7 @@ export class GridRow extends React.Component {
                 if (current_value === 'err.') {
                     value = 'err.'
                 } else if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
-                    if (!this.flagQuoteErrorOnPositionCell()) {
+                    if (!flagQuoteErrorOnPositionCell()) {
                         value = percent_value
                     } else {
                         value = 'err.'
@@ -459,7 +435,7 @@ export class GridRow extends React.Component {
             case 'whatif_basis':
                 if (whatif === null) {
                     value = 'n/a'
-                } else if (this.props.whatif_format === 'deltas') {
+                } else if (props.whatif_format === 'deltas') {
                     value = whatif.basis - ((basis === 'n/a') ? 0 : basis)
                 } else {
                     value = whatif.basis
@@ -467,7 +443,7 @@ export class GridRow extends React.Component {
                 break
             case 'basis_risked':
                 if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
-                    if (this.props.current_value === 0) {
+                    if (props.current_value === 0) {
                         value = 'n/a'
                     } else {
                         value = basis_risked
@@ -479,7 +455,7 @@ export class GridRow extends React.Component {
             case 'whatif_basis_risked':
                 if (whatif === null) {
                     value = 'n/a'
-                } else if (this.props.whatif_format === 'deltas') {
+                } else if (props.whatif_format === 'deltas') {
                     value = whatif.basis_risked - ((basis_risked === 'n/a') ? 0 : basis_risked)
                 } else {
                     value = whatif.basis_risked
@@ -493,18 +469,18 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'profit':
-                if (this.props.current_value === 0) {
+                if (props.current_value === 0) {
                     value = 'n/a'
-                } else if (!this.flagQuoteErrorOnPositionCell()) {
+                } else if (!flagQuoteErrorOnPositionCell()) {
                     value = profit
                 } else {
                     value = 'err.'
                 }
                 break
             case 'percent_profit':
-                if (this.props.current_value === 0) {
+                if (props.current_value === 0) {
                     value = 'n/a'
-                } else if (!this.flagQuoteErrorOnPositionCell()) {
+                } else if (!flagQuoteErrorOnPositionCell()) {
                     value = percent_profit
                 } else {
                     value = 'err.'
@@ -514,23 +490,23 @@ export class GridRow extends React.Component {
                 value = realized_gains
                 break
             case 'change_pct':
-                value = this.props.change_pct
+                value = props.change_pct
                 break
             case 'risk_factor':
                 value = visible_risk_factor
                 break
             case 'risk_factor_modified':
-                if (this.props.risk_factor_modified !== null) {
-                    value = this.formatDate(parseInt(this.props.risk_factor_modified))
+                if (props.risk_factor_modified !== null) {
+                    value = formatDate(parseInt(props.risk_factor_modified))
                 } else {
                     value = 'n/a'
                 }
                 break
             case 'value_at_risk':
                 if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
-                    if (this.props.current_value === 0) {
+                    if (props.current_value === 0) {
                         value = 'n/a'
-                    } else if (!this.flagQuoteErrorOnPositionCell()) {
+                    } else if (!flagQuoteErrorOnPositionCell()) {
                         value = value_at_risk
                     } else {
                         value = 'err.'
@@ -540,10 +516,10 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'whatif_value_at_risk':
-                if (!this.flagQuoteErrorOnPositionCell()) {
+                if (!flagQuoteErrorOnPositionCell()) {
                     if (whatif === null) {
                         value = 'n/a'
-                    } else if (this.props.whatif_format === 'deltas') {
+                    } else if (props.whatif_format === 'deltas') {
                         value = whatif.value_at_risk - ((value_at_risk === 'n/a') ? 0 : value_at_risk)
                     } else {
                         value = whatif.value_at_risk
@@ -553,46 +529,46 @@ export class GridRow extends React.Component {
                 }
                 break
             case 'volume':
-                if (!this.flagQuoteError()) {
-                    value = this.props.volume
+                if (!flagQuoteError()) {
+                    value = props.volume
                 } else {
                     value = 'err.'
                 }
                 break
             case 'dollar_volume':
-                if (!this.flagQuoteError()) {
-                    if (this.props.volume === 'err.') {
+                if (!flagQuoteError()) {
+                    if (props.volume === 'err.') {
                         value = 'err.'
                     } else {
-                        value = this.props.current_price * this.props.volume
+                        value = props.current_price * props.volume
                     }
                 } else {
                     value = 'err.'
                 }
                 break
             case 'short_change_pct':
-                if (!this.flagQuoteError()) {
-                    value = this.props.performance_numbers.short_change_pct
+                if (!flagQuoteError()) {
+                    value = props.performance_numbers.short_change_pct
                     performance_value = true
-                    baseline_value = this.props.baseline.short_change_pct
+                    baseline_value = props.baseline.short_change_pct
                 } else {
                     value = 'err.'
                 }
                 break
             case 'medium_change_pct':
-                if (!this.flagQuoteError()) {
-                    value = this.props.performance_numbers.medium_change_pct
+                if (!flagQuoteError()) {
+                    value = props.performance_numbers.medium_change_pct
                     performance_value = true
-                    baseline_value = this.props.baseline.medium_change_pct
+                    baseline_value = props.baseline.medium_change_pct
                 } else {
                     value = 'err.'
                 }
                 break
             case 'long_change_pct':
-                if (!this.flagQuoteError()) {
-                    value = this.props.performance_numbers.long_change_pct
+                if (!flagQuoteError()) {
+                    value = props.performance_numbers.long_change_pct
                     performance_value = true
-                    baseline_value = this.props.baseline.long_change_pct
+                    baseline_value = props.baseline.long_change_pct
                 } else {
                     value = 'err.'
                 }
@@ -600,7 +576,7 @@ export class GridRow extends React.Component {
             default:
                 break
         }
-        if ( this.props.row_name === 'cash' || (this.props.is_aggregate && !this.props.membership_set.length) ) {
+        if ( props.row_name === 'cash' || (props.is_aggregate && !props.membership_set.length) ) {
             switch (column.name) {
                 case 'realized_gains': 
                 case 'profit': 
@@ -628,8 +604,8 @@ export class GridRow extends React.Component {
                 if (column.hasOwnProperty('scaling_power')) {
                     value *= Math.pow(10, column.scaling_power)
                 }
-                if (performance_value && this.props.baseline.name !== 'zero_pct_gain') {
-                    if (this.props.row_name === 'S&P500') {
+                if (performance_value && props.baseline.name !== 'zero_pct_gain') {
+                    if (props.row_name === 'S&P500') {
                         return 'ref.'
                     } else {
                         value = value - baseline_value
@@ -640,10 +616,10 @@ export class GridRow extends React.Component {
                 }
             }
             if (value >= 0) {
-                prefix = (column.name.startsWith('whatif_') && this.props.whatif_format === 'deltas') ? '+' + prefix : prefix
-                return value = prefix + this.numberWithCommas(value) + suffix
+                prefix = (column.name.startsWith('whatif_') && props.whatif_format === 'deltas') ? '+' + prefix : prefix
+                return value = prefix + numberWithCommas(value) + suffix
             } else {
-                return value = '-' + prefix + this.numberWithCommas(Math.abs(value)) + suffix
+                return value = '-' + prefix + numberWithCommas(Math.abs(value)) + suffix
             }
         } else if (column.hasOwnProperty('passthrough_strings') && column['passthrough_strings']) {
             return value
@@ -654,11 +630,11 @@ export class GridRow extends React.Component {
         }
     }
 
-    numberWithCommas(x) {
+    const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    daysAgo(date_str) { // yyyy-mm-dd
+    const daysAgo = (date_str) => { // yyyy-mm-dd
         let now = new Date()
         let then = new Date(date_str)
         let days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
@@ -669,7 +645,7 @@ export class GridRow extends React.Component {
         }
     }
 
-    isQuoteFromToday(quote_date_str) { // yyyy-mm-dd
+    const isQuoteFromToday = (quote_date_str) => { // yyyy-mm-dd
         let now = new Date()
         let quote_date = new Date(quote_date_str)
         let days_ago = (now - quote_date) / 1000 / 60 / 60 / 24
@@ -681,8 +657,8 @@ export class GridRow extends React.Component {
     }
 
     // certain columns' cells can print an error if the quote is out of date
-    flagQuoteError() {
-        if (this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
+    const flagQuoteError = () => {
+        if (props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
             return true
         } else {
             return false
@@ -690,66 +666,62 @@ export class GridRow extends React.Component {
     }
 
     // certain POSITION columns' cells may print share-count-based "n/a" values before a quote out-of-date error applies
-    flagQuoteErrorOnPositionCell() {
-        if (this.props.is_aggregate) {
-            if (this.props.current_value !== 0 && this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
+    const flagQuoteErrorOnPositionCell = () => {
+        if (props.is_aggregate) {
+            if (props.current_value !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
                 return true
             }
         } else {
-            if (typeof this.props.current_shares === 'number' && this.props.current_shares !== 0 && this.props.error_if_not_todays_quote && !this.isQuoteFromToday(this.props.quote_date)) {
+            if (typeof props.current_shares === 'number' && props.current_shares !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
                 return true
             }
         }
         return false
     }
 
-    render() {
-        const is_aggr = this.props.is_aggregate
+    const is_aggr = props.is_aggregate
 
-        let row_classes = 'position-row' 
-        this.props.special_classes.forEach(function(special_class) {
-            if (special_class === 'index') {
-                row_classes += ' position-is-index'
-            }
-            if (special_class === 'cash') {
-                row_classes += ' position-is-cash'
-            }
-            if (special_class === 'aggregate') {
-                row_classes += ' position-is-aggregate'
-            }
-        })
+    let row_classes = 'position-row' 
+    props.special_classes.forEach(function(special_class) {
+        if (special_class === 'index') {
+            row_classes += ' position-is-index'
+        }
+        if (special_class === 'cash') {
+            row_classes += ' position-is-cash'
+        }
+        if (special_class === 'aggregate') {
+            row_classes += ' position-is-aggregate'
+        }
+    })
 
-        let member_count = this.props.membership_set.length
+    let member_count = props.membership_set.length
 
-        let self = this
-        return (
-            <tr className={ row_classes }>
-                <td>
-                    { member_count ? this.props.membership_set.sort().map(symbol => this.populateMemberButton(symbol)) : (this.props.special_classes.length ? '' : '-') }
-                </td>
-                { this.props.columns.map(function(column) {
-                    if (column.name === 'symbol') {
-                        return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onMouseEnter={self.toggleHoverSymbol} onMouseLeave={self.toggleHoverSymbol}>{ self.populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ self.populateDeleteButton(column.name, is_aggr) }</td>
-                        )
-                    } else if (column.name === 'risk_factor') {
-                        return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onClick={ (e)=>self.editRiskFactor(self.props.row_name) } onMouseEnter={self.toggleHoverRiskFactor} onMouseLeave={self.toggleHoverRiskFactor}>{ self.populateCellValue(column) }{ self.populateEditButton(column.name, self.props.row_name) }</td>
-                        )
-                    } else if (column.name.startsWith('whatif_')) {
-                        return (
-                            <td key={column.name} className={ self.styleCell(column.name) } onClick={ (column.name.startsWith('whatif_')) ? (e)=>self.onWhatifCellClick() : undefined }>{ self.populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
-                        )
-                    } else {
-                        return (
-                            <td key={column.name} className={ self.styleCell(column.name) }>{ self.populateCellValue(column) }{ self.populateDeleteButton(column.name, is_aggr) }</td>
-                        )
-                    }
-                })}
-            </tr>
-        )
-    }
-
+    return (
+        <tr className={ row_classes }>
+            <td>
+                { member_count ? props.membership_set.sort().map(symbol => populateMemberButton(symbol)) : (props.special_classes.length ? '' : '-') }
+            </td>
+            { props.columns.map(function(column) {
+                if (column.name === 'symbol') {
+                    return (
+                        <td key={column.name} className={ styleCell(column.name) } onMouseEnter={toggleHoverSymbol} onMouseLeave={toggleHoverSymbol}>{ populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ populateDeleteButton(column.name, is_aggr) }</td>
+                    )
+                } else if (column.name === 'risk_factor') {
+                    return (
+                        <td key={column.name} className={ styleCell(column.name) } onClick={ (e)=>editRiskFactor(props.row_name) } onMouseEnter={toggleHoverRiskFactor} onMouseLeave={toggleHoverRiskFactor}>{ populateCellValue(column) }{ populateEditButton(column.name, props.row_name) }</td>
+                    )
+                } else if (column.name.startsWith('whatif_')) {
+                    return (
+                        <td key={column.name} className={ styleCell(column.name) } onClick={ (column.name.startsWith('whatif_')) ? (e)=>onWhatifCellClick() : undefined }>{ populateCellValue(column) }{ populateDeleteButton(column.name, is_aggr) }</td>
+                    )
+                } else {
+                    return (
+                        <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ populateDeleteButton(column.name, is_aggr) }</td>
+                    )
+                }
+            })}
+        </tr>
+    )
 }
 
 GridRow.defaultProps = {
