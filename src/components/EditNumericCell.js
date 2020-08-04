@@ -1,67 +1,58 @@
-import React from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 
-export class EditNumericCell extends React.Component {
+export const EditNumericCell = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            user_value: '',
-            user_value_is_valid: false
+    const inputEl = useRef(null)
+    const [userValue, setUserValue] = useState('')
+    const [userValueIsValid, setUserValueIsValid] = useState(false)
+
+    useEffect( () => {
+        const handleEscapeKey = (event) => {
+            if (event.keyCode === 27) {
+                props.on_escape_key()
+            }
         }
-        this.handleEscapeKey = this.handleEscapeKey.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-    }
-
-    componentDidMount() {
-        if (isNaN(this.props.original_value)) {
-            this.setState({ user_value: '' }) 
+        if (isNaN(props.original_value)) {
+            setUserValue('') 
         } else {
-            this.setState({ user_value: this.props.original_value })
+            setUserValue(props.original_value) 
         }
-        this.elem.focus()
-        document.addEventListener('keydown', this.handleEscapeKey, false)
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('keydown', this.handleEscapeKey, false)
-    }
-
-    handleEscapeKey(event) {
-        if (event.keyCode === 27) {
-            this.props.on_escape_key()
+        inputEl.current.focus()
+        document.addEventListener('keydown', handleEscapeKey, false)
+        return function cleanup() {
+            document.removeEventListener('keydown', handleEscapeKey, false)
         }
-    }
+    }, [props, inputEl])
 
-    handleChange(event) {
+    const handleChange = (event) => {
 
         let {name, value } = event.target
 
         // when the input changes, validate the user's value
         if (name === 'user_value') {
             if (value.length && !isNaN(value) && value > 0) {
-                this.setState({ user_value: value, user_value_is_valid: true })
+                setUserValue(value)
+                setUserValueIsValid(true)
             } else {
-                this.setState({ user_value: value, user_value_is_valid: false })
+                setUserValue(value)
+                setUserValueIsValid(false)
             }
         }
     }
 
-    handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault()
-        this.props.on_new_value(this.state.user_value)
+        props.on_new_value(userValue)
     }
 
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <input ref={(elem) => {this.elem = elem}} type="text" id="edit-cell" name="user_value" value={this.state.user_value} onChange={this.handleChange} size="5" />
-                <button type="submit" disabled={!this.state.user_value_is_valid}>S</button>
-            </form>
-        )
-    }
+    return (
+        <form onSubmit={handleSubmit}>
+            <input ref={inputEl} type="text" id="edit-cell" name="user_value" value={userValue} onChange={handleChange} size="5" />
+            <button type="submit" disabled={!userValueIsValid}>S</button>
+        </form>
+    )
 }
 
 EditNumericCell.propTypes = {
