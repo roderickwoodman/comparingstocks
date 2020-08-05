@@ -24,7 +24,6 @@ export const Console = (props) => {
     }
 
     const formatTimestamp = (epoch) => {
-        console.log('epoch:',epoch)
         let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
         let localISOTime = (new Date(new Date(parseInt(epoch)) - tzoffset)).toISOString()
         let iso = localISOTime.match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/)
