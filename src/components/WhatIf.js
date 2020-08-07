@@ -1,60 +1,53 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 
-export class WhatIf extends React.Component {
+export const WhatIf = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            balanceable_value: 0,
-            balance_target_set: 'my_current_holdings',
-            balance_target_column: 'current_value',
-            sell_all_of: ['sell_none'],
-            cash_treatment: 'ignore',
-            cash_remaining: '$0',
-            cash_valid: true
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.isDisabled = this.isDisabled.bind(this)
-        this.numberWithCommas = this.numberWithCommas.bind(this)
-    }
+    const [balanceableValue, setBalanceableValue] = useState(0)
+    const [balanceTargetSet, setBalanceTargetSet] = useState('my_current_holdings')
+    const [balanceTargetColumn, setBalanceTargetColumn] = useState('current_value')
+    const [sellAllOf, setSellAllOf] = useState('sell_none')
+    const [cashTreatment] = useState('ignore')
+    const [cashRemaining, setCashRemaining] = useState('$0')
+    const [cashValid, setCashValid] = useState(true)
 
-    componentDidMount() {
-        let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column))
-        this.setState({ balanceable_value: new_balanceable_value })
+    useEffect( () => {
 
-        const stored_balance_target_set = JSON.parse(localStorage.getItem("balance_target_set"))
-        if (stored_balance_target_set !== null) {
-            this.setState({ balance_target_set: stored_balance_target_set })
+        let new_balanceableValue = Math.round(props.get_balanceable_value(balanceTargetSet, sellAllOf, balanceTargetColumn))
+        setBalanceableValue(new_balanceableValue)
+
+        const stored_balanceTargetSet = JSON.parse(localStorage.getItem("balance_target_set"))
+        if (stored_balanceTargetSet !== null) {
+            setBalanceTargetSet(stored_balanceTargetSet)
         }
 
-        const stored_balance_target_column = JSON.parse(localStorage.getItem("balance_target_column"))
-        if (stored_balance_target_column !== null) {
-            this.setState({ balance_target_column: stored_balance_target_column })
+        const stored_balanceTargetColumn = JSON.parse(localStorage.getItem("balance_target_column"))
+        if (stored_balanceTargetColumn !== null) {
+            setBalanceTargetColumn(stored_balanceTargetColumn)
         }
 
-        const stored_cash_remaining = JSON.parse(localStorage.getItem("cash_remaining"))
-        if (stored_cash_remaining !== null) {
-            this.setState({ cash_remaining: stored_cash_remaining })
+        const stored_cashRemaining = JSON.parse(localStorage.getItem("cash_remaining"))
+        if (stored_cashRemaining !== null) {
+            setCashRemaining(stored_cashRemaining)
         }
-    }
 
-    handleChange(event) {
+    }, [props, balanceTargetSet, sellAllOf, balanceTargetColumn])
+
+    const handleChange = (event) => {
 
         let {name, value, selectedOptions } = event.target
 
         // when the balance target set input changes, update the maximum value
         if (name === 'balance_target_set') {
-            let new_balanceable_value = Math.round(this.props.get_balanceable_value(value, this.state.sell_all_of, this.state.balance_target_column))
-            this.setState({ balanceable_value: new_balanceable_value })
+            let new_balanceableValue = Math.round(props.get_balanceable_value(value, sellAllOf, balanceTargetColumn))
+            setBalanceableValue(new_balanceableValue)
         }
 
         // when the balance target column input changes, update the maximum value
         if (name === 'balance_target_column') {
-            let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, this.state.sell_all_of, value))
-            this.setState({ balanceable_value: new_balanceable_value })
+            let new_balanceableValue = Math.round(this.props.get_balanceable_value(balanceTargetSet, sellAllOf, value))
+            setBalanceableValue(new_balanceableValue)
         }
 
         // when the cash remaining input changes, validate the user's value
@@ -66,9 +59,9 @@ export class WhatIf extends React.Component {
                 && user_whole_dollars_string === valid_whole_dollars_string 
                 && user_whole_dollars >= 0
                 && user_whole_dollars <= this.state.balanceable_value) { 
-                this.setState({ cash_valid: true })
+                setCashValid(true)
             } else {
-                this.setState({ cash_valid: false })
+                setCashValid(false)
             }
         }
 
@@ -76,92 +69,90 @@ export class WhatIf extends React.Component {
         localStorage.setItem(name, JSON.stringify(value))
 
         // mirror the input in state, since this is a (React) controlled input
-        if (name !== 'sell_all_of') {
-            this.setState({ [name]: value })
-        } else {
+        if (name === 'balance_target_set') {
+            setBalanceTargetSet(value)
+        } else if (name === 'balance_target_column') {
+            setBalanceTargetColumn(value)
+        } else if (name === 'sell_all_of') {
             let multiple_tickers = Array.from(selectedOptions, (item) => item.value)
             if (multiple_tickers.includes('sell_none')) {
                 multiple_tickers = ['sell_none']
             }
-            let new_balanceable_value = Math.round(this.props.get_balanceable_value(this.state.balance_target_set, value, this.state.balance_target_column))
-            this.setState({ 
-                sell_all_of: multiple_tickers,
-                balanceable_value: new_balanceable_value
-            })
+            let new_balanceableValue = Math.round(props.get_balanceable_value(balanceTargetSet, value, balanceTargetColumn))
+            setSellAllOf(multiple_tickers)
+            setBalanceableValue(new_balanceableValue)
         }
     }
 
-    handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault()
-        let user_remaining_cash = this.state.cash_remaining.split('.')[0].replace(/[^0-9]/g, "")
-        let remaining_cash = (this.state.cash_treatment === 'include') ? parseInt(user_remaining_cash) : null
-        this.props.on_whatif_submit(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column, remaining_cash)
+        let user_remaining_cash = cashRemaining.split('.')[0].replace(/[^0-9]/g, "")
+        let remaining_cash = (cashTreatment === 'include') ? parseInt(user_remaining_cash) : null
+        props.on_whatif_submit(balanceTargetSet, sellAllOf, balanceTargetColumn, remaining_cash)
     }
 
-    isDisabled() {
+    const isDisabled = () => {
 
-        if (this.state.cash_treatment === 'include' && !this.state.cash_valid) {
+        if (cashTreatment === 'include' && !cashValid) {
             return true
-        } else if (this.state.balance_target_set === 'my_current_holdings') {
-            return (this.props.show_current_holdings) ? false : true
-        } else if (this.state.balance_target_set === 'untagged') {
-            return (this.props.show_untagged) ? false : true
+        } else if (balanceTargetSet === 'my_current_holdings') {
+            return (props.show_current_holdings) ? false : true
+        } else if (balanceTargetSet === 'untagged') {
+            return (props.show_untagged) ? false : true
         } else {
-            return (this.props.show_tagged) ? false : true
+            return (props.show_tagged) ? false : true
         }
     }
 
-    numberWithCommas(x) {
+    const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    render() {
-        let excludable_tickers = []
-        if (this.state.balance_target_set === "my_current_holdings") {
-            excludable_tickers = Object.keys(this.props.all_positions).filter( ticker => ticker !== 'cash' && this.props.all_positions[ticker].current_shares)
-        } else if (this.props.all_tags.hasOwnProperty(this.state.balance_target_set)) {
-            excludable_tickers = this.props.all_tags[this.state.balance_target_set].filter( ticker => this.props.all_positions[ticker] && this.props.all_positions[ticker].current_shares)
-        }
-        return (
-            <section id="what-if">
-                <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
-                    <div id="operation">Balance&nbsp;
-                        <select name="balance_target_set" value={this.state.balance_target_set} onChange={this.handleChange}>
-                            <option value="my_current_holdings">current holdings ({Object.entries(this.props.all_positions).filter(position => position[0] !== 'cash' && position[1].current_shares !== 0).length})</option>
-                            <option value="untagged">untagged tickers ({this.props.all_tags.untagged.length})</option>
-                            {Object.entries(this.props.all_tags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
-                                <option key={tag} value={tag}>tag: {tag} ({this.props.all_tags[tag].length})</option>
-                            )}
-                        </select>
-                        &nbsp;into&nbsp; 
-                        <select name="balance_target_column" value={this.state.balance_target_column} onChange={this.handleChange}>
-                            <option value="current_value">equal values</option>
-                            <option value="value_at_risk">equal values, risk adjusted</option>
-                            <option value="basis">equal bases</option>
-                            <option value="basis_risked">equal bases, risk adjusted</option>
-                            <option value="only_profits">only profits remaining</option>
-                        </select>
-                        , but sell all of&nbsp;
-                        <select name="sell_all_of" value={this.state.sell_all_of} multiple={true} onChange={this.handleChange}>
-                            <option value="sell_none">(none. keep all.)</option>
-                            {excludable_tickers.sort().map(ticker => 
-                                <option key={ticker} value={ticker}> {ticker} </option>
-                            )}
-                        </select>
-                        &nbsp;...
-                    </div>
-                    <div id="cash-treatment">
-                        <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={this.handleChange} defaultChecked />ignoring my cash balance</label>
-                        <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={this.handleChange} disabled={!this.props.show_cash} />using my cash balance, and leaving at least
-                        <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={this.handleChange} value={this.state.cash_remaining} placeholder="$0"></input>cash remaining (max: ${this.numberWithCommas(this.state.balanceable_value)})</label>
-                    </div>
-                    <section className="buttonrow">
-                        <input className="btn btn-sm btn-primary" type="submit" value="What If?" disabled={this.isDisabled()}/>
-                    </section>
-                </form>
-            </section>
-        )
+    let excludable_tickers = []
+    if (balanceTargetSet === "my_current_holdings") {
+        excludable_tickers = Object.keys(props.all_positions).filter( ticker => ticker !== 'cash' && props.all_positions[ticker].current_shares)
+    } else if (props.all_tags.hasOwnProperty(balanceTargetSet)) {
+        excludable_tickers = props.all_tags[balanceTargetSet].filter( ticker => props.all_positions[ticker] && props.all_positions[ticker].current_shares)
     }
+    return (
+        <section id="what-if">
+            <form onSubmit={handleSubmit}>
+                <div id="operation">Balance&nbsp;
+                    <select name="balance_target_set" value={balanceTargetSet} onChange={handleChange}>
+                        <option value="my_current_holdings">current holdings ({Object.entries(props.all_positions).filter(position => position[0] !== 'cash' && position[1].current_shares !== 0).length})</option>
+                        <option value="untagged">untagged tickers ({props.all_tags.untagged.length})</option>
+                        {Object.entries(props.all_tags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
+                            <option key={tag} value={tag}>tag: {tag} ({props.all_tags[tag].length})</option>
+                        )}
+                    </select>
+                    &nbsp;into&nbsp; 
+                    <select name="balance_target_column" value={balanceTargetColumn} onChange={handleChange}>
+                        <option value="current_value">equal values</option>
+                        <option value="value_at_risk">equal values, risk adjusted</option>
+                        <option value="basis">equal bases</option>
+                        <option value="basis_risked">equal bases, risk adjusted</option>
+                        <option value="only_profits">only profits remaining</option>
+                    </select>
+                    , but sell all of&nbsp;
+                    <select name="sell_all_of" value={sellAllOf} multiple={true} onChange={handleChange}>
+                        <option value="sell_none">(none. keep all.)</option>
+                        {excludable_tickers.sort().map(ticker => 
+                            <option key={ticker} value={ticker}> {ticker} </option>
+                        )}
+                    </select>
+                    &nbsp;...
+                </div>
+                <div id="cash-treatment">
+                    <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={handleChange} defaultChecked />ignoring my cash balance</label>
+                    <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={handleChange} disabled={!props.show_cash} />using my cash balance, and leaving at least
+                    <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={handleChange} value={cashRemaining} placeholder="$0"></input>cash remaining (max: ${numberWithCommas(balanceableValue)})</label>
+                </div>
+                <section className="buttonrow">
+                    <input className="btn btn-sm btn-primary" type="submit" value="What If?" disabled={isDisabled()}/>
+                </section>
+            </form>
+        </section>
+    )
 }
 
 WhatIf.propTypes = {
