@@ -1,57 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 
-export class TransactionAdd extends React.Component {
+export const TransactionAdd = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            transaction_date: '',
-            transaction: '',
-            user_cash_action: 'dividend',
-            user_cash_amount: '',
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.validateTransaction = this.validateTransaction.bind(this)
-        this.handleCashChange = this.handleCashChange.bind(this)
-        this.handleCashReset = this.handleCashReset.bind(this)
-        this.handleActionChange = this.handleActionChange.bind(this)
-        this.handleCashSubmit = this.handleCashSubmit.bind(this)
-        this.getCashOperationPlaceholder = this.getCashOperationPlaceholder.bind(this)
+    const [transactionDate] = useState('')
+    const [transaction, setTransaction] = useState('')
+    const [userCashAction, setUserCashAction] = useState('dividend')
+    const [userCashAmount, setUserCashAmount] = useState('')
+
+    const handleChange = (event) => {
+        setTransaction(event.target.value)
     }
 
-    handleChange(event) {
-        const target = event.target
-        const new_value = target.value
-        const name = target.name
-        this.setState({ [name]: new_value })
+    const handleActionChange = (event) => {
+        setUserCashAction(event.target.value)
     }
 
-    handleActionChange(event) {
-        this.setState({ user_cash_action: event.target.value })
+    const handleCashChange = (event) => {
+        setUserCashAmount(event.target.value)
     }
 
-    handleCashChange(event) {
-        this.setState({ user_cash_amount: event.target.value })
+    const handleCashReset = (event) => {
+        setUserCashAmount("")
     }
 
-    handleCashReset(event) {
-        this.setState({ user_cash_amount: "" })
-    }
-
-    handleCashSubmit(event) {
+    const handleCashSubmit = (event) => {
         event.preventDefault()
         let new_message = null
-        let user_cash_action = this.state.user_cash_action
-        let user_date = this.state.transaction_date
+        let user_cash_action = userCashAction
+        let user_date = transactionDate
 
-        let user_cash_operation = this.state.user_cash_amount
+        let user_cash_operation = userCashAmount
         let terms = user_cash_operation.split(' ')
         let user_cash_amount
 
-        if (this.state.user_cash_action === 'dividend') {
+        if (userCashAction === 'dividend') {
             if (terms.length === 3 && terms[1].toLowerCase() === 'on' && terms[2].replace(/\W/g,'').length) {
                 user_cash_amount = terms[0]
             } else {
@@ -68,31 +52,31 @@ export class TransactionAdd extends React.Component {
             } else {
                 let total = parseFloat((Math.round(cash_amount * 100) / 100).toFixed(2));
                 let valid_transaction_summary = user_date + ': ' + user_cash_action + ' $' + total.toFixed(2) + ' cash'
-                if (this.state.user_cash_action === 'dividend') {
+                if (userCashAction === 'dividend') {
                     valid_transaction_summary += ' on ' + terms[2].toUpperCase()
                 }
                 new_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
-                this.props.on_new_cash(valid_transaction_summary)
-                this.handleCashReset()
+                props.on_new_cash(valid_transaction_summary)
+                handleCashReset()
             }
         }
-        let new_console_message_set = this.props.create_console_message_set(new_message)
+        let new_console_message_set = props.create_console_message_set(new_message)
         if (new_message.toUpperCase().startsWith('ERROR:')) {
             new_console_message_set.has_errors = true
         }
-        this.props.on_new_console_messages(new_console_message_set)
+        props.on_new_console_messages(new_console_message_set)
     }
 
-    handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault()
-        let user_transaction = String(this.state.transaction)
+        let user_transaction = String(transaction)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.replace(/[^A-Za-z0-9$.]/g, ""))
-        this.validateTransaction(user_transaction)
+        validateTransaction(user_transaction)
     }
 
-    validateTransaction(transaction) {
+    const validateTransaction = (transaction) => {
         let new_messages = [], summary_message
 
         if (transaction.length < 4) {
@@ -113,7 +97,7 @@ export class TransactionAdd extends React.Component {
             }
 
             let ticker = transaction[2].toUpperCase().replace(/[^A-Z]/g, "")
-            if (ticker !== transaction[2].toUpperCase() || !this.props.all_stocks.includes(ticker.toUpperCase())) {
+            if (ticker !== transaction[2].toUpperCase() || !props.all_stocks.includes(ticker.toUpperCase())) {
                 new_messages.push('ERROR: Ticker "' + transaction[2] + '" does not exist.')
             }
 
@@ -129,9 +113,8 @@ export class TransactionAdd extends React.Component {
 
                 // also print the "ticker has now been added" message, if needed
                 let tagged_tickers = []
-                let self = this
-                Object.keys(this.props.all_tags).forEach(function(tag) {
-                    self.props.all_tags[tag].forEach(function(ticker) {
+                Object.keys(props.all_tags).forEach(function(tag) {
+                    props.all_tags[tag].forEach(function(ticker) {
                         if (!tagged_tickers.includes(ticker)) {
                             tagged_tickers.push(ticker)
                         }
@@ -141,10 +124,10 @@ export class TransactionAdd extends React.Component {
                     new_messages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
                 }
 
-                let valid_transaction_summary = this.state.transaction_date + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
+                let valid_transaction_summary = transactionDate + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
                 summary_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
                 new_messages.push(summary_message)
-                this.props.on_new_transaction(valid_transaction_summary)
+                props.on_new_transaction(valid_transaction_summary)
 
             } else {
                 transaction[2] = transaction[2].toUpperCase()
@@ -154,63 +137,61 @@ export class TransactionAdd extends React.Component {
         }
 
         // send all of the messages to print
-        let new_console_message_set = this.props.create_console_message_set(summary_message)
+        let new_console_message_set = props.create_console_message_set(summary_message)
         if (summary_message.toUpperCase().startsWith('ERRROR:')) {
             new_console_message_set.has_errors = true
         }
         new_console_message_set.messages = [...new_messages]
-        this.props.on_new_console_messages(new_console_message_set)
+        props.on_new_console_messages(new_console_message_set)
     }
 
-    getCashOperationPlaceholder() {
-        if (this.state.user_cash_action === 'dividend') {
+    const getCashOperationPlaceholder = () => {
+        if (userCashAction === 'dividend') {
             return "$85.00 on MSFT"
-        } else if (this.state.user_cash_action === 'fee') {
+        } else if (userCashAction === 'fee') {
             return "$15"
         } else {
             return "$1000"
         }
     }
 
-    render() {
-        return (
-            <section id="add-transaction">
-                <form>
-                    <label>Transaction Date:</label>
-                    <input name="transaction_date" value={this.state.transaction_date} onChange={this.handleChange} type="date" size="10" />
-                </form>
-                <form onSubmit={this.handleSubmit}>
-                    <label>New Transaction:</label>
+    return (
+        <section id="add-transaction">
+            <form>
+                <label>Transaction Date:</label>
+                <input name="transaction_date" value={transactionDate} onChange={handleChange} type="date" size="10" />
+            </form>
+            <form onSubmit={handleSubmit}>
+                <label>New Transaction:</label>
 
-                    <input name="transaction" value={this.state.transaction} onChange={this.handleChange} size="25" placeholder="buy 100 CSCO $2200.32" required />
+                <input name="transaction" value={transaction} onChange={handleChange} size="25" placeholder="buy 100 CSCO $2200.32" required />
 
-                    <section className="buttonrow">
-                        <input className="btn btn-sm btn-primary" type="submit" value="Add Transaction" disabled={this.state.transaction==='' || this.state.transaction_date===''} />
-                    </section>
-                </form>
-                <form onSubmit={this.handleCashSubmit}>
-                    <label>Cash&nbsp;
-                        <select value={this.state.action} onChange={this.handleActionChange}>
-                            <option value="dividend">dividend</option>
-                            <option value="fee">fee</option>
-                            <option value="transferIN">transfer IN</option>
-                            <option value="transferOUT">transfer OUT</option>
-                        </select>:
-                        <input value={this.state.user_cash_amount} onChange={this.handleCashChange} size="20" placeholder={this.getCashOperationPlaceholder()} required />
-                    </label>
-                    <section className="buttonrow">
-                        <input className="btn btn-sm btn-primary" type="submit" value="Adjust Cash" disabled={this.state.user_cash_amount==='' || this.state.transaction_date===''}/>
-                    </section>
-                </form>
-            </section>
-        )
-    }
+                <section className="buttonrow">
+                    <input className="btn btn-sm btn-primary" type="submit" value="Add Transaction" disabled={transaction==='' || transactionDate===''} />
+                </section>
+            </form>
+            <form onSubmit={handleCashSubmit}>
+                <label>Cash&nbsp;
+                    <select onChange={handleActionChange}>
+                        <option value="dividend">dividend</option>
+                        <option value="fee">fee</option>
+                        <option value="transferIN">transfer IN</option>
+                        <option value="transferOUT">transfer OUT</option>
+                    </select>:
+                    <input value={userCashAmount} onChange={handleCashChange} size="20" placeholder={getCashOperationPlaceholder()} required />
+                </label>
+                <section className="buttonrow">
+                    <input className="btn btn-sm btn-primary" type="submit" value="Adjust Cash" disabled={userCashAmount==='' || transactionDate===''}/>
+                </section>
+            </form>
+        </section>
+    )
 }
 
 TransactionAdd.propTypes = {
-    all_stocks: PropTypes.array.isRequired,
-    all_tags: PropTypes.object.isRequired,
-    on_new_transaction: PropTypes.func.isRequired,
-    on_new_cash: PropTypes.func.isRequired,
-    on_new_console_messages: PropTypes.func.isRequired
+all_stocks: PropTypes.array.isRequired,
+all_tags: PropTypes.object.isRequired,
+on_new_transaction: PropTypes.func.isRequired,
+on_new_cash: PropTypes.func.isRequired,
+on_new_console_messages: PropTypes.func.isRequired
 }
