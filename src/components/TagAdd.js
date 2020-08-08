@@ -1,43 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 
-export class TagAdd extends React.Component {
+export const TagAdd = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            user_tags_string: '',
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.handleReset = this.handleReset.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.validateTags = this.validateTags.bind(this)
+    const [userTagsString, setUserTagsString] = useState('')
+
+    const handleChange = (event) => {
+        setUserTagsString(event.target.value)
     }
 
-    handleChange(event) {
-        this.setState({ user_tags_string: event.target.value })
+    const handleReset = (event) => {
+        setUserTagsString('')
     }
 
-    handleReset(event) {
-        this.setState({ user_tags_string: "" })
-    }
-
-    handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault()
-        let user_tags = String(this.state.user_tags_string)
+        let user_tags = String(userTagsString)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toLowerCase())
             .map(str => str.replace(/[^a-z0-9:()-_!?]/g, ""))
-        this.validateTags(Array.from(new Set(user_tags)))
+        validateTags(Array.from(new Set(user_tags)))
     }
 
-    validateTags(tags) {
+    const validateTags = (tags) => {
         let tags_to_add = [], new_messages = []
-        let self = this
         tags.forEach(function(tag) {
-            if (self.props.all_tags.hasOwnProperty(tag)) {
+            if (props.all_tags.hasOwnProperty(tag)) {
                 new_messages.push('ERROR: Tag "' + tag + '" has already been created.')
             } else {
                 new_messages.push('Tag "' + tag + '" has now been created.')
@@ -53,31 +43,29 @@ export class TagAdd extends React.Component {
         } else {
             summary = 'ERROR: ' + num_errors + ' of ' + tags.length + ' tags could not be created.'
         }
-        let new_console_message_set = this.props.create_console_message_set(summary)
+        let new_console_message_set = props.create_console_message_set(summary)
         if (new_messages.length > 1) {
             new_console_message_set.messages = [...new_messages]
         }
         if (num_errors > 0) {
             new_console_message_set.has_errors = true
         }
-        this.props.on_new_tags(tags_to_add)
-        this.props.on_new_console_messages(new_console_message_set)
-        this.handleReset()
+        props.on_new_tags(tags_to_add)
+        props.on_new_console_messages(new_console_message_set)
+        handleReset()
     }
 
-    render() {
-        return (
-            <section id="add-tag">
-                <form onSubmit={this.handleSubmit} onReset={this.handleReset}>
-                    <label>New Tag Name(s):</label>
-                    <input value={this.state.user_tags_string} onChange={this.handleChange} required />
-                    <section className="buttonrow">
-                        <input className="btn btn-sm btn-primary" type="submit" value="Create Tag(s)" disabled={this.state.user_tags_string===''} />
-                    </section>
-                </form>
-            </section>
-        )
-    }
+    return (
+        <section id="add-tag">
+            <form onSubmit={handleSubmit} onReset={handleReset}>
+                <label>New Tag Name(s):</label>
+                <input value={userTagsString} onChange={handleChange} required />
+                <section className="buttonrow">
+                    <input className="btn btn-sm btn-primary" type="submit" value="Create Tag(s)" disabled={userTagsString===''} />
+                </section>
+            </form>
+        </section>
+    )
 }
 
 TagAdd.propTypes = {
