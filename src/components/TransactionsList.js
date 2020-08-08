@@ -1,46 +1,29 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 
 
-export class TransactionsList extends React.Component {
+export const TransactionsList = (props) => {
 
-    constructor(props) {
-        super(props)
-        this.exportRef = React.createRef()
-        this.importRef = React.createRef()
-        this.state = {
-            data_sort_dir: 'desc',
-            filter_str: '',
-            file: ''
-        }
-        this.handleChange = this.handleChange.bind(this)
-        this.onToggleSortOrder = this.onToggleSortOrder.bind(this)
-        this.onExportButton = this.onExportButton.bind(this)
-        this.onHiddenImportChange = this.onHiddenImportChange.bind(this)
+    const exportEl = useRef(null)
+    const importEl = useRef(null)
+    const [dataSortDir, setDataSortDir] = useState('desc')
+    const [filterStr, setFilterStr] = useState('')
+
+    const handleChange = (event) => {
+        setFilterStr(event.target.value)
     }
 
-    handleChange(event) {
-        const target = event.target
-        const new_value = target.value
-        const name = target.name
-        this.setState({ [name]: new_value })
-    }
-
-    onToggleSortOrder() {
-        this.setState(prevState => {
-            let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
-            return { 
-                data_sort_dir: new_sort_dir 
-            }
-        })
+    const onToggleSortOrder = () => {
+        let new_sort_dir = (dataSortDir === 'asc') ? 'desc' : 'asc'
+        setDataSortDir(new_sort_dir)
     }
         
-    onExportButton() {
+    const onExportButton = () => {
 
         // prepare the data
         let exported_json = {
-            transactions: JSON.parse(JSON.stringify(this.props.all_transactions)),
-            risk: JSON.parse(JSON.stringify(this.props.all_risk))
+            transactions: JSON.parse(JSON.stringify(props.all_transactions)),
+            risk: JSON.parse(JSON.stringify(props.all_risk))
         }
         var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exported_json));
 
@@ -51,65 +34,60 @@ export class TransactionsList extends React.Component {
         a.innerHTML = 'download'
 
         // attach the download link, trigger it, and then remove it from the DOM
-        var container = this.exportRef.current
+        var container = exportEl.current
         container.appendChild(a)
         a.click()
         a.remove()
     }
 
-    onHiddenImportChange(files) {
+    const onHiddenImportChange = (files) => {
         if (files[0]) {
-            let self = this
             let reader = new FileReader();
             reader.readAsText(files[0], "UTF-8");
             reader.onload = function (evt) {
                 let file_contents = JSON.parse(evt.target.result)
-                self.props.on_import_transactions(file_contents)
+                props.on_import_transactions(file_contents)
             }
         }
     }
 
-    render() {
+    let all_transactions = props.all_transactions
+    let ordered_filtered_transactions = all_transactions
+        .filter( transaction => transaction.summary.toLowerCase().includes(filterStr.toLowerCase()) )
+        .sort( function(a,b) {
+            if (a.summary < b.summary) {
+                return (dataSortDir === 'asc') ? -1 : 1
+            } else if (a.summary > b.summary) {
+                return (dataSortDir === 'asc') ? 1 : -1
+            } else {
+                return 0
+            }
+        })
+    return (
+        <section id="transaction-list">
+            <section id="transaction-list-controls">
+                <form>
+                    <button onClick={ (e)=>onToggleSortOrder() } className="strong">&#x21c5;</button>
 
-        let all_transactions = this.props.all_transactions
-        let self = this
-        let ordered_filtered_transactions = all_transactions
-            .filter( transaction => transaction.summary.toLowerCase().includes(this.state.filter_str.toLowerCase()) )
-            .sort( function(a,b) {
-                if (a.summary < b.summary) {
-                    return (self.state.data_sort_dir === 'asc') ? -1 : 1
-                } else if (a.summary > b.summary) {
-                    return (self.state.data_sort_dir === 'asc') ? 1 : -1
-                } else {
-                    return 0
-                }
-            })
-        return (
-            <section id="transaction-list">
-                <section id="transaction-list-controls">
-                    <form>
-                        <button onClick={ (e)=>this.onToggleSortOrder() } className="strong">&#x21c5;</button>
+                    <label>Filter:</label>
+                    <input name="filter_str" value={filterStr} onChange={handleChange} size="15" />
 
-                        <label>Filter:</label>
-                        <input name="filter_str" value={this.state.filter_str} onChange={this.handleChange} size="15" />
+                    <button className="btn btn-sm btn-primary" onClick={onExportButton} disabled={!props.all_transactions.length}>export</button>
+                    <div ref={exportEl}></div>
 
-                        <button className="btn btn-sm btn-primary" onClick={this.onExportButton} disabled={!this.props.all_transactions.length}>export</button>
-                        <div ref={this.exportRef}></div>
-
-                        <label className="btn btn-sm btn-primary">
-                        <input type="file" ref={this.importRef} onChange={ (e) => this.onHiddenImportChange(e.target.files) } accept="application/json" style={{width: 0, visibility: "hidden"}} />
-                        import
-                        </label>
-                    </form>
-                </section>
-                <section id="transactions">
-                    {ordered_filtered_transactions.map( transaction => (
-                        <p key={transaction.modified_at} className="transaction" onClick={ (e)=>this.props.on_delete_transaction(transaction.modified_at)}>{transaction.summary}</p>
-                    ))}
-                </section>
+                    <label className="btn btn-sm btn-primary">
+                    <input type="file" ref={importEl} onChange={ (e) => onHiddenImportChange(e.target.files) } accept="application/json" style={{width: 0, visibility: "hidden"}} />
+                    import
+                    </label>
+                </form>
             </section>
-        )
-    }
+            <section id="transactions">
+                {ordered_filtered_transactions.map( transaction => (
+                    <p key={transaction.modified_at} className="transaction" onClick={ (e)=>props.on_delete_transaction(transaction.modified_at)}>{transaction.summary}</p>
+                ))}
+            </section>
+        </section>
+    )
 }
 
 TransactionsList.propTypes = {
