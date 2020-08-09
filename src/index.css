@@ -496,10 +496,12 @@ button.tag-removal {
   margin: 1px;
   padding: 1px 2px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 button.tag-removal:disabled {
   cursor: default;
+  border-radius: 5px;
 }
 
 button.tag-removal:hover:not(:disabled) {
