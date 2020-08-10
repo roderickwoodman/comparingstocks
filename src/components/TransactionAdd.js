@@ -4,13 +4,17 @@ import PropTypes from 'prop-types'
 
 export const TransactionAdd = (props) => {
 
-    const [transactionDate] = useState('')
+    const [transactionDate, setTransactionDate] = useState('')
     const [transaction, setTransaction] = useState('')
     const [userCashAction, setUserCashAction] = useState('dividend')
     const [userCashAmount, setUserCashAmount] = useState('')
 
     const handleChange = (event) => {
-        setTransaction(event.target.value)
+        if (event.target.name === 'transaction') {
+            setTransaction(event.target.value)
+        } else if (event.target.name === 'transaction_date') {
+            setTransactionDate(event.target.value)
+        }
     }
 
     const handleActionChange = (event) => {
