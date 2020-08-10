@@ -7,7 +7,7 @@ export const WhatIf = (props) => {
     const [balanceableValue, setBalanceableValue] = useState(0)
     const [balanceTargetSet, setBalanceTargetSet] = useState('my_current_holdings')
     const [balanceTargetColumn, setBalanceTargetColumn] = useState('current_value')
-    const [sellAllOf, setSellAllOf] = useState('sell_none')
+    const [sellAllOf, setSellAllOf] = useState(['sell_none'])
     const [cashTreatment] = useState('ignore')
     const [cashRemaining, setCashRemaining] = useState('$0')
     const [cashValid, setCashValid] = useState(true)
