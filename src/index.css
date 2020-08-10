@@ -21,6 +21,11 @@ code {
     monospace;
 }
 
+button.strong,
+button.strong:focus {
+  border-radius: 5px;
+}
+
 #page-wrapper {
   padding: 20px;
 }
