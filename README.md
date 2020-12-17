@@ -40,7 +40,7 @@ For developers, be aware that there is no backend server for this app. So althou
 
 This app has numerous features that are downstream of the quote data that are being developed on a daily basis using stale quote data. But eventually, current quotes will indeed be turned on.
 
-### Running This App Locally (aka: Development Mode)
+### (For Developers) Running this app locally
 
 As a one-time setup, copy the code for this app to your local machine. 
 ```
@@ -55,5 +55,3 @@ npm start
 ```
 
 Doing this will open a browser tab for viewing the app at [http://localhost:3000](http://localhost:3000). The page will reload if you make edits to your local code copies. You will also see any lint errors in the browser console. 
-
-FYI, this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).  You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
