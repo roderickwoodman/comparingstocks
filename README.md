@@ -3,7 +3,7 @@
 ## ComparingStocks
 *A tool for generating meaningful performance and allocation data for your stock holdings*
 
-Most financial websites give you only the most superficial data about your stock portfolio as a whole. They typically give you your current holdings in dollars and shares and then for performance they tell you the lifetime gain. It is all simple math, and it is all useless for managing a portfolio. This is because the funds that are needed to increase a position must always come from trimming back on other positions. Yes, comparisons are unavoidable. And so, fundamentally, all individual investors need tools that will compare their positions to each other.
+Most financial websites give you only the most superficial data about your stock portfolio. Simple calculations like value and basis and performance only tell part of the picture. When managing a portfolio, what investors are unable to avoid doing is comparisons. This is because the funds that are needed to increase a position almost always come from trimming back on other positions. And so, at the portfolio allocation level, comparison metrics between positions offer the most insight to the individual investor.
 
 ### Useful Data Formats
 
