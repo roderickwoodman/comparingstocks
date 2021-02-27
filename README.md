@@ -3,7 +3,9 @@
 ## ComparingStocks
 *A tool for generating meaningful performance and allocation data for your stock holdings*
 
-Most financial websites give you only the most superficial data about your stock portfolio. Simple calculations like value and basis and performance only tell part of the picture. When managing a portfolio, what investors are unable to avoid doing is comparisons. This is because the funds that are needed to increase a position almost always come from trimming back on other positions. And so, at the portfolio allocation level, comparison metrics between positions offer the most insight to the individual investor.
+Managing a portfolio is all about comparisons. It is not enough to know the common metrics on a position like its current value and its cost basis. The red and green numbers are nice to look at on a daily basis, but are too simplistic to be actionable.
+
+Adding and removing a stock usually requires a more complex rebalancing operation across multiple stocks so as to remain similarly invested. And so, representing positions as portfolio fractions and having a balancing engine that allows these fractions to be adjusted are invaluable tools when changing a portfolio.
 
 ### Useful Data Formats
 
