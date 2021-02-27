@@ -11,24 +11,38 @@ Adding and removing a stock usually requires a more complex rebalancing operatio
 
 Unfortunately, stock positions are inherently quite different. Investments are made in different amounts on different dates and the underlying securities themselves have a wide range of performance and volatility to them. However, by framing an investor's portfolio holdings data in the following ways, many more actionable, apples-to-apples comparisons can be made:
 
-  * For useful position size data, each of your holdings should be shown to you with:
-      * **its percentage of your total portfolio value -** Percentages are more immediately comparable than share counts and dollars are.
-      * **its cost basis -** Basis reveals your original investment, ex what the market has done with it since.
-      * **its capital at risk -** The true downside of a position requires adjusting it by some stock-specific volatility metric.
+**ComparingStocks** generates the following high-level numbers:
 
-  * For useful performance data, each of your holdings should be shown to you with:
-      * **its gains in percentage -** Percentages are more immediately comparable than gains in dollars are.
-      * **its gains sampled at multiple time windows -** A few recent look-back snapshots are sufficient for assessment and are also easier to focus on than every price fluctuation over all time is.
-      * **its gains relative to the broad index -** Gains relative to the index (aka: "alpha") are an investor's ultimate scorecard. Absolute gains are only half-truths.
+  * Positions as a percentage of the total portfolio
+  * Positions adjusted for risk
+
+  * Performance relative to the broad index
+  * Performance over 3 different fixed timeframes
 
 This big-picture portfolio perspective helps an investor to level a diverse collection of stocks and purchase histories so that he or she is aware of all outsized bets and risks at all times.
 
-### Useful Portfolio Tools
+### Useful Aggregation Feature
 
-In addition this app has the following two features that save the investor from doing even more back-of-the-envelope math before buying and selling stocks:
+This app has a flexible tagging interface that allows these metrics to be calculated in aggregate, on any arbitrary collection of positions. For instance, groups of positions can defined:
 
-  * **aggregate positions -** A flexible position tagging interface allows these same metrics to be calculated on aggregate for any arbitrary combination of individual stock positions.
-  * **many balancing scenarios -** A robust balancing engine makes it so that any aggregate group of positions can be balanced either by basis or by current value, while also adjusting for cash, for risk, and for liquidated positions if desired. The output of the balancing operation is the exact number of shares of each stock needed to be bought or sold to achieve the desired balance.
+* group by account
+* group by sector
+* group by strategy
+
+### Useful Balancing Engine
+
+One of the key features of this app is its robust balancing engine. Multiple balancing scenarios are supported:
+
+* balance by basis
+* balance by risk-adjusted basis
+* balance by current value
+* balance by value at-risk
+* balance to leave only profits
+* balance to leave a certain amount of cash
+
+The output of the balancing operation is the exact number of shares of each stock that are needed to be bought or sold to achieve the desired balance.
+
+### In Summary
 
 In all, **ComparingStocks** attempts to be a long-term portfolio management tool for the individual investor.
 
