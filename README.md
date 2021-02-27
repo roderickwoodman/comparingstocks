@@ -7,7 +7,7 @@ Managing a portfolio is all about comparisons. It is not enough to know the comm
 
 Adding and removing a stock usually requires a more complex rebalancing operation across multiple stocks so as to remain similarly invested. And so, representing positions as portfolio fractions and having a balancing engine that allows these fractions to be adjusted are invaluable tools when changing a portfolio.
 
-### Useful Data Formats
+### Meaningful Data Formats
 
 Stock positions are inherently quite different in terms of things like dates, cash invested, volatility, and performance. But **ComparingStocks** generates the following high-level numbers in order to show the most insightful comparisons:
 
@@ -18,7 +18,7 @@ Stock positions are inherently quite different in terms of things like dates, ca
 
 This big-picture portfolio perspective helps the individual investor to be aware of all outsized bets and risks at all times.
 
-### Useful Aggregation Feature
+### Position Aggregation
 
 This app has a flexible tagging interface that allows these metrics to be calculated in aggregate, on any arbitrary collection of positions. Similar positions can be grouped by applying the same label, for instance:
 
@@ -26,9 +26,9 @@ This app has a flexible tagging interface that allows these metrics to be calcul
 * Label positions into groups by sector
 * Label positions into groups by strategy
 
-### Useful Balancing Engine
+### Portfolio Balancing
 
-One of the key features of this app is its robust balancing engine. Multiple balancing scenarios are supported:
+One of the key features of this app is its robust balancing engine. The following balancing scenarios are supported:
 
 * balance by basis
 * balance by risk-adjusted basis
@@ -47,7 +47,7 @@ In all, **ComparingStocks** attempts to be a long-term portfolio management tool
 
 **AS-IS:** This app has been designed for the author's needs only, in the author's spare time. By using this app, you are accepting it as-is.
 
-**Quotes Are Not Current** For most people, [the link above](https://roderickwoodman.github.io/comparingstocks/) will take you to the live, production version of the app on the Internet. At the moment however, because of technical, the stocks are limited to the DOW30 and quotes are not current so you will see price errors.
+**Quotes Are Not Current:** For most people, [the link above](https://roderickwoodman.github.io/comparingstocks/) will take you to the live, production version of the app on the Internet. At the moment however, because of technical, the stocks are limited to the DOW30 and quotes are not current so you will see price errors.
 
 ### (For Developers) Running this app locally
 
