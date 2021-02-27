@@ -9,25 +9,22 @@ Adding and removing a stock usually requires a more complex rebalancing operatio
 
 ### Useful Data Formats
 
-Unfortunately, stock positions are inherently quite different. Investments are made in different amounts on different dates and the underlying securities themselves have a wide range of performance and volatility to them. However, by framing an investor's portfolio holdings data in the following ways, many more actionable, apples-to-apples comparisons can be made:
+Stock positions are inherently quite different in terms of things like dates, cash invested, volatility, and performance. But **ComparingStocks** generates the following high-level numbers in order to show the most insightful comparisons:
 
-**ComparingStocks** generates the following high-level numbers:
+* Positions as a percentage of the total portfolio
+* Positions adjusted for risk
+* Performance relative to the broad index
+* Performance over 3 different fixed timeframes
 
-  * Positions as a percentage of the total portfolio
-  * Positions adjusted for risk
-
-  * Performance relative to the broad index
-  * Performance over 3 different fixed timeframes
-
-This big-picture portfolio perspective helps an investor to level a diverse collection of stocks and purchase histories so that he or she is aware of all outsized bets and risks at all times.
+This big-picture portfolio perspective helps the individual investor to be aware of all outsized bets and risks at all times.
 
 ### Useful Aggregation Feature
 
-This app has a flexible tagging interface that allows these metrics to be calculated in aggregate, on any arbitrary collection of positions. For instance, groups of positions can defined:
+This app has a flexible tagging interface that allows these metrics to be calculated in aggregate, on any arbitrary collection of positions. Similar positions can be grouped by applying the same label, for instance:
 
-* group by account
-* group by sector
-* group by strategy
+* Label positions into groups by account
+* Label positions into groups by sector
+* Label positions into groups by strategy
 
 ### Useful Balancing Engine
 
@@ -48,13 +45,9 @@ In all, **ComparingStocks** attempts to be a long-term portfolio management tool
 
 ### DISCLAIMER
 
-This app has been designed for the author's needs only, in the author's spare time. By using this app, you are accepting it as-is.
+**AS-IS:** This app has been designed for the author's needs only, in the author's spare time. By using this app, you are accepting it as-is.
 
-For most people, [the link above](https://roderickwoodman.github.io/comparingstocks/) will take you to the live, production version of the app on the Internet. At the moment however, because of technical and financial reasons, the stocks are limited to the DOW30 and quotes are not current so you will see price errors.
-
-For developers, be aware that there is no backend server for this app. So although that means there are no security issues for users and passwords and their financial data, it also means that each user's machine must submit its own API key to the Alpha Vantage quotes service. But this development mode feature has been disabled until throttling logic is put in place (on the front end) to intelligently meter the outgoing requests to the Alpha Vantage servers so that the app degrades gracefully for users who exceed their daily quota while using this app.
-
-This app has numerous features that are downstream of the quote data that are being developed on a daily basis using stale quote data. But eventually, current quotes will indeed be turned on.
+**Quotes Are Not Current** For most people, [the link above](https://roderickwoodman.github.io/comparingstocks/) will take you to the live, production version of the app on the Internet. At the moment however, because of technical, the stocks are limited to the DOW30 and quotes are not current so you will see price errors.
 
 ### (For Developers) Running this app locally
 
