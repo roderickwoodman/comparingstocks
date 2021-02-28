@@ -168,7 +168,7 @@ export class MyPerformance extends React.Component {
                     period_sort_suffix = ''
                     period_display_suffix = ''
                 }
-                new_period['display_name'] = (p !== periods_of_performance - 1) ? year + period_display_suffix : 'current'
+                new_period['displayName'] = (p !== periods_of_performance - 1) ? year + period_display_suffix : 'current'
                 new_period['sort_name'] = year + period_sort_suffix
 
                 // determine period's transactions
@@ -564,7 +564,7 @@ export class MyPerformance extends React.Component {
                     <div id="my-performance-periods">
                         { sorted_data.map( qdata => (
                         <div className="period-data" key={qdata.sort_name}>
-                            <p className="strong">{qdata.display_name}</p>
+                            <p className="strong">{qdata.displayName}</p>
                             <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
                             <p>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
                             <p>{this.formatCurrency(qdata.end_transfersinvalue)}</p>

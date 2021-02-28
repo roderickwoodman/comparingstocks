@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { EditNumericCell } from './EditNumericCell'
 
 
-// This component displays table data for either tickers (is_aggregate === 0) or tags (is_aggregate === 1).
+// This component displays table data for either tickers (isAggregate === 0) or tags (isAggregate === 1).
 // For tickers, the membership_set prop is all of the tags that it belongs to.
 // For tags, the membership_set prop is all of the tags that belong to it.
 export const GridRow = (props) => {
@@ -26,7 +26,7 @@ export const GridRow = (props) => {
     }
 
     const onWhatifCellClick = () => {
-        props.on_change_whatif_format()
+        props.onChangeWhatifFormat()
     }
 
     const toggleHoverSymbol = () => {
@@ -39,7 +39,7 @@ export const GridRow = (props) => {
 
     // this button removes a ticker from a tag
     const populateMemberButton = (symbol) => {
-        let is_aggr = props.is_aggregate
+        let is_aggr = props.isAggregate
         let row_name = props.row_name
         if (is_aggr) {
             // row_name is a TAG
@@ -69,13 +69,13 @@ export const GridRow = (props) => {
     }
 
     // this button deletes the ticker or tag completely
-    const populateDeleteButton = (column_name, is_aggregate) => {
+    const populateDeleteButton = (columnName, isAggregate) => {
         let classes = 'delete'
         if (hoveringSymbol) {
             classes += ' hovering'
         }
-        if (is_aggregate) {
-            if (column_name === 'symbol' && props.row_name !== 'untagged') {
+        if (isAggregate) {
+            if (columnName === 'symbol' && props.row_name !== 'untagged') {
                 return (
                     <button className={classes} onClick={ (e) => {props.on_delete_tags(props.row_name)}}>x</button>
                 )
@@ -83,7 +83,7 @@ export const GridRow = (props) => {
                 return
             }
         } else {
-            if (column_name === 'symbol' 
+            if (columnName === 'symbol' 
                 && !props.special_classes.includes('index')
                 && !(props.row_name === 'cash' && isNaN(props.current_shares)) ) {
                 return (
@@ -96,15 +96,15 @@ export const GridRow = (props) => {
     }
 
     // the edit button is an extra affordance; clicking anywhere in the cell enters edit mode on this cell's value
-    const populateEditButton = (column_name, row_name) => {
+    const populateEditButton = (columnName, row_name) => {
         let classes = 'edit'
         if (hoveringRiskFactor) {
             classes += ' hovering'
         }
-        if ( column_name === 'risk_factor'
+        if ( columnName === 'risk_factor'
             && row_name !== props.editing_row
             && row_name !== 'cash'
-            && !props.is_aggregate 
+            && !props.isAggregate 
             && !props.special_classes.includes('index') ) {
                 return (
                     <button className={classes}>{String.fromCharCode(0x270e)}</button>
@@ -134,7 +134,7 @@ export const GridRow = (props) => {
         }
     }
 
-    const styleCell = (column_name) => {
+    const styleCell = (columnName) => {
         let classes = 'position-cell'
         const row_name = props.row_name
         const change_pct = props.change_pct
@@ -145,31 +145,31 @@ export const GridRow = (props) => {
 
         // hovering
         if ( hoveringSymbol
-            && column_name === 'symbol' 
+            && columnName === 'symbol' 
             && !special_classes.includes('index') 
             && row_name !== 'untagged'
             && !(row_name === 'cash' && isNaN(current_shares)) ) {
             classes += ' hovering'
         }
         if ( hoveringRiskFactor
-            && column_name === 'risk_factor' 
+            && columnName === 'risk_factor' 
             && !special_classes.includes('index') 
-            && !props.is_aggregate
+            && !props.isAggregate
             && row_name !== 'cash' ) {
             classes += ' hovering'
         }
 
         // whatif
-        if ( column_name.startsWith('whatif_') ) {
+        if ( columnName.startsWith('whatif-') ) {
             classes += ' clickable whatif'
         }
 
         // italics
-        if ( column_name === 'symbol' && row_name === 'untagged') {
+        if ( columnName === 'symbol' && row_name === 'untagged') {
             classes += ' italics'
         }
 
-        switch (column_name) {
+        switch (columnName) {
             case 'symbol':
                 classes += ' col-symbol'
                 break
@@ -372,7 +372,7 @@ export const GridRow = (props) => {
             case 'whatif_current_shares':
                 if (whatif === null) {
                     value = 'n/a'
-                } else if (props.whatif_format === 'deltas') {
+                } else if (props.whatifFormat === 'deltas') {
                     value = whatif.current_shares - ((current_shares === 'n/a') ? 0 : current_shares)
                 } else {
                     value = whatif.current_shares
@@ -382,7 +382,7 @@ export const GridRow = (props) => {
                 value = current_price
                 break
             case 'quote_date':
-                if (!props.is_aggregate) {
+                if (!props.isAggregate) {
                     value = quote_date
                 } else {
                     value = 'n/a'
@@ -403,7 +403,7 @@ export const GridRow = (props) => {
                 if (!flagQuoteErrorOnPositionCell()) {
                     if (whatif === null) {
                         value = 'n/a'
-                    } else if (props.whatif_format === 'deltas') {
+                    } else if (props.whatifFormat === 'deltas') {
                         value = whatif.current_value - ((current_value === 'n/a') ? 0 : current_value)
                     } else {
                         value = whatif.current_value
@@ -435,7 +435,7 @@ export const GridRow = (props) => {
             case 'whatif_basis':
                 if (whatif === null) {
                     value = 'n/a'
-                } else if (props.whatif_format === 'deltas') {
+                } else if (props.whatifFormat === 'deltas') {
                     value = whatif.basis - ((basis === 'n/a') ? 0 : basis)
                 } else {
                     value = whatif.basis
@@ -455,7 +455,7 @@ export const GridRow = (props) => {
             case 'whatif_basis_risked':
                 if (whatif === null) {
                     value = 'n/a'
-                } else if (props.whatif_format === 'deltas') {
+                } else if (props.whatifFormat === 'deltas') {
                     value = whatif.basis_risked - ((basis_risked === 'n/a') ? 0 : basis_risked)
                 } else {
                     value = whatif.basis_risked
@@ -519,7 +519,7 @@ export const GridRow = (props) => {
                 if (!flagQuoteErrorOnPositionCell()) {
                     if (whatif === null) {
                         value = 'n/a'
-                    } else if (props.whatif_format === 'deltas') {
+                    } else if (props.whatifFormat === 'deltas') {
                         value = whatif.value_at_risk - ((value_at_risk === 'n/a') ? 0 : value_at_risk)
                     } else {
                         value = whatif.value_at_risk
@@ -576,7 +576,7 @@ export const GridRow = (props) => {
             default:
                 break
         }
-        if ( props.row_name === 'cash' || (props.is_aggregate && !props.membership_set.length) ) {
+        if ( props.row_name === 'cash' || (props.isAggregate && !props.membership_set.length) ) {
             switch (column.name) {
                 case 'realized_gains': 
                 case 'profit': 
@@ -616,7 +616,7 @@ export const GridRow = (props) => {
                 }
             }
             if (value >= 0) {
-                prefix = (column.name.startsWith('whatif_') && props.whatif_format === 'deltas') ? '+' + prefix : prefix
+                prefix = (column.name.startsWith('whatif-') && props.whatifFormat === 'deltas') ? '+' + prefix : prefix
                 return value = prefix + numberWithCommas(value) + suffix
             } else {
                 return value = '-' + prefix + numberWithCommas(Math.abs(value)) + suffix
@@ -667,7 +667,7 @@ export const GridRow = (props) => {
 
     // certain POSITION columns' cells may print share-count-based "n/a" values before a quote out-of-date error applies
     const flagQuoteErrorOnPositionCell = () => {
-        if (props.is_aggregate) {
+        if (props.isAggregate) {
             if (props.current_value !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
                 return true
             }
@@ -679,7 +679,7 @@ export const GridRow = (props) => {
         return false
     }
 
-    const is_aggr = props.is_aggregate
+    const is_aggr = props.isAggregate
 
     let row_classes = 'position-row' 
     props.special_classes.forEach(function(special_class) {
@@ -710,9 +710,9 @@ export const GridRow = (props) => {
                     return (
                         <td key={column.name} className={ styleCell(column.name) } onClick={ (e)=>editRiskFactor(props.row_name) } onMouseEnter={toggleHoverRiskFactor} onMouseLeave={toggleHoverRiskFactor}>{ populateCellValue(column) }{ populateEditButton(column.name, props.row_name) }</td>
                     )
-                } else if (column.name.startsWith('whatif_')) {
+                } else if (column.name.startsWith('whatif-')) {
                     return (
-                        <td key={column.name} className={ styleCell(column.name) } onClick={ (column.name.startsWith('whatif_')) ? (e)=>onWhatifCellClick() : undefined }>{ populateCellValue(column) }{ populateDeleteButton(column.name, is_aggr) }</td>
+                        <td key={column.name} className={ styleCell(column.name) } onClick={ (column.name.startsWith('whatif-')) ? (e)=>onWhatifCellClick() : undefined }>{ populateCellValue(column) }{ populateDeleteButton(column.name, is_aggr) }</td>
                     )
                 } else {
                     return (
@@ -733,7 +733,7 @@ GridRow.defaultProps = {
 }
 
 GridRow.propTypes = {
-    is_aggregate: PropTypes.bool,
+    isAggregate: PropTypes.bool,
     columns: PropTypes.array,
     row_name: PropTypes.string,
     membership_set: PropTypes.array,
@@ -790,8 +790,8 @@ GridRow.propTypes = {
         PropTypes.string
       ]),
     whatif: PropTypes.object,
-    whatif_format: PropTypes.string,
-    on_change_whatif_format: PropTypes.func,
+    whatifFormat: PropTypes.string,
+    onChangeWhatifFormat: PropTypes.func,
     on_remove_from_tag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
     on_delete_tags: PropTypes.func,

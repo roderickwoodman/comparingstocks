@@ -8,30 +8,30 @@ import { Popover } from 'react-bootstrap'
 import { OverlayTrigger } from 'react-bootstrap'
 
 
-const all_columns = [
+const allColumns = [
     {
         name: 'symbol',
-        display_name: 'Symbol',
+        displayName: 'Symbol',
         type: 'string',
         category: 'always'
     },
     {
         name: 'current_shares',
-        display_name: 'Shares',
+        displayName: 'Shares',
         type: 'number',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'whatif_current_shares',
-        display_name: 'What-If Shares',
+        displayName: 'What-If Shares',
         type: 'number',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'current_price',
-        display_name: 'Price',
+        displayName: 'Price',
         type: 'currency',
         num_decimals: 2,
         category: 'stock-specific'
@@ -39,69 +39,69 @@ const all_columns = [
     // this column is too short-term ;-P
     // {
     //     name: 'change_pct',
-    //     display_name: 'Change',
+    //     displayName: 'Change',
     //     type: 'percentage',
     //     num_decimals: 2,
     //     category: 'performance'
     // },
     {
         name: 'quote_date',
-        display_name: 'Price Date',
+        displayName: 'Price Date',
         type: 'string',
         category: 'stock-specific'
     },
     {
         name: 'current_value',
-        display_name: 'Value',
+        displayName: 'Value',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'percent_value',
-        display_name: 'Pct of Total Value',
+        displayName: 'Pct of Total Value',
         type: 'percentage',
         num_decimals: 1,
         category: 'holdings'
     },
     {
         name: 'whatif_current_value',
-        display_name: 'What-If Value',
+        displayName: 'What-If Value',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'basis',
-        display_name: 'Basis',
+        displayName: 'Basis',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'percent_basis',
-        display_name: 'Pct of Total Basis',
+        displayName: 'Pct of Total Basis',
         type: 'percentage',
         num_decimals: 1,
         category: 'holdings'
     },
     {
         name: 'whatif_basis',
-        display_name: 'What-If Basis',
+        displayName: 'What-If Basis',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'profit',
-        display_name: 'Profit',
+        displayName: 'Profit',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'percent_profit',
-        display_name: 'Pct Profit',
+        displayName: 'Pct Profit',
         type: 'percentage',
         passthrough_strings: true,
         num_decimals: 1,
@@ -109,62 +109,62 @@ const all_columns = [
     },
     {
         name: 'realized_gains',
-        display_name: 'Realized',
+        displayName: 'Realized',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'risk_factor_modified',
-        display_name: 'Risk Factor Edited Date',
+        displayName: 'Risk Factor Edited Date',
         type: 'string',
         category: 'stock-specific'
     },
     {
         name: 'risk_factor',
-        display_name: 'Risk Factor (default=0.20)',
+        displayName: 'Risk Factor (default=0.20)',
         type: 'number',
         num_decimals: 2,
         category: 'stock-specific'
     },
     {
         name: 'value_at_risk',
-        display_name: 'Value At Risk',
+        displayName: 'Value At Risk',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'whatif_value_at_risk',
-        display_name: 'What-If Value At Risk',
+        displayName: 'What-If Value At Risk',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'basis_risked',
-        display_name: 'Basis Risked',
+        displayName: 'Basis Risked',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'whatif_basis_risked',
-        display_name: 'What-If Basis Risked',
+        displayName: 'What-If Basis Risked',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
         name: 'volume',
-        display_name: 'Volume',
+        displayName: 'Volume',
         type: 'number',
         num_decimals: 0,
         category: 'stock-specific'
     },
     {
         name: 'dollar_volume',
-        display_name: 'Dollar Vol (M)',
+        displayName: 'Dollar Vol (M)',
         type: 'currency',
         scaling_power: -6,
         num_decimals: 0,
@@ -172,27 +172,27 @@ const all_columns = [
     },
     {
         name: 'start_date',
-        display_name: 'Holding Started Date',
+        displayName: 'Holding Started Date',
         type: 'string',
         category: 'holdings'
     },
     {
         name: 'short_change_pct',
-        display_name: '6-month',
+        displayName: '6-month',
         type: 'percentage',
         num_decimals: 1,
         category: 'performance'
     },
     {
         name: 'medium_change_pct',
-        display_name: '1-year',
+        displayName: '1-year',
         type: 'percentage',
         num_decimals: 1,
         category: 'performance'
     },
     {
         name: 'long_change_pct',
-        display_name: '2-year',
+        displayName: '2-year',
         type: 'percentage',
         num_decimals: 1,
         category: 'performance'
@@ -223,7 +223,7 @@ export class ComparingStocks extends React.Component {
             allWhatifs: {},
             allConsoleMessages: [],
             last_console_message: '',
-            whatif_format: 'deltas', // deltas | new_values
+            whatifFormat: 'deltas', // deltas | new_values
             balance_target_set: 'my_current_holdings',
             balance_target_column: '',
             sell_all_of: [],
@@ -250,7 +250,7 @@ export class ComparingStocks extends React.Component {
             show_aggregates: true,
             error_if_not_todays_quote: true,
             show_only_achieved_performance: false,
-            sort_column: 'symbol',
+            sortColumn: 'symbol',
             sort_dir_asc: true,
             shown_columns: [],
 
@@ -313,9 +313,9 @@ export class ComparingStocks extends React.Component {
 
         // 1. load all locally-stored data
 
-        const stored_sort_column = JSON.parse(localStorage.getItem("sort_column"))
+        const stored_sort_column = JSON.parse(localStorage.getItem("sortColumn"))
         if (stored_sort_column !== null) {
-            this.setState({ sort_column: stored_sort_column })
+            this.setState({ sortColumn: stored_sort_column })
         }
 
         const stored_sort_dir_asc = JSON.parse(localStorage.getItem("sort_dir_asc"))
@@ -323,9 +323,9 @@ export class ComparingStocks extends React.Component {
             this.setState({ sort_dir_asc: stored_sort_dir_asc })
         }
 
-        const stored_whatif_format = JSON.parse(localStorage.getItem("whatif_format"))
+        const stored_whatif_format = JSON.parse(localStorage.getItem("whatifFormat"))
         if (stored_whatif_format !== null) {
-            this.setState({ whatif_format: stored_whatif_format })
+            this.setState({ whatifFormat: stored_whatif_format })
         }
 
         let allTags = {}
@@ -365,7 +365,7 @@ export class ComparingStocks extends React.Component {
         if (stored_shown_columns !== null) {
             init_shown_columns = [...stored_shown_columns]
         } else {
-            init_shown_columns = all_columns.filter(column => default_shown_columns.includes(column.name))
+            init_shown_columns = allColumns.filter(column => default_shown_columns.includes(column.name))
         }
 
 
@@ -929,45 +929,45 @@ export class ComparingStocks extends React.Component {
     }
 
     onChangeWhatifFormat() {
-        let new_whatif_format = (this.state.whatif_format === 'deltas') ? 'new_values' : 'deltas'
-        localStorage.setItem('whatif_format', JSON.stringify(new_whatif_format))
-        this.setState({ whatif_format: new_whatif_format })
+        let new_whatif_format = (this.state.whatifFormat === 'deltas') ? 'new_values' : 'deltas'
+        localStorage.setItem('whatifFormat', JSON.stringify(new_whatif_format))
+        this.setState({ whatifFormat: new_whatif_format })
     }
 
     onChangeSort(new_sort_column) {
-        if (new_sort_column === this.state.sort_column) {
+        if (new_sort_column === this.state.sortColumn) {
             localStorage.setItem('sort_dir_asc', JSON.stringify(!this.state.sort_dir_asc))
             this.setState(prevState => ({
                 sort_dir_asc: !prevState.sort_dir_asc
             }))
         }
-        localStorage.setItem('sort_column', JSON.stringify(new_sort_column))
-        this.setState({ sort_column: new_sort_column })
+        localStorage.setItem('sortColumn', JSON.stringify(new_sort_column))
+        this.setState({ sortColumn: new_sort_column })
     }
 
     showColumns(column_names) {
         this.setState(prevState => {
             let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
-            column_names.forEach(function(column_name) {
-                if (!new_shown_column_names.includes(column_name)) {
-                    new_shown_column_names.push(column_name)
+            column_names.forEach(function(columnName) {
+                if (!new_shown_column_names.includes(columnName)) {
+                    new_shown_column_names.push(columnName)
                 }
             })
-            let new_shown_columns = all_columns.filter(column => new_shown_column_names.includes(column.name))
+            let new_shown_columns = allColumns.filter(column => new_shown_column_names.includes(column.name))
             localStorage.setItem('shown_columns', JSON.stringify(new_shown_columns))
             return { shown_columns: new_shown_columns }
         })
     }
 
-    onToggleShowColumn(column_name) {
+    onToggleShowColumn(columnName) {
         this.setState(prevState => {
             let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
-            if (new_shown_column_names.includes(column_name)) {
-                new_shown_column_names.splice(new_shown_column_names.findIndex(name => name === column_name), 1)
+            if (new_shown_column_names.includes(columnName)) {
+                new_shown_column_names.splice(new_shown_column_names.findIndex(name => name === columnName), 1)
             } else {
-                new_shown_column_names.push(column_name)
+                new_shown_column_names.push(columnName)
             }
-            let new_shown_columns = all_columns.filter(column => new_shown_column_names.includes(column.name))
+            let new_shown_columns = allColumns.filter(column => new_shown_column_names.includes(column.name))
             localStorage.setItem('shown_columns', JSON.stringify(new_shown_columns))
             return { shown_columns: new_shown_columns }
         })
@@ -1646,7 +1646,7 @@ export class ComparingStocks extends React.Component {
             column = 'basis'
         }
         show_whatif_columns.push(column)
-        show_whatif_columns.push('whatif_'+column)
+        show_whatif_columns.push('whatif-'+column)
         if (target_column === 'only_profits') {
             show_whatif_columns.push('profit')
         }
@@ -2024,7 +2024,7 @@ export class ComparingStocks extends React.Component {
 
     sortTickers(names_list) {
 
-        let sort_column = this.state.sort_column
+        let sortColumn = this.state.sortColumn
         let quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
         let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'profit', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
@@ -2035,7 +2035,7 @@ export class ComparingStocks extends React.Component {
             let value_a, value_b
 
             // pin certain names to the top, regardless of the user sort
-            if (sort_column === 'symbol') {
+            if (sortColumn === 'symbol') {
                 if (a === 'untagged') {
                     return -1
                 } else if (b === 'untagged') {
@@ -2053,48 +2053,48 @@ export class ComparingStocks extends React.Component {
                 value_b = b
 
             // sort by a quote column
-            } else if (quote_columns.includes(sort_column)) {
+            } else if (quote_columns.includes(sortColumn)) {
                 if (self.nameIsAnAggregate(a) || !self.state.allCurrentQuotes.hasOwnProperty(a)) {
                     value_a = 'n/a'
                 } else {
-                    if (sort_column === 'dollar_volume') {
+                    if (sortColumn === 'dollar_volume') {
                         value_a = self.state.allCurrentQuotes[a]['current_price'] * self.state.allCurrentQuotes[a]['volume']
                     } else {
-                        value_a = self.state.allCurrentQuotes[a][sort_column]
+                        value_a = self.state.allCurrentQuotes[a][sortColumn]
                     }
                 }
                 if (self.nameIsAnAggregate(b) || !self.state.allCurrentQuotes.hasOwnProperty(b)) {
                     value_b = 'n/a'
                 } else {
-                    if (sort_column === 'dollar_volume') {
+                    if (sortColumn === 'dollar_volume') {
                         value_b = self.state.allCurrentQuotes[b]['current_price'] * self.state.allCurrentQuotes[b]['volume']
                     } else {
-                        value_b = self.state.allCurrentQuotes[b][sort_column]
+                        value_b = self.state.allCurrentQuotes[b][sortColumn]
                     }
                 }
 
             // sort by a performance column
-            } else if (performance_columns.includes(sort_column)) {
+            } else if (performance_columns.includes(sortColumn)) {
                 if (self.nameIsAnAggregate(a) && self.state.aggrPerformance.hasOwnProperty(a)) {
-                    value_a = self.state.aggrPerformance[a][sort_column]
+                    value_a = self.state.aggrPerformance[a][sortColumn]
                 } else if (!self.nameIsAnAggregate(a) && self.state.allPerformanceNumbers.hasOwnProperty(a)) {
-                    value_a = self.state.allPerformanceNumbers[a][sort_column]
+                    value_a = self.state.allPerformanceNumbers[a][sortColumn]
                 } else {
                     value_a = 'n/a'
                 }
                 if (self.nameIsAnAggregate(b) && self.state.aggrPerformance.hasOwnProperty(b)) {
-                    value_b = self.state.aggrPerformance[b][sort_column]
+                    value_b = self.state.aggrPerformance[b][sortColumn]
                 } else if (!self.nameIsAnAggregate(b) && self.state.allPerformanceNumbers.hasOwnProperty(b)) {
-                    value_b = self.state.allPerformanceNumbers[b][sort_column]
+                    value_b = self.state.allPerformanceNumbers[b][sortColumn]
                 } else {
                     value_b = 'n/a'
                 }
 
             // sort by a holdings column
-            } else if (holdings_columns.includes(sort_column)) {
+            } else if (holdings_columns.includes(sortColumn)) {
                 let positionvalue_a, positionvalue_b, basis_a, basis_b
                 if (self.nameIsAnAggregate(a)) {
-                    switch(sort_column) {
+                    switch(sortColumn) {
                         case 'current_shares':
                             value_a = 'n/a'
                             break;
@@ -2125,13 +2125,13 @@ export class ComparingStocks extends React.Component {
                             value_a = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(a)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'profit' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
+                    if (sortColumn === 'current_value' || sortColumn === 'percent_value' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
-                            if ( (sort_column === 'profit' || sort_column === 'percent_profit') && positionvalue_a !== 0) {
+                            if ( (sortColumn === 'profit' || sortColumn === 'percent_profit') && positionvalue_a !== 0) {
                                 basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
-                            } else if (sort_column === 'value_at_risk' && positionvalue_a !== 0 && self.state.allRisk.hasOwnProperty(a)) {
+                            } else if (sortColumn === 'value_at_risk' && positionvalue_a !== 0 && self.state.allRisk.hasOwnProperty(a)) {
                                 value_a = positionvalue_a * self.state.allRisk[a].factor
                             } else {
                                 value_a = positionvalue_a
@@ -2140,12 +2140,12 @@ export class ComparingStocks extends React.Component {
                             value_a = 'n/a'
                         }
                     } else if (self.state.allPositions[a]['current_shares']) {
-                        if (sort_column === 'basis_risked' && self.state.allRisk.hasOwnProperty(a)) {
+                        if (sortColumn === 'basis_risked' && self.state.allRisk.hasOwnProperty(a)) {
                             value_a = self.state.allPositions[a]['basis'] * self.state.allRisk[a]['factor']
-                        } else if (sort_column === 'percent_basis') {
+                        } else if (sortColumn === 'percent_basis') {
                             value_a = self.state.allPositions[a]['basis']
                         } else {
-                            value_a = self.state.allPositions[a][sort_column]
+                            value_a = self.state.allPositions[a][sortColumn]
                         }
                     } else {
                         value_a = 'n/a'
@@ -2154,7 +2154,7 @@ export class ComparingStocks extends React.Component {
                     value_a = 'n/a'
                 }
                 if (self.nameIsAnAggregate(b)) {
-                    switch(sort_column) {
+                    switch(sortColumn) {
                         case 'current_shares':
                             value_b = 'n/a'
                             break;
@@ -2185,13 +2185,13 @@ export class ComparingStocks extends React.Component {
                             value_b = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(b)) {
-                    if (sort_column === 'current_value' || sort_column === 'percent_value' || sort_column === 'profit' || sort_column === 'percent_profit' || sort_column === 'value_at_risk') {
+                    if (sortColumn === 'current_value' || sortColumn === 'percent_value' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
-                            if ( (sort_column === 'profit' || sort_column === 'percent_profit') && positionvalue_b !== 0) {
+                            if ( (sortColumn === 'profit' || sortColumn === 'percent_profit') && positionvalue_b !== 0) {
                                 basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
-                            } else if (sort_column === 'value_at_risk' && positionvalue_b !== 0 && self.state.allRisk.hasOwnProperty(b)) {
+                            } else if (sortColumn === 'value_at_risk' && positionvalue_b !== 0 && self.state.allRisk.hasOwnProperty(b)) {
                                 value_b = positionvalue_b * self.state.allRisk[b].factor
                             } else {
                                 value_b = positionvalue_b
@@ -2200,12 +2200,12 @@ export class ComparingStocks extends React.Component {
                             value_b = 'n/a'
                         }
                     } else if (self.state.allPositions[b]['current_shares']) {
-                        if (sort_column === 'basis_risked' && self.state.allRisk.hasOwnProperty(b)) {
+                        if (sortColumn === 'basis_risked' && self.state.allRisk.hasOwnProperty(b)) {
                             value_b = self.state.allPositions[b]['basis'] * self.state.allRisk[b]['factor']
-                        } else if (sort_column === 'percent_basis') {
+                        } else if (sortColumn === 'percent_basis') {
                             value_b = self.state.allPositions[b]['basis']
                         } else {
-                            value_b = self.state.allPositions[b][sort_column]
+                            value_b = self.state.allPositions[b][sortColumn]
                         }
                     } else {
                         value_b = 'n/a'
@@ -2215,11 +2215,11 @@ export class ComparingStocks extends React.Component {
                 }
 
             // miscelaneous columns
-            } else if (sort_column === 'risk_factor') {
+            } else if (sortColumn === 'risk_factor') {
                 value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].factor : (a === 'cash') ? 0 : 0.20
                 value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : (b === 'cash') ? 0 : 0.20
 
-            } else if (sort_column === 'risk_factor_modified') {
+            } else if (sortColumn === 'risk_factor_modified') {
                 value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].modifiedAt : 'n/a'
                 value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].modifiedAt : 'n/a'
 
@@ -2284,7 +2284,7 @@ export class ComparingStocks extends React.Component {
             }
         }
         let unique_tickers_to_show = Array.from(new Set(tickers_to_show))
-        let sort_triangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
+        let sortTriangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
         let sorted_tickers = this.sortTickers(unique_tickers_to_show)
 
         let row_data = {}
@@ -2354,14 +2354,14 @@ export class ComparingStocks extends React.Component {
         })
 
         let shown_column_names = this.state.shown_columns.map(column => column.name)
-        let all_columns_namesorted = JSON.parse(JSON.stringify(all_columns)).sort(function (a,b) {
-            let value_a = a.display_name
+        let all_columns_namesorted = JSON.parse(JSON.stringify(allColumns)).sort(function (a,b) {
+            let value_a = a.displayName
             if (value_a.includes('year')) {
                 value_a = '0' + value_a
             } else if (value_a.includes('month')) {
                 value_a = '00' + value_a
             }
-            let value_b = b.display_name
+            let value_b = b.displayName
             if (value_b.includes('year')) {
                 value_b = '0' + value_b
             } else if (value_b.includes('month')) {
@@ -2467,7 +2467,7 @@ export class ComparingStocks extends React.Component {
                             <div className="strong">{key}</div>
                             <ul>
                                 {all_columns_by_category[key].map(column => (
-                                    <li key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name)} className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.display_name }</li>
+                                    <li key={ column.name } onClick={ (e)=>this.onToggleShowColumn(column.name)} className={!shown_column_names.includes(column.name) ? 'strikethrough' : ''}>{ column.displayName }</li>
                                 ))}
                             </ul>
                         </div>
@@ -2522,24 +2522,24 @@ export class ComparingStocks extends React.Component {
             </OverlayTrigger>
         )
         
-        const PopulateHeaderRow = ({is_aggregate, highlight_column}) => (
+        const PopulateHeaderRow = ({isAggregate, highlightColumn}) => (
             <GridHeaderRow
-                highlight_column={highlight_column}
-                is_aggregate={is_aggregate}
+                highlightColumn={highlightColumn}
+                isAggregate={isAggregate}
                 columns={this.state.shown_columns}
-                symbol_count_str={symbol_count}
-                sort_column={this.state.sort_column}
-                sort_triangle={sort_triangle}
-                whatif_format={this.state.whatif_format}
-                on_change_sort={this.onChangeSort}
-                on_change_whatif_format={this.onChangeWhatifFormat}
+                symbolCountStr={symbol_count}
+                sortColumn={this.state.sortColumn}
+                sortTriangle={sortTriangle}
+                whatifFormat={this.state.whatifFormat}
+                onChangeSort={this.onChangeSort}
+                onChangeWhatifFormat={this.onChangeWhatifFormat}
             />
         )
 
         const PopulateRow = ({row_data}) => (
             <GridRow 
                 key={row_data.row_name}
-                is_aggregate={row_data.is_aggregate}
+                isAggregate={row_data.isAggregate}
                 row_name={row_data.row_name}
                 membership_set={row_data.membership_set}
                 columns={row_data.columns}
@@ -2581,8 +2581,8 @@ export class ComparingStocks extends React.Component {
                                ? row_data.total_basis 
                                : 'n/a'}
                 whatif={row_data.whatif}
-                whatif_format={this.state.whatif_format}
-                on_change_whatif_format={this.onChangeWhatifFormat}
+                whatifFormat={this.state.whatifFormat}
+                onChangeWhatifFormat={this.onChangeWhatifFormat}
                 on_remove_from_tag={row_data.on_remove_from_tag}
                 on_delete_ticker={row_data.on_delete_ticker}
                 on_delete_tags={row_data.on_delete_tags}
@@ -2622,7 +2622,7 @@ export class ComparingStocks extends React.Component {
             let quote_exists = self.currentQuoteExists(ticker)
             let performance_numbers_exist = self.state.allPerformanceNumbers.hasOwnProperty(ticker)
             let new_row = {}
-            new_row['is_aggregate'] = false
+            new_row['isAggregate'] = false
             new_row['row_name'] = ticker
             new_row['membership_set'] = row_data[ticker]['tags']
             new_row['columns'] = self.state.shown_columns
@@ -2666,7 +2666,7 @@ export class ComparingStocks extends React.Component {
                 }
 
                 let new_row = {}
-                new_row['is_aggregate'] = true
+                new_row['isAggregate'] = true
                 new_row['row_name'] = aggr_ticker
                 new_row['membership_set'] = self.state.allTags[aggr_ticker]
                 new_row['columns'] = self.state.shown_columns
@@ -2698,8 +2698,8 @@ export class ComparingStocks extends React.Component {
         }
 
         let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
-        let all_ticker_rows = all_row_data.filter(row_data => !row_data.is_aggregate)
-        let all_aggregate_rows = all_row_data.filter(row_data => row_data.is_aggregate)
+        let all_ticker_rows = all_row_data.filter(row_data => !row_data.isAggregate)
+        let all_aggregate_rows = all_row_data.filter(row_data => row_data.isAggregate)
 
         return (
             <div id="page-wrapper">
@@ -2753,11 +2753,11 @@ export class ComparingStocks extends React.Component {
                 </div>
                 <table id="position-listing" cellSpacing="0">
                     <thead>
-                        <PopulateHeaderRow is_aggregate={false} highlight_column={this.state.balance_target_column} />
-                        <PopulateHeaderRow is_aggregate={false} highlight_column={null} />
+                        <PopulateHeaderRow isAggregate={false} highlightColumn={this.state.balance_target_column} />
+                        <PopulateHeaderRow isAggregate={false} highlightColumn={null} />
                     </thead>
                     <tbody>
-                        {this.state.done && all_row_data.filter(row_data => !row_data.is_aggregate).map(row_data => (
+                        {this.state.done && all_row_data.filter(row_data => !row_data.isAggregate).map(row_data => (
                             <PopulateRow key={row_data.row_name} row_data={row_data} />
                         ))}
                         {this.state.done && all_ticker_rows.length ? (
@@ -2777,10 +2777,10 @@ export class ComparingStocks extends React.Component {
                 {this.state.done && this.state.show_aggregates && (
                     <table id="aggr-position-listing" cellSpacing="0">
                         <thead>
-                            <PopulateHeaderRow is_aggregate={true} highlight_column={null} />
+                            <PopulateHeaderRow isAggregate={true} highlightColumn={null} />
                         </thead>
                         <tbody>
-                            {this.state.done && all_aggregate_rows.filter(row => row.name !== 'untagged').length ? all_row_data.filter(row_data => row_data.is_aggregate).map(row_data => (
+                            {this.state.done && all_aggregate_rows.filter(row => row.name !== 'untagged').length ? all_row_data.filter(row_data => row_data.isAggregate).map(row_data => (
                                 <PopulateRow key={row_data.row_name} row_data={row_data} />
                             )) : (
                                 <tr>

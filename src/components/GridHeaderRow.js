@@ -2,86 +2,86 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 
-// This component displays table headers for either tickers (is_aggregate === 0) or tags (is_aggregate === 1).
+// This component displays table headers for either tickers (isAggregate === 0) or tags (isAggregate === 1).
 export const GridHeaderRow = (props) => {
 
-    const styleCell = (column_index, column_name) => {
+    const styleCell = (columnIndex, columnName) => {
         let classes = ''
-        if (column_index !== 0) {
+        if (columnIndex !== 0) {
             classes += 'clickable '
         }
-        if (column_name.startsWith('whatif_')) {
+        if (columnName.startsWith('whatif-')) {
             classes += 'whatif '
         }
         return classes
     }
 
-    const onHeaderCellClick = (column_name) => {
-        if (column_name.startsWith('whatif_')) {
-            props.on_change_whatif_format()
+    const onHeaderCellClick = (columnName) => {
+        if (columnName.startsWith('whatif-')) {
+            props.onChangeWhatifFormat()
         } else {
-            props.on_change_sort(column_name)
+            props.onChangeSort(columnName)
         }
     }
 
-    let is_aggregate = props.is_aggregate
-    let sort_column = props.sort_column
-    let sort_triangle = props.sort_triangle
-    let symbol_count_str = props.symbol_count_str
+    let isAggregate = props.isAggregate
+    let sortColumn = props.sortColumn
+    let sortTriangle = props.sortTriangle
+    let symbolCountStr = props.symbolCountStr
 
-    let all_columns = []
+    let allColumns = []
 
-    let first_column = { // always the tag or ticker membership column
+    let firstColumn = { // always the tag or ticker membership column
         name: 'first'
     }
-    if (props.is_aggregate) {
-        first_column['display_name'] = 'Tickers'
+    if (props.isAggregate) {
+        firstColumn['displayName'] = 'Tickers'
     } else {
-        first_column['display_name'] = 'Tags'
+        firstColumn['displayName'] = 'Tags'
     }
-    all_columns.push(first_column)
+    allColumns.push(firstColumn)
 
     props.columns.forEach(function(column) {
-        let new_column = {}
-        new_column['name'] = column.name
+        let newColumn = {}
+        newColumn['name'] = column.name
         if (column.name === 'symbol') {
-            if (is_aggregate) {
-                new_column['display_name'] = 'Tags'
+            if (isAggregate) {
+                newColumn['displayName'] = 'Tags'
             } else {
-                new_column['display_name'] = 'Tickers'
+                newColumn['displayName'] = 'Tickers'
             }
-        } else if (column.name.startsWith('whatif_')) {
-            if (props.whatif_format === 'deltas') {
-                new_column['display_name'] = column.display_name.replace('What-If', 'What-If DELTA')
+        } else if (column.name.startsWith('whatif-')) {
+            if (props.whatifFormat === 'deltas') {
+                newColumn['displayName'] = column.displayName.replace('What-If', 'What-If DELTA')
             } else {
-                new_column['display_name'] = column.display_name.replace('What-If', 'What-If NEW')
+                newColumn['displayName'] = column.displayName.replace('What-If', 'What-If NEW')
             }
         } else {
-            new_column['display_name'] = column.display_name
+            newColumn['displayName'] = column.displayName
         }
-        all_columns.push(new_column)
+        allColumns.push(newColumn)
     })
 
     return (
         <tr>
-        {props.highlight_column !== null && all_columns.map( (column,i) => (
+        {props.highlightColumn !== null && allColumns.map( (column,i) => (
             <th
             key={ column.name }
             >
-                { (column.name === props.highlight_column) 
+                { (column.name === props.highlightColumn) 
                 ? 'BEFORE BALANCING' 
-                : (column.name === 'whatif_' + props.highlight_column) 
+                : (column.name === 'whatif-' + props.highlightColumn) 
                     ? 'AFTER BALANCING' 
                     : String.fromCharCode(160) }
             </th>
         ))}
-        {props.highlight_column === null && all_columns.map( (column,i) => (
+        {props.highlightColumn === null && allColumns.map( (column,i) => (
             <th 
                 key={ column.name } 
                 className={ styleCell(i, column.name) }
                 onClick={ (i!==0) ? (e)=>onHeaderCellClick(column.name) : undefined }
-            >   { (i===1 && !is_aggregate) ? column.display_name + symbol_count_str : column.display_name }
-                { column.name === sort_column ? sort_triangle : '' }
+            >   { (i===1 && !isAggregate) ? column.displayName + symbolCountStr : column.displayName }
+                { column.name === sortColumn ? sortTriangle : '' }
             </th>
         ))}
         </tr>
@@ -90,13 +90,13 @@ export const GridHeaderRow = (props) => {
 }
 
 GridHeaderRow.propTypes = {
-    highlight_column: PropTypes.string,
-    is_aggregate: PropTypes.bool,
+    highlightColumn: PropTypes.string,
+    isAggregate: PropTypes.bool,
     columns: PropTypes.array,
-    symbol_count_str: PropTypes.string,
-    sort_column: PropTypes.string,
-    sort_triangle: PropTypes.string,
-    whatif_format: PropTypes.string,
-    on_change_sort: PropTypes.func,
-    on_change_whatif_format: PropTypes.func
+    symbolCountStr: PropTypes.string,
+    sortColumn: PropTypes.string,
+    sortTriangle: PropTypes.string,
+    whatifFormat: PropTypes.string,
+    onChangeSort: PropTypes.func,
+    onChangeWhatifFormat: PropTypes.func
 }
