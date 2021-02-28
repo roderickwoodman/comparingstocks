@@ -9,7 +9,7 @@ Adding and removing a stock usually requires a more complex rebalancing operatio
 
 ### Meaningful Data Formats
 
-Stock positions are inherently quite different in terms of things like dates, cash invested, volatility, and performance. But **ComparingStocks** generates the following high-level numbers in order to show the most insightful comparisons:
+Stock positions are inherently quite different in terms of things like dates, cash invested, volatility, and performance. But **ComparingStocks** generates the following high-level numbers that enable apples-to-apples comparisons:
 
 * Positions as a percentage of the total portfolio
 * Positions adjusted for risk
@@ -28,7 +28,7 @@ This app has a flexible tagging interface that allows these metrics to be calcul
 
 ### Portfolio Balancing
 
-One of the key features of this app is its robust balancing engine. The following balancing scenarios are supported:
+The most powerful feature of this app is its robust balancing engine. The following balancing scenarios are supported:
 
 * balance by basis
 * balance by risk-adjusted basis
