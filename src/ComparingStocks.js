@@ -653,7 +653,7 @@ export class ComparingStocks extends React.Component {
     // }
 
     getTransactionById(transaction_id) {
-        return this.state.allTransactions.filter(transaction => transaction.modified_at === transaction_id)[0]
+        return this.state.allTransactions.filter(transaction => transaction.modifiedAt === transaction_id)[0]
     }
 
     getTransactionsByTicker(ticker) {
@@ -988,7 +988,7 @@ export class ComparingStocks extends React.Component {
 
     createConsoleMessageSet(new_message) {
         let new_console_message_set = {
-            modified_at: new Date().getTime(),
+            modifiedAt: new Date().getTime(),
             summary: new_message,
             messages: [new_message],
             has_errors: (new_message.toUpperCase().startsWith('ERROR:')) ? true : false
@@ -1142,7 +1142,7 @@ export class ComparingStocks extends React.Component {
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_transaction = { 
-                modified_at: new Date().getTime(),
+                modifiedAt: new Date().getTime(),
                 date: date,
                 ticker: ticker,
                 action: action,
@@ -1269,7 +1269,7 @@ export class ComparingStocks extends React.Component {
             // update transaction info
             let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions))
             let new_cash_transaction = { 
-                modified_at: new Date().getTime(),
+                modifiedAt: new Date().getTime(),
                 date: date,
                 ticker: 'cash',
                 action: action,
@@ -1327,7 +1327,7 @@ export class ComparingStocks extends React.Component {
         this.setState(prevState => {
 
             // update transactions
-            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modified_at !== delete_transaction_id)
+            let newAllTransactions = JSON.parse(JSON.stringify(prevState.allTransactions)).filter(transaction => transaction.modifiedAt !== delete_transaction_id)
             localStorage.setItem('allTransactions', JSON.stringify(newAllTransactions))
 
             // add console messages
@@ -1502,10 +1502,10 @@ export class ComparingStocks extends React.Component {
             let newAllRisk = JSON.parse(JSON.stringify(prevState.allRisk))
             if (newAllRisk.hasOwnProperty(ticker)) {
                 newAllRisk[ticker]['factor'] = parseFloat(new_value)
-                newAllRisk[ticker]['modified_at'] = new Date().getTime()
+                newAllRisk[ticker]['modifiedAt'] = new Date().getTime()
             } else {
                 let newRisk = { 
-                    modified_at: new Date().getTime(),
+                    modifiedAt: new Date().getTime(),
                     factor: parseFloat(new_value) 
                 }
                 newAllRisk[ticker] = newRisk
@@ -2220,8 +2220,8 @@ export class ComparingStocks extends React.Component {
                 value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].factor : (b === 'cash') ? 0 : 0.20
 
             } else if (sort_column === 'risk_factor_modified') {
-                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].modified_at : 'n/a'
-                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].modified_at : 'n/a'
+                value_a = (self.state.allRisk.hasOwnProperty(a)) ? self.state.allRisk[a].modifiedAt : 'n/a'
+                value_b = (self.state.allRisk.hasOwnProperty(b)) ? self.state.allRisk[b].modifiedAt : 'n/a'
 
             // default, do not reorder this pair
             } else {
@@ -2637,7 +2637,7 @@ export class ComparingStocks extends React.Component {
             new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : null
-            new_row['risk_factor_modified'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].modified_at : null
+            new_row['risk_factor_modified'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].modifiedAt : null
             new_row['performance_numbers'] = (performance_numbers_exist) ? self.state.allPerformanceNumbers[ticker] : error_performance_numbers
             new_row['baseline'] = self.state.baseline
             new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].current_shares).length) ? true : false
@@ -2731,7 +2731,7 @@ export class ComparingStocks extends React.Component {
                                 on_new_cash={this.onNewCash}
                                 create_console_message_set={this.createConsoleMessageSet}
                                 clear_last_console_message={this.clearLastConsoleMessage}
-                                all_console_messages={this.state.allConsoleMessages}
+                                allConsoleMessages={this.state.allConsoleMessages}
                                 on_new_console_messages={this.onNewConsoleMessages}
                                 on_whatif_submit={this.onWhatifSubmit}
                             />

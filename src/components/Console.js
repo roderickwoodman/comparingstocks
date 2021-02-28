@@ -15,9 +15,9 @@ export const Console = (props) => {
         return classes
     }
 
-    const getMessageSetClasses = (message_set_count) => {
-        let classes = 'message_set'
-        if (parseInt(message_set_count) > 1) {
+    const getMessageSetClasses = (messageSetCount) => {
+        let classes = 'messageSet'
+        if (parseInt(messageSetCount) > 1) {
             classes += ' multiline'
         }
         return classes
@@ -31,39 +31,39 @@ export const Console = (props) => {
     }
 
     const onToggleSortOrder = () => {
-        let new_sort_dir = (dataSortDir === 'asc') ? 'desc' : 'asc'
-        setDataSortDir(new_sort_dir)
+        let newSortDir = (dataSortDir === 'asc') ? 'desc' : 'asc'
+        setDataSortDir(newSortDir)
     }
 
     const onToggleExpandMessageSet = (identifier) => {
-        let new_expanded_message_sets = JSON.parse(JSON.stringify(expandedMessageSets))
-        if (!new_expanded_message_sets.includes(identifier)) {
-            new_expanded_message_sets = [identifier]
+        let newExpandedMessageSets = JSON.parse(JSON.stringify(expandedMessageSets))
+        if (!newExpandedMessageSets.includes(identifier)) {
+            newExpandedMessageSets = [identifier]
         } else {
-            new_expanded_message_sets = []
+            newExpandedMessageSets = []
         }
-        setExpandedMessageSets(new_expanded_message_sets)
+        setExpandedMessageSets(newExpandedMessageSets)
     }
 
-    const PopulateMessageSet = (to_populate) => {
-        let timestamp = formatTimestamp(to_populate.message_set.modified_at)
-        let count = to_populate.message_set.messages.length
+    const PopulateMessageSet = (toPopulate) => {
+        let timestamp = formatTimestamp(toPopulate.messageSet.modifiedAt)
+        let count = toPopulate.messageSet.messages.length
         return (
             <div className={getMessageSetClasses(count)}>
-                <p className="summary" onClick={ (e) => onToggleExpandMessageSet(timestamp)}>[{timestamp}] <span className={getClasses(to_populate.message_set.summary)}>{to_populate.message_set.summary}</span></p>
-                { to_populate.message_set.messages.length > 1 && expandedMessageSets.includes(timestamp) && to_populate.message_set.messages.map ( (message, i) => (
+                <p className="summary" onClick={ (e) => onToggleExpandMessageSet(timestamp)}>[{timestamp}] <span className={getClasses(toPopulate.messageSet.summary)}>{toPopulate.messageSet.summary}</span></p>
+                { toPopulate.messageSet.messages.length > 1 && expandedMessageSets.includes(timestamp) && toPopulate.messageSet.messages.map ( (message, i) => (
                     <p key={i} onClick={ (e) => onToggleExpandMessageSet(timestamp)}><span className={getClasses(message)}>{message}</span></p>
                 ))}
             </div>
         )
     }
 
-    let message_sets = props.all_console_messages
-    let ordered_message_sets
-    ordered_message_sets = message_sets.sort(function(a,b) {
-        if (a.modified_at < b.modified_at) {
+    let messageSets = props.allConsoleMessages
+    let orderedMessageSets
+    orderedMessageSets = messageSets.sort(function(a,b) {
+        if (a.modifiedAt < b.modifiedAt) {
             return (dataSortDir === 'asc') ? -1 : 1
-        } else if (a.modified_at > b.modified_at) {
+        } else if (a.modifiedAt > b.modifiedAt) {
             return (dataSortDir === 'asc') ? 1 : -1
         } else {
             return 0
@@ -74,8 +74,8 @@ export const Console = (props) => {
         <div id="console-messages-wrapper">
             <button onClick={ (e)=>onToggleSortOrder() } className="strong">&#x21c5;</button> History:
             <div id="console-messages">
-            { ordered_message_sets && ordered_message_sets.map( (message_set, i) => (
-                <PopulateMessageSet key={i} message_set={message_set} />
+            { orderedMessageSets && orderedMessageSets.map( (messageSet, i) => (
+                <PopulateMessageSet key={i} messageSet={messageSet} />
             ))}
             </div>
         </div>
@@ -83,5 +83,5 @@ export const Console = (props) => {
 }
 
 Console.propTypes = {
-    all_console_messages: PropTypes.array.isRequired,
+    allConsoleMessages: PropTypes.array.isRequired,
 }

@@ -122,7 +122,7 @@ export const InputForms = (props) => {
                 {whichInputs === 'console' && (
                     <React.Fragment>
                     <Console
-                        all_console_messages={props.all_console_messages}
+                        allConsoleMessages={props.allConsoleMessages}
                     />
                     </React.Fragment>
                 )}
@@ -153,7 +153,7 @@ InputForms.propTypes = {
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,
     create_console_message_set: PropTypes.func.isRequired,
-    all_console_messages: PropTypes.array.isRequired,
+    allConsoleMessages: PropTypes.array.isRequired,
     on_new_console_messages: PropTypes.func.isRequired,
     on_whatif_submit: PropTypes.func,
     clear_last_console_message: PropTypes.func

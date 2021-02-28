@@ -14,8 +14,8 @@ export const TransactionsList = (props) => {
     }
 
     const onToggleSortOrder = () => {
-        let new_sort_dir = (dataSortDir === 'asc') ? 'desc' : 'asc'
-        setDataSortDir(new_sort_dir)
+        let newSortDir = (dataSortDir === 'asc') ? 'desc' : 'asc'
+        setDataSortDir(newSortDir)
     }
         
     const onExportButton = () => {
@@ -83,7 +83,7 @@ export const TransactionsList = (props) => {
             </section>
             <section id="transactions">
                 {ordered_filtered_transactions.map( transaction => (
-                    <p key={transaction.modified_at} className="transaction" onClick={ (e)=>props.on_delete_transaction(transaction.modified_at)}>{transaction.summary}</p>
+                    <p key={transaction.modifiedAt} className="transaction" onClick={ (e)=>props.on_delete_transaction(transaction.modifiedAt)}>{transaction.summary}</p>
                 ))}
             </section>
         </section>

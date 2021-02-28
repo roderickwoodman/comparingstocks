@@ -626,15 +626,15 @@ input[type='checkbox'] {
   color: red;
 }
 
-.message_set p:not(.summary) {
+.messageSet p:not(.summary) {
   padding-left: 30px;
 }
 
-.message_set {
+.messageSet {
   border: 1px solid transparent;
 }
 
-.message_set.multiline:hover {
+.messageSet.multiline:hover {
   cursor: pointer;
   border: 1px solid silver;
 }

@@ -510,10 +510,10 @@ export class MyPerformance extends React.Component {
         let new_scroll_left = (num_periods - leftmost_zbperiod_shown - 1) * period_width
         el.scrollLeft = new_scroll_left
         this.setState(prevState => {
-            let new_sort_dir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
-            localStorage.setItem('data_sort_dir', JSON.stringify(new_sort_dir))
+            let newSortDir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
+            localStorage.setItem('data_sort_dir', JSON.stringify(newSortDir))
             return { 
-                data_sort_dir: new_sort_dir 
+                data_sort_dir: newSortDir 
             }
         })
     }
