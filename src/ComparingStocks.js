@@ -2590,7 +2590,7 @@ export class ComparingStocks extends React.Component {
                 current_edit_value={(typeof this.state.editing_row === 'string' && this.state.allRisk.hasOwnProperty(this.state.editing_row)) ? this.state.allRisk[this.state.editing_row].factor : ''}
                 on_edit_cell={row_data.on_edit_cell}
                 on_modify_risk_factor={row_data.on_modify_risk_factor}
-                on_escape_key={this.onEscapeKey}
+                onEscapeKey={this.onEscapeKey}
             />
         )
 

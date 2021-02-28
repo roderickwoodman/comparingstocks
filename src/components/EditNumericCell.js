@@ -11,13 +11,13 @@ export const EditNumericCell = (props) => {
     useEffect( () => {
         const handleEscapeKey = (event) => {
             if (event.keyCode === 27) {
-                props.on_escape_key()
+                props.onEscapeKey()
             }
         }
-        if (isNaN(props.original_value)) {
+        if (isNaN(props.originalValue)) {
             setUserValue('') 
         } else {
-            setUserValue(props.original_value) 
+            setUserValue(props.originalValue) 
         }
         inputEl.current.focus()
         document.addEventListener('keydown', handleEscapeKey, false)
@@ -31,7 +31,7 @@ export const EditNumericCell = (props) => {
         let {name, value } = event.target
 
         // when the input changes, validate the user's value
-        if (name === 'user_value') {
+        if (name === 'userValue') {
             if (value.length && !isNaN(value) && value > 0) {
                 setUserValue(value)
                 setUserValueIsValid(true)
@@ -44,24 +44,24 @@ export const EditNumericCell = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        props.on_new_value(userValue)
+        props.onNewValue(userValue)
     }
 
     return (
         <form onSubmit={handleSubmit}>
-            <input ref={inputEl} type="text" id="edit-cell" name="user_value" value={userValue} onChange={handleChange} size="5" />
+            <input ref={inputEl} type="text" id="edit-cell" name="userValue" value={userValue} onChange={handleChange} size="5" />
             <button type="submit" disabled={!userValueIsValid}>S</button>
         </form>
     )
 }
 
 EditNumericCell.propTypes = {
-    original_value: PropTypes.oneOfType([
+    originalValue: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
-    on_new_value: PropTypes.func.isRequired,
-    on_escape_key: PropTypes.func.isRequired
+    onNewValue: PropTypes.func.isRequired,
+    onEscapeKey: PropTypes.func.isRequired
 }
 
 

@@ -264,9 +264,9 @@ export const GridRow = (props) => {
             && props.row_name === props.editing_row ) {
             return (
                 <EditNumericCell 
-                    original_value={props.current_edit_value} 
-                    on_new_value={onNewValue} 
-                    on_escape_key={props.on_escape_key}
+                    originalValue={props.current_edit_value} 
+                    onNewValue={onNewValue} 
+                    onEscapeKey={props.onEscapeKey}
                 />
             )
         }
@@ -802,5 +802,5 @@ GridRow.propTypes = {
       ]),
     on_edit_cell: PropTypes.func,
     on_modify_risk_factor: PropTypes.func,
-    on_escape_key: PropTypes.func,
+    onEscapeKey: PropTypes.func,
 }
