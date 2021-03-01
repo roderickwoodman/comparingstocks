@@ -506,7 +506,7 @@ export class ComparingStocks extends React.Component {
 
                     // collect all quotes for this ticker
                     let newQuote = {}
-                    newQuote['adjusted_close'] = parseFloat(entry[1]['5. adjusted close'])
+                    newQuote['adjustedClose'] = parseFloat(entry[1]['5. adjusted close'])
                     newTickerQuotes[full_date] = newQuote
 
                     // build the month-end dates (YYYY-MM-DD)
@@ -662,7 +662,7 @@ export class ComparingStocks extends React.Component {
 
     getPositionFromSingleTickerTransactions(transactions) { // assumes the transactions are all from a single ticker
         let inflows = 0, outflows = 0, currentShares = 0, date, action, num_shares, ticker, value
-        let sorted_transactions = transactions.sort(function(a,b) {
+        let sortedTransactions = transactions.sort(function(a,b) {
             if (a.date > b.date) {
                 return -1
             } else if (a.date < b.date) {
@@ -672,7 +672,7 @@ export class ComparingStocks extends React.Component {
             }
         })
         let position_start_date = '1970/01/01'
-        sorted_transactions.forEach(function(transaction) {
+        sortedTransactions.forEach(function(transaction) {
             [date, action, num_shares, ticker, value] = transaction.summary.split(' ')
             date = date.substr(0, date.length-1)
             num_shares = parseInt(num_shares)
@@ -1559,7 +1559,7 @@ export class ComparingStocks extends React.Component {
     getClosingPrice(ticker, date, data) {
         if (data.hasOwnProperty(ticker)) {
             if (data[ticker].hasOwnProperty(date)) {
-                return data[ticker][date].adjusted_close
+                return data[ticker][date].adjustedClose
             }
         }
         return undefined

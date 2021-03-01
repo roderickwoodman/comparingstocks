@@ -7,9 +7,9 @@ export class MyPerformance extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            period_size: 'month',
-            period_data: [],
-            data_sort_dir: 'asc',
+            periodSize: 'month',
+            periodData: [],
+            dataSortDir: 'asc',
         }
         this.generatePeriodData = this.generatePeriodData.bind(this)
         this.numberWithCommas = this.numberWithCommas.bind(this)
@@ -29,28 +29,28 @@ export class MyPerformance extends React.Component {
 
     componentDidMount() {
 
-        let data_sort_dir = 'asc', period_size ='month'
+        let dataSortDir = 'asc', periodSize ='month'
 
-        const stored_data_sort_dir = JSON.parse(localStorage.getItem("data_sort_dir"))
-        if (stored_data_sort_dir !== null) {
-            data_sort_dir = stored_data_sort_dir
+        const storedDataSortDir = JSON.parse(localStorage.getItem("dataSortDir"))
+        if (storedDataSortDir !== null) {
+            dataSortDir = storedDataSortDir
         }
 
-        const stored_period_size = JSON.parse(localStorage.getItem("period_size"))
-        if (stored_period_size !== null) {
-            period_size = stored_period_size
+        const storedPeriodSize = JSON.parse(localStorage.getItem("periodSize"))
+        if (storedPeriodSize !== null) {
+            periodSize = storedPeriodSize
         }
 
-        this.generatePeriodData(period_size)
+        this.generatePeriodData(periodSize)
 
-        this.setState({ data_sort_dir: data_sort_dir,
-                        period_size: period_size })
+        this.setState({ dataSortDir: dataSortDir,
+                        periodSize: periodSize })
 
     }
 
-    generatePeriodData(period_size) {
+    generatePeriodData(periodSize) {
 
-        let sorted_transactions = this.props.allTransactions.sort(function(a, b) {
+        let sortedTransactions = this.props.allTransactions.sort(function(a, b) {
             if (a.date < b.date) {
                 return -1
             } else if (a.date > b.date) {
@@ -60,122 +60,122 @@ export class MyPerformance extends React.Component {
             }
         })
         
-        let period_data = [], new_console_messages = [], quote_errors = []
+        let periodData = [], newConsoleMessages = [], quoteErrors = []
 
-        if (sorted_transactions.length) {
+        if (sortedTransactions.length) {
 
             // the performance start period includes the earliest added transaction
-            let first_year = parseInt(sorted_transactions[0].date.split('-')[0])
-            let first_month = parseInt(sorted_transactions[0].date.split('-')[1])
-            let first_period
-            if (period_size === 'month') {
-                first_period = first_month
-            } else if (period_size === 'quarter') {
-                first_period = Math.floor((first_month - 1) / 3 + 1)
-            } else if (period_size === 'year') {
-                first_period = 1
+            let firstYear = parseInt(sortedTransactions[0].date.split('-')[0])
+            let firstMonth = parseInt(sortedTransactions[0].date.split('-')[1])
+            let firstPeriod
+            if (periodSize === 'month') {
+                firstPeriod = firstMonth
+            } else if (periodSize === 'quarter') {
+                firstPeriod = Math.floor((firstMonth - 1) / 3 + 1)
+            } else if (periodSize === 'year') {
+                firstPeriod = 1
             }
 
             // the performance end period includes the current date
             let today = new Date()
-            let today_year = today.getFullYear()
-            let today_month = today.getMonth() + 1
-            let today_period
-            if (period_size === 'month') {
-                today_period = today_month
-            } else if (period_size === 'quarter') {
-                today_period = Math.round(today.getMonth() / 3)
-            } else if (period_size === 'year') {
-                today_period = 1
+            let todayYear = today.getFullYear()
+            let todayMonth = today.getMonth() + 1
+            let todayPeriod
+            if (periodSize === 'month') {
+                todayPeriod = todayMonth
+            } else if (periodSize === 'quarter') {
+                todayPeriod = Math.round(today.getMonth() / 3)
+            } else if (periodSize === 'year') {
+                todayPeriod = 1
             }
 
             // calculate the number of periods to display
-            let periods_of_performance
-            if (period_size === 'month') {
-                periods_of_performance = (today_year - first_year) * 12 + (today_period - first_period) + 1
-            } else if (period_size === 'quarter') {
-                periods_of_performance = (today_year - first_year) * 4 + (today_period - first_period) + 1
-            } else if (period_size === 'year') {
-                periods_of_performance = (today_year - first_year) + 1
+            let periodsOfPerformance
+            if (periodSize === 'month') {
+                periodsOfPerformance = (todayYear - firstYear) * 12 + (todayPeriod - firstPeriod) + 1
+            } else if (periodSize === 'quarter') {
+                periodsOfPerformance = (todayYear - firstYear) * 4 + (todayPeriod - firstPeriod) + 1
+            } else if (periodSize === 'year') {
+                periodsOfPerformance = (todayYear - firstYear) + 1
             }
 
             // based on MONTHLY quote data, initialize the lookback variables for the previous period
-            let start_baselinequote, start_baselineprice
-            let prev_quote_month, prev_quote_year
-            if (period_size === 'month') {
-                prev_quote_year = (first_month !== 1) ? first_year : first_year - 1
-                prev_quote_month = (first_month !== 1) ? first_month - 1 : 12
-            } else if (period_size === 'quarter') {
-                prev_quote_year = (first_period !== 1) ? first_year : first_year - 1 
-                prev_quote_month = (first_period !== 1) ? (first_period - 1) * 3 : 9
-            } else if (period_size === 'year') {
-                prev_quote_year = first_year - 1
-                prev_quote_month = 12
+            let startBaselinequote, startBaselineprice
+            let prevQuoteMonth, prevQuoteYear
+            if (periodSize === 'month') {
+                prevQuoteYear = (firstMonth !== 1) ? firstYear : firstYear - 1
+                prevQuoteMonth = (firstMonth !== 1) ? firstMonth - 1 : 12
+            } else if (periodSize === 'quarter') {
+                prevQuoteYear = (firstPeriod !== 1) ? firstYear : firstYear - 1 
+                prevQuoteMonth = (firstPeriod !== 1) ? (firstPeriod - 1) * 3 : 9
+            } else if (periodSize === 'year') {
+                prevQuoteYear = firstYear - 1
+                prevQuoteMonth = 12
             }
-            start_baselinequote = this.getMonthEndQuote('S&P500', prev_quote_year, prev_quote_month)
-            if (start_baselinequote === undefined || start_baselinequote.price === undefined) {
-                new_console_messages.push('ERROR: Quote for symbol S&P500 for month '+prev_quote_year+'-'+prev_quote_month+' is unavailable.')
-                start_baselineprice = 'err.'
-                quote_errors.push('S&P500')
+            startBaselinequote = this.getMonthEndQuote('S&P500', prevQuoteYear, prevQuoteMonth)
+            if (startBaselinequote === undefined || startBaselinequote.price === undefined) {
+                newConsoleMessages.push('ERROR: Quote for symbol S&P500 for month '+prevQuoteYear+'-'+prevQuoteMonth+' is unavailable.')
+                startBaselineprice = 'err.'
+                quoteErrors.push('S&P500')
             } else {
-                start_baselineprice = start_baselinequote.price.adjusted_close
+                startBaselineprice = startBaselinequote.price.adjustedClose
             }
 
             // calculate all period data
-            let year = first_year
-            let start_shares = {}, start_cash = 0, start_tickervalue = 0, start_totalvalue = 0
-            for (let p = 0; p < periods_of_performance; p++) {
+            let year = firstYear
+            let startShares = {}, startCash = 0, startTickervalue = 0, startTotalValue = 0
+            for (let p = 0; p < periodsOfPerformance; p++) {
                 
                 // initialization
-                let period, new_period = {}
-                if (period_size === 'month') {
-                    period = (p + first_period - 1) % 12 + 1
-                } else if (period_size === 'quarter') {
-                    period = (p + first_period - 1) % 4 + 1
-                } else if (period_size === 'year') {
+                let period, newPeriod = {}
+                if (periodSize === 'month') {
+                    period = (p + firstPeriod - 1) % 12 + 1
+                } else if (periodSize === 'quarter') {
+                    period = (p + firstPeriod - 1) % 4 + 1
+                } else if (periodSize === 'year') {
                     period =  1
                 }
-                new_period['period'] = period
+                newPeriod['period'] = period
                 if (period === 1 && p !== 0) {
                     year += 1
                 }
-                new_period['year'] = year
+                newPeriod['year'] = year
 
                 // initialize this period's end values with the previous period's end values
-                let prev_shares = {}, prev_cash = 0, end_transfersinvalue = 0
+                let prevShares = {}, prevCash = 0, endTransfersinvalue = 0
                 if (p !== 0) {
-                    start_tickervalue = period_data[p-1].end_tickervalue
-                    start_totalvalue = period_data[p-1].end_totalvalue
-                    prev_shares = Object.assign({}, period_data[p-1].end_shares)
-                    prev_cash = period_data[p-1].end_cash
+                    startTickervalue = periodData[p-1].endTickervalue
+                    startTotalValue = periodData[p-1].endTotalvalue
+                    prevShares = Object.assign({}, periodData[p-1].endShares)
+                    prevCash = periodData[p-1].endCash
                 } else {
-                    prev_shares = Object.assign({}, start_shares)
-                    prev_cash = start_cash
+                    prevShares = Object.assign({}, startShares)
+                    prevCash = startCash
                 }
-                let end_shares = Object.assign({}, prev_shares)
-                let end_cash = prev_cash
+                let endShares = Object.assign({}, prevShares)
+                let endCash = prevCash
 
                 // generate the title for this period
-                let period_sort_suffix, period_display_suffix
-                if (period_size === 'month') {
+                let periodSortSuffix, periodDisplaySuffix
+                if (periodSize === 'month') {
                     let d = new Date(1980, period - 1, 1)
-                    period_sort_suffix = 'M' + ('0' + period).slice(-2)
-                    period_display_suffix = ' ' + d.toLocaleString('default', { month: 'short' })
-                } else if (period_size === 'quarter') {
-                    period_sort_suffix = 'Q' + ('0' + period).slice(-2)
-                    period_display_suffix = 'Q' + period
-                } else if (period_size === 'year') {
-                    period_sort_suffix = ''
-                    period_display_suffix = ''
+                    periodSortSuffix = 'M' + ('0' + period).slice(-2)
+                    periodDisplaySuffix = ' ' + d.toLocaleString('default', { month: 'short' })
+                } else if (periodSize === 'quarter') {
+                    periodSortSuffix = 'Q' + ('0' + period).slice(-2)
+                    periodDisplaySuffix = 'Q' + period
+                } else if (periodSize === 'year') {
+                    periodSortSuffix = ''
+                    periodDisplaySuffix = ''
                 }
-                new_period['displayName'] = (p !== periods_of_performance - 1) ? year + period_display_suffix : 'current'
-                new_period['sort_name'] = year + period_sort_suffix
+                newPeriod['displayName'] = (p !== periodsOfPerformance - 1) ? year + periodDisplaySuffix : 'current'
+                newPeriod['sort_name'] = year + periodSortSuffix
 
                 // determine period's transactions
                 let target_year = year
-                let period_transactions = sorted_transactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(period_size, t.date) === period )
-                new_period['transactions_of_stock'] = period_transactions.filter( t => t.ticker !== 'cash' )
-                new_period['transactions_of_cash'] = period_transactions.filter( t => t.ticker === 'cash' )
+                let period_transactions = sortedTransactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(periodSize, t.date) === period )
+                newPeriod['transactions_of_stock'] = period_transactions.filter( t => t.ticker !== 'cash' )
+                newPeriod['transactions_of_cash'] = period_transactions.filter( t => t.ticker === 'cash' )
 
                 // determine period-end shares and cash value
                 for (let transaction of period_transactions) {
@@ -184,104 +184,104 @@ export class MyPerformance extends React.Component {
                     if (ticker === 'cash') {
                         let cash_delta = (action === 'transferIN' || action === 'dividend') ? total : -1 * total
                         if (action === 'transferIN' || action === 'transferOUT') {
-                            end_transfersinvalue += cash_delta
+                            endTransfersinvalue += cash_delta
                         }
-                        end_cash += cash_delta
+                        endCash += cash_delta
                     } else {
                         let share_delta = (action === 'buy') ? shares : -1 * shares
                         let cash_delta = (action === 'buy') ? -1 * total : total
-                        if (end_shares.hasOwnProperty(ticker)) {
-                            end_shares[ticker] += share_delta
+                        if (endShares.hasOwnProperty(ticker)) {
+                            endShares[ticker] += share_delta
                         } else {
-                            end_shares[ticker] = share_delta
+                            endShares[ticker] = share_delta
                         }
-                        end_cash += cash_delta
+                        endCash += cash_delta
                     }
                 }
-                new_period['end_shares'] = end_shares
-                new_period['end_cash'] = end_cash
-                new_period['end_transfersinvalue'] = end_transfersinvalue
+                newPeriod['endShares'] = endShares
+                newPeriod['endCash'] = endCash
+                newPeriod['endTransfersinvalue'] = endTransfersinvalue
 
                 // determine period-end ticker value
                 let self = this
-                let end_tickervalue = 0, end_tickerdate = null
+                let endTickervalue = 0, end_tickerdate = null
                 let this_quote_month
-                if (period_size === 'month') {
+                if (periodSize === 'month') {
                     this_quote_month = period
-                } else if (period_size === 'quarter') {
+                } else if (periodSize === 'quarter') {
                     this_quote_month = period * 3
-                } else if (period_size === 'year') {
+                } else if (periodSize === 'year') {
                     this_quote_month = 12
                 }
                 let this_quote_year = target_year
-                if (target_year === today_year && period === today_period) { // for a partial last period, use a previous month's quotes
+                if (target_year === todayYear && period === todayPeriod) { // for a partial last period, use a previous month's quotes
                     let lastavailablequote_month_str, lastavailablequote_year_str
                     [lastavailablequote_year_str, lastavailablequote_month_str] = this.props.allMonthEndDates[0].split('-')
                     let lastavailablequote_month = parseInt(lastavailablequote_month_str)
                     let lastavailablequote_year = parseInt(lastavailablequote_year_str)
-                    if (period_size === 'year') {
-                        if (lastavailablequote_year === today_year) {
+                    if (periodSize === 'year') {
+                        if (lastavailablequote_year === todayYear) {
                             this_quote_month = lastavailablequote_month
                             this_quote_year = lastavailablequote_year
                         }
                     } else {
-                        if (lastavailablequote_month !== today_month || lastavailablequote_year !== today_year) { // allow the previous month's quotes only
-                            if (today_month === 1 && (lastavailablequote_month !== 12 || lastavailablequote_year !== today_year - 1)) {
+                        if (lastavailablequote_month !== todayMonth || lastavailablequote_year !== todayYear) { // allow the previous month's quotes only
+                            if (todayMonth === 1 && (lastavailablequote_month !== 12 || lastavailablequote_year !== todayYear - 1)) {
                                 this_quote_month = 12
-                                this_quote_year = today_year - 1
-                            } else if (today_month !== 1 && (lastavailablequote_month !== today_month - 1 || lastavailablequote_year !== today_year)) {
-                                this_quote_month = today_month - 1
-                                this_quote_year = today_year
+                                this_quote_year = todayYear - 1
+                            } else if (todayMonth !== 1 && (lastavailablequote_month !== todayMonth - 1 || lastavailablequote_year !== todayYear)) {
+                                this_quote_month = todayMonth - 1
+                                this_quote_year = todayYear
                             }
                         }
                     }
                 }
-                Object.entries(end_shares).forEach(function(position) {
+                Object.entries(endShares).forEach(function(position) {
                     if (position[1] !== 0) {
                         let month_end_quote = self.getMonthEndQuote(position[0], this_quote_year, this_quote_month)
                         if (month_end_quote === undefined || month_end_quote.price === undefined) {
-                            new_console_messages.push('ERROR: Quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable.')
-                            end_tickervalue = 'err.'
+                            newConsoleMessages.push('ERROR: Quote for symbol '+position[0]+' for month '+this_quote_year+'-'+this_quote_month+' is unavailable.')
+                            endTickervalue = 'err.'
                             end_tickerdate = null
-                            quote_errors.push(position[0])
-                        } else if (end_tickervalue !== 'err.') {
-                            end_tickervalue += position[1] * month_end_quote.price.adjusted_close
+                            quoteErrors.push(position[0])
+                        } else if (endTickervalue !== 'err.') {
+                            endTickervalue += position[1] * month_end_quote.price.adjustedClose
                             if (end_tickerdate === null) {
                                 end_tickerdate = month_end_quote.date
                             } else if (end_tickerdate !== month_end_quote.date) {
-                                new_console_messages.push('ERROR: Quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+').')
+                                newConsoleMessages.push('ERROR: Quote dates for month '+this_quote_year+'-'+this_quote_month+' do not match for all symbols ('+end_tickerdate+' & '+month_end_quote.date+').')
                             }
                         }
                     }
                 })
-                new_period['end_tickervalue'] = end_tickervalue
-                new_period['end_tickerdate'] = end_tickerdate
+                newPeriod['endTickervalue'] = endTickervalue
+                newPeriod['end_tickerdate'] = end_tickerdate
                 
                 // determine period-end total value
-                let end_totalvalue
-                if (typeof end_tickervalue !== 'number' || typeof end_cash !== 'number') {
-                    end_totalvalue = 'err.'
+                let endTotalvalue
+                if (typeof endTickervalue !== 'number' || typeof endCash !== 'number') {
+                    endTotalvalue = 'err.'
                 } else {
-                    end_totalvalue = end_tickervalue + end_cash
+                    endTotalvalue = endTickervalue + endCash
                 }
-                new_period['end_totalvalue'] = end_totalvalue
-                new_period['end_tickervaluefraction'] = end_tickervalue / end_totalvalue
-                new_period['end_cashfraction'] = end_cash / end_totalvalue
+                newPeriod['endTotalvalue'] = endTotalvalue
+                newPeriod['end_tickervaluefraction'] = endTickervalue / endTotalvalue
+                newPeriod['end_cashfraction'] = endCash / endTotalvalue
 
                 // determine period-end baseline value
                 let end_baselineprice, end_baselinedate
                 let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
                 if (end_baselinequote === undefined || end_baselinequote.price === undefined) {
-                    new_console_messages.push('ERROR: Quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable.')
+                    newConsoleMessages.push('ERROR: Quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable.')
                     end_baselineprice = 'err.'
                     end_baselinedate = null
-                    quote_errors.push('S&P500')
+                    quoteErrors.push('S&P500')
                 } else {
-                    end_baselineprice = end_baselinequote.price.adjusted_close
+                    end_baselineprice = end_baselinequote.price.adjustedClose
                     end_baselinedate = end_baselinequote.date
                 }
-                new_period['end_baselineprice'] = end_baselineprice
-                new_period['end_baselinedate'] = end_baselinedate
+                newPeriod['end_baselineprice'] = end_baselineprice
+                newPeriod['end_baselinedate'] = end_baselinedate
 
                 // determine period-over-period performance
                 // HPR (holding period return) = end / prev_end - 1
@@ -290,15 +290,15 @@ export class MyPerformance extends React.Component {
                 //   transfersIN = transferINa * fraction of period duration) + (transferINb * fraction of period duration)
                 let adjusted_transfer_value = 0
                 let zb_start_month, zb_end_month, end_year
-                if (period_size === 'month') {
+                if (periodSize === 'month') {
                     zb_start_month = period - 1
                     zb_end_month = (zb_start_month !== 11) ? zb_start_month + 1 : 1
                     end_year = (zb_start_month !== 11) ? target_year : target_year + 1
-                } else if (period_size === 'quarter') {
+                } else if (periodSize === 'quarter') {
                     zb_start_month = period * 3 - 3
                     zb_end_month = (period !== 4) ? zb_start_month + 3 : 1
                     end_year = (period !== 4) ? target_year : target_year + 1
-                } else if (period_size === 'year') {
+                } else if (periodSize === 'year') {
                     zb_start_month = 0
                     zb_end_month = 0
                     end_year = target_year + 1
@@ -306,7 +306,7 @@ export class MyPerformance extends React.Component {
                 let period_start_date = new Date(target_year, zb_start_month, 1)
                 let period_end_date = new Date(end_year, zb_end_month, 1)
                 let period_days = Math.round((period_end_date - period_start_date) / (1000 * 60 * 60 * 24))
-                new_period.transactions_of_cash.forEach(function(transaction) {
+                newPeriod.transactions_of_cash.forEach(function(transaction) {
                     let transfer_month, transfer_day, fraction_of_period
                     [transfer_month, transfer_day] = [parseInt(transaction.date.split('-')[1]), parseInt(transaction.date.split('-')[2])]
                     let transfer_date = new Date(target_year, transfer_month - 1, transfer_day)
@@ -319,38 +319,38 @@ export class MyPerformance extends React.Component {
                     }
                 })
                 let performance
-                if (typeof start_totalvalue !== 'number' || typeof end_totalvalue !== 'number') {
+                if (typeof startTotalValue !== 'number' || typeof endTotalvalue !== 'number') {
                     performance = 'err.'
-                } else if (start_tickervalue === 0 && end_tickervalue === 0) {
+                } else if (startTickervalue === 0 && endTickervalue === 0) {
                     performance = 0
                 } else {
-                    performance = (end_totalvalue / (start_totalvalue + adjusted_transfer_value)) - 1
+                    performance = (endTotalvalue / (startTotalValue + adjusted_transfer_value)) - 1
                 }
-                new_period['period_change_pct'] = performance
+                newPeriod['period_change_pct'] = performance
 
                 // determine period-over-period baseline performance
                 performance = 'n/a'
-                if (typeof start_baselineprice !== 'number' || typeof end_baselineprice !== 'number') {
+                if (typeof startBaselineprice !== 'number' || typeof end_baselineprice !== 'number') {
                     performance = 'err.'
                 } else if (p === 0) {
-                    performance = (end_baselineprice / start_baselineprice) - 1
+                    performance = (end_baselineprice / startBaselineprice) - 1
                 } else {
-                    performance = (end_baselineprice / period_data[p-1].end_baselineprice) - 1
+                    performance = (end_baselineprice / periodData[p-1].end_baselineprice) - 1
                 }
-                new_period['period_baseline_change_pct'] = performance
+                newPeriod['period_baseline_change_pct'] = performance
 
                 // store the data object
-                period_data.push(new_period)
+                periodData.push(newPeriod)
             }
         }
 
-        if (new_console_messages.length) {
+        if (newConsoleMessages.length) {
             let message_summary
-            let quote_error_count = quote_errors.length
-            if (new_console_messages.length === 1) {
-                message_summary = new_console_messages[0]
+            let quote_error_count = quoteErrors.length
+            if (newConsoleMessages.length === 1) {
+                message_summary = newConsoleMessages[0]
             } else {
-                let quote_tickers_count = Array.from(new Set(quote_errors)).length
+                let quote_tickers_count = Array.from(new Set(quoteErrors)).length
                 let plural_quoteerrors = (quote_error_count === 1) ? '' : 's'
                 let plural_verb = (quote_error_count === 1) ? ' was' : ' were'
                 let plural_differentstocks = (quote_tickers_count === 1) ? ' stock' : ' different stocks'
@@ -364,14 +364,14 @@ export class MyPerformance extends React.Component {
                 }
             }
             let new_console_message_set = this.props.createConsoleMessageSet(message_summary)
-            new_console_message_set.messages = [...new_console_messages]
+            new_console_message_set.messages = [...newConsoleMessages]
             if (quote_error_count > 0) {
                 new_console_message_set.has_errors = true
             }
             this.props.onNewConsoleMessages(new_console_message_set)
         }
 
-        this.setState({ period_data: period_data })
+        this.setState({ periodData: periodData })
 
     }
 
@@ -379,14 +379,14 @@ export class MyPerformance extends React.Component {
         return parseInt(date.split('-')[0])
     }
 
-    getPeriod(period_size, date) {
+    getPeriod(periodSize, date) {
         let zb_month = parseInt(date.split('-')[1])-1
 
-        if (period_size === 'month') {
+        if (periodSize === 'month') {
             return zb_month + 1
-        } else if (period_size === 'quarter') {
+        } else if (periodSize === 'quarter') {
             return Math.floor(zb_month / 3) + 1
-        } else if (period_size === 'year') {
+        } else if (periodSize === 'year') {
             return 1
         } else {
             return 'n/a'
@@ -414,18 +414,18 @@ export class MyPerformance extends React.Component {
         return retval
     }
 
-    getDisplayedPerformance(period_data) {
+    getDisplayedPerformance(periodData) {
         let retval = {}
-        retval['key'] = period_data.sort_name
+        retval['key'] = periodData.sort_name
         retval['display_value'] = 'err.'
         retval['baseline_value'] = 'err.'
-        retval['index_value'] = period_data.period_baseline_change_pct
-        let my_perf = period_data.period_change_pct
+        retval['index_value'] = periodData.period_baseline_change_pct
+        let my_perf = periodData.period_change_pct
         if (my_perf === 'err.') {
             retval['display_value'] = 'err.'
         } else if (typeof my_perf === 'number') {
             if (this.props.baselineName === 'sp500_pct_gain') {
-                let baseline_perf = period_data.period_baseline_change_pct
+                let baseline_perf = periodData.period_baseline_change_pct
                 if (typeof baseline_perf !== 'number') {
                     return retval
                 } else {
@@ -510,32 +510,32 @@ export class MyPerformance extends React.Component {
         let new_scroll_left = (num_periods - leftmost_zbperiod_shown - 1) * period_width
         el.scrollLeft = new_scroll_left
         this.setState(prevState => {
-            let newSortDir = (prevState.data_sort_dir === 'asc') ? 'desc' : 'asc'
-            localStorage.setItem('data_sort_dir', JSON.stringify(newSortDir))
+            let newSortDir = (prevState.dataSortDir === 'asc') ? 'desc' : 'asc'
+            localStorage.setItem('dataSortDir', JSON.stringify(newSortDir))
             return { 
-                data_sort_dir: newSortDir 
+                dataSortDir: newSortDir 
             }
         })
     }
 
     handlePeriodChange(event) {
         let newPeriod = event.target.id.replace(/select-/g, '')
-        localStorage.setItem('period_size', JSON.stringify(newPeriod))
-        this.setState({ period_size: newPeriod })
+        localStorage.setItem('periodSize', JSON.stringify(newPeriod))
+        this.setState({ periodSize: newPeriod })
         this.generatePeriodData(newPeriod)
     }
 
     render() {
         let self = this
         let displayed_performance = {}
-        this.state.period_data.forEach(function(qdata) {
+        this.state.periodData.forEach(function(qdata) {
             displayed_performance[qdata.sort_name] = self.getDisplayedPerformance(qdata)
         })
-        let sorted_data = this.state.period_data.sort( function(a,b) {
+        let sorted_data = this.state.periodData.sort( function(a,b) {
             if (a.sort_name < b.sort_name) {
-                return (self.state.data_sort_dir === 'asc') ? -1 : 1
+                return (self.state.dataSortDir === 'asc') ? -1 : 1
             } else if (a.sort_name > b.sort_name) {
-                return (self.state.data_sort_dir === 'asc') ? 1 : -1
+                return (self.state.dataSortDir === 'asc') ? 1 : -1
             } else {
                 return 0
             }
@@ -546,9 +546,9 @@ export class MyPerformance extends React.Component {
                     <div id="my-performance-rowlabels">
                         <div id="my-performance-controls">
                             <ul id="periodsize-selector">
-                                <li id="select-year" className={"strong selector" + (this.state.period_size === "year" ? " selected" : "")} onClick={this.handlePeriodChange}>Y</li>
-                                <li id="select-quarter" className={"strong selector" + (this.state.period_size === "quarter" ? " selected" : "")} onClick={this.handlePeriodChange}>Q</li>
-                                <li id="select-month" className={"strong selector" + (this.state.period_size === "month" ? " selected" : "")} onClick={this.handlePeriodChange}>M</li>
+                                <li id="select-year" className={"strong selector" + (this.state.periodSize === "year" ? " selected" : "")} onClick={this.handlePeriodChange}>Y</li>
+                                <li id="select-quarter" className={"strong selector" + (this.state.periodSize === "quarter" ? " selected" : "")} onClick={this.handlePeriodChange}>Q</li>
+                                <li id="select-month" className={"strong selector" + (this.state.periodSize === "month" ? " selected" : "")} onClick={this.handlePeriodChange}>M</li>
                             </ul>
                             <div id="sortorder-button">
                                 <button onClick={ (e)=>this.onToggleSortOrder(sorted_data.length) } className="strong">&#x21c6;</button>
@@ -565,10 +565,10 @@ export class MyPerformance extends React.Component {
                         { sorted_data.map( qdata => (
                         <div className="period-data" key={qdata.sort_name}>
                             <p className="strong">{qdata.displayName}</p>
-                            <p>{this.formatCurrency(qdata.end_tickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
-                            <p>{this.formatCurrency(qdata.end_cash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
-                            <p>{this.formatCurrency(qdata.end_transfersinvalue)}</p>
-                            <p className="strong">{this.formatCurrency(qdata.end_totalvalue)}</p>
+                            <p>{this.formatCurrency(qdata.endTickervalue)} ({this.formatWholePercentage(qdata.end_tickervaluefraction)})</p>
+                            <p>{this.formatCurrency(qdata.endCash)} ({this.formatWholePercentage(qdata.end_cashfraction)})</p>
+                            <p>{this.formatCurrency(qdata.endTransfersinvalue)}</p>
+                            <p className="strong">{this.formatCurrency(qdata.endTotalvalue)}</p>
                             <p className={ this.styleCell(displayed_performance[qdata.sort_name]) }>{ this.formatPerformance(displayed_performance[qdata.sort_name].display_value) }</p>
                             <p>{ this.formatIndexPerformance(displayed_performance[qdata.sort_name].index_value) }</p>
                         </div>
