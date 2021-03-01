@@ -241,12 +241,12 @@ export class ComparingStocks extends React.Component {
             aggrRealized: {},
             aggrTotalValue: {},
 
-            show_current_holdings: true,
-            show_previous_holdings: false,
-            show_tagged: true,
-            show_untagged: true,
+            showCurrentHoldings: true,
+            showPreviousHoldings: false,
+            showTagged: true,
+            showUntagged: true,
             show_index: false,
-            show_cash: false,
+            showCash: false,
             show_aggregates: true,
             error_if_not_todays_quote: true,
             show_only_achieved_performance: false,
@@ -349,7 +349,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
 
-        const view_controls = ['show_current_holdings', 'show_previous_holdings', 'show_tagged', 'show_untagged', 'show_index', 'show_cash', 'show_aggregates', 'show_only_achieved_performance', 'error_if_not_todays_quote']
+        const view_controls = ['showCurrentHoldings', 'showPreviousHoldings', 'showTagged', 'showUntagged', 'show_index', 'showCash', 'show_aggregates', 'show_only_achieved_performance', 'error_if_not_todays_quote']
         let stored_controls = {}
         view_controls.forEach(function(control) {
             stored_controls[control] = null
@@ -434,28 +434,28 @@ export class ComparingStocks extends React.Component {
 
         // 3. calculate position data (from transactions) for all holdings
 
-        let all_stocks = []
+        let allStocks = []
         allTransactions.forEach(function(transaction) {
-            if (!all_stocks.includes(transaction.ticker)) {
-                all_stocks.push(transaction.ticker)
+            if (!allStocks.includes(transaction.ticker)) {
+                allStocks.push(transaction.ticker)
             }
         })
         Object.keys(indexed_current_quote_data).forEach(function(ticker) {
-            if (!all_stocks.includes(ticker)) {
-                all_stocks.push(ticker)
+            if (!allStocks.includes(ticker)) {
+                allStocks.push(ticker)
             }
         })
         Object.keys(indexed_monthly_quote_data).forEach(function(ticker) {
-            if (!all_stocks.includes(ticker)) {
-                all_stocks.push(ticker)
+            if (!allStocks.includes(ticker)) {
+                allStocks.push(ticker)
             }
         })
         Object.keys(indexed_risk_data).forEach(function(ticker) {
-            if (!all_stocks.includes(ticker)) {
-                all_stocks.push(ticker)
+            if (!allStocks.includes(ticker)) {
+                allStocks.push(ticker)
             }
         })
-        all_stocks = all_stocks.filter(ticker => ticker !== 'cash')
+        allStocks = allStocks.filter(ticker => ticker !== 'cash')
 
         let newPositions = {}
         let newCurrentQuotes = {}
@@ -465,7 +465,7 @@ export class ComparingStocks extends React.Component {
         let newRisk = {}
         let cash_delta_from_stock_transactions = 0
 
-        all_stocks.forEach(function(ticker) {
+        allStocks.forEach(function(ticker) {
 
             // create a stock position if any transactions exist
             allTransactions.forEach(function(transaction) {
@@ -601,13 +601,13 @@ export class ComparingStocks extends React.Component {
         }
 
         // 5. handle aggregates
-        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(allTags, newPositions, newCurrentQuotes, stored_controls['show_current_holdings'], stored_controls['show_cash'])))
+        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(allTags, newPositions, newCurrentQuotes, stored_controls['showCurrentHoldings'], stored_controls['showCash'])))
         let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(allTags, newPerformanceNumbers)))
 
 
         // 6. update the app's state with all of the above changes
 
-        this.setState({ allStocks: all_stocks,
+        this.setState({ allStocks: allStocks,
                         allPositions: newPositions,
                         allCurrentQuotes: newCurrentQuotes,
                         allMonthEndDates: newMonthEndDates,
@@ -724,28 +724,28 @@ export class ComparingStocks extends React.Component {
         return newPosition
     }
 
-    calculateAggrPositionInfo(all_tags, all_positions, all_quotes, show_current_holdings, show_cash) {
+    calculateAggrPositionInfo(allTags, allPositions, all_quotes, showCurrentHoldings, showCash) {
 
-        let holdings = (show_current_holdings === null) ? this.state.show_current_holdings : show_current_holdings
-        let cash = (show_cash === null) ? this.state.show_cash : show_cash
+        let holdings = (showCurrentHoldings === null) ? this.state.showCurrentHoldings : showCurrentHoldings
+        let cash = (showCash === null) ? this.state.showCash : showCash
 
         let aggr_totalbasis_by_tag = {}, aggr_totalrealized_by_tag = {}, aggr_totalvalue_by_tag = {}
         aggr_totalbasis_by_tag['_everything_'] = 0
         aggr_totalrealized_by_tag['_everything_'] = 0
         aggr_totalvalue_by_tag['_everything_'] = 0
-        Object.keys(all_tags).forEach(function(tag) {
+        Object.keys(allTags).forEach(function(tag) {
             aggr_totalrealized_by_tag[tag] = 'n/a';
             aggr_totalbasis_by_tag[tag] = 'n/a';
             aggr_totalvalue_by_tag[tag] = 'n/a';
-            Object.keys(all_positions).forEach(function(ticker) {
-                if (all_tags[tag].includes(ticker)) {
+            Object.keys(allPositions).forEach(function(ticker) {
+                if (allTags[tag].includes(ticker)) {
                     aggr_totalrealized_by_tag[tag] = 0 
                     aggr_totalbasis_by_tag[tag] = 0 
                     aggr_totalvalue_by_tag[tag] = 0 
                 }
             })
         })
-        Object.entries(all_positions).forEach(function(position_info) {
+        Object.entries(allPositions).forEach(function(position_info) {
             let ticker = position_info[0]
             let ticker_basis = position_info[1]['basis']
             if (ticker_basis < 0) {
@@ -779,8 +779,8 @@ export class ComparingStocks extends React.Component {
                 } else {
                     aggr_totalvalue_by_tag['_everything_'] += ticker_total_value
                 }
-                Object.keys(all_tags).forEach(function(tag) {
-                    if (all_tags[tag].includes(ticker)) {
+                Object.keys(allTags).forEach(function(tag) {
+                    if (allTags[tag].includes(ticker)) {
                         aggr_totalbasis_by_tag[tag] += ticker_basis - ticker_realized_gains
                         aggr_totalrealized_by_tag[tag] += parseFloat(ticker_realized_gains)
                         if (aggr_totalbasis_by_tag[tag] < 0) {
@@ -804,7 +804,7 @@ export class ComparingStocks extends React.Component {
         return [aggr_totalbasis_by_tag, aggr_totalrealized_by_tag, aggr_totalvalue_by_tag]
     }
 
-    calculateAggrPerformance(all_tags, all_performance_numbers) {
+    calculateAggrPerformance(allTags, all_performance_numbers) {
 
         let aggr_performance_by_tag = {}
         aggr_performance_by_tag['_everything_'] = {
@@ -815,7 +815,7 @@ export class ComparingStocks extends React.Component {
         }
 
         let all_stocks_of_interest = []
-        Object.values(all_tags).forEach(function(array_of_tickers) {
+        Object.values(allTags).forEach(function(array_of_tickers) {
             array_of_tickers.forEach(ticker => all_stocks_of_interest.push(ticker))
         })
         all_stocks_of_interest = Array.from(new Set(all_stocks_of_interest))
@@ -843,8 +843,8 @@ export class ComparingStocks extends React.Component {
             }
             aggr_performance_by_tag['_everything_'].num_tickers += 1
 
-            Object.keys(all_tags).forEach(function(tag) {
-                if (aggr_performance_by_tag.hasOwnProperty(tag) && all_tags[tag].includes(ticker)) {
+            Object.keys(allTags).forEach(function(tag) {
+                if (aggr_performance_by_tag.hasOwnProperty(tag) && allTags[tag].includes(ticker)) {
                     prev_short = aggr_performance_by_tag[tag].shortChangePct
                     prev_medium = aggr_performance_by_tag[tag].mediumChangePct
                     prev_long = aggr_performance_by_tag[tag].longChangePct
@@ -852,7 +852,7 @@ export class ComparingStocks extends React.Component {
                     aggr_performance_by_tag[tag].mediumChangePct = (prev_medium === 'err.') ? 'err.' : medium
                     aggr_performance_by_tag[tag].longChangePct = (prev_long === 'err.') ? 'err.' : long
                     aggr_performance_by_tag[tag].num_tickers += 1
-                } else if (all_tags[tag].includes(ticker)) {
+                } else if (allTags[tag].includes(ticker)) {
                     let new_aggr_performance = {}
                     new_aggr_performance['shortChangePct'] = short
                     new_aggr_performance['mediumChangePct'] = medium
@@ -906,17 +906,17 @@ export class ComparingStocks extends React.Component {
         localStorage.setItem(name, JSON.stringify(new_value))
 
         // recalculate the aggregate numbers
-        let show_cash = (name === 'show_cash') ? new_value : this.state.show_cash
-        let show_current_holdings = (name === 'show_current_holdings') ? new_value : this.state.show_current_holdings
+        let showCash = (name === 'showCash') ? new_value : this.state.showCash
+        let showCurrentHoldings = (name === 'showCurrentHoldings') ? new_value : this.state.showCurrentHoldings
         let aggr_position_info = JSON.parse(JSON.stringify(
             this.calculateAggrPositionInfo(
                 this.state.allTags, 
                 this.state.allPositions, 
                 this.state.allCurrentQuotes, 
-                show_current_holdings,
-                show_cash)))
+                showCurrentHoldings,
+                showCash)))
 
-        if (name === 'show_cash') {
+        if (name === 'showCash') {
             this.onWhatifGo(this.state.balance_target_set, this.state.sell_all_of, this.state.balance_target_column, new_value, this.state.remaining_cash)
         }
 
@@ -1015,8 +1015,8 @@ export class ComparingStocks extends React.Component {
                     newAllTags, 
                     this.state.allPositions, 
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     newAllTags, 
@@ -1053,8 +1053,8 @@ export class ComparingStocks extends React.Component {
                     newAllTags, 
                     this.state.allPositions, 
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     newAllTags, 
@@ -1103,8 +1103,8 @@ export class ComparingStocks extends React.Component {
                     newAllTags, 
                     newAllPositions, 
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     newAllTags, 
@@ -1198,8 +1198,8 @@ export class ComparingStocks extends React.Component {
                     newAllTags,
                     newAllPositions,
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     newAllTags,
@@ -1301,8 +1301,8 @@ export class ComparingStocks extends React.Component {
                     this.state.allTags, 
                     newAllPositions,
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     this.state.allTags, 
@@ -1356,8 +1356,8 @@ export class ComparingStocks extends React.Component {
                     this.state.allTags,
                     newAllPositions,
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
 
             return { 
                 allPositions: newAllPositions, 
@@ -1396,8 +1396,8 @@ export class ComparingStocks extends React.Component {
                     newAllTags, 
                     this.state.allPositions, 
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     newAllTags, 
@@ -1462,8 +1462,8 @@ export class ComparingStocks extends React.Component {
                     newAllTags, 
                     this.state.allPositions, 
                     this.state.allCurrentQuotes, 
-                    this.state.show_current_holdings,
-                    this.state.show_cash)))
+                    this.state.showCurrentHoldings,
+                    this.state.showCash)))
             let aggr_performance = JSON.parse(JSON.stringify(
                 this.calculateAggrPerformance(
                     newAllTags, 
@@ -1607,14 +1607,14 @@ export class ComparingStocks extends React.Component {
         let balanceable_value = 0
 
         let current_cash_value = 0
-        if (include_cash && this.state.show_cash && this.state.allPositions.hasOwnProperty('cash')) {
+        if (include_cash && this.state.showCash && this.state.allPositions.hasOwnProperty('cash')) {
             current_cash_value = self.state.allPositions['cash'].currentShares * self.state.allCurrentQuotes['cash'].current_price
         }
         balanceable_value += current_cash_value
 
         let target_tickers = this.getTickersFromSet(target_set)
-        if ( (target_set === 'my_current_holdings' && this.state.show_current_holdings)
-            || (target_set === 'untagged' && this.state.show_untagged) 
+        if ( (target_set === 'my_current_holdings' && this.state.showCurrentHoldings)
+            || (target_set === 'untagged' && this.state.showUntagged) 
             || (target_set !== 'my_current_holdings' && target_set !== 'untagged') ) {
             target_tickers.forEach( function(ticker) {
                 let currentValue = self.state.allPositions[ticker].currentShares * self.state.allCurrentQuotes[ticker].current_price
@@ -1654,13 +1654,13 @@ export class ComparingStocks extends React.Component {
             show_whatif_columns.push('risk_factor')
         }
         this.showColumns(show_whatif_columns)
-        this.onWhatifGo(target_set, sell_all_of, target_column, this.state.show_cash, remaining_cash)
+        this.onWhatifGo(target_set, sell_all_of, target_column, this.state.showCash, remaining_cash)
     }
 
-    onWhatifGo(target_set, sell_all_set, target_column, show_cash, remaining_cash) {
+    onWhatifGo(target_set, sell_all_set, target_column, showCash, remaining_cash) {
 
         let self = this
-        let adjusting_cash = show_cash && (remaining_cash !== null || target_column === 'only_profits')
+        let adjusting_cash = showCash && (remaining_cash !== null || target_column === 'only_profits')
         let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].currentShares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
@@ -1998,7 +1998,7 @@ export class ComparingStocks extends React.Component {
         if (this.state.show_index) {
             grid_rows -= 1
         }
-        if (this.state.show_cash) {
+        if (this.state.showCash) {
             grid_rows -= 1
         }
         if (grid_rows) {
@@ -2267,19 +2267,19 @@ export class ComparingStocks extends React.Component {
             if (this.state.show_index) {
                 tickers_to_show = [...tickers_to_show, ...this.getIndicies()]
             }
-            if (this.state.show_current_holdings) {
+            if (this.state.showCurrentHoldings) {
                 tickers_to_show = [...tickers_to_show, ...this.getCurrentHoldings()].filter(ticker => ticker !== 'cash')
             }
-            if (this.state.show_previous_holdings) {
+            if (this.state.showPreviousHoldings) {
                 tickers_to_show = [...tickers_to_show, ...this.getPreviousHoldings()].filter(ticker => ticker !== 'cash')
             }
-            if (this.state.show_cash) {
+            if (this.state.showCash) {
                 tickers_to_show.push('cash')
             }
-            if (this.state.show_tagged) {
+            if (this.state.showTagged) {
                 tickers_to_show = [...tickers_to_show, ...this.getTagged()]
             }
-            if (this.state.show_untagged) {
+            if (this.state.showUntagged) {
                 tickers_to_show = [...tickers_to_show, ...this.getUntagged()]
             }
         }
@@ -2393,32 +2393,32 @@ export class ComparingStocks extends React.Component {
                             <div className="switch_control">
                                 <div className="switch_label">show current holdings:</div>
                                 <div className="switch_wrapper">
-                                    <input id="show_current_holdings" name="show_current_holdings" type="checkbox" checked={this.state.show_current_holdings} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_current_holdings" className="switch"></label>
+                                    <input id="showCurrentHoldings" name="showCurrentHoldings" type="checkbox" checked={this.state.showCurrentHoldings} onChange={this.onShowInputChange} />
+                                    <label htmlFor="showCurrentHoldings" className="switch"></label>
                                 </div>
                             </div>
 
                             <div className="switch_control">
                                 <div className="switch_label">show previous holdings:</div>
                                 <div className="switch_wrapper">
-                                    <input id="show_previous_holdings" name="show_previous_holdings" type="checkbox" checked={this.state.show_previous_holdings} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_previous_holdings" className="switch"></label>
+                                    <input id="showPreviousHoldings" name="showPreviousHoldings" type="checkbox" checked={this.state.showPreviousHoldings} onChange={this.onShowInputChange} />
+                                    <label htmlFor="showPreviousHoldings" className="switch"></label>
                                 </div>
                             </div>
 
                             <div className="switch_control">
                                 <div className="switch_label">show tagged:</div>
                                 <div className="switch_wrapper">
-                                    <input id="show_tagged" name="show_tagged" type="checkbox" checked={this.state.show_tagged} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_tagged" className="switch"></label>
+                                    <input id="showTagged" name="showTagged" type="checkbox" checked={this.state.showTagged} onChange={this.onShowInputChange} />
+                                    <label htmlFor="showTagged" className="switch"></label>
                                 </div>
                             </div>
 
                             <div className="switch_control">
                                 <div className="switch_label">show untagged:</div>
                                 <div className="switch_wrapper">
-                                    <input id="show_untagged" name="show_untagged" type="checkbox" checked={this.state.show_untagged} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_untagged" className="switch"></label>
+                                    <input id="showUntagged" name="showUntagged" type="checkbox" checked={this.state.showUntagged} onChange={this.onShowInputChange} />
+                                    <label htmlFor="showUntagged" className="switch"></label>
                                 </div>
                             </div>
 
@@ -2433,8 +2433,8 @@ export class ComparingStocks extends React.Component {
                             <div className="switch_control">
                                 <div className="switch_label">show cash:</div>
                                 <div className="switch_wrapper">
-                                    <input id="show_cash" name="show_cash" type="checkbox" checked={this.state.show_cash} onChange={this.onShowInputChange} />
-                                    <label htmlFor="show_cash" className="switch"></label>
+                                    <input id="showCash" name="showCash" type="checkbox" checked={this.state.showCash} onChange={this.onShowInputChange} />
+                                    <label htmlFor="showCash" className="switch"></label>
                                 </div>
                             </div>
 
@@ -2548,21 +2548,21 @@ export class ComparingStocks extends React.Component {
                 change_pct={row_data.change_pct}
                 quote_date={row_data.quote_date}
                 volume={row_data.volume}
-                basis={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
-                         || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                basis={( (row_data.currentShares !== 0 && this.state.showCurrentHoldings) 
+                         || (row_data.currentShares === 0 && this.state.showPreviousHoldings) ) 
                          ? row_data.basis 
                          : 'n/a'}
                 start_date={row_data.start_date}
-                currentShares={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
-                                  || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                currentShares={( (row_data.currentShares !== 0 && this.state.showCurrentHoldings) 
+                                  || (row_data.currentShares === 0 && this.state.showPreviousHoldings) ) 
                                   ? row_data.currentShares 
                                   : 'n/a'}
-                currentValue={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
-                                 || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                currentValue={( (row_data.currentShares !== 0 && this.state.showCurrentHoldings) 
+                                 || (row_data.currentShares === 0 && this.state.showPreviousHoldings) ) 
                                  ? row_data.currentValue 
                                  : 'n/a'}
-                realized_gains={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
-                                  || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                realized_gains={( (row_data.currentShares !== 0 && this.state.showCurrentHoldings) 
+                                  || (row_data.currentShares === 0 && this.state.showPreviousHoldings) ) 
                                   ? row_data.realized_gains 
                                   : 'n/a'}
                 risk_factor={row_data.risk_factor}
@@ -2572,12 +2572,12 @@ export class ComparingStocks extends React.Component {
                 show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
                 style_realized_performance={row_data.style_realized_performance}
-                totalValue={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
-                               || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                totalValue={( (row_data.currentShares !== 0 && this.state.showCurrentHoldings) 
+                               || (row_data.currentShares === 0 && this.state.showPreviousHoldings) ) 
                                ? row_data.totalValue 
                                : 'n/a'}
-                totalBasis={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
-                               || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                totalBasis={( (row_data.currentShares !== 0 && this.state.showCurrentHoldings) 
+                               || (row_data.currentShares === 0 && this.state.showPreviousHoldings) ) 
                                ? row_data.totalBasis 
                                : 'n/a'}
                 whatif={row_data.whatif}
@@ -2707,33 +2707,33 @@ export class ComparingStocks extends React.Component {
                     <div id="left-side">
                         <div id="input-controls">
                             <InputForms
-                                all_stocks={this.state.allStocks}
-                                all_tags={this.state.allTags}
-                                all_current_quotes={this.state.allCurrentQuotes}
-                                all_monthly_quotes={this.state.allMonthlyQuotes}
-                                all_month_end_dates={this.state.allMonthEndDates}
-                                all_positions={this.state.allPositions}
-                                all_transactions={this.state.allTransactions}
-                                all_risk={this.state.allRisk}
-                                show_current_holdings={this.state.show_current_holdings}
-                                show_previous_holdings={this.state.show_previous_holdings}
-                                show_tagged={this.state.show_tagged}
-                                show_untagged={this.state.show_untagged}
-                                show_cash={this.state.show_cash}
-                                baseline_name={this.state.baseline.name}
-                                get_balanceable_value={this.getMaxBalanceableValue}
-                                on_new_tickers={this.onNewTickers}
-                                on_new_tags={this.onNewTags}
+                                allStocks={this.state.allStocks}
+                                allTags={this.state.allTags}
+                                allCurrentQuotes={this.state.allCurrentQuotes}
+                                allMonthlyQuotes={this.state.allMonthlyQuotes}
+                                allMonthEndDates={this.state.allMonthEndDates}
+                                allPositions={this.state.allPositions}
+                                allTransactions={this.state.allTransactions}
+                                allRisk={this.state.allRisk}
+                                showCurrentHoldings={this.state.showCurrentHoldings}
+                                showPreviousHoldings={this.state.showPreviousHoldings}
+                                showTagged={this.state.showTagged}
+                                showUntagged={this.state.showUntagged}
+                                showCash={this.state.showCash}
+                                baselineName={this.state.baseline.name}
+                                getBalanceableValue={this.getMaxBalanceableValue}
+                                onNewTickers={this.onNewTickers}
+                                onNewTags={this.onNewTags}
                                 onDeleteTags={this.onDeleteTags}
-                                on_delete_transaction={this.onDeleteTransaction}
-                                on_new_transaction={this.onNewTransaction}
-                                on_import_transactions={this.onImportTransactions}
-                                on_new_cash={this.onNewCash}
-                                create_console_message_set={this.createConsoleMessageSet}
-                                clear_last_console_message={this.clearLastConsoleMessage}
+                                onDeleteTransaction={this.onDeleteTransaction}
+                                onNewTransaction={this.onNewTransaction}
+                                onImportTransactions={this.onImportTransactions}
+                                onNewCash={this.onNewCash}
+                                createConsoleMessageSet={this.createConsoleMessageSet}
+                                clearLastConsoleMessage={this.clearLastConsoleMessage}
                                 allConsoleMessages={this.state.allConsoleMessages}
-                                on_new_console_messages={this.onNewConsoleMessages}
-                                on_whatif_submit={this.onWhatifSubmit}
+                                onNewConsoleMessages={this.onNewConsoleMessages}
+                                onWhatifSubmit={this.onWhatifSubmit}
                             />
                         </div>
                         <div id="last-console-message">

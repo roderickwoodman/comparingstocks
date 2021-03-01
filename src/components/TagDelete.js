@@ -41,7 +41,7 @@ export const TagDelete = (props) => {
                     Delete Tag:
                     <select value={deleteTagList} multiple={true} onChange={handleTagChange}>
                         <option key="untagged" value="untagged">(none)</option>
-                        {Object.keys(props.all_tags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
+                        {Object.keys(props.allTags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
                         <option key={tag_name} value={tag_name}>{tag_name}</option>
                         ))}
                     </select>
@@ -55,6 +55,6 @@ export const TagDelete = (props) => {
 }
 
 TagDelete.propTypes = {
-    all_tags: PropTypes.object.isRequired,
+    allTags: PropTypes.object.isRequired,
     onDeleteTags: PropTypes.func.isRequired,
 }

@@ -35,11 +35,11 @@ export const TickerAdd = (props) => {
         let new_messages = []
         tickers.forEach(function(ticker) {
             // ticker does not exist
-            if (!props.all_stocks.includes(ticker)) {
+            if (!props.allStocks.includes(ticker)) {
                 new_messages.push('ERROR: Ticker ' + ticker + ' does not exist.')
 
             // ticker is already in the target tag
-            } else if (props.all_tags[tag].includes(ticker)) {
+            } else if (props.allTags[tag].includes(ticker)) {
                 if (tag === 'untagged') {
                     new_messages.push('ERROR: Ticker ' + ticker + ' has already been added.')
                 } else {
@@ -49,9 +49,9 @@ export const TickerAdd = (props) => {
             // ticker is being added to a tag that it is not already in
             } else {
                 let tagged_tickers = []
-                Object.keys(props.all_tags).forEach(function(tag) {
+                Object.keys(props.allTags).forEach(function(tag) {
                     if (tag !== 'untagged') {
-                        tagged_tickers = tagged_tickers.concat(props.all_tags[tag])
+                        tagged_tickers = tagged_tickers.concat(props.allTags[tag])
                     }
                 })
                 if (tag === 'untagged' && tagged_tickers.includes(ticker)) {
@@ -76,15 +76,15 @@ export const TickerAdd = (props) => {
         } else {
             summary = 'ERROR: ' + num_errors + ' of ' + tickers.length + ' tickers could not be added' + tag_status_str + '.'
         }
-        let new_console_message_set = props.create_console_message_set(summary)
+        let new_console_message_set = props.createConsoleMessageSet(summary)
         if (new_messages.length > 1) {
             new_console_message_set.messages = [...new_messages]
         }
         if (num_errors > 0) {
             new_console_message_set.has_errors = true
         }
-        props.on_new_tickers(tag, tickers_to_add)
-        props.on_new_console_messages(new_console_message_set)
+        props.onNewTickers(tag, tickers_to_add)
+        props.onNewConsoleMessages(new_console_message_set)
         handleReset()
     }
 
@@ -97,7 +97,7 @@ export const TickerAdd = (props) => {
                     Add to Tag:
                     <select value={addToTag} onChange={handleTagChange}>
                         <option key="untagged" value="untagged">(no tag)</option>
-                        {Object.keys(props.all_tags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
+                        {Object.keys(props.allTags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
                         <option key={tag_name} value={tag_name}>{tag_name}</option>
                         ))}
                     </select>
@@ -111,9 +111,9 @@ export const TickerAdd = (props) => {
 }
 
 TickerAdd.propTypes = {
-    all_stocks: PropTypes.array.isRequired,
-    all_tags: PropTypes.object.isRequired,
-    on_new_tickers: PropTypes.func.isRequired,
-    create_console_message_set: PropTypes.func.isRequired,
-    on_new_console_messages: PropTypes.func.isRequired
+    allStocks: PropTypes.array.isRequired,
+    allTags: PropTypes.object.isRequired,
+    onNewTickers: PropTypes.func.isRequired,
+    createConsoleMessageSet: PropTypes.func.isRequired,
+    onNewConsoleMessages: PropTypes.func.isRequired
 }

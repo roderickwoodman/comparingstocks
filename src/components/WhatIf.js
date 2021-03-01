@@ -14,7 +14,7 @@ export const WhatIf = (props) => {
 
     useEffect( () => {
 
-        let new_balanceableValue = Math.round(props.get_balanceable_value(balanceTargetSet, sellAllOf, balanceTargetColumn))
+        let new_balanceableValue = Math.round(props.getBalanceableValue(balanceTargetSet, sellAllOf, balanceTargetColumn))
         setBalanceableValue(new_balanceableValue)
 
         const stored_balanceTargetSet = JSON.parse(localStorage.getItem("balance_target_set"))
@@ -40,13 +40,13 @@ export const WhatIf = (props) => {
 
         // when the balance target set input changes, update the maximum value
         if (name === 'balance_target_set') {
-            let new_balanceableValue = Math.round(props.get_balanceable_value(value, sellAllOf, balanceTargetColumn))
+            let new_balanceableValue = Math.round(props.getBalanceableValue(value, sellAllOf, balanceTargetColumn))
             setBalanceableValue(new_balanceableValue)
         }
 
         // when the balance target column input changes, update the maximum value
         if (name === 'balance_target_column') {
-            let new_balanceableValue = Math.round(this.props.get_balanceable_value(balanceTargetSet, sellAllOf, value))
+            let new_balanceableValue = Math.round(this.props.getBalanceableValue(balanceTargetSet, sellAllOf, value))
             setBalanceableValue(new_balanceableValue)
         }
 
@@ -78,7 +78,7 @@ export const WhatIf = (props) => {
             if (multiple_tickers.includes('sell_none')) {
                 multiple_tickers = ['sell_none']
             }
-            let new_balanceableValue = Math.round(props.get_balanceable_value(balanceTargetSet, value, balanceTargetColumn))
+            let new_balanceableValue = Math.round(props.getBalanceableValue(balanceTargetSet, value, balanceTargetColumn))
             setSellAllOf(multiple_tickers)
             setBalanceableValue(new_balanceableValue)
         }
@@ -88,7 +88,7 @@ export const WhatIf = (props) => {
         event.preventDefault()
         let user_remaining_cash = cashRemaining.split('.')[0].replace(/[^0-9]/g, "")
         let remaining_cash = (cashTreatment === 'include') ? parseInt(user_remaining_cash) : null
-        props.on_whatif_submit(balanceTargetSet, sellAllOf, balanceTargetColumn, remaining_cash)
+        props.onWhatifSubmit(balanceTargetSet, sellAllOf, balanceTargetColumn, remaining_cash)
     }
 
     const isDisabled = () => {
@@ -96,11 +96,11 @@ export const WhatIf = (props) => {
         if (cashTreatment === 'include' && !cashValid) {
             return true
         } else if (balanceTargetSet === 'my_current_holdings') {
-            return (props.show_current_holdings) ? false : true
+            return (props.showCurrentHoldings) ? false : true
         } else if (balanceTargetSet === 'untagged') {
-            return (props.show_untagged) ? false : true
+            return (props.showUntagged) ? false : true
         } else {
-            return (props.show_tagged) ? false : true
+            return (props.showTagged) ? false : true
         }
     }
 
@@ -110,19 +110,19 @@ export const WhatIf = (props) => {
 
     let excludable_tickers = []
     if (balanceTargetSet === "my_current_holdings") {
-        excludable_tickers = Object.keys(props.all_positions).filter( ticker => ticker !== 'cash' && props.all_positions[ticker].currentShares)
-    } else if (props.all_tags.hasOwnProperty(balanceTargetSet)) {
-        excludable_tickers = props.all_tags[balanceTargetSet].filter( ticker => props.all_positions[ticker] && props.all_positions[ticker].currentShares)
+        excludable_tickers = Object.keys(props.allPositions).filter( ticker => ticker !== 'cash' && props.allPositions[ticker].currentShares)
+    } else if (props.allTags.hasOwnProperty(balanceTargetSet)) {
+        excludable_tickers = props.allTags[balanceTargetSet].filter( ticker => props.allPositions[ticker] && props.allPositions[ticker].currentShares)
     }
     return (
         <section id="what-if">
             <form onSubmit={handleSubmit}>
                 <div id="operation">Balance&nbsp;
                     <select name="balance_target_set" value={balanceTargetSet} onChange={handleChange}>
-                        <option value="my_current_holdings">current holdings ({Object.entries(props.all_positions).filter(position => position[0] !== 'cash' && position[1].currentShares !== 0).length})</option>
-                        <option value="untagged">untagged tickers ({props.all_tags.untagged.length})</option>
-                        {Object.entries(props.all_tags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
-                            <option key={tag} value={tag}>tag: {tag} ({props.all_tags[tag].length})</option>
+                        <option value="my_current_holdings">current holdings ({Object.entries(props.allPositions).filter(position => position[0] !== 'cash' && position[1].currentShares !== 0).length})</option>
+                        <option value="untagged">untagged tickers ({props.allTags.untagged.length})</option>
+                        {Object.entries(props.allTags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
+                            <option key={tag} value={tag}>tag: {tag} ({props.allTags[tag].length})</option>
                         )}
                     </select>
                     &nbsp;into&nbsp; 
@@ -144,7 +144,7 @@ export const WhatIf = (props) => {
                 </div>
                 <div id="cash-treatment">
                     <label htmlFor="ignore"><input type="radio" id="ignore" name="cash_treatment" value="ignore" selected onChange={handleChange} defaultChecked />ignoring my cash balance</label>
-                    <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={handleChange} disabled={!props.show_cash} />using my cash balance, and leaving at least
+                    <label htmlFor="include"><input type="radio" id="include" name="cash_treatment" value="include" onChange={handleChange} disabled={!props.showCash} />using my cash balance, and leaving at least
                     <input type="text" id="cash_remaining" name="cash_remaining" size="12" onChange={handleChange} value={cashRemaining} placeholder="$0"></input>cash remaining (max: ${numberWithCommas(balanceableValue)})</label>
                 </div>
                 <section className="buttonrow">
@@ -156,13 +156,13 @@ export const WhatIf = (props) => {
 }
 
 WhatIf.propTypes = {
-    all_current_quotes: PropTypes.object,
-    all_tags: PropTypes.object,
-    all_positions: PropTypes.object,
-    get_balanceable_value: PropTypes.func,
-    show_current_holdings: PropTypes.bool,
-    show_tagged: PropTypes.bool,
-    show_untagged: PropTypes.bool,
-    show_cash: PropTypes.bool,
-    on_whatif_submit: PropTypes.func
+    allCurrentQuotes: PropTypes.object,
+    allTags: PropTypes.object,
+    allPositions: PropTypes.object,
+    getBalanceableValue: PropTypes.func,
+    showCurrentHoldings: PropTypes.bool,
+    showTagged: PropTypes.bool,
+    showUntagged: PropTypes.bool,
+    showCash: PropTypes.bool,
+    onWhatifSubmit: PropTypes.func
 }

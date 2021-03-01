@@ -22,8 +22,8 @@ export const TransactionsList = (props) => {
 
         // prepare the data
         let exported_json = {
-            transactions: JSON.parse(JSON.stringify(props.all_transactions)),
-            risk: JSON.parse(JSON.stringify(props.all_risk))
+            transactions: JSON.parse(JSON.stringify(props.allTransactions)),
+            risk: JSON.parse(JSON.stringify(props.allRisk))
         }
         var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exported_json));
 
@@ -46,13 +46,13 @@ export const TransactionsList = (props) => {
             reader.readAsText(files[0], "UTF-8");
             reader.onload = function (evt) {
                 let file_contents = JSON.parse(evt.target.result)
-                props.on_import_transactions(file_contents)
+                props.onImportTransactions(file_contents)
             }
         }
     }
 
-    let all_transactions = props.all_transactions
-    let ordered_filtered_transactions = all_transactions
+    let allTransactions = props.allTransactions
+    let ordered_filtered_transactions = allTransactions
         .filter( transaction => transaction.summary.toLowerCase().includes(filterStr.toLowerCase()) )
         .sort( function(a,b) {
             if (a.summary < b.summary) {
@@ -72,7 +72,7 @@ export const TransactionsList = (props) => {
                     <label>Filter:</label>
                     <input name="filter_str" value={filterStr} onChange={handleChange} size="15" />
 
-                    <button className="btn btn-sm btn-primary" onClick={onExportButton} disabled={!props.all_transactions.length}>export</button>
+                    <button className="btn btn-sm btn-primary" onClick={onExportButton} disabled={!props.allTransactions.length}>export</button>
                     <div ref={exportEl}></div>
 
                     <label className="btn btn-sm btn-primary">
@@ -83,7 +83,7 @@ export const TransactionsList = (props) => {
             </section>
             <section id="transactions">
                 {ordered_filtered_transactions.map( transaction => (
-                    <p key={transaction.modifiedAt} className="transaction" onClick={ (e)=>props.on_delete_transaction(transaction.modifiedAt)}>{transaction.summary}</p>
+                    <p key={transaction.modifiedAt} className="transaction" onClick={ (e)=>props.onDeleteTransaction(transaction.modifiedAt)}>{transaction.summary}</p>
                 ))}
             </section>
         </section>
@@ -91,8 +91,8 @@ export const TransactionsList = (props) => {
 }
 
 TransactionsList.propTypes = {
-    all_transactions: PropTypes.array.isRequired,
-    all_risk: PropTypes.object.isRequired,
-    on_delete_transaction: PropTypes.func.isRequired,
-    on_import_transactions: PropTypes.func.isRequired,
+    allTransactions: PropTypes.array.isRequired,
+    allRisk: PropTypes.object.isRequired,
+    onDeleteTransaction: PropTypes.func.isRequired,
+    onImportTransactions: PropTypes.func.isRequired,
 }

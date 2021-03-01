@@ -16,18 +16,18 @@ export const InputForms = (props) => {
     const [whichInputs, setWhichInputs] = useState('tickers') 
 
     useEffect ( () => {
-        const stored_which_inputs = JSON.parse(localStorage.getItem("which_inputs"))
-        if (stored_which_inputs !== null) {
-            setWhichInputs(stored_which_inputs)
+        const storedWhichInputs = JSON.parse(localStorage.getItem("whichInputs"))
+        if (storedWhichInputs !== null) {
+            setWhichInputs(storedWhichInputs)
         }
     }, [])
 
-    const onWhichInputs = (new_which_inputs) => {
-        localStorage.setItem('which_inputs', JSON.stringify(new_which_inputs))
-        if (whichInputs !== new_which_inputs) {
-            props.clear_last_console_message()
+    const onWhichInputs = (newWhichInputs) => {
+        localStorage.setItem('whichInputs', JSON.stringify(newWhichInputs))
+        if (whichInputs !== newWhichInputs) {
+            props.clearLastConsoleMessage()
         }
-        setWhichInputs(new_which_inputs)
+        setWhichInputs(newWhichInputs)
     }
 
     return (
@@ -44,24 +44,24 @@ export const InputForms = (props) => {
                 {whichInputs === 'tickers' && (
                     <React.Fragment>
                     <TickerAdd
-                        all_stocks={props.all_stocks}
-                        all_tags={props.all_tags}
-                        on_new_tickers={props.on_new_tickers}
-                        create_console_message_set={props.create_console_message_set}
-                        on_new_console_messages={props.on_new_console_messages}
+                        allStocks={props.allStocks}
+                        allTags={props.allTags}
+                        onNewTickers={props.onNewTickers}
+                        createConsoleMessageSet={props.createConsoleMessageSet}
+                        onNewConsoleMessages={props.onNewConsoleMessages}
                     />
                     </React.Fragment>
                 )}
                 {whichInputs === 'tags' && (
                     <React.Fragment>
                     <TagAdd
-                        all_tags={props.all_tags}
-                        on_new_tags={props.on_new_tags}
-                        create_console_message_set={props.create_console_message_set}
-                        on_new_console_messages={props.on_new_console_messages}
+                        allTags={props.allTags}
+                        onNewTags={props.onNewTags}
+                        createConsoleMessageSet={props.createConsoleMessageSet}
+                        onNewConsoleMessages={props.onNewConsoleMessages}
                     />
                     <TagDelete
-                        all_tags={props.all_tags}
+                        allTags={props.allTags}
                         onDeleteTags={props.onDeleteTags}
                     />
                     </React.Fragment>
@@ -71,20 +71,20 @@ export const InputForms = (props) => {
                     <div className="content-wrapper">
                         <div className="content-half">
                             <TransactionAdd
-                                all_stocks={props.all_stocks}
-                                all_tags={props.all_tags}
-                                on_new_transaction={props.on_new_transaction}
-                                on_new_cash={props.on_new_cash}
-                                create_console_message_set={props.create_console_message_set}
-                                on_new_console_messages={props.on_new_console_messages}
+                                allStocks={props.allStocks}
+                                allTags={props.allTags}
+                                onNewTransaction={props.onNewTransaction}
+                                onNewCash={props.onNewCash}
+                                createConsoleMessageSet={props.createConsoleMessageSet}
+                                onNewConsoleMessages={props.onNewConsoleMessages}
                             />
                         </div>
                         <div className="content-half">
                             <TransactionsList
-                                all_transactions={props.all_transactions}
-                                all_risk={props.all_risk}
-                                on_delete_transaction={props.on_delete_transaction}
-                                on_import_transactions={props.on_import_transactions}
+                                allTransactions={props.allTransactions}
+                                allRisk={props.allRisk}
+                                onDeleteTransaction={props.onDeleteTransaction}
+                                onImportTransactions={props.onImportTransactions}
                             />
                         </div>
                     </div>
@@ -93,29 +93,29 @@ export const InputForms = (props) => {
                 {whichInputs === 'what-ifs' && (
                     <React.Fragment>
                     <WhatIf
-                        all_current_quotes={props.all_current_quotes}
-                        all_positions={props.all_positions}
-                        all_tags={props.all_tags}
-                        get_balanceable_value={props.get_balanceable_value}
-                        show_current_holdings={props.show_current_holdings}
-                        show_previous_holdings={props.show_previous_holdings}
-                        show_tagged={props.show_tagged}
-                        show_untagged={props.show_untagged}
-                        show_cash={props.show_cash}
-                        on_whatif_submit={props.on_whatif_submit}
+                        allCurrentQuotes={props.allCurrentQuotes}
+                        allPositions={props.allPositions}
+                        allTags={props.allTags}
+                        getBalanceableValue={props.getBalanceableValue}
+                        showCurrentHoldings={props.showCurrentHoldings}
+                        showPreviousHoldings={props.showPreviousHoldings}
+                        showTagged={props.showTagged}
+                        showUntagged={props.showUntagged}
+                        showCash={props.showCash}
+                        onWhatifSubmit={props.onWhatifSubmit}
                     />
                     </React.Fragment>
                 )}
                 {whichInputs === 'my-performance' && (
                     <React.Fragment>
                     <MyPerformance
-                        all_transactions={props.all_transactions}
-                        all_positions={props.all_positions}
-                        all_monthly_quotes={props.all_monthly_quotes}
-                        all_month_end_dates={props.all_month_end_dates}
-                        baseline_name={props.baseline_name}
-                        create_console_message_set={props.create_console_message_set}
-                        on_new_console_messages={props.on_new_console_messages}
+                        allTransactions={props.allTransactions}
+                        allPositions={props.allPositions}
+                        allMonthlyQuotes={props.allMonthlyQuotes}
+                        allMonthEndDates={props.allMonthEndDates}
+                        baselineName={props.baselineName}
+                        createConsoleMessageSet={props.createConsoleMessageSet}
+                        onNewConsoleMessages={props.onNewConsoleMessages}
                     />
                     </React.Fragment>
                 )}
@@ -132,29 +132,29 @@ export const InputForms = (props) => {
 }
 
 InputForms.propTypes = {
-    all_stocks: PropTypes.array.isRequired,
-    all_tags: PropTypes.object.isRequired,
-    all_current_quotes: PropTypes.object.isRequired,
-    all_monthly_quotes: PropTypes.object.isRequired,
-    all_month_end_dates: PropTypes.array.isRequired,
-    all_positions: PropTypes.object,
-    all_transactions: PropTypes.array,
-    all_risk: PropTypes.object,
-    show_tagged: PropTypes.bool,
-    show_untagged: PropTypes.bool,
-    show_cash: PropTypes.bool,
-    baseline_name: PropTypes.string,
-    get_balanceable_value: PropTypes.func,
-    on_new_tickers: PropTypes.func.isRequired,
-    on_new_cash: PropTypes.func.isRequired,
-    on_new_tags: PropTypes.func.isRequired,
+    allStocks: PropTypes.array.isRequired,
+    allTags: PropTypes.object.isRequired,
+    allCurrentQuotes: PropTypes.object.isRequired,
+    allMonthlyQuotes: PropTypes.object.isRequired,
+    allMonthEndDates: PropTypes.array.isRequired,
+    allPositions: PropTypes.object,
+    allTransactions: PropTypes.array,
+    allRisk: PropTypes.object,
+    showTagged: PropTypes.bool,
+    showUntagged: PropTypes.bool,
+    showCash: PropTypes.bool,
+    baselineName: PropTypes.string,
+    getBalanceableValue: PropTypes.func,
+    onNewTickers: PropTypes.func.isRequired,
+    onNewCash: PropTypes.func.isRequired,
+    onNewTags: PropTypes.func.isRequired,
     onDeleteTags: PropTypes.func.isRequired,
-    on_new_transaction: PropTypes.func.isRequired,
-    on_delete_transaction: PropTypes.func.isRequired,
-    on_import_transactions: PropTypes.func.isRequired,
-    create_console_message_set: PropTypes.func.isRequired,
+    onNewTransaction: PropTypes.func.isRequired,
+    onDeleteTransaction: PropTypes.func.isRequired,
+    onImportTransactions: PropTypes.func.isRequired,
+    createConsoleMessageSet: PropTypes.func.isRequired,
     allConsoleMessages: PropTypes.array.isRequired,
-    on_new_console_messages: PropTypes.func.isRequired,
-    on_whatif_submit: PropTypes.func,
-    clear_last_console_message: PropTypes.func
+    onNewConsoleMessages: PropTypes.func.isRequired,
+    onWhatifSubmit: PropTypes.func,
+    clearLastConsoleMessage: PropTypes.func
 }

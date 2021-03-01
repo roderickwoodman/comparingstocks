@@ -60,15 +60,15 @@ export const TransactionAdd = (props) => {
                     valid_transaction_summary += ' on ' + terms[2].toUpperCase()
                 }
                 new_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
-                props.on_new_cash(valid_transaction_summary)
+                props.onNewCash(valid_transaction_summary)
                 handleCashReset()
             }
         }
-        let new_console_message_set = props.create_console_message_set(new_message)
+        let new_console_message_set = props.createConsoleMessageSet(new_message)
         if (new_message.toUpperCase().startsWith('ERROR:')) {
             new_console_message_set.has_errors = true
         }
-        props.on_new_console_messages(new_console_message_set)
+        props.onNewConsoleMessages(new_console_message_set)
     }
 
     const handleSubmit = (event) => {
@@ -101,7 +101,7 @@ export const TransactionAdd = (props) => {
             }
 
             let ticker = transaction[2].toUpperCase().replace(/[^A-Z]/g, "")
-            if (ticker !== transaction[2].toUpperCase() || !props.all_stocks.includes(ticker.toUpperCase())) {
+            if (ticker !== transaction[2].toUpperCase() || !props.allStocks.includes(ticker.toUpperCase())) {
                 new_messages.push('ERROR: Ticker "' + transaction[2] + '" does not exist.')
             }
 
@@ -117,8 +117,8 @@ export const TransactionAdd = (props) => {
 
                 // also print the "ticker has now been added" message, if needed
                 let tagged_tickers = []
-                Object.keys(props.all_tags).forEach(function(tag) {
-                    props.all_tags[tag].forEach(function(ticker) {
+                Object.keys(props.allTags).forEach(function(tag) {
+                    props.allTags[tag].forEach(function(ticker) {
                         if (!tagged_tickers.includes(ticker)) {
                             tagged_tickers.push(ticker)
                         }
@@ -131,7 +131,7 @@ export const TransactionAdd = (props) => {
                 let valid_transaction_summary = transactionDate + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
                 summary_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
                 new_messages.push(summary_message)
-                props.on_new_transaction(valid_transaction_summary)
+                props.onNewTransaction(valid_transaction_summary)
 
             } else {
                 transaction[2] = transaction[2].toUpperCase()
@@ -141,12 +141,12 @@ export const TransactionAdd = (props) => {
         }
 
         // send all of the messages to print
-        let new_console_message_set = props.create_console_message_set(summary_message)
+        let new_console_message_set = props.createConsoleMessageSet(summary_message)
         if (summary_message.toUpperCase().startsWith('ERRROR:')) {
             new_console_message_set.has_errors = true
         }
         new_console_message_set.messages = [...new_messages]
-        props.on_new_console_messages(new_console_message_set)
+        props.onNewConsoleMessages(new_console_message_set)
     }
 
     const getCashOperationPlaceholder = () => {
@@ -193,9 +193,9 @@ export const TransactionAdd = (props) => {
 }
 
 TransactionAdd.propTypes = {
-all_stocks: PropTypes.array.isRequired,
-all_tags: PropTypes.object.isRequired,
-on_new_transaction: PropTypes.func.isRequired,
-on_new_cash: PropTypes.func.isRequired,
-on_new_console_messages: PropTypes.func.isRequired
+allStocks: PropTypes.array.isRequired,
+allTags: PropTypes.object.isRequired,
+onNewTransaction: PropTypes.func.isRequired,
+onNewCash: PropTypes.func.isRequired,
+onNewConsoleMessages: PropTypes.func.isRequired
 }

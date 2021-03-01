@@ -27,7 +27,7 @@ export const TagAdd = (props) => {
     const validateTags = (tags) => {
         let tags_to_add = [], new_messages = []
         tags.forEach(function(tag) {
-            if (props.all_tags.hasOwnProperty(tag)) {
+            if (props.allTags.hasOwnProperty(tag)) {
                 new_messages.push('ERROR: Tag "' + tag + '" has already been created.')
             } else {
                 new_messages.push('Tag "' + tag + '" has now been created.')
@@ -43,15 +43,15 @@ export const TagAdd = (props) => {
         } else {
             summary = 'ERROR: ' + num_errors + ' of ' + tags.length + ' tags could not be created.'
         }
-        let new_console_message_set = props.create_console_message_set(summary)
+        let new_console_message_set = props.createConsoleMessageSet(summary)
         if (new_messages.length > 1) {
             new_console_message_set.messages = [...new_messages]
         }
         if (num_errors > 0) {
             new_console_message_set.has_errors = true
         }
-        props.on_new_tags(tags_to_add)
-        props.on_new_console_messages(new_console_message_set)
+        props.onNewTags(tags_to_add)
+        props.onNewConsoleMessages(new_console_message_set)
         handleReset()
     }
 
@@ -69,8 +69,8 @@ export const TagAdd = (props) => {
 }
 
 TagAdd.propTypes = {
-    all_tags: PropTypes.object.isRequired,
-    on_new_tags: PropTypes.func.isRequired,
-    create_console_message_set: PropTypes.func.isRequired,
-    on_new_console_messages: PropTypes.func.isRequired
+    allTags: PropTypes.object.isRequired,
+    onNewTags: PropTypes.func.isRequired,
+    createConsoleMessageSet: PropTypes.func.isRequired,
+    onNewConsoleMessages: PropTypes.func.isRequired
 }

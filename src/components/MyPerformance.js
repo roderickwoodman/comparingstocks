@@ -50,7 +50,7 @@ export class MyPerformance extends React.Component {
 
     generatePeriodData(period_size) {
 
-        let sorted_transactions = this.props.all_transactions.sort(function(a, b) {
+        let sorted_transactions = this.props.allTransactions.sort(function(a, b) {
             if (a.date < b.date) {
                 return -1
             } else if (a.date > b.date) {
@@ -216,7 +216,7 @@ export class MyPerformance extends React.Component {
                 let this_quote_year = target_year
                 if (target_year === today_year && period === today_period) { // for a partial last period, use a previous month's quotes
                     let lastavailablequote_month_str, lastavailablequote_year_str
-                    [lastavailablequote_year_str, lastavailablequote_month_str] = this.props.all_month_end_dates[0].split('-')
+                    [lastavailablequote_year_str, lastavailablequote_month_str] = this.props.allMonthEndDates[0].split('-')
                     let lastavailablequote_month = parseInt(lastavailablequote_month_str)
                     let lastavailablequote_year = parseInt(lastavailablequote_year_str)
                     if (period_size === 'year') {
@@ -363,12 +363,12 @@ export class MyPerformance extends React.Component {
                     message_summary = 'ERROR: period performance calculations encountered error(s)'
                 }
             }
-            let new_console_message_set = this.props.create_console_message_set(message_summary)
+            let new_console_message_set = this.props.createConsoleMessageSet(message_summary)
             new_console_message_set.messages = [...new_console_messages]
             if (quote_error_count > 0) {
                 new_console_message_set.has_errors = true
             }
-            this.props.on_new_console_messages(new_console_message_set)
+            this.props.onNewConsoleMessages(new_console_message_set)
         }
 
         this.setState({ period_data: period_data })
@@ -424,7 +424,7 @@ export class MyPerformance extends React.Component {
         if (my_perf === 'err.') {
             retval['display_value'] = 'err.'
         } else if (typeof my_perf === 'number') {
-            if (this.props.baseline_name === 'sp500_pct_gain') {
+            if (this.props.baselineName === 'sp500_pct_gain') {
                 let baseline_perf = period_data.period_baseline_change_pct
                 if (typeof baseline_perf !== 'number') {
                     return retval
@@ -441,8 +441,8 @@ export class MyPerformance extends React.Component {
     }
 
     getMonthEndQuote(ticker, year, month) {
-        let monthly_quotes = this.props.all_monthly_quotes
-        let monthly_dates = this.props.all_month_end_dates
+        let monthly_quotes = this.props.allMonthlyQuotes
+        let monthly_dates = this.props.allMonthEndDates
         let period_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
         let retval = {}
         if (period_idx !== -1) {
@@ -459,7 +459,7 @@ export class MyPerformance extends React.Component {
         let displayed, baseline, index
         [displayed, baseline, index] = [performance_obj.display_value, performance_obj.baseline_value, performance_obj.index_value]
         let classes = 'performance-cell'
-        if ( this.props.baseline_name === 'sp500_pct_gain') {
+        if ( this.props.baselineName === 'sp500_pct_gain') {
             if (displayed > 0) {
                 classes += ' text-green'
             } else if (displayed < 0) {
@@ -486,7 +486,7 @@ export class MyPerformance extends React.Component {
     }
 
     formatIndexPerformance(performance) {
-        if ( this.props.baseline_name === 'sp500_pct_gain') {
+        if ( this.props.baselineName === 'sp500_pct_gain') {
             return this.formatPerformance('ref.')
         } else {
             return this.formatPerformance(performance)
@@ -558,7 +558,7 @@ export class MyPerformance extends React.Component {
                         <p className="strong">cash:</p>
                         <p className="strong">transfers in:</p>
                         <p className="strong">total:</p>
-                        <p className="strong">my perf{ (this.props.baseline_name === 'sp500_pct_gain') ? ' delta' : '' }:</p>
+                        <p className="strong">my perf{ (this.props.baselineName === 'sp500_pct_gain') ? ' delta' : '' }:</p>
                         <p className="strong">S&amp;P500:</p>
                     </div>
                     <div id="my-performance-periods">
@@ -584,11 +584,11 @@ export class MyPerformance extends React.Component {
 }
 
 MyPerformance.propTypes = {
-    all_transactions: PropTypes.array.isRequired,
-    all_positions: PropTypes.object.isRequired,
-    all_monthly_quotes: PropTypes.object.isRequired,
-    all_month_end_dates: PropTypes.array.isRequired,
-    baseline_name: PropTypes.string.isRequired,
-    create_console_message_set: PropTypes.func.isRequired,
-    on_new_console_messages: PropTypes.func.isRequired
+    allTransactions: PropTypes.array.isRequired,
+    allPositions: PropTypes.object.isRequired,
+    allMonthlyQuotes: PropTypes.object.isRequired,
+    allMonthEndDates: PropTypes.array.isRequired,
+    baselineName: PropTypes.string.isRequired,
+    createConsoleMessageSet: PropTypes.func.isRequired,
+    onNewConsoleMessages: PropTypes.func.isRequired
 }
