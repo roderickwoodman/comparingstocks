@@ -183,9 +183,9 @@ export const GridRow = (props) => {
                     classes += ' text-red'
                 }
                 break
-            case 'short_change_pct':
+            case 'shortChangePct':
                 if (!flagQuoteError()) {
-                    if (performanceBeatTheBaseline(performance.short_change_pct, baseline.short_change_pct)) {
+                    if (performanceBeatTheBaseline(performance.shortChangePct, baseline.shortChangePct)) {
                         classes += ' text-green'
                     } else  {
                         classes += ' text-green'
@@ -204,9 +204,9 @@ export const GridRow = (props) => {
                     }
                 }
                 break
-            case 'medium_change_pct':
+            case 'mediumChangePct':
                 if (!flagQuoteError()) {
-                    if (performanceBeatTheBaseline(performance.medium_change_pct, baseline.medium_change_pct)) {
+                    if (performanceBeatTheBaseline(performance.mediumChangePct, baseline.mediumChangePct)) {
                         classes += ' text-green'
                     } else  {
                         classes += ' text-green'
@@ -225,9 +225,9 @@ export const GridRow = (props) => {
                     }
                 }
                 break
-            case 'long_change_pct':
+            case 'longChangePct':
                 if (!flagQuoteError()) {
-                    if (performanceBeatTheBaseline(performance.long_change_pct, baseline.long_change_pct)) {
+                    if (performanceBeatTheBaseline(performance.longChangePct, baseline.longChangePct)) {
                         classes += ' text-green'
                     } else  {
                         classes += ' text-green'
@@ -257,7 +257,7 @@ export const GridRow = (props) => {
     }
 
     // prints the value that is (usually) explicitly passed in via props
-    // AND is responsible for calculating "percent_value", "percent_basis", and "percent_profit"
+    // AND is responsible for calculating "percentValue", "percentBasis", and "percent_profit"
     const populateCellValue = (column) => {
 
         if ( column.name === 'risk_factor'
@@ -279,61 +279,61 @@ export const GridRow = (props) => {
         let performance_value = false
 
         const quote_date = props.quote_date
-        const total_value = props.total_value
-        const total_basis = props.total_basis
+        const totalValue = props.totalValue
+        const totalBasis = props.totalBasis
         const current_price = props.current_price
         let currentShares = props.currentShares
-        const current_value = props.current_value
+        const currentValue = props.currentValue
         let risk_factor = (props.risk_factor !== null) ? props.risk_factor : 0.20
         let visible_risk_factor = (props.risk_factor !== null) ? props.risk_factor : 'n/a'
         if (props.rowName === 'cash') {
             risk_factor = 0
             visible_risk_factor = 0
         }
-        let value_at_risk = current_value * risk_factor
+        let value_at_risk = currentValue * risk_factor
         let basis = props.basis
         let basis_risked = basis * risk_factor
         let realized_gains = props.realized_gains
         const whatif = props.whatif
 
-        let percent_value, percent_basis, profit, percent_profit
+        let percentValue, percentBasis, profit, percent_profit
 
-        // calculate percent_value
-        if (isNaN(current_value)) {
-            percent_value = 'n/a'
+        // calculate percentValue
+        if (isNaN(currentValue)) {
+            percentValue = 'n/a'
         } else {
-            if (isNaN(total_value) || total_value === 0) {
-                percent_value = 'n/a'
+            if (isNaN(totalValue) || totalValue === 0) {
+                percentValue = 'n/a'
             } else {
-                percent_value = (current_value !== 'n/a') ? current_value / total_value * 100 : 'n/a'
+                percentValue = (currentValue !== 'n/a') ? currentValue / totalValue * 100 : 'n/a'
             }
         }
 
-        // calculate percent_basis
-        if (isNaN(current_value)) {
-            percent_basis = 'n/a'
+        // calculate percentBasis
+        if (isNaN(currentValue)) {
+            percentBasis = 'n/a'
         } else {
-            if (isNaN(total_basis) || total_basis === 0) {
-                percent_basis = 'n/a'
+            if (isNaN(totalBasis) || totalBasis === 0) {
+                percentBasis = 'n/a'
             } else {
-                percent_basis = (current_value !== 'n/a') ? basis / total_basis * 100 : 'n/a'
+                percentBasis = (currentValue !== 'n/a') ? basis / totalBasis * 100 : 'n/a'
             }
         }
 
         // calculate profit and percent_profit
-        if (isNaN(current_value) || isNaN(basis)) {
+        if (isNaN(currentValue) || isNaN(basis)) {
             profit = 'n/a'
             percent_profit = 'n/a'
         } else {
             if (currentShares === 0) {
                 profit = 'n/a'
                 percent_profit = 'n/a'
-            } else if (basis > current_value) {
-                profit = current_value - basis
+            } else if (basis > currentValue) {
+                profit = currentValue - basis
                 percent_profit = 'losing'
-            } else if (basis < current_value) {
-                profit = current_value - basis
-                percent_profit = (1 - basis / current_value) * 100
+            } else if (basis < currentValue) {
+                profit = currentValue - basis
+                percent_profit = (1 - basis / currentValue) * 100
             } else {
                 profit = 0
                 percent_profit = 0
@@ -388,10 +388,10 @@ export const GridRow = (props) => {
                     value = 'n/a'
                 }
                 break
-            case 'current_value':
+            case 'currentValue':
                 if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (!flagQuoteErrorOnPositionCell()) {
-                        value = current_value
+                        value = currentValue
                     } else {
                         value = 'err.'
                     }
@@ -404,20 +404,20 @@ export const GridRow = (props) => {
                     if (whatif === null) {
                         value = 'n/a'
                     } else if (props.whatifFormat === 'deltas') {
-                        value = whatif.current_value - ((current_value === 'n/a') ? 0 : current_value)
+                        value = whatif.currentValue - ((currentValue === 'n/a') ? 0 : currentValue)
                     } else {
-                        value = whatif.current_value
+                        value = whatif.currentValue
                     }
                 } else {
                     value = 'err.'
                 }
                 break
-            case 'percent_value':
-                if (current_value === 'err.') {
+            case 'percentValue':
+                if (currentValue === 'err.') {
                     value = 'err.'
                 } else if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (!flagQuoteErrorOnPositionCell()) {
-                        value = percent_value
+                        value = percentValue
                     } else {
                         value = 'err.'
                     }
@@ -443,7 +443,7 @@ export const GridRow = (props) => {
                 break
             case 'basis_risked':
                 if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
-                    if (props.current_value === 0) {
+                    if (props.currentValue === 0) {
                         value = 'n/a'
                     } else {
                         value = basis_risked
@@ -461,15 +461,15 @@ export const GridRow = (props) => {
                     value = whatif.basis_risked
                 }
                 break
-            case 'percent_basis':
+            case 'percentBasis':
                 if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
-                    value = percent_basis
+                    value = percentBasis
                 } else {
                     value = 'err.'
                 }
                 break
             case 'profit':
-                if (props.current_value === 0) {
+                if (props.currentValue === 0) {
                     value = 'n/a'
                 } else if (!flagQuoteErrorOnPositionCell()) {
                     value = profit
@@ -478,7 +478,7 @@ export const GridRow = (props) => {
                 }
                 break
             case 'percent_profit':
-                if (props.current_value === 0) {
+                if (props.currentValue === 0) {
                     value = 'n/a'
                 } else if (!flagQuoteErrorOnPositionCell()) {
                     value = percent_profit
@@ -504,7 +504,7 @@ export const GridRow = (props) => {
                 break
             case 'value_at_risk':
                 if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
-                    if (props.current_value === 0) {
+                    if (props.currentValue === 0) {
                         value = 'n/a'
                     } else if (!flagQuoteErrorOnPositionCell()) {
                         value = value_at_risk
@@ -546,29 +546,29 @@ export const GridRow = (props) => {
                     value = 'err.'
                 }
                 break
-            case 'short_change_pct':
+            case 'shortChangePct':
                 if (!flagQuoteError()) {
-                    value = props.performance_numbers.short_change_pct
+                    value = props.performance_numbers.shortChangePct
                     performance_value = true
-                    baseline_value = props.baseline.short_change_pct
+                    baseline_value = props.baseline.shortChangePct
                 } else {
                     value = 'err.'
                 }
                 break
-            case 'medium_change_pct':
+            case 'mediumChangePct':
                 if (!flagQuoteError()) {
-                    value = props.performance_numbers.medium_change_pct
+                    value = props.performance_numbers.mediumChangePct
                     performance_value = true
-                    baseline_value = props.baseline.medium_change_pct
+                    baseline_value = props.baseline.mediumChangePct
                 } else {
                     value = 'err.'
                 }
                 break
-            case 'long_change_pct':
+            case 'longChangePct':
                 if (!flagQuoteError()) {
-                    value = props.performance_numbers.long_change_pct
+                    value = props.performance_numbers.longChangePct
                     performance_value = true
-                    baseline_value = props.baseline.long_change_pct
+                    baseline_value = props.baseline.longChangePct
                 } else {
                     value = 'err.'
                 }
@@ -583,9 +583,9 @@ export const GridRow = (props) => {
                 case 'percent_profit': 
                 case 'volume': 
                 case 'dollar_volume': 
-                case 'short_change_pct': 
-                case 'medium_change_pct': 
-                case 'long_change_pct': 
+                case 'shortChangePct': 
+                case 'mediumChangePct': 
+                case 'longChangePct': 
                     value = 'n/a'
                     break
                 default:
@@ -668,7 +668,7 @@ export const GridRow = (props) => {
     // certain POSITION columns' cells may print share-count-based "n/a" values before a quote out-of-date error applies
     const flagQuoteErrorOnPositionCell = () => {
         if (props.isAggregate) {
-            if (props.current_value !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
+            if (props.currentValue !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
                 return true
             }
         } else {
@@ -726,9 +726,9 @@ export const GridRow = (props) => {
 
 GridRow.defaultProps = {
     performance_numbers: {
-        short_change_pct: 0,
-        medium_change_pct: 0,
-        long_change_pct: 0
+        shortChangePct: 0,
+        mediumChangePct: 0,
+        longChangePct: 0
     }
 }
 
@@ -747,7 +747,7 @@ GridRow.propTypes = {
         PropTypes.number,
         PropTypes.string
       ]),
-    current_value: PropTypes.oneOfType([
+    currentValue: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
@@ -781,11 +781,11 @@ GridRow.propTypes = {
     show_only_achieved_performance: PropTypes.bool,
     baseline: PropTypes.object,
     style_realized_performance: PropTypes.bool,
-    total_value: PropTypes.oneOfType([
+    totalValue: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
-    total_basis: PropTypes.oneOfType([
+    totalBasis: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),

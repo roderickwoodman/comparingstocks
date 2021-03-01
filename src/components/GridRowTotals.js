@@ -4,11 +4,11 @@ import PropTypes from 'prop-types'
 
 export const GridRowTotals = (props) => {
 
-    const total_value = props.total_value
-    const total_basis = props.total_basis
-    const short_perf = props.total_performance.short_change_pct
-    const medium_perf = props.total_performance.medium_change_pct
-    const long_perf = props.total_performance.long_change_pct
+    const totalValue = props.totalValue
+    const totalBasis = props.totalBasis
+    const shortPerf = props.totalPerformance.shortChangePct
+    const mediumPerf = props.totalPerformance.mediumChangePct
+    const longPerf = props.totalPerformance.longChangePct
 
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -17,35 +17,35 @@ export const GridRowTotals = (props) => {
     const populateTotalsCellValue = (column) => {
         let value
         switch (column.name) {
-            case 'current_value':
-                value = (total_value !== 'err.') ? '$' + numberWithCommas(Math.round(total_value)) : 'err.'
+            case 'currentValue':
+                value = (totalValue !== 'err.') ? '$' + numberWithCommas(Math.round(totalValue)) : 'err.'
                 break
-            case 'percent_value':
-                value = (total_value !== 'err.') ? '100%' : 'err.'
+            case 'percentValue':
+                value = (totalValue !== 'err.') ? '100%' : 'err.'
                 break
             case 'basis':
-                value = '$' + numberWithCommas(Math.round(total_basis))
+                value = '$' + numberWithCommas(Math.round(totalBasis))
                 break
-            case 'percent_basis':
-                value = (total_basis) ? '100%' : 'err.'
+            case 'percentBasis':
+                value = (totalBasis) ? '100%' : 'err.'
                 break
-            case 'short_change_pct':
-                if (short_perf !== 'err.') {
-                    value = (Math.round(10 * short_perf) / 10).toFixed(1) + '%'
+            case 'shortChangePct':
+                if (shortPerf !== 'err.') {
+                    value = (Math.round(10 * shortPerf) / 10).toFixed(1) + '%'
                 } else {
                     value = 'err.'
                 }
                 break
-            case 'medium_change_pct':
-                if (medium_perf !== 'err.') {
-                    value = (Math.round(10 * medium_perf) / 10).toFixed(1) + '%'
+            case 'mediumChangePct':
+                if (mediumPerf !== 'err.') {
+                    value = (Math.round(10 * mediumPerf) / 10).toFixed(1) + '%'
                 } else {
                     value = 'err.'
                 }
                 break
-            case 'long_change_pct':
-                if (long_perf !== 'err.') {
-                    value = (Math.round(10 * long_perf) / 10).toFixed(1) + '%'
+            case 'longChangePct':
+                if (longPerf !== 'err.') {
+                    value = (Math.round(10 * longPerf) / 10).toFixed(1) + '%'
                 } else {
                     value = 'err.'
                 }
@@ -63,13 +63,13 @@ export const GridRowTotals = (props) => {
     const styleTotalsCell = (column) => {
         let classes = ''
         switch (column) {
-            case 'current_value':
-            case 'percent_value':
+            case 'currentValue':
+            case 'percentValue':
             case 'basis':
-            case 'percent_basis':
-            case 'short_change_pct':
-            case 'medium_change_pct':
-            case 'long_change_pct':
+            case 'percentBasis':
+            case 'shortChangePct':
+            case 'mediumChangePct':
+            case 'longChangePct':
                 classes += 'totals'
                 break
             default:
@@ -92,11 +92,11 @@ export const GridRowTotals = (props) => {
 
 GridRowTotals.propTypes = {
     columns: PropTypes.array,
-    total_value: PropTypes.oneOfType([
+    totalValue: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
-    total_basis: PropTypes.number,
-    total_performance: PropTypes.object,
+    totalBasis: PropTypes.number,
+    totalPerformance: PropTypes.object,
 
 }

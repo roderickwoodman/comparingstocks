@@ -51,14 +51,14 @@ const allColumns = [
         category: 'stock-specific'
     },
     {
-        name: 'current_value',
+        name: 'currentValue',
         displayName: 'Value',
         type: 'currency',
         num_decimals: 0,
         category: 'holdings'
     },
     {
-        name: 'percent_value',
+        name: 'percentValue',
         displayName: 'Pct of Total Value',
         type: 'percentage',
         num_decimals: 1,
@@ -79,7 +79,7 @@ const allColumns = [
         category: 'holdings'
     },
     {
-        name: 'percent_basis',
+        name: 'percentBasis',
         displayName: 'Pct of Total Basis',
         type: 'percentage',
         num_decimals: 1,
@@ -177,21 +177,21 @@ const allColumns = [
         category: 'holdings'
     },
     {
-        name: 'short_change_pct',
+        name: 'shortChangePct',
         displayName: '6-month',
         type: 'percentage',
         num_decimals: 1,
         category: 'performance'
     },
     {
-        name: 'medium_change_pct',
+        name: 'mediumChangePct',
         displayName: '1-year',
         type: 'percentage',
         num_decimals: 1,
         category: 'performance'
     },
     {
-        name: 'long_change_pct',
+        name: 'longChangePct',
         displayName: '2-year',
         type: 'percentage',
         num_decimals: 1,
@@ -199,7 +199,7 @@ const allColumns = [
     }
 ]
 
-const default_shown_columns = ['symbol', 'currentShares', 'current_value', 'percent_value', 'percent_basis', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+const default_shown_columns = ['symbol', 'currentShares', 'currentValue', 'percentValue', 'percentBasis', 'percent_profit', 'shortChangePct', 'mediumChangePct', 'longChangePct']
 
 export class ComparingStocks extends React.Component {
 
@@ -230,9 +230,9 @@ export class ComparingStocks extends React.Component {
             remaining_cash: null,
             baseline: {
                 name: 'zero_pct_gain',
-                short_change_pct: 0,
-                medium_change_pct: 0,
-                long_change_pct: 0,
+                shortChangePct: 0,
+                mediumChangePct: 0,
+                longChangePct: 0,
             },
             editing_row: null,
 
@@ -378,9 +378,9 @@ export class ComparingStocks extends React.Component {
         } else {
             baseline = {
                 name: 'zero_pct_gain',
-                short_change_pct: 0,
-                medium_change_pct: 0,
-                long_change_pct: 0,
+                shortChangePct: 0,
+                mediumChangePct: 0,
+                longChangePct: 0,
             }
         }
 
@@ -418,12 +418,12 @@ export class ComparingStocks extends React.Component {
                 let prev_short = monthly_prices[5]
                 let prev_medium = monthly_prices[11]
                 let prev_long = monthly_prices[23]
-                index_performance['short_change_pct'] = (now - prev_short) / now * 100
-                index_performance['medium_change_pct'] = (now - prev_medium) / now * 100
-                index_performance['long_change_pct'] = (now - prev_long) / now * 100
-                baseline['short_change_pct'] = index_performance['short_change_pct']
-                baseline['medium_change_pct'] = index_performance['medium_change_pct']
-                baseline['long_change_pct'] = index_performance['long_change_pct']
+                index_performance['shortChangePct'] = (now - prev_short) / now * 100
+                index_performance['mediumChangePct'] = (now - prev_medium) / now * 100
+                index_performance['longChangePct'] = (now - prev_long) / now * 100
+                baseline['shortChangePct'] = index_performance['shortChangePct']
+                baseline['mediumChangePct'] = index_performance['mediumChangePct']
+                baseline['longChangePct'] = index_performance['longChangePct']
                 self.setState({ baseline: baseline })
                 localStorage.setItem('baseline', JSON.stringify(baseline))
             }
@@ -536,27 +536,27 @@ export class ComparingStocks extends React.Component {
                 if (typeof ticker_now === 'number') {
                     if (typeof ticker_short_ago === 'number') {
                         ticker_perf_short = (ticker_now - ticker_short_ago) / ticker_now * 100
-                        newPerformance['short_change_pct'] = (baseline.name === 'sp500_pct_gain') 
-                            ? ticker_perf_short - index_performance.short_change_pct 
+                        newPerformance['shortChangePct'] = (baseline.name === 'sp500_pct_gain') 
+                            ? ticker_perf_short - index_performance.shortChangePct 
                             : ticker_perf_short
                     } else {
-                        newPerformance['short_change_pct'] = 'err.'
+                        newPerformance['shortChangePct'] = 'err.'
                     }
                     if (typeof ticker_medium_ago === 'number') {
                         ticker_perf_medium = (ticker_now - ticker_medium_ago) / ticker_now * 100
-                        newPerformance['medium_change_pct'] = (baseline.name === 'sp500_pct_gain') 
-                            ? ticker_perf_medium - index_performance.medium_change_pct 
+                        newPerformance['mediumChangePct'] = (baseline.name === 'sp500_pct_gain') 
+                            ? ticker_perf_medium - index_performance.mediumChangePct 
                             : ticker_perf_medium
                     } else {
-                        newPerformance['medium_change_pct'] = 'err.'
+                        newPerformance['mediumChangePct'] = 'err.'
                     }
                     if (typeof ticker_long_ago === 'number') {
                         ticker_perf_long = (ticker_now - ticker_long_ago) / ticker_now * 100
-                        newPerformance['long_change_pct'] = (baseline.name === 'sp500_pct_gain') 
-                            ? ticker_perf_long - index_performance.long_change_pct 
+                        newPerformance['longChangePct'] = (baseline.name === 'sp500_pct_gain') 
+                            ? ticker_perf_long - index_performance.longChangePct 
                             : ticker_perf_long
                     } else {
-                        newPerformance['long_change_pct'] = 'err.'
+                        newPerformance['longChangePct'] = 'err.'
                     }
                 }
                 newPerformanceNumbers[ticker] = newPerformance
@@ -581,9 +581,9 @@ export class ComparingStocks extends React.Component {
 
         // performance for cash
         let cashPerformance = {
-            short_change_pct: 0,
-            medium_change_pct: 0,
-            long_change_pct: 0,
+            shortChangePct: 0,
+            mediumChangePct: 0,
+            longChangePct: 0,
         }
         newPerformanceNumbers['cash'] = cashPerformance
 
@@ -808,9 +808,9 @@ export class ComparingStocks extends React.Component {
 
         let aggr_performance_by_tag = {}
         aggr_performance_by_tag['_everything_'] = {
-            short_change_pct: 0,
-            medium_change_pct: 0,
-            long_change_pct: 0,
+            shortChangePct: 0,
+            mediumChangePct: 0,
+            longChangePct: 0,
             num_tickers: 0
         }
 
@@ -824,39 +824,39 @@ export class ComparingStocks extends React.Component {
 
             let short, medium, long, prev_short, prev_medium, prev_long
             if (all_performance_numbers.hasOwnProperty(ticker)) {
-                short = all_performance_numbers[ticker]['short_change_pct']
-                medium = all_performance_numbers[ticker]['medium_change_pct']
-                long = all_performance_numbers[ticker]['long_change_pct']
-                prev_short = aggr_performance_by_tag['_everything_'].short_change_pct
-                prev_medium = aggr_performance_by_tag['_everything_'].medium_change_pct
-                prev_long = aggr_performance_by_tag['_everything_'].long_change_pct
-                aggr_performance_by_tag['_everything_'].short_change_pct = (prev_short === 'err.' || short === 'err.') ? 'err.' : prev_short + short
-                aggr_performance_by_tag['_everything_'].medium_change_pct = (prev_medium === 'err.' || medium === 'err.') ? 'err.' : prev_medium + medium
-                aggr_performance_by_tag['_everything_'].long_change_pct = (prev_long === 'err.' || long === 'err.') ? 'err.' : prev_long + long
+                short = all_performance_numbers[ticker]['shortChangePct']
+                medium = all_performance_numbers[ticker]['mediumChangePct']
+                long = all_performance_numbers[ticker]['longChangePct']
+                prev_short = aggr_performance_by_tag['_everything_'].shortChangePct
+                prev_medium = aggr_performance_by_tag['_everything_'].mediumChangePct
+                prev_long = aggr_performance_by_tag['_everything_'].longChangePct
+                aggr_performance_by_tag['_everything_'].shortChangePct = (prev_short === 'err.' || short === 'err.') ? 'err.' : prev_short + short
+                aggr_performance_by_tag['_everything_'].mediumChangePct = (prev_medium === 'err.' || medium === 'err.') ? 'err.' : prev_medium + medium
+                aggr_performance_by_tag['_everything_'].longChangePct = (prev_long === 'err.' || long === 'err.') ? 'err.' : prev_long + long
             } else {
                 short = 'err.'
                 medium = 'err.'
                 long = 'err.'
-                aggr_performance_by_tag['_everything_'].short_change_pct = 'err.'
-                aggr_performance_by_tag['_everything_'].medium_change_pct = 'err.'
-                aggr_performance_by_tag['_everything_'].long_change_pct = 'err.'
+                aggr_performance_by_tag['_everything_'].shortChangePct = 'err.'
+                aggr_performance_by_tag['_everything_'].mediumChangePct = 'err.'
+                aggr_performance_by_tag['_everything_'].longChangePct = 'err.'
             }
             aggr_performance_by_tag['_everything_'].num_tickers += 1
 
             Object.keys(all_tags).forEach(function(tag) {
                 if (aggr_performance_by_tag.hasOwnProperty(tag) && all_tags[tag].includes(ticker)) {
-                    prev_short = aggr_performance_by_tag[tag].short_change_pct
-                    prev_medium = aggr_performance_by_tag[tag].medium_change_pct
-                    prev_long = aggr_performance_by_tag[tag].long_change_pct
-                    aggr_performance_by_tag[tag].short_change_pct = (prev_short === 'err.') ? 'err.' : short
-                    aggr_performance_by_tag[tag].medium_change_pct = (prev_medium === 'err.') ? 'err.' : medium
-                    aggr_performance_by_tag[tag].long_change_pct = (prev_long === 'err.') ? 'err.' : long
+                    prev_short = aggr_performance_by_tag[tag].shortChangePct
+                    prev_medium = aggr_performance_by_tag[tag].mediumChangePct
+                    prev_long = aggr_performance_by_tag[tag].longChangePct
+                    aggr_performance_by_tag[tag].shortChangePct = (prev_short === 'err.') ? 'err.' : short
+                    aggr_performance_by_tag[tag].mediumChangePct = (prev_medium === 'err.') ? 'err.' : medium
+                    aggr_performance_by_tag[tag].longChangePct = (prev_long === 'err.') ? 'err.' : long
                     aggr_performance_by_tag[tag].num_tickers += 1
                 } else if (all_tags[tag].includes(ticker)) {
                     let new_aggr_performance = {}
-                    new_aggr_performance['short_change_pct'] = short
-                    new_aggr_performance['medium_change_pct'] = medium
-                    new_aggr_performance['long_change_pct'] = long
+                    new_aggr_performance['shortChangePct'] = short
+                    new_aggr_performance['mediumChangePct'] = medium
+                    new_aggr_performance['longChangePct'] = long
                     new_aggr_performance['num_tickers'] = 1
                     aggr_performance_by_tag[tag] = new_aggr_performance
                 }
@@ -885,13 +885,13 @@ export class ComparingStocks extends React.Component {
             let new_baseline = {}
             new_baseline['name'] = new_baseline_name
             if (new_baseline_name === 'sp500_pct_gain') {
-                new_baseline['short_change_pct'] = this.state.allPerformanceNumbers['S&P500']['short_change_pct']
-                new_baseline['medium_change_pct'] = this.state.allPerformanceNumbers['S&P500']['medium_change_pct']
-                new_baseline['long_change_pct'] = this.state.allPerformanceNumbers['S&P500']['long_change_pct']
+                new_baseline['shortChangePct'] = this.state.allPerformanceNumbers['S&P500']['shortChangePct']
+                new_baseline['mediumChangePct'] = this.state.allPerformanceNumbers['S&P500']['mediumChangePct']
+                new_baseline['longChangePct'] = this.state.allPerformanceNumbers['S&P500']['longChangePct']
             } else {
-                new_baseline['short_change_pct'] = 0
-                new_baseline['medium_change_pct'] = 0
-                new_baseline['long_change_pct'] = 0
+                new_baseline['shortChangePct'] = 0
+                new_baseline['mediumChangePct'] = 0
+                new_baseline['longChangePct'] = 0
             }
 
             localStorage.setItem('baseline', JSON.stringify(new_baseline))
@@ -1617,12 +1617,12 @@ export class ComparingStocks extends React.Component {
             || (target_set === 'untagged' && this.state.show_untagged) 
             || (target_set !== 'my_current_holdings' && target_set !== 'untagged') ) {
             target_tickers.forEach( function(ticker) {
-                let current_value = self.state.allPositions[ticker].currentShares * self.state.allCurrentQuotes[ticker].current_price
-                if (target_column === 'current_value' || target_column === 'value_at_risk' || target_column === 'only_profits') {
-                    balanceable_value += current_value
+                let currentValue = self.state.allPositions[ticker].currentShares * self.state.allCurrentQuotes[ticker].current_price
+                if (target_column === 'currentValue' || target_column === 'value_at_risk' || target_column === 'only_profits') {
+                    balanceable_value += currentValue
                 } else if (target_column === 'basis' || target_column === 'basis_risked') {
                     if (sell_all_set.includes(ticker)) {
-                        balanceable_value += current_value
+                        balanceable_value += currentValue
                     } else {
                         balanceable_value += self.state.allPositions[ticker].basis
                     }
@@ -1698,12 +1698,12 @@ export class ComparingStocks extends React.Component {
             let original_currentvalue = self.getCurrentValue(ticker)
             let original_basis = self.getBasis(ticker)
 
-            if (target_column === 'current_value' || target_column === 'basis' || target_column === 'only_profits') {
+            if (target_column === 'currentValue' || target_column === 'basis' || target_column === 'only_profits') {
                 if (sell_all_set.includes(ticker)) {
                     new_whatif.values[ticker]['currentShares'] = 0
                     new_whatif.values[ticker]['basis'] = 0
                     new_whatif.values[ticker]['basis_risked'] = 0
-                    new_whatif.values[ticker]['current_value'] = 0
+                    new_whatif.values[ticker]['currentValue'] = 0
                     new_whatif.values[ticker]['value_at_risk'] = 0
                     if (adjusting_cash) {
                         actual_remaining_cash += original_currentvalue 
@@ -1713,13 +1713,13 @@ export class ComparingStocks extends React.Component {
             }
 
             // balancing by value is a simple average of current values
-            if (target_column === 'current_value') {
+            if (target_column === 'currentValue') {
 
                 whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
                 new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                 whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
-                new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
+                new_whatif.values[ticker]['currentValue'] = whatif_balancedvalue
 
                 value_delta = whatif_balancedvalue - original_currentvalue
                 let whatif_basis = original_basis + value_delta
@@ -1753,9 +1753,9 @@ export class ComparingStocks extends React.Component {
                 new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * risk_factors[ticker]
 
                 value_delta = whatif_balancedbasis - original_basis
-                new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+                new_whatif.values[ticker]['currentValue'] = original_currentvalue + value_delta
 
-                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
+                new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['currentValue'] * risk_factors[ticker]
 
             } else if (target_column === 'only_profits') {
 
@@ -1775,7 +1775,7 @@ export class ComparingStocks extends React.Component {
                 if (losing || sell_all_set.includes(ticker)) {
                     new_whatif.values[ticker]['basis'] = 'n/a'
                     new_whatif.values[ticker]['basis_risked'] = 'n/a'
-                    new_whatif.values[ticker]['current_value'] = 0
+                    new_whatif.values[ticker]['currentValue'] = 0
                     new_whatif.values[ticker]['value_at_risk'] = 'n/a'
                     value_delta = -1 * original_currentvalue
                 } else {
@@ -1785,7 +1785,7 @@ export class ComparingStocks extends React.Component {
 
                     let whatif_currentvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     value_delta = whatif_currentvalue - original_currentvalue
-                    new_whatif.values[ticker]['current_value'] = whatif_currentvalue
+                    new_whatif.values[ticker]['currentValue'] = whatif_currentvalue
                     new_whatif.values[ticker]['value_at_risk'] = whatif_currentvalue * risk_factors[ticker]
                 }
             }
@@ -1882,7 +1882,7 @@ export class ComparingStocks extends React.Component {
                     new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                     let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
-                    new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
+                    new_whatif.values[ticker]['currentValue'] = whatif_balancedvalue
 
                     value_delta = whatif_balancedvalue - original_currentvalue
                     let whatif_basis = original_basis + value_delta
@@ -1904,7 +1904,7 @@ export class ComparingStocks extends React.Component {
                         new_whatif.values[ticker]['currentShares'] = 0
                         new_whatif.values[ticker]['basis'] = 0
                         new_whatif.values[ticker]['basis_risked'] = 0
-                        new_whatif.values[ticker]['current_value'] = 0
+                        new_whatif.values[ticker]['currentValue'] = 0
                         new_whatif.values[ticker]['value_at_risk'] = 0
                         value_delta = -1 * original_currentvalue
                     } else {
@@ -1924,9 +1924,9 @@ export class ComparingStocks extends React.Component {
                         new_whatif.values[ticker]['basis_risked'] = whatif_balancedbasis * risk_factors[ticker]
         
                         value_delta = whatif_balancedbasis - original_basis
-                        new_whatif.values[ticker]['current_value'] = original_currentvalue + value_delta
+                        new_whatif.values[ticker]['currentValue'] = original_currentvalue + value_delta
         
-                        new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['current_value'] * risk_factors[ticker]
+                        new_whatif.values[ticker]['value_at_risk'] = new_whatif.values[ticker]['currentValue'] * risk_factors[ticker]
                     }
                 }
 
@@ -1939,7 +1939,7 @@ export class ComparingStocks extends React.Component {
         if (adjusting_cash) {
             new_whatif.values['cash'] = {}
             new_whatif.values['cash']['currentShares'] = actual_remaining_cash
-            new_whatif.values['cash']['current_value'] = actual_remaining_cash
+            new_whatif.values['cash']['currentValue'] = actual_remaining_cash
             new_whatif.values['cash']['basis'] = actual_remaining_cash
             new_whatif.values['cash']['value_at_risk'] = 0
         }
@@ -2026,8 +2026,8 @@ export class ComparingStocks extends React.Component {
 
         let sortColumn = this.state.sortColumn
         let quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
-        let holdings_columns = ['start_date', 'currentShares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'profit', 'percent_profit']
-        let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
+        let holdings_columns = ['start_date', 'currentShares', 'currentValue', 'percentValue', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percentBasis', 'profit', 'percent_profit']
+        let performance_columns = ['shortChangePct', 'mediumChangePct', 'longChangePct']
 
         let sorted_names_list = [...names_list]
         let self = this
@@ -2098,12 +2098,12 @@ export class ComparingStocks extends React.Component {
                         case 'currentShares':
                             value_a = 'n/a'
                             break;
-                        case 'current_value':
-                        case 'percent_value':
+                        case 'currentValue':
+                        case 'percentValue':
                             value_a = self.state.aggrTotalValue[a]
                             break;
                         case 'basis':
-                        case 'percent_basis':
+                        case 'percentBasis':
                             value_a = self.state.aggrBasis[a]
                             break;
                         case 'realized_gains':
@@ -2125,7 +2125,7 @@ export class ComparingStocks extends React.Component {
                             value_a = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(a)) {
-                    if (sortColumn === 'current_value' || sortColumn === 'percent_value' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
+                    if (sortColumn === 'currentValue' || sortColumn === 'percentValue' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
                             positionvalue_a = self.state.allPositions[a]['currentShares'] * self.state.allCurrentQuotes[a]['current_price']
                             if ( (sortColumn === 'profit' || sortColumn === 'percent_profit') && positionvalue_a !== 0) {
@@ -2142,7 +2142,7 @@ export class ComparingStocks extends React.Component {
                     } else if (self.state.allPositions[a]['currentShares']) {
                         if (sortColumn === 'basis_risked' && self.state.allRisk.hasOwnProperty(a)) {
                             value_a = self.state.allPositions[a]['basis'] * self.state.allRisk[a]['factor']
-                        } else if (sortColumn === 'percent_basis') {
+                        } else if (sortColumn === 'percentBasis') {
                             value_a = self.state.allPositions[a]['basis']
                         } else {
                             value_a = self.state.allPositions[a][sortColumn]
@@ -2158,12 +2158,12 @@ export class ComparingStocks extends React.Component {
                         case 'currentShares':
                             value_b = 'n/a'
                             break;
-                        case 'current_value':
-                        case 'percent_value':
+                        case 'currentValue':
+                        case 'percentValue':
                             value_b = self.state.aggrTotalValue[b]
                             break;
                         case 'basis':
-                        case 'percent_basis':
+                        case 'percentBasis':
                             value_b = self.state.aggrBasis[b]
                             break;
                         case 'realized_gains':
@@ -2185,7 +2185,7 @@ export class ComparingStocks extends React.Component {
                             value_b = 'n/a'
                     }
                 } else if (self.state.allPositions.hasOwnProperty(b)) {
-                    if (sortColumn === 'current_value' || sortColumn === 'percent_value' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
+                    if (sortColumn === 'currentValue' || sortColumn === 'percentValue' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
                             positionvalue_b = self.state.allPositions[b]['currentShares'] * self.state.allCurrentQuotes[b]['current_price']
                             if ( (sortColumn === 'profit' || sortColumn === 'percent_profit') && positionvalue_b !== 0) {
@@ -2202,7 +2202,7 @@ export class ComparingStocks extends React.Component {
                     } else if (self.state.allPositions[b]['currentShares']) {
                         if (sortColumn === 'basis_risked' && self.state.allRisk.hasOwnProperty(b)) {
                             value_b = self.state.allPositions[b]['basis'] * self.state.allRisk[b]['factor']
-                        } else if (sortColumn === 'percent_basis') {
+                        } else if (sortColumn === 'percentBasis') {
                             value_b = self.state.allPositions[b]['basis']
                         } else {
                             value_b = self.state.allPositions[b][sortColumn]
@@ -2342,7 +2342,7 @@ export class ComparingStocks extends React.Component {
             new_aggr_data['start_date'] = 'n/a'
             new_aggr_data['currentShares'] = 'n/a'
             new_aggr_data['current_price'] = 'n/a'
-            new_aggr_data['current_value'] = self.state.aggrTotalValue[aggr_ticker]
+            new_aggr_data['currentValue'] = self.state.aggrTotalValue[aggr_ticker]
             new_aggr_data['change_pct'] = 'n/a'
             new_aggr_data['volume'] = 'n/a'
             new_aggr_data['basis'] = self.state.aggrBasis[aggr_ticker]
@@ -2557,9 +2557,9 @@ export class ComparingStocks extends React.Component {
                                   || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
                                   ? row_data.currentShares 
                                   : 'n/a'}
-                current_value={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                currentValue={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
                                  || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
-                                 ? row_data.current_value 
+                                 ? row_data.currentValue 
                                  : 'n/a'}
                 realized_gains={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
                                   || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
@@ -2572,13 +2572,13 @@ export class ComparingStocks extends React.Component {
                 show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
                 style_realized_performance={row_data.style_realized_performance}
-                total_value={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                totalValue={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
                                || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
-                               ? row_data.total_value 
+                               ? row_data.totalValue 
                                : 'n/a'}
-                total_basis={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                totalBasis={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
                                || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
-                               ? row_data.total_basis 
+                               ? row_data.totalBasis 
                                : 'n/a'}
                 whatif={row_data.whatif}
                 whatifFormat={this.state.whatifFormat}
@@ -2613,9 +2613,9 @@ export class ComparingStocks extends React.Component {
         }
 
         let error_performance_numbers = {
-            short_change_pct: 'err.',
-            medium_change_pct: 'err.',
-            long_change_pct: 'err.'
+            shortChangePct: 'err.',
+            mediumChangePct: 'err.',
+            longChangePct: 'err.'
         }
         let all_row_data = []
         sorted_tickers.forEach(function(ticker) {
@@ -2634,15 +2634,15 @@ export class ComparingStocks extends React.Component {
             new_row['basis'] = row_data[ticker]['basis']
             new_row['start_date'] = row_data[ticker]['start_date']
             new_row['currentShares'] = row_data[ticker]['currentShares']
-            new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.currentShares === 'n/a') ? 'n/a' : new_row.current_price * new_row.currentShares
+            new_row['currentValue'] = (new_row.current_price === 'n/a' || new_row.currentShares === 'n/a') ? 'n/a' : new_row.current_price * new_row.currentShares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : null
             new_row['risk_factor_modified'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].modifiedAt : null
             new_row['performance_numbers'] = (performance_numbers_exist) ? self.state.allPerformanceNumbers[ticker] : error_performance_numbers
             new_row['baseline'] = self.state.baseline
             new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].currentShares).length) ? true : false
-            new_row['total_value'] = aggr_total_value
-            new_row['total_basis'] = aggr_basis
+            new_row['totalValue'] = aggr_total_value
+            new_row['totalBasis'] = aggr_basis
             new_row['whatif'] = row_data[ticker]['whatif']
             new_row['onRemoveFromTag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
@@ -2678,15 +2678,15 @@ export class ComparingStocks extends React.Component {
                 new_row['basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['start_date'] = aggr_row_data[aggr_ticker]['start_date']
                 new_row['currentShares'] = aggr_row_data[aggr_ticker]['currentShares']
-                new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
+                new_row['currentValue'] = aggr_row_data[aggr_ticker]['currentValue']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
                 new_row['risk_factor'] = 'n/a'
                 new_row['risk_factor_modified'] = 'n/a'
                 new_row['performance_numbers'] = aggr_row_data[aggr_ticker]['performance']
                 new_row['baseline'] = self.state.baseline
                 new_row['style_realized_performance'] = false
-                new_row['total_value'] = self.state.aggrTotalValue[aggr_ticker]
-                new_row['total_basis'] = self.state.aggrBasis[aggr_ticker]
+                new_row['totalValue'] = self.state.aggrTotalValue[aggr_ticker]
+                new_row['totalBasis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
                 new_row['onRemoveFromTag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
@@ -2763,9 +2763,9 @@ export class ComparingStocks extends React.Component {
                         {this.state.done && all_ticker_rows.length ? (
                         <GridRowTotals
                             columns={this.state.shown_columns}
-                            total_value={aggr_total_value}
-                            total_basis={aggr_basis}
-                            total_performance={this.state.aggrPerformance['_everything_']}
+                            totalValue={aggr_total_value}
+                            totalBasis={aggr_basis}
+                            totalPerformance={this.state.aggrPerformance['_everything_']}
                         />
                         ) : (
                             <tr>

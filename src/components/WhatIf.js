@@ -6,7 +6,7 @@ export const WhatIf = (props) => {
 
     const [balanceableValue, setBalanceableValue] = useState(0)
     const [balanceTargetSet, setBalanceTargetSet] = useState('my_current_holdings')
-    const [balanceTargetColumn, setBalanceTargetColumn] = useState('current_value')
+    const [balanceTargetColumn, setBalanceTargetColumn] = useState('currentValue')
     const [sellAllOf, setSellAllOf] = useState(['sell_none'])
     const [cashTreatment] = useState('ignore')
     const [cashRemaining, setCashRemaining] = useState('$0')
@@ -127,7 +127,7 @@ export const WhatIf = (props) => {
                     </select>
                     &nbsp;into&nbsp; 
                     <select name="balance_target_column" value={balanceTargetColumn} onChange={handleChange}>
-                        <option value="current_value">equal values</option>
+                        <option value="currentValue">equal values</option>
                         <option value="value_at_risk">equal values, risk adjusted</option>
                         <option value="basis">equal bases</option>
                         <option value="basis_risked">equal bases, risk adjusted</option>
