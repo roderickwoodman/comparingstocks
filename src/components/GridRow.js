@@ -4,8 +4,8 @@ import { EditNumericCell } from './EditNumericCell'
 
 
 // This component displays table data for either tickers (isAggregate === 0) or tags (isAggregate === 1).
-// For tickers, the membership_set prop is all of the tags that it belongs to.
-// For tags, the membership_set prop is all of the tags that belong to it.
+// For tickers, the membershipSet prop is all of the tags that it belongs to.
+// For tags, the membershipSet prop is all of the tags that belong to it.
 export const GridRow = (props) => {
 
     const [hoveringSymbol, setHoveringSymbol] = useState(false)
@@ -39,26 +39,26 @@ export const GridRow = (props) => {
 
     // this button removes a ticker from a tag
     const populateMemberButton = (symbol) => {
-        let is_aggr = props.isAggregate
-        let row_name = props.row_name
-        if (is_aggr) {
-            // row_name is a TAG
+        let isAggr = props.isAggregate
+        let rowName = props.rowName
+        if (isAggr) {
+            // rowName is a TAG
             // symbol is a TICKER 
-            if (row_name !== 'untagged') {
+            if (rowName !== 'untagged') {
                 return (
-                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { props.on_remove_from_tag(row_name, symbol)} }>{ symbol }</button>
+                    <button key={rowName + symbol + isAggr} className="tag-removal" onClick={ (e) => { props.onRemoveFromTag(rowName, symbol)} }>{ symbol }</button>
                 )
             } else {
                 return (
-                    <button key={row_name + symbol + is_aggr} className="tag-removal" disabled={true}>{ symbol }</button>
+                    <button key={rowName + symbol + isAggr} className="tag-removal" disabled={true}>{ symbol }</button>
                 )
             }
         } else {
-            // row_name is a TICKER
+            // rowName is a TICKER
             // symbol is a TAG 
-            if (!props.special_classes.includes('index') && !props.special_classes.includes('cash') && !props.membership_set.includes('untagged')) {
+            if (!props.specialClasses.includes('index') && !props.specialClasses.includes('cash') && !props.membershipSet.includes('untagged')) {
                 return (
-                    <button key={row_name + symbol + is_aggr} className="tag-removal" onClick={ (e) => { props.on_remove_from_tag(symbol, row_name)} }>{ symbol }</button>
+                    <button key={rowName + symbol + isAggr} className="tag-removal" onClick={ (e) => { props.onRemoveFromTag(symbol, rowName)} }>{ symbol }</button>
                 )
             } else {
                 return (
@@ -75,19 +75,19 @@ export const GridRow = (props) => {
             classes += ' hovering'
         }
         if (isAggregate) {
-            if (columnName === 'symbol' && props.row_name !== 'untagged') {
+            if (columnName === 'symbol' && props.rowName !== 'untagged') {
                 return (
-                    <button className={classes} onClick={ (e) => {props.on_delete_tags(props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {props.onDeleteTags(props.rowName)}}>x</button>
                 )
             } else {
                 return
             }
         } else {
             if (columnName === 'symbol' 
-                && !props.special_classes.includes('index')
-                && !(props.row_name === 'cash' && isNaN(props.current_shares)) ) {
+                && !props.specialClasses.includes('index')
+                && !(props.rowName === 'cash' && isNaN(props.currentShares)) ) {
                 return (
-                    <button className={classes} onClick={ (e) => {props.on_delete_ticker(props.row_name)}}>x</button>
+                    <button className={classes} onClick={ (e) => {props.on_delete_ticker(props.rowName)}}>x</button>
                 )
             } else {
                 return
@@ -96,16 +96,16 @@ export const GridRow = (props) => {
     }
 
     // the edit button is an extra affordance; clicking anywhere in the cell enters edit mode on this cell's value
-    const populateEditButton = (columnName, row_name) => {
+    const populateEditButton = (columnName, rowName) => {
         let classes = 'edit'
         if (hoveringRiskFactor) {
             classes += ' hovering'
         }
         if ( columnName === 'risk_factor'
-            && row_name !== props.editing_row
-            && row_name !== 'cash'
+            && rowName !== props.editing_row
+            && rowName !== 'cash'
             && !props.isAggregate 
-            && !props.special_classes.includes('index') ) {
+            && !props.specialClasses.includes('index') ) {
                 return (
                     <button className={classes}>{String.fromCharCode(0x270e)}</button>
                 )
@@ -114,8 +114,8 @@ export const GridRow = (props) => {
         }
     }
 
-    const editRiskFactor = (row_name) => {
-        props.on_edit_cell(row_name)
+    const editRiskFactor = (rowName) => {
+        props.on_edit_cell(rowName)
     }
 
     const performanceBeatTheBaseline = (perf, baseline_perf) => {
@@ -136,26 +136,26 @@ export const GridRow = (props) => {
 
     const styleCell = (columnName) => {
         let classes = 'position-cell'
-        const row_name = props.row_name
+        const rowName = props.rowName
         const change_pct = props.change_pct
-        const current_shares = props.current_shares
-        const special_classes = props.special_classes
+        const currentShares = props.currentShares
+        const specialClasses = props.specialClasses
         const performance = props.performance_numbers
         const baseline = props.baseline
 
         // hovering
         if ( hoveringSymbol
             && columnName === 'symbol' 
-            && !special_classes.includes('index') 
-            && row_name !== 'untagged'
-            && !(row_name === 'cash' && isNaN(current_shares)) ) {
+            && !specialClasses.includes('index') 
+            && rowName !== 'untagged'
+            && !(rowName === 'cash' && isNaN(currentShares)) ) {
             classes += ' hovering'
         }
         if ( hoveringRiskFactor
             && columnName === 'risk_factor' 
-            && !special_classes.includes('index') 
+            && !specialClasses.includes('index') 
             && !props.isAggregate
-            && row_name !== 'cash' ) {
+            && rowName !== 'cash' ) {
             classes += ' hovering'
         }
 
@@ -165,7 +165,7 @@ export const GridRow = (props) => {
         }
 
         // italics
-        if ( columnName === 'symbol' && row_name === 'untagged') {
+        if ( columnName === 'symbol' && rowName === 'untagged') {
             classes += ' italics'
         }
 
@@ -191,10 +191,10 @@ export const GridRow = (props) => {
                         classes += ' text-green'
                     }
                     if (props.style_realized_performance
-                        && row_name !== 'cash' 
-                        && !special_classes.includes('index')) {
-                            if (isNaN(current_shares) 
-                                || !current_shares 
+                        && rowName !== 'cash' 
+                        && !specialClasses.includes('index')) {
+                            if (isNaN(currentShares) 
+                                || !currentShares 
                                 || daysAgo(props.start_date) < 180
                                 ){
                                 classes += (props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
@@ -212,10 +212,10 @@ export const GridRow = (props) => {
                         classes += ' text-green'
                     }
                     if (props.style_realized_performance
-                        && row_name !== 'cash' 
-                        && !special_classes.includes('index')) {
-                            if (isNaN(current_shares) 
-                                || !current_shares 
+                        && rowName !== 'cash' 
+                        && !specialClasses.includes('index')) {
+                            if (isNaN(currentShares) 
+                                || !currentShares 
                                 || daysAgo(props.start_date) < 365
                                 ){
                                 classes += (props.show_only_achieved_performance) ? ' hide' :  ' strikethrough'
@@ -233,10 +233,10 @@ export const GridRow = (props) => {
                         classes += ' text-green'
                     }
                     if (props.style_realized_performance
-                        && row_name !== 'cash' 
-                        && !special_classes.includes('index')) {
-                            if (isNaN(current_shares) 
-                                || !current_shares 
+                        && rowName !== 'cash' 
+                        && !specialClasses.includes('index')) {
+                            if (isNaN(currentShares) 
+                                || !currentShares 
                                 || daysAgo(props.start_date) < 730
                                 ){
                                 classes += (props.show_only_achieved_performance) ? ' hide' : ' strikethrough'
@@ -253,7 +253,7 @@ export const GridRow = (props) => {
     }
 
     const onNewValue = (new_value) => {
-        props.on_modify_risk_factor(props.row_name, new_value)
+        props.on_modify_risk_factor(props.rowName, new_value)
     }
 
     // prints the value that is (usually) explicitly passed in via props
@@ -261,7 +261,7 @@ export const GridRow = (props) => {
     const populateCellValue = (column) => {
 
         if ( column.name === 'risk_factor'
-            && props.row_name === props.editing_row ) {
+            && props.rowName === props.editing_row ) {
             return (
                 <EditNumericCell 
                     originalValue={props.current_edit_value} 
@@ -282,11 +282,11 @@ export const GridRow = (props) => {
         const total_value = props.total_value
         const total_basis = props.total_basis
         const current_price = props.current_price
-        let current_shares = props.current_shares
+        let currentShares = props.currentShares
         const current_value = props.current_value
         let risk_factor = (props.risk_factor !== null) ? props.risk_factor : 0.20
         let visible_risk_factor = (props.risk_factor !== null) ? props.risk_factor : 'n/a'
-        if (props.row_name === 'cash') {
+        if (props.rowName === 'cash') {
             risk_factor = 0
             visible_risk_factor = 0
         }
@@ -325,7 +325,7 @@ export const GridRow = (props) => {
             profit = 'n/a'
             percent_profit = 'n/a'
         } else {
-            if (current_shares === 0) {
+            if (currentShares === 0) {
                 profit = 'n/a'
                 percent_profit = 'n/a'
             } else if (basis > current_value) {
@@ -361,21 +361,21 @@ export const GridRow = (props) => {
 
         switch (column.name) {
             case 'symbol':
-                value = props.row_name
+                value = props.rowName
                 break
             case 'start_date':
                 value = props.start_date
                 break
-            case 'current_shares':
-                value = current_shares
+            case 'currentShares':
+                value = currentShares
                 break
             case 'whatif_current_shares':
                 if (whatif === null) {
                     value = 'n/a'
                 } else if (props.whatifFormat === 'deltas') {
-                    value = whatif.current_shares - ((current_shares === 'n/a') ? 0 : current_shares)
+                    value = whatif.currentShares - ((currentShares === 'n/a') ? 0 : currentShares)
                 } else {
-                    value = whatif.current_shares
+                    value = whatif.currentShares
                 }
                 break
             case 'current_price':
@@ -389,7 +389,7 @@ export const GridRow = (props) => {
                 }
                 break
             case 'current_value':
-                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (!flagQuoteErrorOnPositionCell()) {
                         value = current_value
                     } else {
@@ -415,7 +415,7 @@ export const GridRow = (props) => {
             case 'percent_value':
                 if (current_value === 'err.') {
                     value = 'err.'
-                } else if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                } else if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (!flagQuoteErrorOnPositionCell()) {
                         value = percent_value
                     } else {
@@ -426,7 +426,7 @@ export const GridRow = (props) => {
                 }
                 break
             case 'basis':
-                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     value = basis
                 } else {
                     value = 'err.'
@@ -442,7 +442,7 @@ export const GridRow = (props) => {
                 }
                 break
             case 'basis_risked':
-                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (props.current_value === 0) {
                         value = 'n/a'
                     } else {
@@ -462,7 +462,7 @@ export const GridRow = (props) => {
                 }
                 break
             case 'percent_basis':
-                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     value = percent_basis
                 } else {
                     value = 'err.'
@@ -503,7 +503,7 @@ export const GridRow = (props) => {
                 }
                 break
             case 'value_at_risk':
-                if (typeof current_shares === 'string' || (typeof current_shares === 'number' && current_shares >= 0)) {
+                if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (props.current_value === 0) {
                         value = 'n/a'
                     } else if (!flagQuoteErrorOnPositionCell()) {
@@ -576,7 +576,7 @@ export const GridRow = (props) => {
             default:
                 break
         }
-        if ( props.row_name === 'cash' || (props.isAggregate && !props.membership_set.length) ) {
+        if ( props.rowName === 'cash' || (props.isAggregate && !props.membershipSet.length) ) {
             switch (column.name) {
                 case 'realized_gains': 
                 case 'profit': 
@@ -605,7 +605,7 @@ export const GridRow = (props) => {
                     value *= Math.pow(10, column.scaling_power)
                 }
                 if (performance_value && props.baseline.name !== 'zero_pct_gain') {
-                    if (props.row_name === 'S&P500') {
+                    if (props.rowName === 'S&P500') {
                         return 'ref.'
                     } else {
                         value = value - baseline_value
@@ -672,17 +672,17 @@ export const GridRow = (props) => {
                 return true
             }
         } else {
-            if (typeof props.current_shares === 'number' && props.current_shares !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
+            if (typeof props.currentShares === 'number' && props.currentShares !== 0 && props.error_if_not_todays_quote && !isQuoteFromToday(props.quote_date)) {
                 return true
             }
         }
         return false
     }
 
-    const is_aggr = props.isAggregate
+    const isAggr = props.isAggregate
 
     let row_classes = 'position-row' 
-    props.special_classes.forEach(function(special_class) {
+    props.specialClasses.forEach(function(special_class) {
         if (special_class === 'index') {
             row_classes += ' position-is-index'
         }
@@ -694,29 +694,29 @@ export const GridRow = (props) => {
         }
     })
 
-    let member_count = props.membership_set.length
+    let member_count = props.membershipSet.length
 
     return (
         <tr className={ row_classes }>
             <td>
-                { member_count ? props.membership_set.sort().map(symbol => populateMemberButton(symbol)) : (props.special_classes.length ? '' : '-') }
+                { member_count ? props.membershipSet.sort().map(symbol => populateMemberButton(symbol)) : (props.specialClasses.length ? '' : '-') }
             </td>
             { props.columns.map(function(column) {
                 if (column.name === 'symbol') {
                     return (
-                        <td key={column.name} className={ styleCell(column.name) } onMouseEnter={toggleHoverSymbol} onMouseLeave={toggleHoverSymbol}>{ populateCellValue(column) }{ is_aggr && member_count ? '('+member_count+')' : '' }{ populateDeleteButton(column.name, is_aggr) }</td>
+                        <td key={column.name} className={ styleCell(column.name) } onMouseEnter={toggleHoverSymbol} onMouseLeave={toggleHoverSymbol}>{ populateCellValue(column) }{ isAggr && member_count ? '('+member_count+')' : '' }{ populateDeleteButton(column.name, isAggr) }</td>
                     )
                 } else if (column.name === 'risk_factor') {
                     return (
-                        <td key={column.name} className={ styleCell(column.name) } onClick={ (e)=>editRiskFactor(props.row_name) } onMouseEnter={toggleHoverRiskFactor} onMouseLeave={toggleHoverRiskFactor}>{ populateCellValue(column) }{ populateEditButton(column.name, props.row_name) }</td>
+                        <td key={column.name} className={ styleCell(column.name) } onClick={ (e)=>editRiskFactor(props.rowName) } onMouseEnter={toggleHoverRiskFactor} onMouseLeave={toggleHoverRiskFactor}>{ populateCellValue(column) }{ populateEditButton(column.name, props.rowName) }</td>
                     )
                 } else if (column.name.startsWith('whatif-')) {
                     return (
-                        <td key={column.name} className={ styleCell(column.name) } onClick={ (column.name.startsWith('whatif-')) ? (e)=>onWhatifCellClick() : undefined }>{ populateCellValue(column) }{ populateDeleteButton(column.name, is_aggr) }</td>
+                        <td key={column.name} className={ styleCell(column.name) } onClick={ (column.name.startsWith('whatif-')) ? (e)=>onWhatifCellClick() : undefined }>{ populateCellValue(column) }{ populateDeleteButton(column.name, isAggr) }</td>
                     )
                 } else {
                     return (
-                        <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ populateDeleteButton(column.name, is_aggr) }</td>
+                        <td key={column.name} className={ styleCell(column.name) }>{ populateCellValue(column) }{ populateDeleteButton(column.name, isAggr) }</td>
                     )
                 }
             })}
@@ -735,11 +735,11 @@ GridRow.defaultProps = {
 GridRow.propTypes = {
     isAggregate: PropTypes.bool,
     columns: PropTypes.array,
-    row_name: PropTypes.string,
-    membership_set: PropTypes.array,
-    special_classes: PropTypes.array,
+    rowName: PropTypes.string,
+    membershipSet: PropTypes.array,
+    specialClasses: PropTypes.array,
     start_date: PropTypes.string,
-    current_shares: PropTypes.oneOfType([
+    currentShares: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
       ]),
@@ -792,9 +792,9 @@ GridRow.propTypes = {
     whatif: PropTypes.object,
     whatifFormat: PropTypes.string,
     onChangeWhatifFormat: PropTypes.func,
-    on_remove_from_tag: PropTypes.func,
+    onRemoveFromTag: PropTypes.func,
     on_delete_ticker: PropTypes.func,
-    on_delete_tags: PropTypes.func,
+    onDeleteTags: PropTypes.func,
     editing_row: PropTypes.string,
     current_edit_value: PropTypes.oneOfType([
         PropTypes.number,

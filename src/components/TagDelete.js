@@ -21,7 +21,7 @@ export const TagDelete = (props) => {
         event.preventDefault()
 
         let user_tag_list = deleteTagList
-        props.on_delete_tags(user_tag_list)
+        props.onDeleteTags(user_tag_list)
 
         setDeleteTagList(['untagged'])
     }
@@ -56,5 +56,5 @@ export const TagDelete = (props) => {
 
 TagDelete.propTypes = {
     all_tags: PropTypes.object.isRequired,
-    on_delete_tags: PropTypes.func.isRequired,
+    onDeleteTags: PropTypes.func.isRequired,
 }

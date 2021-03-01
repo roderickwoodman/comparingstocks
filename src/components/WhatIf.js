@@ -110,16 +110,16 @@ export const WhatIf = (props) => {
 
     let excludable_tickers = []
     if (balanceTargetSet === "my_current_holdings") {
-        excludable_tickers = Object.keys(props.all_positions).filter( ticker => ticker !== 'cash' && props.all_positions[ticker].current_shares)
+        excludable_tickers = Object.keys(props.all_positions).filter( ticker => ticker !== 'cash' && props.all_positions[ticker].currentShares)
     } else if (props.all_tags.hasOwnProperty(balanceTargetSet)) {
-        excludable_tickers = props.all_tags[balanceTargetSet].filter( ticker => props.all_positions[ticker] && props.all_positions[ticker].current_shares)
+        excludable_tickers = props.all_tags[balanceTargetSet].filter( ticker => props.all_positions[ticker] && props.all_positions[ticker].currentShares)
     }
     return (
         <section id="what-if">
             <form onSubmit={handleSubmit}>
                 <div id="operation">Balance&nbsp;
                     <select name="balance_target_set" value={balanceTargetSet} onChange={handleChange}>
-                        <option value="my_current_holdings">current holdings ({Object.entries(props.all_positions).filter(position => position[0] !== 'cash' && position[1].current_shares !== 0).length})</option>
+                        <option value="my_current_holdings">current holdings ({Object.entries(props.all_positions).filter(position => position[0] !== 'cash' && position[1].currentShares !== 0).length})</option>
                         <option value="untagged">untagged tickers ({props.all_tags.untagged.length})</option>
                         {Object.entries(props.all_tags).filter(entry => entry[1].length).map(entry => entry[0]).sort().filter(tag => tag !== 'untagged').map(tag => 
                             <option key={tag} value={tag}>tag: {tag} ({props.all_tags[tag].length})</option>

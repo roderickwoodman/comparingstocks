@@ -62,7 +62,7 @@ export const InputForms = (props) => {
                     />
                     <TagDelete
                         all_tags={props.all_tags}
-                        on_delete_tags={props.on_delete_tags}
+                        onDeleteTags={props.onDeleteTags}
                     />
                     </React.Fragment>
                 )}
@@ -148,7 +148,7 @@ InputForms.propTypes = {
     on_new_tickers: PropTypes.func.isRequired,
     on_new_cash: PropTypes.func.isRequired,
     on_new_tags: PropTypes.func.isRequired,
-    on_delete_tags: PropTypes.func.isRequired,
+    onDeleteTags: PropTypes.func.isRequired,
     on_new_transaction: PropTypes.func.isRequired,
     on_delete_transaction: PropTypes.func.isRequired,
     on_import_transactions: PropTypes.func.isRequired,

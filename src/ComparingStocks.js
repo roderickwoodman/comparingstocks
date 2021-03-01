@@ -16,7 +16,7 @@ const allColumns = [
         category: 'always'
     },
     {
-        name: 'current_shares',
+        name: 'currentShares',
         displayName: 'Shares',
         type: 'number',
         num_decimals: 0,
@@ -199,7 +199,7 @@ const allColumns = [
     }
 ]
 
-const default_shown_columns = ['symbol', 'current_shares', 'current_value', 'percent_value', 'percent_basis', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
+const default_shown_columns = ['symbol', 'currentShares', 'current_value', 'percent_value', 'percent_basis', 'percent_profit', 'short_change_pct', 'medium_change_pct', 'long_change_pct']
 
 export class ComparingStocks extends React.Component {
 
@@ -595,7 +595,7 @@ export class ComparingStocks extends React.Component {
             newPosition['symbol'] = 'cash'
             if (cash_delta_from_stock_transactions) {
                 newPosition['basis'] += cash_delta_from_stock_transactions
-                newPosition['current_shares'] += cash_delta_from_stock_transactions
+                newPosition['currentShares'] += cash_delta_from_stock_transactions
             }
             newPositions['cash'] = newPosition
         }
@@ -661,7 +661,7 @@ export class ComparingStocks extends React.Component {
     }
 
     getPositionFromSingleTickerTransactions(transactions) { // assumes the transactions are all from a single ticker
-        let inflows = 0, outflows = 0, current_shares = 0, date, action, num_shares, ticker, value
+        let inflows = 0, outflows = 0, currentShares = 0, date, action, num_shares, ticker, value
         let sorted_transactions = transactions.sort(function(a,b) {
             if (a.date > b.date) {
                 return -1
@@ -677,26 +677,26 @@ export class ComparingStocks extends React.Component {
             date = date.substr(0, date.length-1)
             num_shares = parseInt(num_shares)
             value = parseFloat(value.substr(1))
-            if (current_shares === 0) {
+            if (currentShares === 0) {
                 position_start_date = date
             }
             if (action === 'buy') {
                 outflows += value
-                current_shares += num_shares
+                currentShares += num_shares
             } else if (action === 'sell') {
                 inflows += value
-                current_shares -= num_shares
+                currentShares -= num_shares
             }
-            if (current_shares === 0) {
+            if (currentShares === 0) {
                 position_start_date = 'n/a'
             }
         })
         let newPosition = {
             symbol: ticker,
-            current_shares: current_shares,
+            currentShares: currentShares,
             start_date: position_start_date,
             basis: Math.round((outflows > inflows) ? outflows - inflows : 0),
-            realized_gains: Math.round((inflows > outflows || current_shares === 0) ? inflows - outflows : 0)
+            realized_gains: Math.round((inflows > outflows || currentShares === 0) ? inflows - outflows : 0)
         }
 
         return newPosition
@@ -716,7 +716,7 @@ export class ComparingStocks extends React.Component {
         })
         let newPosition = {
             symbol: 'cash',
-            current_shares: total,
+            currentShares: total,
             basis: total,
             realized_gains: 0
         }
@@ -752,7 +752,7 @@ export class ComparingStocks extends React.Component {
                 ticker_basis = 0
             }
             let ticker_realized_gains = position_info[1]['realized_gains']
-            let ticker_shares = position_info[1]['current_shares']
+            let ticker_shares = position_info[1]['currentShares']
             let quote_exists = all_quotes.hasOwnProperty(ticker)
             let ticker_price, ticker_total_value
             if (ticker === 'cash') {
@@ -1159,7 +1159,7 @@ export class ComparingStocks extends React.Component {
             if (newAllPositions.hasOwnProperty(ticker) && newAllPositions[ticker] !== null) {
                 orig_start_date = newAllPositions[ticker]['start_date']
                 orig_basis = newAllPositions[ticker]['basis']
-                orig_current_shares = newAllPositions[ticker]['current_shares']
+                orig_current_shares = newAllPositions[ticker]['currentShares']
                 orig_realized_gains = newAllPositions[ticker]['realized_gains']
             }
             let new_current_shares = (action === 'buy') ? orig_current_shares + num_shares : orig_current_shares - num_shares
@@ -1170,7 +1170,7 @@ export class ComparingStocks extends React.Component {
                 new_start_date = (new Date(date) < new Date(orig_start_date)) ? date : orig_start_date
             }
             let updatedPosition = {
-                current_shares: new_current_shares,
+                currentShares: new_current_shares,
                 start_date: (new_current_shares) ? new_start_date : 'n/a',
                 symbol: ticker,
                 basis: (action === 'buy') ? orig_basis + total : orig_basis - total,
@@ -1182,10 +1182,10 @@ export class ComparingStocks extends React.Component {
             newAllPositions[ticker] = updatedPosition
 
             // recalculate the cash position numbers
-            orig_current_shares = (newAllPositions.hasOwnProperty('cash')) ? newAllPositions['cash'].current_shares : 0
+            orig_current_shares = (newAllPositions.hasOwnProperty('cash')) ? newAllPositions['cash'].currentShares : 0
             new_current_shares = (action === 'buy') ? orig_current_shares - total : orig_current_shares + total
             let updatedCashPosition = {
-                current_shares: new_current_shares,
+                currentShares: new_current_shares,
                 symbol: 'cash',
                 basis: new_current_shares,
                 realized_gains: 0
@@ -1284,13 +1284,13 @@ export class ComparingStocks extends React.Component {
             let newAllPositions = JSON.parse(JSON.stringify(prevState.allPositions))
             let orig_current_shares = 0
             if (newAllPositions.hasOwnProperty('cash')) {
-                orig_current_shares = newAllPositions['cash']['current_shares']
+                orig_current_shares = newAllPositions['cash']['currentShares']
             }
             let new_cash = (action === 'dividend' || action === 'transferIN') ? orig_current_shares + total : orig_current_shares - total
             let updatedPosition = {
                 symbol: 'cash',
                 basis: (new_cash >= 0) ? new_cash : 0,
-                current_shares: new_cash,
+                currentShares: new_cash,
                 realized_gains: 0
             }
             newAllPositions['cash'] = updatedPosition
@@ -1481,15 +1481,15 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onEditCell(row_name) {
+    onEditCell(rowName) {
         this.setState(prevState => {
             if (
-                prevState.editing_row !== row_name
-                && row_name !== this.props.editing_row
-                && !this.nameIsAnAggregate(row_name)
-                && !this.nameIsSpecial(row_name)
+                prevState.editing_row !== rowName
+                && rowName !== this.props.editing_row
+                && !this.nameIsAnAggregate(rowName)
+                && !this.nameIsSpecial(rowName)
             ) {
-                return { editing_row: row_name }
+                return { editing_row: rowName }
             } else {
                 return
             }
@@ -1574,7 +1574,7 @@ export class ComparingStocks extends React.Component {
 
     getCurrentValue(ticker) {
         if (this.state.allPositions.hasOwnProperty(ticker)) {
-            return this.state.allCurrentQuotes[ticker].current_price * this.state.allPositions[ticker].current_shares
+            return this.state.allCurrentQuotes[ticker].current_price * this.state.allPositions[ticker].currentShares
         } else {
             return 0
         }
@@ -1582,7 +1582,7 @@ export class ComparingStocks extends React.Component {
 
     getCurrentShares(ticker) {
         if (this.state.allPositions.hasOwnProperty(ticker)) {
-            return this.state.allPositions[ticker].current_shares
+            return this.state.allPositions[ticker].currentShares
         } else {
             return 0
         }
@@ -1608,7 +1608,7 @@ export class ComparingStocks extends React.Component {
 
         let current_cash_value = 0
         if (include_cash && this.state.show_cash && this.state.allPositions.hasOwnProperty('cash')) {
-            current_cash_value = self.state.allPositions['cash'].current_shares * self.state.allCurrentQuotes['cash'].current_price
+            current_cash_value = self.state.allPositions['cash'].currentShares * self.state.allCurrentQuotes['cash'].current_price
         }
         balanceable_value += current_cash_value
 
@@ -1617,7 +1617,7 @@ export class ComparingStocks extends React.Component {
             || (target_set === 'untagged' && this.state.show_untagged) 
             || (target_set !== 'my_current_holdings' && target_set !== 'untagged') ) {
             target_tickers.forEach( function(ticker) {
-                let current_value = self.state.allPositions[ticker].current_shares * self.state.allCurrentQuotes[ticker].current_price
+                let current_value = self.state.allPositions[ticker].currentShares * self.state.allCurrentQuotes[ticker].current_price
                 if (target_column === 'current_value' || target_column === 'value_at_risk' || target_column === 'only_profits') {
                     balanceable_value += current_value
                 } else if (target_column === 'basis' || target_column === 'basis_risked') {
@@ -1641,7 +1641,7 @@ export class ComparingStocks extends React.Component {
             balance_target_column: target_column 
             })
         let column = target_column
-        let show_whatif_columns = ['current_shares', 'whatif_current_shares']
+        let show_whatif_columns = ['currentShares', 'whatif_current_shares']
         if (target_column === 'only_profits') {
             column = 'basis'
         }
@@ -1661,7 +1661,7 @@ export class ComparingStocks extends React.Component {
 
         let self = this
         let adjusting_cash = show_cash && (remaining_cash !== null || target_column === 'only_profits')
-        let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].current_shares * this.state.allCurrentQuotes['cash'].current_price : 0
+        let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].currentShares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
         let total_amount_to_balance = this.getBalanceableValue(target_set, sell_all_set, target_column, adjusting_cash)
@@ -1700,7 +1700,7 @@ export class ComparingStocks extends React.Component {
 
             if (target_column === 'current_value' || target_column === 'basis' || target_column === 'only_profits') {
                 if (sell_all_set.includes(ticker)) {
-                    new_whatif.values[ticker]['current_shares'] = 0
+                    new_whatif.values[ticker]['currentShares'] = 0
                     new_whatif.values[ticker]['basis'] = 0
                     new_whatif.values[ticker]['basis_risked'] = 0
                     new_whatif.values[ticker]['current_value'] = 0
@@ -1716,7 +1716,7 @@ export class ComparingStocks extends React.Component {
             if (target_column === 'current_value') {
 
                 whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
-                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                 whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                 new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
@@ -1743,7 +1743,7 @@ export class ComparingStocks extends React.Component {
                     target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
                 }
                 whatif_currentshares = original_currentshares + target_delta_shares
-                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                 let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
                 if (whatif_balancedbasis < 0) {
@@ -1770,7 +1770,7 @@ export class ComparingStocks extends React.Component {
                     target_delta_shares = -1 * Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
                     whatif_currentshares = original_currentshares + target_delta_shares
                 }
-                new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                 if (losing || sell_all_set.includes(ticker)) {
                     new_whatif.values[ticker]['basis'] = 'n/a'
@@ -1879,7 +1879,7 @@ export class ComparingStocks extends React.Component {
                 if (target_column === 'value_at_risk') {
 
                     let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
-                    new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                    new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                     let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     new_whatif.values[ticker]['current_value'] = whatif_balancedvalue
@@ -1901,7 +1901,7 @@ export class ComparingStocks extends React.Component {
                     let target_delta = target - original_basis
                     let target_delta_shares
                     if (target === 0) {
-                        new_whatif.values[ticker]['current_shares'] = 0
+                        new_whatif.values[ticker]['currentShares'] = 0
                         new_whatif.values[ticker]['basis'] = 0
                         new_whatif.values[ticker]['basis_risked'] = 0
                         new_whatif.values[ticker]['current_value'] = 0
@@ -1914,7 +1914,7 @@ export class ComparingStocks extends React.Component {
                             target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
                         }
                         let whatif_currentshares = original_currentshares + target_delta_shares
-                        new_whatif.values[ticker]['current_shares'] = whatif_currentshares
+                        new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                         let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
                         if (whatif_balancedbasis < 0) {
@@ -1938,7 +1938,7 @@ export class ComparingStocks extends React.Component {
 
         if (adjusting_cash) {
             new_whatif.values['cash'] = {}
-            new_whatif.values['cash']['current_shares'] = actual_remaining_cash
+            new_whatif.values['cash']['currentShares'] = actual_remaining_cash
             new_whatif.values['cash']['current_value'] = actual_remaining_cash
             new_whatif.values['cash']['basis'] = actual_remaining_cash
             new_whatif.values['cash']['value_at_risk'] = 0
@@ -1947,11 +1947,11 @@ export class ComparingStocks extends React.Component {
     }
 
     getCurrentHoldings() {
-        return Object.entries(this.state.allPositions).filter(holding => holding[1]['current_shares'] !== 0).map(holding => holding[0])
+        return Object.entries(this.state.allPositions).filter(holding => holding[1]['currentShares'] !== 0).map(holding => holding[0])
     }
 
     getPreviousHoldings() {
-        return Object.entries(this.state.allPositions).filter(holding => holding[1]['current_shares'] === 0).map(holding => holding[0])
+        return Object.entries(this.state.allPositions).filter(holding => holding[1]['currentShares'] === 0).map(holding => holding[0])
     }
 
     getIndicies() {
@@ -2026,7 +2026,7 @@ export class ComparingStocks extends React.Component {
 
         let sortColumn = this.state.sortColumn
         let quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
-        let holdings_columns = ['start_date', 'current_shares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'profit', 'percent_profit']
+        let holdings_columns = ['start_date', 'currentShares', 'current_value', 'percent_value', 'value_at_risk', 'basis', 'basis_risked', 'realized_gains', 'percent_basis', 'profit', 'percent_profit']
         let performance_columns = ['short_change_pct', 'medium_change_pct', 'long_change_pct']
 
         let sorted_names_list = [...names_list]
@@ -2095,7 +2095,7 @@ export class ComparingStocks extends React.Component {
                 let positionvalue_a, positionvalue_b, basis_a, basis_b
                 if (self.nameIsAnAggregate(a)) {
                     switch(sortColumn) {
-                        case 'current_shares':
+                        case 'currentShares':
                             value_a = 'n/a'
                             break;
                         case 'current_value':
@@ -2127,7 +2127,7 @@ export class ComparingStocks extends React.Component {
                 } else if (self.state.allPositions.hasOwnProperty(a)) {
                     if (sortColumn === 'current_value' || sortColumn === 'percent_value' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(a)) {
-                            positionvalue_a = self.state.allPositions[a]['current_shares'] * self.state.allCurrentQuotes[a]['current_price']
+                            positionvalue_a = self.state.allPositions[a]['currentShares'] * self.state.allCurrentQuotes[a]['current_price']
                             if ( (sortColumn === 'profit' || sortColumn === 'percent_profit') && positionvalue_a !== 0) {
                                 basis_a = self.state.allPositions[a]['basis']
                                 value_a = (basis_a >= 0) ? 1 - (basis_a / positionvalue_a) : 'losing'
@@ -2139,7 +2139,7 @@ export class ComparingStocks extends React.Component {
                         } else {
                             value_a = 'n/a'
                         }
-                    } else if (self.state.allPositions[a]['current_shares']) {
+                    } else if (self.state.allPositions[a]['currentShares']) {
                         if (sortColumn === 'basis_risked' && self.state.allRisk.hasOwnProperty(a)) {
                             value_a = self.state.allPositions[a]['basis'] * self.state.allRisk[a]['factor']
                         } else if (sortColumn === 'percent_basis') {
@@ -2155,7 +2155,7 @@ export class ComparingStocks extends React.Component {
                 }
                 if (self.nameIsAnAggregate(b)) {
                     switch(sortColumn) {
-                        case 'current_shares':
+                        case 'currentShares':
                             value_b = 'n/a'
                             break;
                         case 'current_value':
@@ -2187,7 +2187,7 @@ export class ComparingStocks extends React.Component {
                 } else if (self.state.allPositions.hasOwnProperty(b)) {
                     if (sortColumn === 'current_value' || sortColumn === 'percent_value' || sortColumn === 'profit' || sortColumn === 'percent_profit' || sortColumn === 'value_at_risk') {
                         if (self.state.allCurrentQuotes.hasOwnProperty(b)) {
-                            positionvalue_b = self.state.allPositions[b]['current_shares'] * self.state.allCurrentQuotes[b]['current_price']
+                            positionvalue_b = self.state.allPositions[b]['currentShares'] * self.state.allCurrentQuotes[b]['current_price']
                             if ( (sortColumn === 'profit' || sortColumn === 'percent_profit') && positionvalue_b !== 0) {
                                 basis_b = self.state.allPositions[b]['basis']
                                 value_b = (basis_b >= 0) ? 1 - (basis_b / positionvalue_b) : 'losing'
@@ -2199,7 +2199,7 @@ export class ComparingStocks extends React.Component {
                         } else {
                             value_b = 'n/a'
                         }
-                    } else if (self.state.allPositions[b]['current_shares']) {
+                    } else if (self.state.allPositions[b]['currentShares']) {
                         if (sortColumn === 'basis_risked' && self.state.allRisk.hasOwnProperty(b)) {
                             value_b = self.state.allPositions[b]['basis'] * self.state.allRisk[b]['factor']
                         } else if (sortColumn === 'percent_basis') {
@@ -2300,24 +2300,24 @@ export class ComparingStocks extends React.Component {
             })
             row_data[ticker]['tags'] = tag_membership
 
-            let special_classes = []
+            let specialClasses = []
             if (self.tickerIsIndex(ticker)) {
-                special_classes.push('index')
+                specialClasses.push('index')
             }
             if (ticker === 'cash') {
-                special_classes.push('cash')
+                specialClasses.push('cash')
             }
-            row_data[ticker]['special_classes'] = special_classes
+            row_data[ticker]['specialClasses'] = specialClasses
 
             if (self.state.allPositions.hasOwnProperty(ticker)) {
                 row_data[ticker]['start_date'] = self.state.allPositions[ticker].start_date
                 row_data[ticker]['basis'] = self.state.allPositions[ticker].basis
-                row_data[ticker]['current_shares'] = self.state.allPositions[ticker].current_shares
+                row_data[ticker]['currentShares'] = self.state.allPositions[ticker].currentShares
                 row_data[ticker]['realized_gains'] = self.state.allPositions[ticker].realized_gains
             } else {
                 row_data[ticker]['start_date'] = 'n/a'
                 row_data[ticker]['basis'] = 'n/a'
-                row_data[ticker]['current_shares'] = 'n/a'
+                row_data[ticker]['currentShares'] = 'n/a'
                 row_data[ticker]['realized_gains'] = 'n/a'
             }
 
@@ -2337,10 +2337,10 @@ export class ComparingStocks extends React.Component {
 
             new_aggr_data['symbol'] = aggr_ticker
             new_aggr_data['tags'] = []
-            new_aggr_data['special_classes'] = ['aggregate']
+            new_aggr_data['specialClasses'] = ['aggregate']
             new_aggr_data['basis'] = 'n/a'
             new_aggr_data['start_date'] = 'n/a'
-            new_aggr_data['current_shares'] = 'n/a'
+            new_aggr_data['currentShares'] = 'n/a'
             new_aggr_data['current_price'] = 'n/a'
             new_aggr_data['current_value'] = self.state.aggrTotalValue[aggr_ticker]
             new_aggr_data['change_pct'] = 'n/a'
@@ -2538,31 +2538,31 @@ export class ComparingStocks extends React.Component {
 
         const PopulateRow = ({row_data}) => (
             <GridRow 
-                key={row_data.row_name}
+                key={row_data.rowName}
                 isAggregate={row_data.isAggregate}
-                row_name={row_data.row_name}
-                membership_set={row_data.membership_set}
+                rowName={row_data.rowName}
+                membershipSet={row_data.membershipSet}
                 columns={row_data.columns}
-                special_classes={row_data.special_classes}
+                specialClasses={row_data.specialClasses}
                 current_price={row_data.current_price}
                 change_pct={row_data.change_pct}
                 quote_date={row_data.quote_date}
                 volume={row_data.volume}
-                basis={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
-                         || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
+                basis={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                         || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
                          ? row_data.basis 
                          : 'n/a'}
                 start_date={row_data.start_date}
-                current_shares={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
-                                  || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
-                                  ? row_data.current_shares 
+                currentShares={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                                  || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
+                                  ? row_data.currentShares 
                                   : 'n/a'}
-                current_value={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
-                                 || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
+                current_value={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                                 || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
                                  ? row_data.current_value 
                                  : 'n/a'}
-                realized_gains={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
-                                  || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
+                realized_gains={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                                  || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
                                   ? row_data.realized_gains 
                                   : 'n/a'}
                 risk_factor={row_data.risk_factor}
@@ -2572,20 +2572,20 @@ export class ComparingStocks extends React.Component {
                 show_only_achieved_performance={this.state.show_only_achieved_performance}
                 baseline={row_data.baseline}
                 style_realized_performance={row_data.style_realized_performance}
-                total_value={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
-                               || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
+                total_value={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                               || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
                                ? row_data.total_value 
                                : 'n/a'}
-                total_basis={( (row_data.current_shares !== 0 && this.state.show_current_holdings) 
-                               || (row_data.current_shares === 0 && this.state.show_previous_holdings) ) 
+                total_basis={( (row_data.currentShares !== 0 && this.state.show_current_holdings) 
+                               || (row_data.currentShares === 0 && this.state.show_previous_holdings) ) 
                                ? row_data.total_basis 
                                : 'n/a'}
                 whatif={row_data.whatif}
                 whatifFormat={this.state.whatifFormat}
                 onChangeWhatifFormat={this.onChangeWhatifFormat}
-                on_remove_from_tag={row_data.on_remove_from_tag}
+                onRemoveFromTag={row_data.onRemoveFromTag}
                 on_delete_ticker={row_data.on_delete_ticker}
-                on_delete_tags={row_data.on_delete_tags}
+                onDeleteTags={row_data.onDeleteTags}
                 editing_row={this.state.editing_row}
                 current_edit_value={(typeof this.state.editing_row === 'string' && this.state.allRisk.hasOwnProperty(this.state.editing_row)) ? this.state.allRisk[this.state.editing_row].factor : ''}
                 on_edit_cell={row_data.on_edit_cell}
@@ -2623,30 +2623,30 @@ export class ComparingStocks extends React.Component {
             let performance_numbers_exist = self.state.allPerformanceNumbers.hasOwnProperty(ticker)
             let new_row = {}
             new_row['isAggregate'] = false
-            new_row['row_name'] = ticker
-            new_row['membership_set'] = row_data[ticker]['tags']
+            new_row['rowName'] = ticker
+            new_row['membershipSet'] = row_data[ticker]['tags']
             new_row['columns'] = self.state.shown_columns
-            new_row['special_classes'] = row_data[ticker]['special_classes']
+            new_row['specialClasses'] = row_data[ticker]['specialClasses']
             new_row['current_price'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].current_price : 'err.'
             new_row['change_pct'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].change_pct : 'err.'
             new_row['quote_date'] = (!quote_exists) ? 'err.' : (ticker !== 'cash' && !self.getIndicies().includes(ticker)) ? self.state.allCurrentQuotes[ticker].quote_date : 'n/a'
             new_row['volume'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].volume : 'err.'
             new_row['basis'] = row_data[ticker]['basis']
             new_row['start_date'] = row_data[ticker]['start_date']
-            new_row['current_shares'] = row_data[ticker]['current_shares']
-            new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.current_shares === 'n/a') ? 'n/a' : new_row.current_price * new_row.current_shares
+            new_row['currentShares'] = row_data[ticker]['currentShares']
+            new_row['current_value'] = (new_row.current_price === 'n/a' || new_row.currentShares === 'n/a') ? 'n/a' : new_row.current_price * new_row.currentShares
             new_row['realized_gains'] = row_data[ticker]['realized_gains']
             new_row['risk_factor'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].factor : null
             new_row['risk_factor_modified'] = (self.state.allRisk.hasOwnProperty(ticker)) ? self.state.allRisk[ticker].modifiedAt : null
             new_row['performance_numbers'] = (performance_numbers_exist) ? self.state.allPerformanceNumbers[ticker] : error_performance_numbers
             new_row['baseline'] = self.state.baseline
-            new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].current_shares).length) ? true : false
+            new_row['style_realized_performance'] = (Object.entries(self.state.allPositions).filter(position => position[0] !== 'cash' && position[1].currentShares).length) ? true : false
             new_row['total_value'] = aggr_total_value
             new_row['total_basis'] = aggr_basis
             new_row['whatif'] = row_data[ticker]['whatif']
-            new_row['on_remove_from_tag'] = self.onRemoveFromTag
+            new_row['onRemoveFromTag'] = self.onRemoveFromTag
             new_row['on_delete_ticker'] = self.onDeleteTicker
-            new_row['on_delete_tags'] = self.onDeleteTags
+            new_row['onDeleteTags'] = self.onDeleteTags
             new_row['on_edit_cell'] = self.onEditCell
             new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
             all_row_data.push(new_row)
@@ -2667,17 +2667,17 @@ export class ComparingStocks extends React.Component {
 
                 let new_row = {}
                 new_row['isAggregate'] = true
-                new_row['row_name'] = aggr_ticker
-                new_row['membership_set'] = self.state.allTags[aggr_ticker]
+                new_row['rowName'] = aggr_ticker
+                new_row['membershipSet'] = self.state.allTags[aggr_ticker]
                 new_row['columns'] = self.state.shown_columns
-                new_row['special_classes'] = aggr_row_data[aggr_ticker]['special_classes']
+                new_row['specialClasses'] = aggr_row_data[aggr_ticker]['specialClasses']
                 new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
                 new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
                 new_row['quote_date'] = quote_date
                 new_row['volume'] = aggr_row_data[aggr_ticker]['volume']
                 new_row['basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['start_date'] = aggr_row_data[aggr_ticker]['start_date']
-                new_row['current_shares'] = aggr_row_data[aggr_ticker]['current_shares']
+                new_row['currentShares'] = aggr_row_data[aggr_ticker]['currentShares']
                 new_row['current_value'] = aggr_row_data[aggr_ticker]['current_value']
                 new_row['realized_gains'] = aggr_row_data[aggr_ticker]['realized_gains']
                 new_row['risk_factor'] = 'n/a'
@@ -2688,9 +2688,9 @@ export class ComparingStocks extends React.Component {
                 new_row['total_value'] = self.state.aggrTotalValue[aggr_ticker]
                 new_row['total_basis'] = self.state.aggrBasis[aggr_ticker]
                 new_row['whatif'] = aggr_row_data[aggr_ticker]['whatif']
-                new_row['on_remove_from_tag'] = self.onRemoveFromTag
+                new_row['onRemoveFromTag'] = self.onRemoveFromTag
                 new_row['on_delete_ticker'] = self.onDeleteTicker
-                new_row['on_delete_tags'] = self.onDeleteTags
+                new_row['onDeleteTags'] = self.onDeleteTags
                 new_row['on_edit_cell'] = self.onEditCell
                 new_row['on_modify_risk_factor'] = self.onModifyRiskFactor
                 all_row_data.push(new_row)
@@ -2724,7 +2724,7 @@ export class ComparingStocks extends React.Component {
                                 get_balanceable_value={this.getMaxBalanceableValue}
                                 on_new_tickers={this.onNewTickers}
                                 on_new_tags={this.onNewTags}
-                                on_delete_tags={this.onDeleteTags}
+                                onDeleteTags={this.onDeleteTags}
                                 on_delete_transaction={this.onDeleteTransaction}
                                 on_new_transaction={this.onNewTransaction}
                                 on_import_transactions={this.onImportTransactions}
@@ -2758,7 +2758,7 @@ export class ComparingStocks extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.done && all_row_data.filter(row_data => !row_data.isAggregate).map(row_data => (
-                            <PopulateRow key={row_data.row_name} row_data={row_data} />
+                            <PopulateRow key={row_data.rowName} row_data={row_data} />
                         ))}
                         {this.state.done && all_ticker_rows.length ? (
                         <GridRowTotals
@@ -2781,7 +2781,7 @@ export class ComparingStocks extends React.Component {
                         </thead>
                         <tbody>
                             {this.state.done && all_aggregate_rows.filter(row => row.name !== 'untagged').length ? all_row_data.filter(row_data => row_data.isAggregate).map(row_data => (
-                                <PopulateRow key={row_data.row_name} row_data={row_data} />
+                                <PopulateRow key={row_data.rowName} row_data={row_data} />
                             )) : (
                                 <tr>
                                     <td className="no_table_data" colSpan={this.state.shown_columns.length+1}>No tags exist yet. Please create them using the form on the "Tags" tab.</td>
