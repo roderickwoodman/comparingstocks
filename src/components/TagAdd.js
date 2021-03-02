@@ -16,42 +16,42 @@ export const TagAdd = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        let user_tags = String(userTagsString)
+        let userTags = String(userTagsString)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toLowerCase())
             .map(str => str.replace(/[^a-z0-9:()-_!?]/g, ""))
-        validateTags(Array.from(new Set(user_tags)))
+        validateTags(Array.from(new Set(userTags)))
     }
 
     const validateTags = (tags) => {
-        let tags_to_add = [], new_messages = []
+        let tagsToAdd = [], newMessages = []
         tags.forEach(function(tag) {
             if (props.allTags.hasOwnProperty(tag)) {
-                new_messages.push('ERROR: Tag "' + tag + '" has already been created.')
+                newMessages.push('ERROR: Tag "' + tag + '" has already been created.')
             } else {
-                new_messages.push('Tag "' + tag + '" has now been created.')
-                tags_to_add.push(tag)
+                newMessages.push('Tag "' + tag + '" has now been created.')
+                tagsToAdd.push(tag)
             }
         })
-        let num_errors = new_messages.filter(message => message.includes('ERROR')).length
+        let numErrors = newMessages.filter(message => message.includes('ERROR')).length
         let summary
-        if (new_messages.length === 1) {
-            summary = new_messages[0]
-        } else if (num_errors === 0) {
+        if (newMessages.length === 1) {
+            summary = newMessages[0]
+        } else if (numErrors === 0) {
             summary = 'Created ' + tags.length + ' tags.'
         } else {
-            summary = 'ERROR: ' + num_errors + ' of ' + tags.length + ' tags could not be created.'
+            summary = 'ERROR: ' + numErrors + ' of ' + tags.length + ' tags could not be created.'
         }
-        let new_console_message_set = props.createConsoleMessageSet(summary)
-        if (new_messages.length > 1) {
-            new_console_message_set.messages = [...new_messages]
+        let newConsoleMessageSet = props.createConsoleMessageSet(summary)
+        if (newMessages.length > 1) {
+            newConsoleMessageSet.messages = [...newMessages]
         }
-        if (num_errors > 0) {
-            new_console_message_set.has_errors = true
+        if (numErrors > 0) {
+            newConsoleMessageSet.hasErrors = true
         }
-        props.onNewTags(tags_to_add)
-        props.onNewConsoleMessages(new_console_message_set)
+        props.onNewTags(tagsToAdd)
+        props.onNewConsoleMessages(newConsoleMessageSet)
         handleReset()
     }
 

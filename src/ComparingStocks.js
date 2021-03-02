@@ -987,13 +987,13 @@ export class ComparingStocks extends React.Component {
     }
 
     createConsoleMessageSet(new_message) {
-        let new_console_message_set = {
+        let newConsoleMessageSet = {
             modifiedAt: new Date().getTime(),
             summary: new_message,
             messages: [new_message],
-            has_errors: (new_message.toUpperCase().startsWith('ERROR:')) ? true : false
+            hasErrors: (new_message.toUpperCase().startsWith('ERROR:')) ? true : false
         }
-        return new_console_message_set
+        return newConsoleMessageSet
     }
 
     onNewTags(new_tags) {
@@ -1094,8 +1094,8 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let new_console_message_set = this.createConsoleMessageSet('Ticker "' + delete_ticker + '" has now been deleted.')
-            newAllConsoleMessages.push(new_console_message_set)
+            let newConsoleMessageSet = this.createConsoleMessageSet('Ticker "' + delete_ticker + '" has now been deleted.')
+            newAllConsoleMessages.push(newConsoleMessageSet)
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1115,7 +1115,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
+                last_console_message: newConsoleMessageSet.summary + ((newConsoleMessageSet.messages.hasErrors) ? ' See the "Messages" tab.' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1332,8 +1332,8 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let new_console_message_set = this.createConsoleMessageSet('Transaction "' + transaction_to_delete.summary + '" has now been deleted.')
-            newAllConsoleMessages.push(new_console_message_set)
+            let newConsoleMessageSet = this.createConsoleMessageSet('Transaction "' + transaction_to_delete.summary + '" has now been deleted.')
+            newAllConsoleMessages.push(newConsoleMessageSet)
 
             // recalculate the position numbers
             let remainingTransactionsForTicker = newAllTransactions.filter(transaction => transaction.ticker === ticker)
@@ -1363,7 +1363,7 @@ export class ComparingStocks extends React.Component {
                 allPositions: newAllPositions, 
                 allTransactions: newAllTransactions, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
+                last_console_message: newConsoleMessageSet.summary + ((newConsoleMessageSet.messages.hasErrors) ? ' See the "Messages" tab.' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1441,20 +1441,20 @@ export class ComparingStocks extends React.Component {
 
             // add console messages
             let newAllConsoleMessages = [...prevState.allConsoleMessages]
-            let summary, new_messages = []
+            let summary, newMessages = []
             delete_tags.forEach(function(tag) {
-                new_messages.push('Tag "' + tag + '" has now been deleted.')
+                newMessages.push('Tag "' + tag + '" has now been deleted.')
             })
-            if (new_messages.length === 1) {
+            if (newMessages.length === 1) {
                 summary = 'Tag "' + delete_tags[0] + '" has now been deleted.'
             } else {
                 summary = 'Deleted ' + delete_tags.length + ' tags.'
             }
-            let new_console_message_set = this.createConsoleMessageSet(summary)
-            if (new_messages.length > 1) {
-                new_console_message_set.messages = [...new_messages]
+            let newConsoleMessageSet = this.createConsoleMessageSet(summary)
+            if (newMessages.length > 1) {
+                newConsoleMessageSet.messages = [...newMessages]
             }
-            newAllConsoleMessages.push(new_console_message_set)
+            newAllConsoleMessages.push(newConsoleMessageSet)
 
             // recalculate the aggregate numbers
             let aggr_position_info = JSON.parse(JSON.stringify(
@@ -1472,7 +1472,7 @@ export class ComparingStocks extends React.Component {
             return { 
                 allTags: newAllTags, 
                 allConsoleMessages: newAllConsoleMessages,
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
+                last_console_message: newConsoleMessageSet.summary + ((newConsoleMessageSet.messages.hasErrors) ? ' See the "Messages" tab.' : ''),
                 aggrBasis: aggr_position_info[0],
                 aggrRealized: aggr_position_info[1],
                 aggrTotalValue: aggr_position_info[2],
@@ -1523,12 +1523,12 @@ export class ComparingStocks extends React.Component {
         this.setState({ editing_row: null })
     }
 
-    onNewConsoleMessages(new_console_message_set) {
+    onNewConsoleMessages(newConsoleMessageSet) {
         this.setState(prevState => {
             let newAllConsoleMessages = JSON.parse(JSON.stringify(prevState.allConsoleMessages))
-            newAllConsoleMessages.push(new_console_message_set)
+            newAllConsoleMessages.push(newConsoleMessageSet)
             return { 
-                last_console_message: new_console_message_set.summary + ((new_console_message_set.messages.has_errors) ? ' See the "Messages" tab.' : ''),
+                last_console_message: newConsoleMessageSet.summary + ((newConsoleMessageSet.messages.hasErrors) ? ' See the "Messages" tab.' : ''),
                 allConsoleMessages: newAllConsoleMessages }
         })
     }

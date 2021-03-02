@@ -64,11 +64,11 @@ export const TransactionAdd = (props) => {
                 handleCashReset()
             }
         }
-        let new_console_message_set = props.createConsoleMessageSet(new_message)
+        let newConsoleMessageSet = props.createConsoleMessageSet(new_message)
         if (new_message.toUpperCase().startsWith('ERROR:')) {
-            new_console_message_set.has_errors = true
+            newConsoleMessageSet.hasErrors = true
         }
-        props.onNewConsoleMessages(new_console_message_set)
+        props.onNewConsoleMessages(newConsoleMessageSet)
     }
 
     const handleSubmit = (event) => {
@@ -81,39 +81,39 @@ export const TransactionAdd = (props) => {
     }
 
     const validateTransaction = (transaction) => {
-        let new_messages = [], summary_message
+        let newMessages = [], summary_message
 
         if (transaction.length < 4) {
 
             summary_message = 'ERROR: Transaction "' + transaction + '" must be 4 terms.'
-            new_messages.push(summary_message)
+            newMessages.push(summary_message)
 
         } else {
 
             let action = transaction[0].toLowerCase()
             if (action !== 'buy' && action !== 'sell') {
-                new_messages.push('ERROR: Action "' + transaction[0] + '" must be either "buy" or "sell".')
+                newMessages.push('ERROR: Action "' + transaction[0] + '" must be either "buy" or "sell".')
             }
 
             let num_shares = parseInt(transaction[1])
             if (isNaN(num_shares) || num_shares < 1) {
-                new_messages.push('ERROR: Share count "' + transaction[1] + '" must be a positive integer.')
+                newMessages.push('ERROR: Share count "' + transaction[1] + '" must be a positive integer.')
             }
 
             let ticker = transaction[2].toUpperCase().replace(/[^A-Z]/g, "")
             if (ticker !== transaction[2].toUpperCase() || !props.allStocks.includes(ticker.toUpperCase())) {
-                new_messages.push('ERROR: Ticker "' + transaction[2] + '" does not exist.')
+                newMessages.push('ERROR: Ticker "' + transaction[2] + '" does not exist.')
             }
 
             let total = parseFloat(transaction[3].replace(/[^0-9.]/g, ""))
             if (isNaN(total) || total < 0) {
-                new_messages.push('ERROR: Total amount "' + transaction[3] + '" must be a non-negative number.')
+                newMessages.push('ERROR: Total amount "' + transaction[3] + '" must be a non-negative number.')
             } else {
                 total = parseFloat((Math.round(total * 100) / 100).toFixed(2));
             }
 
             // this transaction is valid
-            if (!new_messages.length) {
+            if (!newMessages.length) {
 
                 // also print the "ticker has now been added" message, if needed
                 let tagged_tickers = []
@@ -125,12 +125,12 @@ export const TransactionAdd = (props) => {
                     })
                 })
                 if (tagged_tickers.includes(transaction[2].toUpperCase())) {
-                    new_messages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
+                    newMessages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
                 }
 
                 let valid_transaction_summary = transactionDate + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
                 summary_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
-                new_messages.push(summary_message)
+                newMessages.push(summary_message)
                 props.onNewTransaction(valid_transaction_summary)
 
             } else {
@@ -141,12 +141,12 @@ export const TransactionAdd = (props) => {
         }
 
         // send all of the messages to print
-        let new_console_message_set = props.createConsoleMessageSet(summary_message)
+        let newConsoleMessageSet = props.createConsoleMessageSet(summary_message)
         if (summary_message.toUpperCase().startsWith('ERRROR:')) {
-            new_console_message_set.has_errors = true
+            newConsoleMessageSet.hasErrors = true
         }
-        new_console_message_set.messages = [...new_messages]
-        props.onNewConsoleMessages(new_console_message_set)
+        newConsoleMessageSet.messages = [...newMessages]
+        props.onNewConsoleMessages(newConsoleMessageSet)
     }
 
     const getCashOperationPlaceholder = () => {

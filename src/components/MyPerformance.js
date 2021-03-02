@@ -363,12 +363,12 @@ export class MyPerformance extends React.Component {
                     message_summary = 'ERROR: period performance calculations encountered error(s)'
                 }
             }
-            let new_console_message_set = this.props.createConsoleMessageSet(message_summary)
-            new_console_message_set.messages = [...newConsoleMessages]
+            let newConsoleMessageSet = this.props.createConsoleMessageSet(message_summary)
+            newConsoleMessageSet.messages = [...newConsoleMessages]
             if (quote_error_count > 0) {
-                new_console_message_set.has_errors = true
+                newConsoleMessageSet.hasErrors = true
             }
-            this.props.onNewConsoleMessages(new_console_message_set)
+            this.props.onNewConsoleMessages(newConsoleMessageSet)
         }
 
         this.setState({ periodData: periodData })
