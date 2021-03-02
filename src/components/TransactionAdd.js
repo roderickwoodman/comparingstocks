@@ -12,7 +12,7 @@ export const TransactionAdd = (props) => {
     const handleChange = (event) => {
         if (event.target.name === 'transaction') {
             setTransaction(event.target.value)
-        } else if (event.target.name === 'transaction_date') {
+        } else if (event.target.name === 'transactionDate') {
             setTransactionDate(event.target.value)
         }
     }
@@ -163,7 +163,7 @@ export const TransactionAdd = (props) => {
         <section id="add-transaction">
             <form>
                 <label>Transaction Date:</label>
-                <input name="transaction_date" value={transactionDate} onChange={handleChange} type="date" size="10" />
+                <input name="transactionDate" value={transactionDate} onChange={handleChange} type="date" size="10" />
             </form>
             <form onSubmit={handleSubmit}>
                 <label>New Transaction:</label>
