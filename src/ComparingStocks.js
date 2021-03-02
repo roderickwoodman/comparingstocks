@@ -389,18 +389,18 @@ export class ComparingStocks extends React.Component {
             indexedRiskData = JSON.parse(JSON.stringify(storedAllRisk))
         }
 
-        let rawCurrentQuoteData = require('./api/sample_current_quotes.json').sample_current_quotes
+        const rawCurrentQuoteData = require('./api/sample_current_quotes.json').sample_current_quotes
         let indexedCurrentQuoteData = {}
         rawCurrentQuoteData.forEach(function(raw_quote) {
-            let adjustedTicker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'].toUpperCase())
+            const adjustedTicker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'].toUpperCase())
             indexedCurrentQuoteData[adjustedTicker] = raw_quote
         })
 
-        let rawMonthlyQuoteData = require('./api/sample_monthly_quotes.json').sample_monthly_quotes
+        const rawMonthlyQuoteData = require('./api/sample_monthly_quotes.json').sample_monthly_quotes
         let indexedMonthlyQuoteData = {}
         let indexPerformance = {}
         rawMonthlyQuoteData.forEach(function(raw_quote) {
-            let adjustedTicker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'].toUpperCase())
+            const adjustedTicker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'].toUpperCase())
             indexedMonthlyQuoteData[adjustedTicker] = raw_quote
             if (adjustedTicker === 'S&P500') {
                 let quoteTimeSeriesDesc = Object.entries(indexedMonthlyQuoteData[adjustedTicker]['Monthly Adjusted Time Series'])
@@ -413,11 +413,11 @@ export class ComparingStocks extends React.Component {
                         return 0
                     }
                 })
-                let monthly_prices = Object.entries(quoteTimeSeriesDesc).map(price => parseFloat(price[1]['5. adjusted close']))
-                let now = monthly_prices[0]
-                let prev_short = monthly_prices[5]
-                let prev_medium = monthly_prices[11]
-                let prev_long = monthly_prices[23]
+                const monthly_prices = Object.entries(quoteTimeSeriesDesc).map(price => parseFloat(price[1]['5. adjusted close']))
+                const now = monthly_prices[0]
+                const prev_short = monthly_prices[5]
+                const prev_medium = monthly_prices[11]
+                const prev_long = monthly_prices[23]
                 indexPerformance['shortChangePct'] = (now - prev_short) / now * 100
                 indexPerformance['mediumChangePct'] = (now - prev_medium) / now * 100
                 indexPerformance['longChangePct'] = (now - prev_long) / now * 100
@@ -471,7 +471,7 @@ export class ComparingStocks extends React.Component {
             allTransactions.forEach(function(transaction) {
                 if (!newPositions.hasOwnProperty(transaction.ticker) && transaction.ticker !== 'cash') {
                     let newPosition = {}
-                    let ticker = transaction.ticker
+                    const ticker = transaction.ticker
                     newPosition = self.getPositionFromSingleTickerTransactions(allTransactions.filter(transaction => transaction.ticker === ticker))
                     newPosition['symbol'] = ticker
                     newPositions[ticker] = newPosition
@@ -502,7 +502,7 @@ export class ComparingStocks extends React.Component {
                 let newTickerQuotes = {}
                 Object.entries(indexedMonthlyQuoteData[ticker]['Monthly Adjusted Time Series']).forEach(function(entry) {
 
-                    let full_date = entry[0]
+                    const full_date = entry[0]
 
                     // collect all quotes for this ticker
                     let newQuote = {}
@@ -510,9 +510,9 @@ export class ComparingStocks extends React.Component {
                     newTickerQuotes[full_date] = newQuote
 
                     // build the month-end dates (YYYY-MM-DD)
-                    let target_month = full_date.substr(0,7)
+                    const target_month = full_date.substr(0,7)
                     if (!newMonthEndDates.includes(full_date)) {
-                        let found_idx = newMonthEndDates.findIndex(element => element.substr(0,7) === target_month)
+                        const found_idx = newMonthEndDates.findIndex(element => element.substr(0,7) === target_month)
                         if (found_idx === -1) {
                             newMonthEndDates.push(full_date)
                         } else if (newMonthEndDates[found_idx] < full_date) {
@@ -707,7 +707,7 @@ export class ComparingStocks extends React.Component {
 
         cash_transactions.forEach(function(cash_transaction) {
             [, action, value] = cash_transaction.summary.split(' ')
-            let cash_amount = parseFloat(value.substr(1))
+            const cash_amount = parseFloat(value.substr(1))
             if (action === 'transferIN' || action === 'dividend') {
                 total += cash_amount
             } else if (action === 'transferOUT' || action === 'fee') {
@@ -726,8 +726,8 @@ export class ComparingStocks extends React.Component {
 
     calculateAggrPositionInfo(allTags, allPositions, all_quotes, showCurrentHoldings, showCash) {
 
-        let holdings = (showCurrentHoldings === null) ? this.state.showCurrentHoldings : showCurrentHoldings
-        let cash = (showCash === null) ? this.state.showCash : showCash
+        const holdings = (showCurrentHoldings === null) ? this.state.showCurrentHoldings : showCurrentHoldings
+        const cash = (showCash === null) ? this.state.showCash : showCash
 
         let aggr_totalbasis_by_tag = {}, aggr_totalrealized_by_tag = {}, aggr_totalvalue_by_tag = {}
         aggr_totalbasis_by_tag['_everything_'] = 0
@@ -746,7 +746,7 @@ export class ComparingStocks extends React.Component {
             })
         })
         Object.entries(allPositions).forEach(function(position_info) {
-            let ticker = position_info[0]
+            const ticker = position_info[0]
             let ticker_basis = position_info[1]['basis']
             if (ticker_basis < 0) {
                 ticker_basis = 0
@@ -864,7 +864,7 @@ export class ComparingStocks extends React.Component {
         })
 
         Object.entries(aggr_performance_by_tag).forEach(function(tag_performance) {
-            let tag = tag_performance[0]
+            const tag = tag_performance[0]
             let performance = tag_performance[1]
             Object.keys(performance).filter(time_range => time_range !== 'num_tickers').forEach(function(time_range) {
                 if (performance[time_range] !== 'err.') {
@@ -878,7 +878,7 @@ export class ComparingStocks extends React.Component {
     }
 
     onInputChange(event) {
-        let name = event.target.name
+        const name = event.target.name
 
         if (name === 'baseline') {
             let new_baseline_name = event.target.value
@@ -906,8 +906,8 @@ export class ComparingStocks extends React.Component {
         localStorage.setItem(name, JSON.stringify(new_value))
 
         // recalculate the aggregate numbers
-        let showCash = (name === 'showCash') ? new_value : this.state.showCash
-        let showCurrentHoldings = (name === 'showCurrentHoldings') ? new_value : this.state.showCurrentHoldings
+        const showCash = (name === 'showCash') ? new_value : this.state.showCash
+        const showCurrentHoldings = (name === 'showCurrentHoldings') ? new_value : this.state.showCurrentHoldings
         let aggr_position_info = JSON.parse(JSON.stringify(
             this.calculateAggrPositionInfo(
                 this.state.allTags, 
@@ -929,7 +929,7 @@ export class ComparingStocks extends React.Component {
     }
 
     onChangeWhatifFormat() {
-        let new_whatif_format = (this.state.whatifFormat === 'deltas') ? 'new_values' : 'deltas'
+        const new_whatif_format = (this.state.whatifFormat === 'deltas') ? 'new_values' : 'deltas'
         localStorage.setItem('whatifFormat', JSON.stringify(new_whatif_format))
         this.setState({ whatifFormat: new_whatif_format })
     }
@@ -978,7 +978,7 @@ export class ComparingStocks extends React.Component {
     }
 
     convertNameForIndicies(ticker) {
-        let idx = this.state.allIndiciesTickers.indexOf(ticker)
+        const idx = this.state.allIndiciesTickers.indexOf(ticker)
         if (idx !== -1) {
             return this.state.allIndiciesAliases[idx]
         } else {
@@ -1321,8 +1321,8 @@ export class ComparingStocks extends React.Component {
 
     onDeleteTransaction(delete_transaction_id) {
 
-        let transaction_to_delete = this.getTransactionById(delete_transaction_id)
-        let ticker = transaction_to_delete.ticker
+        const transaction_to_delete = this.getTransactionById(delete_transaction_id)
+        const ticker = transaction_to_delete.ticker
 
         this.setState(prevState => {
 
@@ -1538,9 +1538,9 @@ export class ComparingStocks extends React.Component {
     }
 
     daysAgo(date_str) { // yyyy-mm-dd
-        let now = new Date()
-        let then = new Date(date_str)
-        let days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
+        const now = new Date()
+        const then = new Date(date_str)
+        const days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
         if (date_str === 'n/a') {
             return -1
         } else {
@@ -1597,7 +1597,7 @@ export class ComparingStocks extends React.Component {
     }
 
     getMaxBalanceableValue(target_set, sell_all_set, target_column) {
-        let include_cash = true
+        const include_cash = true
         return this.getBalanceableValue(target_set, sell_all_set, target_column, include_cash)
     }
 
@@ -1612,7 +1612,7 @@ export class ComparingStocks extends React.Component {
         }
         balanceableValue += current_cash_value
 
-        let target_tickers = this.getTickersFromSet(target_set)
+        const target_tickers = this.getTickersFromSet(target_set)
         if ( (target_set === 'myCurrentHoldings' && this.state.showCurrentHoldings)
             || (target_set === 'untagged' && this.state.showUntagged) 
             || (target_set !== 'myCurrentHoldings' && target_set !== 'untagged') ) {
@@ -1660,8 +1660,8 @@ export class ComparingStocks extends React.Component {
     onWhatifGo(target_set, sell_all_set, target_column, showCash, remainingCash) {
 
         let self = this
-        let adjusting_cash = showCash && (remainingCash !== null || target_column === 'onlyProfits')
-        let original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].currentShares * this.state.allCurrentQuotes['cash'].current_price : 0
+        const adjusting_cash = showCash && (remainingCash !== null || target_column === 'onlyProfits')
+        const original_cash_position = (this.state.allPositions.hasOwnProperty('cash')) ? this.state.allPositions['cash'].currentShares * this.state.allCurrentQuotes['cash'].current_price : 0
 
         // determine the total value to be balanced
         let total_amount_to_balance = this.getBalanceableValue(target_set, sell_all_set, target_column, adjusting_cash)
@@ -1670,7 +1670,7 @@ export class ComparingStocks extends React.Component {
         }
 
         // determine the tickers to balance across
-        let target_tickers = this.getTickersFromSet(target_set)
+        const target_tickers = this.getTickersFromSet(target_set)
 
         // determine these tickers' what-if values for each relevant column
         let new_whatif = {
@@ -1687,7 +1687,7 @@ export class ComparingStocks extends React.Component {
                 risk_factors[ticker] = 0.20
             }
         })
-        let target = total_amount_to_balance / target_tickers.filter(ticker => !sell_all_set.includes(ticker)).length
+        const target = total_amount_to_balance / target_tickers.filter(ticker => !sell_all_set.includes(ticker)).length
         target_tickers.forEach(function(ticker) {
 
             let whatif_currentshares, whatif_balancedvalue
@@ -1695,8 +1695,8 @@ export class ComparingStocks extends React.Component {
             new_whatif.values[ticker] = {}
 
             let value_delta = 0
-            let original_currentvalue = self.getCurrentValue(ticker)
-            let original_basis = self.getBasis(ticker)
+            const original_currentvalue = self.getCurrentValue(ticker)
+            const original_basis = self.getBasis(ticker)
 
             if (target_column === 'currentValue' || target_column === 'basis' || target_column === 'onlyProfits') {
                 if (sell_all_set.includes(ticker)) {
@@ -1734,8 +1734,8 @@ export class ComparingStocks extends React.Component {
             // balancing by basis must account for sunk costs too; current value is not enough
             } else if (target_column === 'basis') {
 
-                let original_currentshares = self.getCurrentShares(ticker)
-                let target_delta = target - original_basis
+                const original_currentshares = self.getCurrentShares(ticker)
+                const target_delta = target - original_basis
                 let target_delta_shares
                 if (target_delta >= 0) {
                     target_delta_shares = Math.floor(target_delta / self.state.allCurrentQuotes[ticker].current_price)
@@ -1759,14 +1759,14 @@ export class ComparingStocks extends React.Component {
 
             } else if (target_column === 'onlyProfits') {
 
-                let original_currentshares = self.getCurrentShares(ticker)
-                let original_currentvalue = original_currentshares * self.state.allCurrentQuotes[ticker].current_price
+                const original_currentshares = self.getCurrentShares(ticker)
+                const original_currentvalue = original_currentshares * self.state.allCurrentQuotes[ticker].current_price
                 let target_delta_shares
-                let losing = (original_basis > original_currentvalue) ? true : false
+                const losing = (original_basis > original_currentvalue) ? true : false
                 if (losing) {
                     whatif_currentshares = 0
                 } else {
-                    let target_delta = original_basis
+                    const target_delta = original_basis
                     target_delta_shares = -1 * Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
                     whatif_currentshares = original_currentshares + target_delta_shares
                 }
@@ -1779,11 +1779,11 @@ export class ComparingStocks extends React.Component {
                     new_whatif.values[ticker]['valueAtRisk'] = 'n/a'
                     value_delta = -1 * original_currentvalue
                 } else {
-                    let whatif_basis = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
+                    const whatif_basis = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     new_whatif.values[ticker]['basis'] = whatif_basis
                     new_whatif.values[ticker]['basisRisked'] = whatif_basis * risk_factors[ticker]
 
-                    let whatif_currentvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
+                    const whatif_currentvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     value_delta = whatif_currentvalue - original_currentvalue
                     new_whatif.values[ticker]['currentValue'] = whatif_currentvalue
                     new_whatif.values[ticker]['valueAtRisk'] = whatif_currentvalue * risk_factors[ticker]
@@ -1830,7 +1830,7 @@ export class ComparingStocks extends React.Component {
         // balancing by risk requires a complicated algorithm (shown above)
         if (target_column === 'valueAtRisk' || target_column === 'basisRisked') {
 
-            let target_nonzero_tickers = target_tickers.filter(ticker => !sell_all_set.includes(ticker))
+            const target_nonzero_tickers = target_tickers.filter(ticker => !sell_all_set.includes(ticker))
             
             // determine the numerator
             let numerator_product = 1
@@ -1871,17 +1871,17 @@ export class ComparingStocks extends React.Component {
                 if (!new_whatif.values.hasOwnProperty(ticker)) {
                     new_whatif.values[ticker] = {}
                 }
-                let original_currentvalue = self.getCurrentValue(ticker)
-                let original_basis = self.getBasis(ticker)
+                const original_currentvalue = self.getCurrentValue(ticker)
+                const original_basis = self.getBasis(ticker)
                 let value_delta, target = targets[idx]
 
                 // for values, "target" is the target market value for this position
                 if (target_column === 'valueAtRisk') {
 
-                    let whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
+                    const whatif_currentshares = Math.floor(target / self.state.allCurrentQuotes[ticker].current_price)
                     new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
-                    let whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
+                    const whatif_balancedvalue = whatif_currentshares * self.state.allCurrentQuotes[ticker].current_price
                     new_whatif.values[ticker]['currentValue'] = whatif_balancedvalue
 
                     value_delta = whatif_balancedvalue - original_currentvalue
@@ -1897,8 +1897,8 @@ export class ComparingStocks extends React.Component {
                 // for bases, "target" is the target basis for this position
                 } else if (target_column === 'basisRisked') {
 
-                    let original_currentshares = self.getCurrentShares(ticker)
-                    let target_delta = target - original_basis
+                    const original_currentshares = self.getCurrentShares(ticker)
+                    const target_delta = target - original_basis
                     let target_delta_shares
                     if (target === 0) {
                         new_whatif.values[ticker]['currentShares'] = 0
@@ -1913,7 +1913,7 @@ export class ComparingStocks extends React.Component {
                         } else {
                             target_delta_shares = Math.ceil(target_delta / self.state.allCurrentQuotes[ticker].current_price)
                         }
-                        let whatif_currentshares = original_currentshares + target_delta_shares
+                        const whatif_currentshares = original_currentshares + target_delta_shares
                         new_whatif.values[ticker]['currentShares'] = whatif_currentshares
 
                         let whatif_balancedbasis = original_basis + target_delta_shares * self.state.allCurrentQuotes[ticker].current_price
@@ -2024,10 +2024,10 @@ export class ComparingStocks extends React.Component {
 
     sortTickers(names_list) {
 
-        let sortColumn = this.state.sortColumn
-        let quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
-        let holdings_columns = ['start_date', 'currentShares', 'currentValue', 'percentValue', 'valueAtRisk', 'basis', 'basisRisked', 'realized_gains', 'percentBasis', 'profit', 'percent_profit']
-        let performance_columns = ['shortChangePct', 'mediumChangePct', 'longChangePct']
+        const sortColumn = this.state.sortColumn
+        const quote_columns = ['current_price', 'change_pct', 'quote_date', 'volume', 'dollar_volume']
+        const holdings_columns = ['start_date', 'currentShares', 'currentValue', 'percentValue', 'valueAtRisk', 'basis', 'basisRisked', 'realized_gains', 'percentBasis', 'profit', 'percent_profit']
+        const performance_columns = ['shortChangePct', 'mediumChangePct', 'longChangePct']
 
         let sorted_names_list = [...names_list]
         let self = this
@@ -2283,9 +2283,9 @@ export class ComparingStocks extends React.Component {
                 tickers_to_show = [...tickers_to_show, ...this.getUntagged()]
             }
         }
-        let unique_tickers_to_show = Array.from(new Set(tickers_to_show))
-        let sortTriangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
-        let sorted_tickers = this.sortTickers(unique_tickers_to_show)
+        const unique_tickers_to_show = Array.from(new Set(tickers_to_show))
+        const sortTriangle = (this.state.sort_dir_asc === true) ? String.fromCharCode(9650) : String.fromCharCode(9660)
+        const sorted_tickers = this.sortTickers(unique_tickers_to_show)
 
         let row_data = {}
         sorted_tickers.forEach(function(ticker) {
@@ -2329,7 +2329,7 @@ export class ComparingStocks extends React.Component {
             }
         })
 
-        let sorted_aggr_tickers = this.sortTickers(Object.keys(this.state.allTags).filter(ticker => !(ticker === 'untagged' && !this.state.allTags.untagged.length)))
+        const sorted_aggr_tickers = this.sortTickers(Object.keys(this.state.allTags).filter(ticker => !(ticker === 'untagged' && !this.state.allTags.untagged.length)))
         let aggr_row_data = {}
         sorted_aggr_tickers.forEach(function(aggr_ticker) {
 
@@ -2353,8 +2353,8 @@ export class ComparingStocks extends React.Component {
             aggr_row_data[aggr_ticker] = new_aggr_data
         })
 
-        let shown_column_names = this.state.shownColumns.map(column => column.name)
-        let all_columns_namesorted = JSON.parse(JSON.stringify(allColumns)).sort(function (a,b) {
+        const shown_column_names = this.state.shownColumns.map(column => column.name)
+        const all_columns_namesorted = JSON.parse(JSON.stringify(allColumns)).sort(function (a,b) {
             let value_a = a.displayName
             if (value_a.includes('year')) {
                 value_a = '0' + value_a
@@ -2375,10 +2375,10 @@ export class ComparingStocks extends React.Component {
                 return 0
             }
         })
-        let all_categories = ['always', 'stock-specific', 'holdings', 'performance']
+        const all_categories = ['always', 'stock-specific', 'holdings', 'performance']
         let all_columns_by_category = {}
         all_categories.forEach(function(category_name) {
-            let this_category_columns = JSON.parse(JSON.stringify(all_columns_namesorted)).filter(column => column.category === category_name)
+            const this_category_columns = JSON.parse(JSON.stringify(all_columns_namesorted)).filter(column => column.category === category_name)
             all_columns_by_category[category_name] = this_category_columns
         })
 
@@ -2619,8 +2619,8 @@ export class ComparingStocks extends React.Component {
         }
         let all_row_data = []
         sorted_tickers.forEach(function(ticker) {
-            let quote_exists = self.currentQuoteExists(ticker)
-            let performance_numbers_exist = self.state.allPerformanceNumbers.hasOwnProperty(ticker)
+            const quote_exists = self.currentQuoteExists(ticker)
+            const performance_numbers_exist = self.state.allPerformanceNumbers.hasOwnProperty(ticker)
             let new_row = {}
             new_row['isAggregate'] = false
             new_row['rowName'] = ticker
@@ -2658,7 +2658,7 @@ export class ComparingStocks extends React.Component {
                 // if an old quote exists within this aggregate and if this is an error, the aggregate total becomes an error too
                 let quote_date
                 for (let ticker of self.state.allTags[aggr_ticker]) {
-                    let quote_exists = (self.currentQuoteExists(ticker)) ? true : false
+                    const quote_exists = (self.currentQuoteExists(ticker)) ? true : false
                     quote_date = (quote_exists) ? self.state.allCurrentQuotes[ticker].quote_date : 'err.'
                     if (self.daysAgo(quote_date) >= 1) {
                         break
@@ -2697,9 +2697,9 @@ export class ComparingStocks extends React.Component {
             })
         }
 
-        let symbol_count = this.populateSymbolCount(sorted_tickers.length) 
-        let all_ticker_rows = all_row_data.filter(row_data => !row_data.isAggregate)
-        let all_aggregate_rows = all_row_data.filter(row_data => row_data.isAggregate)
+        const symbol_count = this.populateSymbolCount(sorted_tickers.length) 
+        const all_ticker_rows = all_row_data.filter(row_data => !row_data.isAggregate)
+        const all_aggregate_rows = all_row_data.filter(row_data => row_data.isAggregate)
 
         return (
             <div id="page-wrapper">
