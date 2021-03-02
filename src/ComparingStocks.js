@@ -1217,14 +1217,14 @@ export class ComparingStocks extends React.Component {
         })
     }
 
-    onImportTransactions(file_contents) {
+    onImportTransactions(fileContents) {
 
         let imported_tickers = []
 
-        let imported_transactions = JSON.parse(JSON.stringify(file_contents.transactions))
+        let imported_transactions = JSON.parse(JSON.stringify(fileContents.transactions))
         imported_transactions.forEach( transaction => imported_tickers.push(transaction.ticker) )
 
-        let imported_risk = JSON.parse(JSON.stringify(file_contents.risk))
+        let imported_risk = JSON.parse(JSON.stringify(fileContents.risk))
         Object.keys(imported_risk).forEach( ticker => imported_tickers.push(ticker))
 
         let all_stocks_of_interest = Array.from(new Set(imported_tickers))
