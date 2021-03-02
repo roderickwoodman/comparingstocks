@@ -97,8 +97,8 @@ export const TickerAdd = (props) => {
                     Add to Tag:
                     <select value={addToTag} onChange={handleTagChange}>
                         <option key="untagged" value="untagged">(no tag)</option>
-                        {Object.keys(props.allTags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
-                        <option key={tag_name} value={tag_name}>{tag_name}</option>
+                        {Object.keys(props.allTags).sort().filter(tagName => tagName !== 'untagged').map(tagName => (
+                        <option key={tagName} value={tagName}>{tagName}</option>
                         ))}
                     </select>
                 </label>

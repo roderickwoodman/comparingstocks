@@ -1076,8 +1076,8 @@ export class ComparingStocks extends React.Component {
             // update tag membership info
             let newAllTags = JSON.parse(JSON.stringify(prevState.allTags))
             let all_tags_for_this_ticker = []
-            Object.keys(newAllTags).forEach(function(tag_name) {
-                all_tags_for_this_ticker.push(tag_name)
+            Object.keys(newAllTags).forEach(function(tagName) {
+                all_tags_for_this_ticker.push(tagName)
             })
             all_tags_for_this_ticker.forEach(function(tag) {
                 newAllTags[tag] = newAllTags[tag].filter(ticker => ticker !== delete_ticker)
@@ -1378,9 +1378,9 @@ export class ComparingStocks extends React.Component {
 
             // assign ticker to "untagged" if it is losing its last (user) tag
             let all_other_tags_for_this_ticker = []
-            Object.keys(newAllTags).forEach(function(tag_name) {
-                if (tag_name !== remove_from_tag && tag_name !== 'untagged' && newAllTags[tag_name].includes(remove_ticker)) {
-                    all_other_tags_for_this_ticker.push(tag_name)
+            Object.keys(newAllTags).forEach(function(tagName) {
+                if (tagName !== remove_from_tag && tagName !== 'untagged' && newAllTags[tagName].includes(remove_ticker)) {
+                    all_other_tags_for_this_ticker.push(tagName)
                 }
             })
             if (!all_other_tags_for_this_ticker.length) {
@@ -1425,9 +1425,9 @@ export class ComparingStocks extends React.Component {
 
             // assign tickers to "untagged" if they are losing their last (user) tag
             let all_other_tagged_tickers = []
-            Object.keys(newAllTags).forEach(function(tag_name) {
-                if (tag_name !== 'untagged') {
-                    all_other_tagged_tickers = all_other_tagged_tickers.concat(newAllTags[tag_name])
+            Object.keys(newAllTags).forEach(function(tagName) {
+                if (tagName !== 'untagged') {
+                    all_other_tagged_tickers = all_other_tagged_tickers.concat(newAllTags[tagName])
                 }
             })
             tickers_losing_a_tag.forEach(function(ticker) {

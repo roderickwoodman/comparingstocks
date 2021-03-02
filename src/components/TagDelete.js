@@ -9,19 +9,19 @@ export const TagDelete = (props) => {
     const handleTagChange = (event) => {
         let {selectedOptions } = event.target
 
-        let multiple_tags = Array.from(selectedOptions, (item) => item.value)
-        if (multiple_tags.includes('untagged')) {
-            multiple_tags = ['untagged']
+        let multipleTags = Array.from(selectedOptions, (item) => item.value)
+        if (multipleTags.includes('untagged')) {
+            multipleTags = ['untagged']
         }
 
-        setDeleteTagList(multiple_tags)
+        setDeleteTagList(multipleTags)
     }
 
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        let user_tag_list = deleteTagList
-        props.onDeleteTags(user_tag_list)
+        let userTagList = deleteTagList
+        props.onDeleteTags(userTagList)
 
         setDeleteTagList(['untagged'])
     }
@@ -41,8 +41,8 @@ export const TagDelete = (props) => {
                     Delete Tag:
                     <select value={deleteTagList} multiple={true} onChange={handleTagChange}>
                         <option key="untagged" value="untagged">(none)</option>
-                        {Object.keys(props.allTags).sort().filter(tag_name => tag_name !== 'untagged').map(tag_name => (
-                        <option key={tag_name} value={tag_name}>{tag_name}</option>
+                        {Object.keys(props.allTags).sort().filter(tagName => tagName !== 'untagged').map(tagName => (
+                        <option key={tagName} value={tagName}>{tagName}</option>
                         ))}
                     </select>
                 </div>
