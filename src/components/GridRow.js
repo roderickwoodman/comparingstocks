@@ -119,7 +119,7 @@ export const GridRow = (props) => {
     }
 
     const performanceBeatTheBaseline = (perf, baseline_perf) => {
-        if (props.baseline.name === 'zero_pct_gain') {
+        if (props.baseline.name === 'zeroPctGain') {
             if (perf > 0) {
                 return true
             } else if (perf < 0) {
@@ -604,7 +604,7 @@ export const GridRow = (props) => {
                 if (column.hasOwnProperty('scaling_power')) {
                     value *= Math.pow(10, column.scaling_power)
                 }
-                if (performance_value && props.baseline.name !== 'zero_pct_gain') {
+                if (performance_value && props.baseline.name !== 'zeroPctGain') {
                     if (props.rowName === 'S&P500') {
                         return 'ref.'
                     } else {

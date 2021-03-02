@@ -199,7 +199,7 @@ const allColumns = [
     }
 ]
 
-const default_shown_columns = ['symbol', 'currentShares', 'currentValue', 'percentValue', 'percentBasis', 'percent_profit', 'shortChangePct', 'mediumChangePct', 'longChangePct']
+const defaultShownColumns = ['symbol', 'currentShares', 'currentValue', 'percentValue', 'percentBasis', 'percent_profit', 'shortChangePct', 'mediumChangePct', 'longChangePct']
 
 export class ComparingStocks extends React.Component {
 
@@ -229,7 +229,7 @@ export class ComparingStocks extends React.Component {
             sellAllOf: [],
             remainingCash: null,
             baseline: {
-                name: 'zero_pct_gain',
+                name: 'zeroPctGain',
                 shortChangePct: 0,
                 mediumChangePct: 0,
                 longChangePct: 0,
@@ -252,7 +252,7 @@ export class ComparingStocks extends React.Component {
             show_only_achieved_performance: false,
             sortColumn: 'symbol',
             sort_dir_asc: true,
-            shown_columns: [],
+            shownColumns: [],
 
             done: false
         }
@@ -342,68 +342,68 @@ export class ComparingStocks extends React.Component {
             allTransactions = JSON.parse(JSON.stringify(stored_allTransactions))
         }
 
-        const stored_allRisk = JSON.parse(localStorage.getItem("allRisk"))
-        if (stored_allRisk !== null) {
-            this.setState({ allRisk: stored_allRisk })
+        const storedAllRisk = JSON.parse(localStorage.getItem("allRisk"))
+        if (storedAllRisk !== null) {
+            this.setState({ allRisk: storedAllRisk })
         }
 
         let self = this
 
         const view_controls = ['showCurrentHoldings', 'showPreviousHoldings', 'showTagged', 'showUntagged', 'show_index', 'showCash', 'show_aggregates', 'show_only_achieved_performance', 'error_if_not_todays_quote']
-        let stored_controls = {}
+        let storedControls = {}
         view_controls.forEach(function(control) {
-            stored_controls[control] = null
-            const stored_control = JSON.parse(localStorage.getItem(control))
-            if (stored_control !== null) {
-                stored_controls[control] = stored_control
-                self.setState({ [control]: stored_control })
+            storedControls[control] = null
+            const storedControl = JSON.parse(localStorage.getItem(control))
+            if (storedControl !== null) {
+                storedControls[control] = storedControl
+                self.setState({ [control]: storedControl })
             }
         })
 
-        let init_shown_columns = []
-        const stored_shown_columns = JSON.parse(localStorage.getItem("shown_columns"))
-        if (stored_shown_columns !== null) {
-            init_shown_columns = [...stored_shown_columns]
+        let initShownColumns = []
+        const storedShownColumns = JSON.parse(localStorage.getItem("shownColumns"))
+        if (storedShownColumns !== null) {
+            initShownColumns = [...storedShownColumns]
         } else {
-            init_shown_columns = allColumns.filter(column => default_shown_columns.includes(column.name))
+            initShownColumns = allColumns.filter(column => defaultShownColumns.includes(column.name))
         }
 
 
         // 2. calculate historical performance data for each added ticker
 
         let baseline = {}
-        const stored_baseline = JSON.parse(localStorage.getItem("baseline"))
-        if (stored_baseline !== null) {
-            baseline = Object.assign({}, stored_baseline)
+        const storedBaseline = JSON.parse(localStorage.getItem("baseline"))
+        if (storedBaseline !== null) {
+            baseline = Object.assign({}, storedBaseline)
         } else {
             baseline = {
-                name: 'zero_pct_gain',
+                name: 'zeroPctGain',
                 shortChangePct: 0,
                 mediumChangePct: 0,
                 longChangePct: 0,
             }
         }
 
-        let indexed_risk_data = {}
-        if (stored_allRisk !== null) {
-            indexed_risk_data = JSON.parse(JSON.stringify(stored_allRisk))
+        let indexedRiskData = {}
+        if (storedAllRisk !== null) {
+            indexedRiskData = JSON.parse(JSON.stringify(storedAllRisk))
         }
 
-        let raw_current_quote_data = require('./api/sample_current_quotes.json').sample_current_quotes
-        let indexed_current_quote_data = {}
-        raw_current_quote_data.forEach(function(raw_quote) {
-            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'].toUpperCase())
-            indexed_current_quote_data[adjusted_ticker] = raw_quote
+        let rawCurrentQuoteData = require('./api/sample_current_quotes.json').sample_current_quotes
+        let indexedCurrentQuoteData = {}
+        rawCurrentQuoteData.forEach(function(raw_quote) {
+            let adjustedTicker = self.convertNameForIndicies(raw_quote['Global Quote']['01. symbol'].toUpperCase())
+            indexedCurrentQuoteData[adjustedTicker] = raw_quote
         })
 
-        let raw_monthly_quote_data = require('./api/sample_monthly_quotes.json').sample_monthly_quotes
-        let indexed_monthly_quote_data = {}
-        let index_performance = {}
-        raw_monthly_quote_data.forEach(function(raw_quote) {
-            let adjusted_ticker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'].toUpperCase())
-            indexed_monthly_quote_data[adjusted_ticker] = raw_quote
-            if (adjusted_ticker === 'S&P500') {
-                let quoteTimeSeriesDesc = Object.entries(indexed_monthly_quote_data[adjusted_ticker]['Monthly Adjusted Time Series'])
+        let rawMonthlyQuoteData = require('./api/sample_monthly_quotes.json').sample_monthly_quotes
+        let indexedMonthlyQuoteData = {}
+        let indexPerformance = {}
+        rawMonthlyQuoteData.forEach(function(raw_quote) {
+            let adjustedTicker = self.convertNameForIndicies(raw_quote['Meta Data']['2. Symbol'].toUpperCase())
+            indexedMonthlyQuoteData[adjustedTicker] = raw_quote
+            if (adjustedTicker === 'S&P500') {
+                let quoteTimeSeriesDesc = Object.entries(indexedMonthlyQuoteData[adjustedTicker]['Monthly Adjusted Time Series'])
                 .sort(function(a,b) {
                     if(a[0] < b[0]) {
                         return 1
@@ -418,18 +418,18 @@ export class ComparingStocks extends React.Component {
                 let prev_short = monthly_prices[5]
                 let prev_medium = monthly_prices[11]
                 let prev_long = monthly_prices[23]
-                index_performance['shortChangePct'] = (now - prev_short) / now * 100
-                index_performance['mediumChangePct'] = (now - prev_medium) / now * 100
-                index_performance['longChangePct'] = (now - prev_long) / now * 100
-                baseline['shortChangePct'] = index_performance['shortChangePct']
-                baseline['mediumChangePct'] = index_performance['mediumChangePct']
-                baseline['longChangePct'] = index_performance['longChangePct']
+                indexPerformance['shortChangePct'] = (now - prev_short) / now * 100
+                indexPerformance['mediumChangePct'] = (now - prev_medium) / now * 100
+                indexPerformance['longChangePct'] = (now - prev_long) / now * 100
+                baseline['shortChangePct'] = indexPerformance['shortChangePct']
+                baseline['mediumChangePct'] = indexPerformance['mediumChangePct']
+                baseline['longChangePct'] = indexPerformance['longChangePct']
                 self.setState({ baseline: baseline })
                 localStorage.setItem('baseline', JSON.stringify(baseline))
             }
         })
 
-        this.setState({ index_performance: index_performance })
+        this.setState({ indexPerformance: indexPerformance })
 
 
         // 3. calculate position data (from transactions) for all holdings
@@ -440,17 +440,17 @@ export class ComparingStocks extends React.Component {
                 allStocks.push(transaction.ticker)
             }
         })
-        Object.keys(indexed_current_quote_data).forEach(function(ticker) {
+        Object.keys(indexedCurrentQuoteData).forEach(function(ticker) {
             if (!allStocks.includes(ticker)) {
                 allStocks.push(ticker)
             }
         })
-        Object.keys(indexed_monthly_quote_data).forEach(function(ticker) {
+        Object.keys(indexedMonthlyQuoteData).forEach(function(ticker) {
             if (!allStocks.includes(ticker)) {
                 allStocks.push(ticker)
             }
         })
-        Object.keys(indexed_risk_data).forEach(function(ticker) {
+        Object.keys(indexedRiskData).forEach(function(ticker) {
             if (!allStocks.includes(ticker)) {
                 allStocks.push(ticker)
             }
@@ -484,9 +484,9 @@ export class ComparingStocks extends React.Component {
             })
 
             // get current quote
-            if (indexed_current_quote_data.hasOwnProperty(ticker)) {
+            if (indexedCurrentQuoteData.hasOwnProperty(ticker)) {
                 let newCurrentQuote = {}
-                let quoteResult = indexed_current_quote_data[ticker]['Global Quote']
+                let quoteResult = indexedCurrentQuoteData[ticker]['Global Quote']
                 newCurrentQuote['symbol'] = ticker
                 newCurrentQuote['current_price'] = parseFloat((Math.round(100 * parseFloat(quoteResult['05. price'])) / 100).toFixed(2))
                 newCurrentQuote['change'] = parseFloat((Math.round(100 * parseFloat(quoteResult['09. change'])) / 100).toFixed(2))
@@ -497,10 +497,10 @@ export class ComparingStocks extends React.Component {
             }
 
             // get monthly quote
-            if (indexed_monthly_quote_data.hasOwnProperty(ticker)) {
+            if (indexedMonthlyQuoteData.hasOwnProperty(ticker)) {
 
                 let newTickerQuotes = {}
-                Object.entries(indexed_monthly_quote_data[ticker]['Monthly Adjusted Time Series']).forEach(function(entry) {
+                Object.entries(indexedMonthlyQuoteData[ticker]['Monthly Adjusted Time Series']).forEach(function(entry) {
 
                     let full_date = entry[0]
 
@@ -537,7 +537,7 @@ export class ComparingStocks extends React.Component {
                     if (typeof ticker_short_ago === 'number') {
                         ticker_perf_short = (ticker_now - ticker_short_ago) / ticker_now * 100
                         newPerformance['shortChangePct'] = (baseline.name === 'sp500_pct_gain') 
-                            ? ticker_perf_short - index_performance.shortChangePct 
+                            ? ticker_perf_short - indexPerformance.shortChangePct 
                             : ticker_perf_short
                     } else {
                         newPerformance['shortChangePct'] = 'err.'
@@ -545,7 +545,7 @@ export class ComparingStocks extends React.Component {
                     if (typeof ticker_medium_ago === 'number') {
                         ticker_perf_medium = (ticker_now - ticker_medium_ago) / ticker_now * 100
                         newPerformance['mediumChangePct'] = (baseline.name === 'sp500_pct_gain') 
-                            ? ticker_perf_medium - index_performance.mediumChangePct 
+                            ? ticker_perf_medium - indexPerformance.mediumChangePct 
                             : ticker_perf_medium
                     } else {
                         newPerformance['mediumChangePct'] = 'err.'
@@ -553,7 +553,7 @@ export class ComparingStocks extends React.Component {
                     if (typeof ticker_long_ago === 'number') {
                         ticker_perf_long = (ticker_now - ticker_long_ago) / ticker_now * 100
                         newPerformance['longChangePct'] = (baseline.name === 'sp500_pct_gain') 
-                            ? ticker_perf_long - index_performance.longChangePct 
+                            ? ticker_perf_long - indexPerformance.longChangePct 
                             : ticker_perf_long
                     } else {
                         newPerformance['longChangePct'] = 'err.'
@@ -563,8 +563,8 @@ export class ComparingStocks extends React.Component {
             }
 
             // get risk factor
-            if (indexed_risk_data.hasOwnProperty(ticker)) {
-                newRisk[ticker] = JSON.parse(JSON.stringify(indexed_risk_data[ticker]))
+            if (indexedRiskData.hasOwnProperty(ticker)) {
+                newRisk[ticker] = JSON.parse(JSON.stringify(indexedRiskData[ticker]))
             }
         })
         newMonthEndDates = newMonthEndDates.sort().reverse()
@@ -601,7 +601,7 @@ export class ComparingStocks extends React.Component {
         }
 
         // 5. handle aggregates
-        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(allTags, newPositions, newCurrentQuotes, stored_controls['showCurrentHoldings'], stored_controls['showCash'])))
+        let aggr_position_info = JSON.parse(JSON.stringify(this.calculateAggrPositionInfo(allTags, newPositions, newCurrentQuotes, storedControls['showCurrentHoldings'], storedControls['showCash'])))
         let aggr_performance = JSON.parse(JSON.stringify(this.calculateAggrPerformance(allTags, newPerformanceNumbers)))
 
 
@@ -618,7 +618,7 @@ export class ComparingStocks extends React.Component {
                         aggrRealized: aggr_position_info[1],
                         aggrTotalValue: aggr_position_info[2],
                         aggrPerformance: aggr_performance,
-                        shown_columns: init_shown_columns,
+                        shownColumns: initShownColumns,
                         done: true })
 
     }
@@ -947,29 +947,29 @@ export class ComparingStocks extends React.Component {
 
     showColumns(column_names) {
         this.setState(prevState => {
-            let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
+            let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shownColumns)).map(column => column.name)
             column_names.forEach(function(columnName) {
                 if (!new_shown_column_names.includes(columnName)) {
                     new_shown_column_names.push(columnName)
                 }
             })
             let new_shown_columns = allColumns.filter(column => new_shown_column_names.includes(column.name))
-            localStorage.setItem('shown_columns', JSON.stringify(new_shown_columns))
-            return { shown_columns: new_shown_columns }
+            localStorage.setItem('shownColumns', JSON.stringify(new_shown_columns))
+            return { shownColumns: new_shown_columns }
         })
     }
 
     onToggleShowColumn(columnName) {
         this.setState(prevState => {
-            let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shown_columns)).map(column => column.name)
+            let new_shown_column_names = JSON.parse(JSON.stringify(prevState.shownColumns)).map(column => column.name)
             if (new_shown_column_names.includes(columnName)) {
                 new_shown_column_names.splice(new_shown_column_names.findIndex(name => name === columnName), 1)
             } else {
                 new_shown_column_names.push(columnName)
             }
             let new_shown_columns = allColumns.filter(column => new_shown_column_names.includes(column.name))
-            localStorage.setItem('shown_columns', JSON.stringify(new_shown_columns))
-            return { shown_columns: new_shown_columns }
+            localStorage.setItem('shownColumns', JSON.stringify(new_shown_columns))
+            return { shownColumns: new_shown_columns }
         })
     }
 
@@ -2353,7 +2353,7 @@ export class ComparingStocks extends React.Component {
             aggr_row_data[aggr_ticker] = new_aggr_data
         })
 
-        let shown_column_names = this.state.shown_columns.map(column => column.name)
+        let shown_column_names = this.state.shownColumns.map(column => column.name)
         let all_columns_namesorted = JSON.parse(JSON.stringify(allColumns)).sort(function (a,b) {
             let value_a = a.displayName
             if (value_a.includes('year')) {
@@ -2490,7 +2490,7 @@ export class ComparingStocks extends React.Component {
                     <div id="baseline-control">
                         <label htmlFor="baseline">performance baseline:</label>
                         <select id="baseline" name="baseline" value={this.state.baseline.name} onChange={this.onInputChange}>
-                            <option value="zero_pct_gain">0% gain</option>
+                            <option value="zeroPctGain">0% gain</option>
                             <option value="sp500_pct_gain">SP&amp;500 Index</option>
                         </select>
                     </div>
@@ -2526,7 +2526,7 @@ export class ComparingStocks extends React.Component {
             <GridHeaderRow
                 highlightColumn={highlightColumn}
                 isAggregate={isAggregate}
-                columns={this.state.shown_columns}
+                columns={this.state.shownColumns}
                 symbolCountStr={symbol_count}
                 sortColumn={this.state.sortColumn}
                 sortTriangle={sortTriangle}
@@ -2625,7 +2625,7 @@ export class ComparingStocks extends React.Component {
             new_row['isAggregate'] = false
             new_row['rowName'] = ticker
             new_row['membershipSet'] = row_data[ticker]['tags']
-            new_row['columns'] = self.state.shown_columns
+            new_row['columns'] = self.state.shownColumns
             new_row['specialClasses'] = row_data[ticker]['specialClasses']
             new_row['current_price'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].current_price : 'err.'
             new_row['change_pct'] = (quote_exists) ? self.state.allCurrentQuotes[ticker].change_pct : 'err.'
@@ -2669,7 +2669,7 @@ export class ComparingStocks extends React.Component {
                 new_row['isAggregate'] = true
                 new_row['rowName'] = aggr_ticker
                 new_row['membershipSet'] = self.state.allTags[aggr_ticker]
-                new_row['columns'] = self.state.shown_columns
+                new_row['columns'] = self.state.shownColumns
                 new_row['specialClasses'] = aggr_row_data[aggr_ticker]['specialClasses']
                 new_row['current_price'] = aggr_row_data[aggr_ticker]['current_price']
                 new_row['change_pct'] = aggr_row_data[aggr_ticker]['change_pct']
@@ -2762,14 +2762,14 @@ export class ComparingStocks extends React.Component {
                         ))}
                         {this.state.done && all_ticker_rows.length ? (
                         <GridRowTotals
-                            columns={this.state.shown_columns}
+                            columns={this.state.shownColumns}
                             totalValue={aggr_total_value}
                             totalBasis={aggr_basis}
                             totalPerformance={this.state.aggrPerformance['_everything_']}
                         />
                         ) : (
                             <tr>
-                                <td className="no_table_data" colSpan={this.state.shown_columns.length+1}>No stocks have been added yet. Please add them using the form on the "Tickers" tab.</td>
+                                <td className="no_table_data" colSpan={this.state.shownColumns.length+1}>No stocks have been added yet. Please add them using the form on the "Tickers" tab.</td>
                             </tr>
                         ) }
                     </tbody>
@@ -2784,7 +2784,7 @@ export class ComparingStocks extends React.Component {
                                 <PopulateRow key={row_data.rowName} row_data={row_data} />
                             )) : (
                                 <tr>
-                                    <td className="no_table_data" colSpan={this.state.shown_columns.length+1}>No tags exist yet. Please create them using the form on the "Tags" tab.</td>
+                                    <td className="no_table_data" colSpan={this.state.shownColumns.length+1}>No tags exist yet. Please create them using the form on the "Tags" tab.</td>
                                 </tr>
                             )}
                         </tbody>
