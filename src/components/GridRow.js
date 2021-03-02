@@ -290,9 +290,9 @@ export const GridRow = (props) => {
             risk_factor = 0
             visible_risk_factor = 0
         }
-        let value_at_risk = currentValue * risk_factor
+        let valueAtRisk = currentValue * risk_factor
         let basis = props.basis
-        let basis_risked = basis * risk_factor
+        let basisRisked = basis * risk_factor
         let realized_gains = props.realized_gains
         const whatif = props.whatif
 
@@ -441,12 +441,12 @@ export const GridRow = (props) => {
                     value = whatif.basis
                 }
                 break
-            case 'basis_risked':
+            case 'basisRisked':
                 if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (props.currentValue === 0) {
                         value = 'n/a'
                     } else {
-                        value = basis_risked
+                        value = basisRisked
                     }
                 } else {
                     value = 'err.'
@@ -456,9 +456,9 @@ export const GridRow = (props) => {
                 if (whatif === null) {
                     value = 'n/a'
                 } else if (props.whatifFormat === 'deltas') {
-                    value = whatif.basis_risked - ((basis_risked === 'n/a') ? 0 : basis_risked)
+                    value = whatif.basisRisked - ((basisRisked === 'n/a') ? 0 : basisRisked)
                 } else {
-                    value = whatif.basis_risked
+                    value = whatif.basisRisked
                 }
                 break
             case 'percentBasis':
@@ -502,12 +502,12 @@ export const GridRow = (props) => {
                     value = 'n/a'
                 }
                 break
-            case 'value_at_risk':
+            case 'valueAtRisk':
                 if (typeof currentShares === 'string' || (typeof currentShares === 'number' && currentShares >= 0)) {
                     if (props.currentValue === 0) {
                         value = 'n/a'
                     } else if (!flagQuoteErrorOnPositionCell()) {
-                        value = value_at_risk
+                        value = valueAtRisk
                     } else {
                         value = 'err.'
                     }
@@ -520,9 +520,9 @@ export const GridRow = (props) => {
                     if (whatif === null) {
                         value = 'n/a'
                     } else if (props.whatifFormat === 'deltas') {
-                        value = whatif.value_at_risk - ((value_at_risk === 'n/a') ? 0 : value_at_risk)
+                        value = whatif.valueAtRisk - ((valueAtRisk === 'n/a') ? 0 : valueAtRisk)
                     } else {
-                        value = whatif.value_at_risk
+                        value = whatif.valueAtRisk
                     }
                 } else {
                     value = 'err.'
