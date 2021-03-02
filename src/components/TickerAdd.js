@@ -21,17 +21,17 @@ export const TickerAdd = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        let user_tag = addToTag
-        let user_tickers = String(userTickersString)
+        let userTag = addToTag
+        let userTickers = String(userTickersString)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toUpperCase())
             .map(str => str.replace(/[^A-Z]/g, ""))
-        validateTickers(user_tag, Array.from(new Set(user_tickers)))
+        validateTickers(userTag, Array.from(new Set(userTickers)))
     }
 
     const validateTickers = (tag, tickers) => {
-        let tickers_to_add = []
+        let tickersToAdd = []
         let newMessages = []
         tickers.forEach(function(ticker) {
             // ticker does not exist
@@ -48,13 +48,13 @@ export const TickerAdd = (props) => {
 
             // ticker is being added to a tag that it is not already in
             } else {
-                let tagged_tickers = []
+                let taggedTickers = []
                 Object.keys(props.allTags).forEach(function(tag) {
                     if (tag !== 'untagged') {
-                        tagged_tickers = tagged_tickers.concat(props.allTags[tag])
+                        taggedTickers = taggedTickers.concat(props.allTags[tag])
                     }
                 })
-                if (tag === 'untagged' && tagged_tickers.includes(ticker)) {
+                if (tag === 'untagged' && taggedTickers.includes(ticker)) {
                     newMessages.push('ERROR: Ticker ' + ticker + ' has already been added to another named tag.')
                 } else {
                     if (tag === 'untagged') {
@@ -62,19 +62,19 @@ export const TickerAdd = (props) => {
                     } else {
                         newMessages.push('Ticker ' + ticker + ' has now been added to tag "' + tag + '".')
                     }
-                    tickers_to_add.push(ticker)
+                    tickersToAdd.push(ticker)
                 }
             }
         })
         let numErrors = newMessages.filter(message => message.includes('ERROR')).length
         let summary
-        let tag_status_str = (tag !== 'untagged') ? ' to tag "' + tag + '"' : ''
+        let tagStatusStr = (tag !== 'untagged') ? ' to tag "' + tag + '"' : ''
         if (newMessages.length === 1) {
             summary = newMessages[0]
         } else if (numErrors === 0) {
-            summary = 'Added ' + tickers.length + ' tickers' + tag_status_str + '.'
+            summary = 'Added ' + tickers.length + ' tickers' + tagStatusStr + '.'
         } else {
-            summary = 'ERROR: ' + numErrors + ' of ' + tickers.length + ' tickers could not be added' + tag_status_str + '.'
+            summary = 'ERROR: ' + numErrors + ' of ' + tickers.length + ' tickers could not be added' + tagStatusStr + '.'
         }
         let newConsoleMessageSet = props.createConsoleMessageSet(summary)
         if (newMessages.length > 1) {
@@ -83,7 +83,7 @@ export const TickerAdd = (props) => {
         if (numErrors > 0) {
             newConsoleMessageSet.hasErrors = true
         }
-        props.onNewTickers(tag, tickers_to_add)
+        props.onNewTickers(tag, tickersToAdd)
         props.onNewConsoleMessages(newConsoleMessageSet)
         handleReset()
     }

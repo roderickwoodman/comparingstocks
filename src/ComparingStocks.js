@@ -1968,14 +1968,14 @@ export class ComparingStocks extends React.Component {
     }
 
     getTagged() {
-        let tagged_tickers = []
+        let taggedTickers = []
         let self = this
         Object.keys(this.state.allTags).forEach(function(tag) {
             if (tag !== 'untagged') {
-                tagged_tickers = tagged_tickers.concat(self.state.allTags[tag])
+                taggedTickers = taggedTickers.concat(self.state.allTags[tag])
             }
         })
-        return Array.from(new Set(tagged_tickers))
+        return Array.from(new Set(taggedTickers))
     }
 
     getUntagged() {

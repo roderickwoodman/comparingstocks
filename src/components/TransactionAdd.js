@@ -116,15 +116,15 @@ export const TransactionAdd = (props) => {
             if (!newMessages.length) {
 
                 // also print the "ticker has now been added" message, if needed
-                let tagged_tickers = []
+                let taggedTickers = []
                 Object.keys(props.allTags).forEach(function(tag) {
                     props.allTags[tag].forEach(function(ticker) {
-                        if (!tagged_tickers.includes(ticker)) {
-                            tagged_tickers.push(ticker)
+                        if (!taggedTickers.includes(ticker)) {
+                            taggedTickers.push(ticker)
                         }
                     })
                 })
-                if (tagged_tickers.includes(transaction[2].toUpperCase())) {
+                if (taggedTickers.includes(transaction[2].toUpperCase())) {
                     newMessages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
                 }
 
