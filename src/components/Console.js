@@ -24,14 +24,14 @@ export const Console = (props) => {
     }
 
     const formatTimestamp = (epoch) => {
-        let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-        let localISOTime = (new Date(new Date(parseInt(epoch)) - tzoffset)).toISOString()
-        let iso = localISOTime.match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/)
+        const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+        const localISOTime = (new Date(new Date(parseInt(epoch)) - tzoffset)).toISOString()
+        const iso = localISOTime.match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/)
         return iso[1] + ' ' + iso[2]
     }
 
     const onToggleSortOrder = () => {
-        let newSortDir = (dataSortDir === 'asc') ? 'desc' : 'asc'
+        const newSortDir = (dataSortDir === 'asc') ? 'desc' : 'asc'
         setDataSortDir(newSortDir)
     }
 
@@ -46,8 +46,8 @@ export const Console = (props) => {
     }
 
     const PopulateMessageSet = (toPopulate) => {
-        let timestamp = formatTimestamp(toPopulate.messageSet.modifiedAt)
-        let count = toPopulate.messageSet.messages.length
+        const timestamp = formatTimestamp(toPopulate.messageSet.modifiedAt)
+        const count = toPopulate.messageSet.messages.length
         return (
             <div className={getMessageSetClasses(count)}>
                 <p className="summary" onClick={ (e) => onToggleExpandMessageSet(timestamp)}>[{timestamp}] <span className={getClasses(toPopulate.messageSet.summary)}>{toPopulate.messageSet.summary}</span></p>
@@ -58,7 +58,7 @@ export const Console = (props) => {
         )
     }
 
-    let messageSets = props.allConsoleMessages
+    const messageSets = props.allConsoleMessages
     let orderedMessageSets
     orderedMessageSets = messageSets.sort(function(a,b) {
         if (a.modifiedAt < b.modifiedAt) {
