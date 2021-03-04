@@ -28,7 +28,7 @@ export const EditNumericCell = (props) => {
 
     const handleChange = (event) => {
 
-        let {name, value } = event.target
+        const {name, value } = event.target
 
         // when the input changes, validate the user's value
         if (name === 'userValue') {
