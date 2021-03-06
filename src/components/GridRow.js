@@ -39,8 +39,8 @@ export const GridRow = (props) => {
 
     // this button removes a ticker from a tag
     const populateMemberButton = (symbol) => {
-        let isAggr = props.isAggregate
-        let rowName = props.rowName
+        const isAggr = props.isAggregate
+        const rowName = props.rowName
         if (isAggr) {
             // rowName is a TAG
             // symbol is a TICKER 
@@ -282,7 +282,7 @@ export const GridRow = (props) => {
         const totalValue = props.totalValue
         const totalBasis = props.totalBasis
         const current_price = props.current_price
-        let currentShares = props.currentShares
+        const currentShares = props.currentShares
         const currentValue = props.currentValue
         let risk_factor = (props.risk_factor !== null) ? props.risk_factor : 0.20
         let visible_risk_factor = (props.risk_factor !== null) ? props.risk_factor : 'n/a'
@@ -290,10 +290,10 @@ export const GridRow = (props) => {
             risk_factor = 0
             visible_risk_factor = 0
         }
-        let valueAtRisk = currentValue * risk_factor
-        let basis = props.basis
-        let basisRisked = basis * risk_factor
-        let realized_gains = props.realized_gains
+        const valueAtRisk = currentValue * risk_factor
+        const basis = props.basis
+        const basisRisked = basis * risk_factor
+        const realized_gains = props.realized_gains
         const whatif = props.whatif
 
         let percentValue, percentBasis, profit, percent_profit
@@ -635,9 +635,9 @@ export const GridRow = (props) => {
     }
 
     const daysAgo = (date_str) => { // yyyy-mm-dd
-        let now = new Date()
-        let then = new Date(date_str)
-        let days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
+        const now = new Date()
+        const then = new Date(date_str)
+        const days_ago = Math.round((now - then) / 1000 / 60 / 60 / 24)
         if (date_str === 'n/a') {
             return -1
         } else {
@@ -646,9 +646,9 @@ export const GridRow = (props) => {
     }
 
     const isQuoteFromToday = (quote_date_str) => { // yyyy-mm-dd
-        let now = new Date()
-        let quote_date = new Date(quote_date_str)
-        let days_ago = (now - quote_date) / 1000 / 60 / 60 / 24
+        const now = new Date()
+        const quote_date = new Date(quote_date_str)
+        const days_ago = (now - quote_date) / 1000 / 60 / 60 / 24
         if (-1 <= days_ago && days_ago <= 0) {
             return true
         } else {
@@ -694,7 +694,7 @@ export const GridRow = (props) => {
         }
     })
 
-    let member_count = props.membershipSet.length
+    const member_count = props.membershipSet.length
 
     return (
         <tr className={ row_classes }>
