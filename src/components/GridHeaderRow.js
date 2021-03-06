@@ -24,10 +24,10 @@ export const GridHeaderRow = (props) => {
         }
     }
 
-    let isAggregate = props.isAggregate
-    let sortColumn = props.sortColumn
-    let sortTriangle = props.sortTriangle
-    let symbolCountStr = props.symbolCountStr
+    const isAggregate = props.isAggregate
+    const sortColumn = props.sortColumn
+    const sortTriangle = props.sortTriangle
+    const symbolCountStr = props.symbolCountStr
 
     let allColumns = []
 
