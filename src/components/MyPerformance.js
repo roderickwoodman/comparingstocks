@@ -65,8 +65,8 @@ export class MyPerformance extends React.Component {
         if (sortedTransactions.length) {
 
             // the performance start period includes the earliest added transaction
-            let firstYear = parseInt(sortedTransactions[0].date.split('-')[0])
-            let firstMonth = parseInt(sortedTransactions[0].date.split('-')[1])
+            const firstYear = parseInt(sortedTransactions[0].date.split('-')[0])
+            const firstMonth = parseInt(sortedTransactions[0].date.split('-')[1])
             let firstPeriod
             if (periodSize === 'month') {
                 firstPeriod = firstMonth
@@ -77,9 +77,9 @@ export class MyPerformance extends React.Component {
             }
 
             // the performance end period includes the current date
-            let today = new Date()
-            let todayYear = today.getFullYear()
-            let todayMonth = today.getMonth() + 1
+            const today = new Date()
+            const todayYear = today.getFullYear()
+            const todayMonth = today.getMonth() + 1
             let todayPeriod
             if (periodSize === 'month') {
                 todayPeriod = todayMonth
@@ -158,7 +158,7 @@ export class MyPerformance extends React.Component {
                 // generate the title for this period
                 let periodSortSuffix, periodDisplaySuffix
                 if (periodSize === 'month') {
-                    let d = new Date(1980, period - 1, 1)
+                    const d = new Date(1980, period - 1, 1)
                     periodSortSuffix = 'M' + ('0' + period).slice(-2)
                     periodDisplaySuffix = ' ' + d.toLocaleString('default', { month: 'short' })
                 } else if (periodSize === 'quarter') {
@@ -172,8 +172,8 @@ export class MyPerformance extends React.Component {
                 newPeriod['sort_name'] = year + periodSortSuffix
 
                 // determine period's transactions
-                let target_year = year
-                let period_transactions = sortedTransactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(periodSize, t.date) === period )
+                const target_year = year
+                const period_transactions = sortedTransactions.filter( t => this.getYear(t.date) === target_year && this.getPeriod(periodSize, t.date) === period )
                 newPeriod['transactions_of_stock'] = period_transactions.filter( t => t.ticker !== 'cash' )
                 newPeriod['transactions_of_cash'] = period_transactions.filter( t => t.ticker === 'cash' )
 
@@ -182,14 +182,14 @@ export class MyPerformance extends React.Component {
                     let action, ticker, shares, total
                     [action, ticker, shares, total] = [transaction.action, transaction.ticker, transaction.shares, transaction.total]
                     if (ticker === 'cash') {
-                        let cash_delta = (action === 'transferIN' || action === 'dividend') ? total : -1 * total
+                        const cash_delta = (action === 'transferIN' || action === 'dividend') ? total : -1 * total
                         if (action === 'transferIN' || action === 'transferOUT') {
                             endTransfersinvalue += cash_delta
                         }
                         endCash += cash_delta
                     } else {
-                        let share_delta = (action === 'buy') ? shares : -1 * shares
-                        let cash_delta = (action === 'buy') ? -1 * total : total
+                        const share_delta = (action === 'buy') ? shares : -1 * shares
+                        const cash_delta = (action === 'buy') ? -1 * total : total
                         if (endShares.hasOwnProperty(ticker)) {
                             endShares[ticker] += share_delta
                         } else {
@@ -203,7 +203,7 @@ export class MyPerformance extends React.Component {
                 newPeriod['endTransfersinvalue'] = endTransfersinvalue
 
                 // determine period-end ticker value
-                let self = this
+                const self = this
                 let endTickervalue = 0, end_tickerdate = null
                 let this_quote_month
                 if (periodSize === 'month') {
@@ -217,8 +217,8 @@ export class MyPerformance extends React.Component {
                 if (target_year === todayYear && period === todayPeriod) { // for a partial last period, use a previous month's quotes
                     let lastavailablequote_month_str, lastavailablequote_year_str
                     [lastavailablequote_year_str, lastavailablequote_month_str] = this.props.allMonthEndDates[0].split('-')
-                    let lastavailablequote_month = parseInt(lastavailablequote_month_str)
-                    let lastavailablequote_year = parseInt(lastavailablequote_year_str)
+                    const lastavailablequote_month = parseInt(lastavailablequote_month_str)
+                    const lastavailablequote_year = parseInt(lastavailablequote_year_str)
                     if (periodSize === 'year') {
                         if (lastavailablequote_year === todayYear) {
                             this_quote_month = lastavailablequote_month
@@ -270,7 +270,7 @@ export class MyPerformance extends React.Component {
 
                 // determine period-end baseline value
                 let end_baselineprice, end_baselinedate
-                let end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
+                const end_baselinequote = self.getMonthEndQuote('S&P500', this_quote_year, this_quote_month)
                 if (end_baselinequote === undefined || end_baselinequote.price === undefined) {
                     newConsoleMessages.push('ERROR: Quote for symbol S&P500 for month '+this_quote_year+'-'+this_quote_month+' is unavailable.')
                     end_baselineprice = 'err.'
@@ -303,13 +303,13 @@ export class MyPerformance extends React.Component {
                     zb_end_month = 0
                     end_year = target_year + 1
                 }
-                let period_start_date = new Date(target_year, zb_start_month, 1)
-                let period_end_date = new Date(end_year, zb_end_month, 1)
-                let period_days = Math.round((period_end_date - period_start_date) / (1000 * 60 * 60 * 24))
+                const period_start_date = new Date(target_year, zb_start_month, 1)
+                const period_end_date = new Date(end_year, zb_end_month, 1)
+                const period_days = Math.round((period_end_date - period_start_date) / (1000 * 60 * 60 * 24))
                 newPeriod.transactions_of_cash.forEach(function(transaction) {
                     let transfer_month, transfer_day, fraction_of_period
                     [transfer_month, transfer_day] = [parseInt(transaction.date.split('-')[1]), parseInt(transaction.date.split('-')[2])]
-                    let transfer_date = new Date(target_year, transfer_month - 1, transfer_day)
+                    const transfer_date = new Date(target_year, transfer_month - 1, transfer_day)
                     if (transaction.action === 'transferIN') {
                         fraction_of_period = (period_end_date - transfer_date) / (1000 * 60 * 60 * 24) / period_days
                         adjusted_transfer_value += transaction.total * fraction_of_period
@@ -346,14 +346,14 @@ export class MyPerformance extends React.Component {
 
         if (newConsoleMessages.length) {
             let message_summary
-            let quote_error_count = quoteErrors.length
+            const quote_error_count = quoteErrors.length
             if (newConsoleMessages.length === 1) {
                 message_summary = newConsoleMessages[0]
             } else {
-                let quote_tickers_count = Array.from(new Set(quoteErrors)).length
-                let plural_quoteerrors = (quote_error_count === 1) ? '' : 's'
-                let plural_verb = (quote_error_count === 1) ? ' was' : ' were'
-                let plural_differentstocks = (quote_tickers_count === 1) ? ' stock' : ' different stocks'
+                const quote_tickers_count = Array.from(new Set(quoteErrors)).length
+                const plural_quoteerrors = (quote_error_count === 1) ? '' : 's'
+                const plural_verb = (quote_error_count === 1) ? ' was' : ' were'
+                const plural_differentstocks = (quote_tickers_count === 1) ? ' stock' : ' different stocks'
                 if (quote_error_count === 1) {
                     message_summary = 'ERROR: 1 quote was unavailable.'
                 } else if (quote_error_count > 1) {
@@ -380,7 +380,7 @@ export class MyPerformance extends React.Component {
     }
 
     getPeriod(periodSize, date) {
-        let zb_month = parseInt(date.split('-')[1])-1
+        const zb_month = parseInt(date.split('-')[1])-1
 
         if (periodSize === 'month') {
             return zb_month + 1
@@ -404,7 +404,7 @@ export class MyPerformance extends React.Component {
     formatCurrency(dollars) {
         let prefix, retval = dollars
         if (typeof dollars === 'number') {
-            let value = Math.round(dollars)
+            const value = Math.round(dollars)
             retval = this.numberWithCommas(Math.abs(value))
             prefix = (value < 0 ) ? '-$' : '$'
             retval = prefix + retval
@@ -420,12 +420,12 @@ export class MyPerformance extends React.Component {
         retval['display_value'] = 'err.'
         retval['baseline_value'] = 'err.'
         retval['index_value'] = periodData.period_baseline_change_pct
-        let my_perf = periodData.period_change_pct
+        const my_perf = periodData.period_change_pct
         if (my_perf === 'err.') {
             retval['display_value'] = 'err.'
         } else if (typeof my_perf === 'number') {
             if (this.props.baselineName === 'sp500_pct_gain') {
-                let baseline_perf = periodData.period_baseline_change_pct
+                const baseline_perf = periodData.period_baseline_change_pct
                 if (typeof baseline_perf !== 'number') {
                     return retval
                 } else {
@@ -441,12 +441,12 @@ export class MyPerformance extends React.Component {
     }
 
     getMonthEndQuote(ticker, year, month) {
-        let monthly_quotes = this.props.allMonthlyQuotes
-        let monthly_dates = this.props.allMonthEndDates
-        let period_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
+        const monthly_quotes = this.props.allMonthlyQuotes
+        const monthly_dates = this.props.allMonthEndDates
+        const period_idx = monthly_dates.findIndex( date => this.getYear(date) === year && this.getMonth(date) === month )
         let retval = {}
         if (period_idx !== -1) {
-            let quote_date = monthly_dates[period_idx]
+            const quote_date = monthly_dates[period_idx]
             retval['date'] = quote_date
             retval['price'] = (monthly_quotes[ticker].hasOwnProperty(quote_date)) ? monthly_quotes[ticker][quote_date] : undefined
         } else {
@@ -505,12 +505,12 @@ export class MyPerformance extends React.Component {
 
     onToggleSortOrder(num_periods) {
         let el = document.getElementById('my-performance-periods')
-        let period_width = Math.floor(el.scrollWidth / num_periods)
-        let leftmost_zbperiod_shown = Math.floor(el.scrollLeft / period_width)
-        let new_scroll_left = (num_periods - leftmost_zbperiod_shown - 1) * period_width
+        const period_width = Math.floor(el.scrollWidth / num_periods)
+        const leftmost_zbperiod_shown = Math.floor(el.scrollLeft / period_width)
+        const new_scroll_left = (num_periods - leftmost_zbperiod_shown - 1) * period_width
         el.scrollLeft = new_scroll_left
         this.setState(prevState => {
-            let newSortDir = (prevState.dataSortDir === 'asc') ? 'desc' : 'asc'
+            const newSortDir = (prevState.dataSortDir === 'asc') ? 'desc' : 'asc'
             localStorage.setItem('dataSortDir', JSON.stringify(newSortDir))
             return { 
                 dataSortDir: newSortDir 
@@ -519,19 +519,19 @@ export class MyPerformance extends React.Component {
     }
 
     handlePeriodChange(event) {
-        let newPeriod = event.target.id.replace(/select-/g, '')
+        const newPeriod = event.target.id.replace(/select-/g, '')
         localStorage.setItem('periodSize', JSON.stringify(newPeriod))
         this.setState({ periodSize: newPeriod })
         this.generatePeriodData(newPeriod)
     }
 
     render() {
-        let self = this
+        const self = this
         let displayed_performance = {}
         this.state.periodData.forEach(function(qdata) {
             displayed_performance[qdata.sort_name] = self.getDisplayedPerformance(qdata)
         })
-        let sorted_data = this.state.periodData.sort( function(a,b) {
+        const sorted_data = this.state.periodData.sort( function(a,b) {
             if (a.sort_name < b.sort_name) {
                 return (self.state.dataSortDir === 'asc') ? -1 : 1
             } else if (a.sort_name > b.sort_name) {
