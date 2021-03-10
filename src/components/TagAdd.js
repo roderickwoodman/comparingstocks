@@ -16,7 +16,7 @@ export const TagAdd = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        let userTags = String(userTagsString)
+        const userTags = String(userTagsString)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toLowerCase())
@@ -34,7 +34,7 @@ export const TagAdd = (props) => {
                 tagsToAdd.push(tag)
             }
         })
-        let numErrors = newMessages.filter(message => message.includes('ERROR')).length
+        const numErrors = newMessages.filter(message => message.includes('ERROR')).length
         let summary
         if (newMessages.length === 1) {
             summary = newMessages[0]
