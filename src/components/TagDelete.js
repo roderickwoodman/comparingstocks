@@ -7,7 +7,7 @@ export const TagDelete = (props) => {
     const [deleteTagList, setDeleteTagList] = useState(['untagged'])
 
     const handleTagChange = (event) => {
-        let {selectedOptions } = event.target
+        const {selectedOptions } = event.target
 
         let multipleTags = Array.from(selectedOptions, (item) => item.value)
         if (multipleTags.includes('untagged')) {
@@ -20,7 +20,7 @@ export const TagDelete = (props) => {
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        let userTagList = deleteTagList
+        const userTagList = deleteTagList
         props.onDeleteTags(userTagList)
 
         setDeleteTagList(['untagged'])
