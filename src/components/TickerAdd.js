@@ -21,8 +21,8 @@ export const TickerAdd = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        let userTag = addToTag
-        let userTickers = String(userTickersString)
+        const userTag = addToTag
+        const userTickers = String(userTickersString)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.toUpperCase())
@@ -66,9 +66,9 @@ export const TickerAdd = (props) => {
                 }
             }
         })
-        let numErrors = newMessages.filter(message => message.includes('ERROR')).length
+        const numErrors = newMessages.filter(message => message.includes('ERROR')).length
         let summary
-        let tagStatusStr = (tag !== 'untagged') ? ' to tag "' + tag + '"' : ''
+        const tagStatusStr = (tag !== 'untagged') ? ' to tag "' + tag + '"' : ''
         if (newMessages.length === 1) {
             summary = newMessages[0]
         } else if (numErrors === 0) {
