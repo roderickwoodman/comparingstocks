@@ -32,11 +32,11 @@ export const TransactionAdd = (props) => {
     const handleCashSubmit = (event) => {
         event.preventDefault()
         let new_message = null
-        let user_cash_action = userCashAction
-        let user_date = transactionDate
+        const user_cash_action = userCashAction
+        const user_date = transactionDate
 
-        let user_cash_operation = userCashAmount
-        let terms = user_cash_operation.split(' ')
+        const user_cash_operation = userCashAmount
+        const terms = user_cash_operation.split(' ')
         let user_cash_amount
 
         if (userCashAction === 'dividend') {
@@ -50,11 +50,11 @@ export const TransactionAdd = (props) => {
         }
 
         if (new_message === null) {
-            let cash_amount = parseFloat(user_cash_amount.trim().replace(/\$/g, ""))
+            const cash_amount = parseFloat(user_cash_amount.trim().replace(/\$/g, ""))
             if (isNaN(cash_amount)) {
                 new_message = 'ERROR: Cash amount "' + cash_amount + '" is not in currency format.'
             } else {
-                let total = parseFloat((Math.round(cash_amount * 100) / 100).toFixed(2));
+                const total = parseFloat((Math.round(cash_amount * 100) / 100).toFixed(2));
                 let valid_transaction_summary = user_date + ': ' + user_cash_action + ' $' + total.toFixed(2) + ' cash'
                 if (userCashAction === 'dividend') {
                     valid_transaction_summary += ' on ' + terms[2].toUpperCase()
@@ -73,7 +73,7 @@ export const TransactionAdd = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        let user_transaction = String(transaction)
+        const user_transaction = String(transaction)
             .split(" ")
             .map(str => str.trim())
             .map(str => str.replace(/[^A-Za-z0-9$.]/g, ""))
@@ -90,17 +90,17 @@ export const TransactionAdd = (props) => {
 
         } else {
 
-            let action = transaction[0].toLowerCase()
+            const action = transaction[0].toLowerCase()
             if (action !== 'buy' && action !== 'sell') {
                 newMessages.push('ERROR: Action "' + transaction[0] + '" must be either "buy" or "sell".')
             }
 
-            let num_shares = parseInt(transaction[1])
+            const num_shares = parseInt(transaction[1])
             if (isNaN(num_shares) || num_shares < 1) {
                 newMessages.push('ERROR: Share count "' + transaction[1] + '" must be a positive integer.')
             }
 
-            let ticker = transaction[2].toUpperCase().replace(/[^A-Z]/g, "")
+            const ticker = transaction[2].toUpperCase().replace(/[^A-Z]/g, "")
             if (ticker !== transaction[2].toUpperCase() || !props.allStocks.includes(ticker.toUpperCase())) {
                 newMessages.push('ERROR: Ticker "' + transaction[2] + '" does not exist.')
             }
@@ -128,7 +128,7 @@ export const TransactionAdd = (props) => {
                     newMessages.push('Ticker ' + transaction[2].toUpperCase() + ' has now been added.')
                 }
 
-                let valid_transaction_summary = transactionDate + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
+                const valid_transaction_summary = transactionDate + ': ' + action + ' ' + num_shares + ' ' + ticker + ' $' + total.toFixed(2)
                 summary_message = 'Transaction "' + valid_transaction_summary + '" has now been recorded.'
                 newMessages.push(summary_message)
                 props.onNewTransaction(valid_transaction_summary)
