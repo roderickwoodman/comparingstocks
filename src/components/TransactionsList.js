@@ -14,7 +14,7 @@ export const TransactionsList = (props) => {
     }
 
     const onToggleSortOrder = () => {
-        let newSortDir = (dataSortDir === 'asc') ? 'desc' : 'asc'
+        const newSortDir = (dataSortDir === 'asc') ? 'desc' : 'asc'
         setDataSortDir(newSortDir)
     }
         
@@ -45,14 +45,14 @@ export const TransactionsList = (props) => {
             let reader = new FileReader();
             reader.readAsText(files[0], "UTF-8");
             reader.onload = function (evt) {
-                let fileContents = JSON.parse(evt.target.result)
+                const fileContents = JSON.parse(evt.target.result)
                 props.onImportTransactions(fileContents)
             }
         }
     }
 
-    let allTransactions = props.allTransactions
-    let orderedFilteredTransactions = allTransactions
+    const allTransactions = props.allTransactions
+    const orderedFilteredTransactions = allTransactions
         .filter( transaction => transaction.summary.toLowerCase().includes(filterStr.toLowerCase()) )
         .sort( function(a,b) {
             if (a.summary < b.summary) {
