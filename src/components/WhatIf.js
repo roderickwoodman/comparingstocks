@@ -14,7 +14,7 @@ export const WhatIf = (props) => {
 
     useEffect( () => {
 
-        let newBalanceableValue = Math.round(props.getBalanceableValue(balanceTargetSet, sellAllOf, balanceTargetColumn))
+        const newBalanceableValue = Math.round(props.getBalanceableValue(balanceTargetSet, sellAllOf, balanceTargetColumn))
         setBalanceableValue(newBalanceableValue)
 
         const storedBalanceTargetSet = JSON.parse(localStorage.getItem("balanceTargetSet"))
@@ -36,25 +36,25 @@ export const WhatIf = (props) => {
 
     const handleChange = (event) => {
 
-        let {name, value, selectedOptions } = event.target
+        const {name, value, selectedOptions } = event.target
 
         // when the balance target set input changes, update the maximum value
         if (name === 'balanceTargetSet') {
-            let newBalanceableValue = Math.round(props.getBalanceableValue(value, sellAllOf, balanceTargetColumn))
+            const newBalanceableValue = Math.round(props.getBalanceableValue(value, sellAllOf, balanceTargetColumn))
             setBalanceableValue(newBalanceableValue)
         }
 
         // when the balance target column input changes, update the maximum value
         if (name === 'balanceTargetColumn') {
-            let newBalanceableValue = Math.round(this.props.getBalanceableValue(balanceTargetSet, sellAllOf, value))
+            const newBalanceableValue = Math.round(this.props.getBalanceableValue(balanceTargetSet, sellAllOf, value))
             setBalanceableValue(newBalanceableValue)
         }
 
         // when the cash remaining input changes, validate the user's value
         if (name === 'cashRemaining') {
-            let usersWholeDollarsString = value.replace('$','').split('.')[0]
-            let usersWholeDollars = parseInt(usersWholeDollarsString)
-            let validWholeDollarsString = value.replace(/[^0-9.,]/g,'').split('.')[0]
+            const usersWholeDollarsString = value.replace('$','').split('.')[0]
+            const usersWholeDollars = parseInt(usersWholeDollarsString)
+            const validWholeDollarsString = value.replace(/[^0-9.,]/g,'').split('.')[0]
             if (validWholeDollarsString.length 
                 && usersWholeDollarsString === validWholeDollarsString 
                 && usersWholeDollars >= 0
@@ -78,7 +78,7 @@ export const WhatIf = (props) => {
             if (multipleTickers.includes('sellNone')) {
                 multipleTickers = ['sellNone']
             }
-            let newBalanceableValue = Math.round(props.getBalanceableValue(balanceTargetSet, value, balanceTargetColumn))
+            const newBalanceableValue = Math.round(props.getBalanceableValue(balanceTargetSet, value, balanceTargetColumn))
             setSellAllOf(multipleTickers)
             setBalanceableValue(newBalanceableValue)
         }
@@ -86,8 +86,8 @@ export const WhatIf = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        let userRemainingCash = cashRemaining.split('.')[0].replace(/[^0-9]/g, "")
-        let remainingCash = (cashTreatment === 'include') ? parseInt(userRemainingCash) : null
+        const userRemainingCash = cashRemaining.split('.')[0].replace(/[^0-9]/g, "")
+        const remainingCash = (cashTreatment === 'include') ? parseInt(userRemainingCash) : null
         props.onWhatifSubmit(balanceTargetSet, sellAllOf, balanceTargetColumn, remainingCash)
     }
 
